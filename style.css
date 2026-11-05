@@ -1255,6 +1255,7 @@ body.dark-theme {
   -webkit-text-fill-color: transparent;
 }
 
+
 /* NÃšT CIRCULAR-REVEAL SUN/MOON (219) */
 .u219-tg {
   width: 40px;
@@ -1275,7 +1276,7 @@ body.dark-theme {
               box-shadow 0.2s ease;
   flex-shrink: 0;
   position: relative;
-  z-index: 100001;
+  z-index: 101;
 }
 
 .u219-tg:hover {
@@ -1312,34 +1313,59 @@ body.dark-theme {
   transform: rotate(-90deg);
 }
 
-/* Lá»šP PHá»¦ CIRCULAR REVEAL TOÃ€N MÃ€N HÃŒNH */
-.u219-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100000;
-  pointer-events: none;
-  clip-path: circle(0px at var(--reveal-x, 90vw) var(--reveal-y, 38px));
-  transition: clip-path 0.75s cubic-bezier(0.65, 0, 0.35, 1);
-  opacity: 0;
+/* NATIVE VIEW TRANSITION CHO CIRCULAR REVEAL SIÃŠU MÆ¯á»¢T */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
-.u219-overlay.revealing-dark {
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999999;
+}
+
+:root[data-theme="dark"]::view-transition-old(root) {
+  z-index: 999999;
+}
+
+:root[data-theme="dark"]::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* FALLBACK CIRCULAR REVEAL CHO TRÃŒNH DUYá»†T KHÃ”NG Há»– TRá»¢ VIEW TRANSITION */
+.u219-fallback-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  pointer-events: none;
+  opacity: 0;
+  clip-path: circle(0px at var(--reveal-x, 90vw) var(--reveal-y, 38px));
+  transition: clip-path 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.u219-fallback-overlay.animating-dark {
   background: #090a0f;
   opacity: 1;
   clip-path: circle(160vmax at var(--reveal-x, 90vw) var(--reveal-y, 38px));
 }
 
-.u219-overlay.revealing-light {
+.u219-fallback-overlay.animating-light {
   background: #fcfbf9;
   opacity: 1;
   clip-path: circle(160vmax at var(--reveal-x, 90vw) var(--reveal-y, 38px));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .u219-overlay {
-    transition: none !important;
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
-  .u219-tg svg {
+  .u219-fallback-overlay {
     transition: none !important;
   }
 }

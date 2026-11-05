@@ -49,17 +49,17 @@
                         <path d="M13.5 9.8A5.6 5.6 0 0 1 6.2 2.5a5.6 5.6 0 1 0 7.3 7.3z" fill="currentColor"/>
                     </svg>
                 </button>
-                <div id="u219-reveal-overlay" class="u219-overlay" aria-hidden="true"></div>
+                <div id="u219-fallback-overlay" class="u219-fallback-overlay" aria-hidden="true"></div>
 
                 <script>
                 (function() {
                     var btn = document.getElementById('circular-theme-toggle');
-                    var overlay = document.getElementById('u219-reveal-overlay');
+                    var fallbackOverlay = document.getElementById('u219-fallback-overlay');
                     if (!btn) return;
 
-                    var isAnimating = false;
+                    var isRunning = false;
 
-                    function setTheme(dark, withAnimation, clickEvent) {
+                    function applyDomTheme(dark) {
                         if (dark) {
                             document.documentElement.setAttribute('data-theme', 'dark');
                             document.body.classList.add('dark-theme');
@@ -73,37 +73,76 @@
                             btn.setAttribute('aria-label', 'Switch to dark mode');
                             btn.setAttribute('aria-pressed', 'false');
                         }
-
-                        if (!withAnimation || !overlay) return;
-
-                        var rect = btn.getBoundingClientRect();
-                        var cx = clickEvent ? clickEvent.clientX : (rect.left + rect.width / 2);
-                        var cy = clickEvent ? clickEvent.clientY : (rect.top + rect.height / 2);
-
-                        document.documentElement.style.setProperty('--reveal-x', cx + 'px');
-                        document.documentElement.style.setProperty('--reveal-y', cy + 'px');
-
-                        isAnimating = true;
-                        overlay.className = 'u219-overlay ' + (dark ? 'revealing-dark' : 'revealing-light');
-
-                        setTimeout(function() {
-                            overlay.className = 'u219-overlay';
-                            isAnimating = false;
-                        }, 750);
                     }
 
-                    // Khởi tạo trạng thái ban đầu (không chạy animation lần đầu load trang)
+                    // Khởi tạo ban đầu
                     var saved = localStorage.getItem('dream_house_theme');
                     var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    var initDark = saved === 'dark' || (!saved && prefersDark);
-                    setTheme(initDark, false);
+                    var currentDark = saved === 'dark' || (!saved && prefersDark);
+                    applyDomTheme(currentDark);
 
-                    // Xử lý click tạo hiệu ứng Circular Reveal lan tỏa từ nút
+                    // Xử lý chuyển đổi với hiệu ứng Circular Reveal (Chuẩn View Transition API & Fallback)
                     btn.addEventListener('click', function(e) {
                         e.preventDefault();
-                        if (isAnimating) return;
-                        var isDarkNow = document.documentElement.getAttribute('data-theme') === 'dark';
-                        setTheme(!isDarkNow, true, e);
+                        if (isRunning) return;
+
+                        var nextDark = !(document.documentElement.getAttribute('data-theme') === 'dark');
+                        var rect = btn.getBoundingClientRect();
+                        var x = e.clientX || (rect.left + rect.width / 2);
+                        var y = e.clientY || (rect.top + rect.height / 2);
+
+                        // 1. Nếu trình duyệt hỗ trợ document.startViewTransition (Chrome, Edge, Opera, Safari mới)
+                        if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                            isRunning = true;
+                            var endRadius = Math.hypot(
+                                Math.max(x, window.innerWidth - x),
+                                Math.max(y, window.innerHeight - y)
+                            );
+
+                            var transition = document.startViewTransition(function() {
+                                applyDomTheme(nextDark);
+                            });
+
+                            transition.ready.then(function() {
+                                var clipPath = [
+                                    'circle(0px at ' + x + 'px ' + y + 'px)',
+                                    'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'
+                                ];
+                                document.documentElement.animate(
+                                    {
+                                        clipPath: nextDark ? clipPath : clipPath.slice().reverse()
+                                    },
+                                    {
+                                        duration: 650,
+                                        easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+                                        pseudoElement: nextDark ? '::view-transition-new(root)' : '::view-transition-old(root)'
+                                    }
+                                ).onfinish = function() {
+                                    isRunning = false;
+                                };
+                            }).catch(function() {
+                                isRunning = false;
+                            });
+                            return;
+                        }
+
+                        // 2. Fallback cho các trình duyệt chưa hỗ trợ View Transitions
+                        if (fallbackOverlay && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                            isRunning = true;
+                            document.documentElement.style.setProperty('--reveal-x', x + 'px');
+                            document.documentElement.style.setProperty('--reveal-y', y + 'px');
+                            fallbackOverlay.className = 'u219-fallback-overlay ' + (nextDark ? 'animating-dark' : 'animating-light');
+
+                            setTimeout(function() {
+                                applyDomTheme(nextDark);
+                                fallbackOverlay.className = 'u219-fallback-overlay';
+                                isRunning = false;
+                            }, 700);
+                            return;
+                        }
+
+                        // Mặc định không animation
+                        applyDomTheme(nextDark);
                     });
                 })();
                 </script>
