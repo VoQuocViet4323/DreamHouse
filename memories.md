@@ -257,6 +257,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Đa ngôn ngữ đầy đủ cho các trường mới trong `js/i18n.js` (`auth_username`, `auth_confirm_pass`, `auth_username_placeholder`, `auth_login_placeholder`).
   - Tăng tham số phiên bản cache-busting lên **`?v=2.8`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 16: Chuẩn hóa Tuyệt đối Cơ chế Ghi nhớ Tài khoản (Strict Remember-Me Behavior)
+- [x] **Khắc phục lỗi tự động điền Username khi không tích chọn Ghi nhớ:**
+  - Bỏ thuộc tính `checked` mặc định trong thẻ `<input type="checkbox" id="auth-remember-me">` tại [index.html](file:///d:/DreamHouse/index.html) để người dùng chủ động lựa chọn.
+  - Bổ sung lệnh xóa `localStorage.removeItem('dream_house_remember_email')` khi người dùng đăng ký hoặc đăng nhập với checkbox không được tích.
+  - Tái cấu trúc hàm `loadRememberedAccount()` trong [js/app.js](file:///d:/DreamHouse/js/app.js): Chỉ khi có bản ghi hợp lệ trong `localStorage` mới điền vào `#auth-email` và bật checkbox; nếu không có, **bắt buộc dọn sạch trường `emailInput.value = ''`** và tắt checkbox.
+  - Dọn sạch toàn bộ trường mật khẩu và tài khoản cũ trong hàm `logout()` và khi bấm nút Đăng nhập từ Header.
+  - Nâng tham số cache-busting lên **`?v=2.9`** trên toàn bộ `index.html` và `admin.html`.
+
+
 
 
 

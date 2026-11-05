@@ -399,6 +399,8 @@ class DreamHouseApp {
             const rememberCheckbox = document.getElementById('auth-remember-me');
             if (rememberCheckbox && rememberCheckbox.checked) {
                 localStorage.setItem('dream_house_remember_email', cleanUsername);
+            } else {
+                localStorage.removeItem('dream_house_remember_email');
             }
 
             await this.loadUserProfile();
@@ -523,11 +525,13 @@ class DreamHouseApp {
             const switchLink = document.getElementById('auth-switch-mode');
             if (switchLink) switchLink.textContent = window.i18n ? window.i18n.t('auth_no_acc') : 'Need to create an account? Sign Up';
 
-            // Xóa trường mật khẩu cũ
+            // Xóa sạch toàn bộ các ô nhập dữ liệu cũ
             const passInput = document.getElementById('auth-password');
             if (passInput) passInput.value = '';
+            if (confirmInput) confirmInput.value = '';
+            if (emailInput) emailInput.value = '';
 
-            // Nạp lại email đã ghi nhớ (nếu có)
+            // Chỉ nạp lại tài khoản nếu ĐÃ ĐƯỢC LƯU trong localStorage
             this.loadRememberedAccount();
             const rememberedEmail = localStorage.getItem('dream_house_remember_email');
 
@@ -1316,6 +1320,11 @@ class DreamHouseApp {
                 alertBox.textContent = '';
             }
             updateAuthFormMode(false);
+            const passInput = document.getElementById('auth-password');
+            if (passInput) passInput.value = '';
+            const confirmInput = document.getElementById('auth-confirm-password');
+            if (confirmInput) confirmInput.value = '';
+
             this.loadRememberedAccount();
             modal?.classList.remove('hidden');
             window.location.hash = 'login';
@@ -1351,6 +1360,16 @@ class DreamHouseApp {
         switchModeLink?.addEventListener('click', (e) => {
             e.preventDefault();
             updateAuthFormMode(!isRegisterMode);
+            const passInput = document.getElementById('auth-password');
+            if (passInput) passInput.value = '';
+            const confirmInput = document.getElementById('auth-confirm-password');
+            if (confirmInput) confirmInput.value = '';
+            if (!isRegisterMode) {
+                this.loadRememberedAccount();
+            } else {
+                const rememberCheckbox = document.getElementById('auth-remember-me');
+                if (rememberCheckbox) rememberCheckbox.checked = false;
+            }
         });
 
         // Nút con mắt ẩn/hiện mật khẩu trong form Auth
@@ -1503,11 +1522,12 @@ class DreamHouseApp {
             const rememberedEmail = localStorage.getItem('dream_house_remember_email');
             const emailInput = document.getElementById('auth-email');
             const rememberCheckbox = document.getElementById('auth-remember-me');
-            if (rememberedEmail) {
-                if (emailInput) emailInput.value = rememberedEmail;
+            if (rememberedEmail && rememberedEmail.trim()) {
+                if (emailInput) emailInput.value = rememberedEmail.trim();
                 if (rememberCheckbox) rememberCheckbox.checked = true;
             } else {
-                if (emailInput && !emailInput.value) emailInput.value = '';
+                // Tuyệt đối không điền sẵn nếu không có ghi nhớ tài khoản
+                if (emailInput) emailInput.value = '';
                 if (rememberCheckbox) rememberCheckbox.checked = false;
             }
         } catch (e) {

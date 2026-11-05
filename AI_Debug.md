@@ -203,6 +203,19 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 14: Trường Tên tài khoản vẫn bị điền sẵn sau khi Đăng xuất dù người dùng không tích chọn "Ghi nhớ tài khoản"
+- **Hiện tượng:** Người dùng đăng ký hoặc đăng nhập mà không tích chọn "Ghi nhớ tài khoản", nhưng khi đăng xuất khỏi hệ thống, ô Tên tài khoản hoặc Email vẫn tự động điền sẵn tên đăng nhập cũ trong khi ô checkbox thì không tích.
+- **Nguyên nhân:**
+  1. Thẻ HTML `<input type="checkbox" id="auth-remember-me" class="auth-remember-input" checked />` có thuộc tính `checked` mặc định.
+  2. Trong hàm `registerWithUsername`, khi người dùng bỏ tích checkbox thì thiếu lệnh xóa `localStorage.removeItem('dream_house_remember_email')`.
+  3. Trong hàm `loadRememberedAccount()`, điều kiện xóa trường cũ bị vướng kiểm tra `if (emailInput && !emailInput.value) emailInput.value = '';`. Do `emailInput.value` đã lưu sẵn chuỗi trong bộ nhớ DOM nên không bị xóa về rỗng.
+- **Cách khắc phục dứt điểm:**
+  1. Bỏ thuộc tính `checked` mặc định trong file [index.html](file:///d:/DreamHouse/index.html).
+  2. Cập nhật hàm `loadRememberedAccount()` trong [js/app.js](file:///d:/DreamHouse/js/app.js): nếu không có dữ liệu trong `localStorage`, bắt buộc xóa trắng `emailInput.value = ''` và đặt `rememberCheckbox.checked = false`.
+  3. Bổ sung lệnh dọn sạch toàn bộ các ô nhập `auth-email`, `auth-password`, `auth-confirm-password` trong hàm `logout()`.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
