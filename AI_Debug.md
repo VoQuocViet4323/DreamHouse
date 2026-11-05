@@ -187,9 +187,19 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 - **Nguyên nhân:** Mặc định trên gói Supabase Free, tuỳ chọn "Confirm email" được bật sẵn. Supabase dùng máy chủ SMTP mặc định bị giới hạn gửi tối đa 3-4 email/giờ. Khi đăng ký tài khoản dạng Username (ánh xạ qua email ảo nội bộ `@dreamhouse.internal`), hệ thống vẫn cố gửi email xác thực dẫn tới cạn kiệt hạn ngạch gửi mail.
 - **Cách khắc phục dứt điểm:**
   1. Xây dựng hàm RPC `public.register_user_by_username(p_username, p_password, p_full_name)` trong [`supabase/05_username_auth.sql`](file:///d:/DreamHouse/supabase/05_username_auth.sql).
-  2. Hàm này chèn trực tiếp vào `auth.users` với cờ `email_confirmed_at = now()` và mật khẩu được băm an toàn theo chuẩn bcrypt `crypt(p_password, gen_salt('bf'))`.
+  2. Hàm này chèn trực tiếp vào `auth.users` với cờ `email_confirmed_at = now()` và mật khẩu được băm an toàn theo chuẩn bcrypt `crypt(p_password, gen_salt('bf', 10))`.
   3. Nhờ có `email_confirmed_at = now()`, Supabase không cần gửi email kích hoạt, xóa bỏ 100% rủi ro bị rate limit.
   4. Client sau khi gọi RPC thành công sẽ tự động đăng nhập thông qua `signInWithPassword`, tạo phiên làm việc (Session) chuẩn mực và tự động ghi nhận profile vào `public.profiles`.
+
+---
+
+### 🔴 Lỗi 13: Đăng nhập bị lỗi `500 (Database error querying schema)` sau khi tạo user trực tiếp vào `auth.users` bằng SQL
+- **Hiện tượng:** Sau khi tạo tài khoản qua hàm RPC SQL, khi đăng nhập (`token?grant_type=password`), máy chủ Supabase trả về lỗi 500 kèm thông báo `Database error querying schema`.
+- **Nguyên nhân cốt lõi:** Trong kiến trúc GoTrue v2 của Supabase (viết bằng ngôn ngữ Go), khi truy vấn `SELECT * FROM auth.users`, GoTrue ánh xạ (Scan) các cột `confirmation_token`, `recovery_token`, `email_change_token_new`, `email_change`, `email_change_token_current`, `phone_change`, `phone_change_token`, `reauthentication_token` trực tiếp vào kiểu `string` nguyên thủy của Go (không phải `sql.NullString`), và `email_change_confirm_status` vào kiểu `int`. Nếu câu lệnh `INSERT INTO auth.users` bỏ trống các cột này khiến chúng nhận giá trị `NULL`, trình điều khiển database của Go sẽ văng lỗi `converting NULL to string is unsupported` (mã 500). Đồng thời GoTrue v2 yêu cầu phải có bản ghi tương ứng trong bảng `auth.identities`.
+- **Cách khắc phục dứt điểm:**
+  1. Trong câu lệnh `INSERT INTO auth.users` của hàm `register_user_by_username`, bắt buộc truyền chuỗi rỗng `''` cho toàn bộ 8 cột token nêu trên, `0` cho `email_change_confirm_status`, `false` cho `is_sso_user` và `is_anonymous`.
+  2. Chèn đồng thời bản ghi định danh vào bảng `auth.identities` với `provider = 'email'` và `provider_id = v_user_id::text`.
+  3. Bổ sung câu lệnh `UPDATE auth.users SET confirmation_token = COALESCE(confirmation_token, '') ...` ở đầu file [`supabase/05_username_auth.sql`](file:///d:/DreamHouse/supabase/05_username_auth.sql) để tự động sửa chữa ngay lập tức mọi tài khoản đã tạo trước đó (như `vietvq`).
 
 ---
 

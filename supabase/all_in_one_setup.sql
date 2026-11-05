@@ -554,8 +554,66 @@ INSERT INTO public.templates (
 );
 
 -- ==============================================================================
--- 7. HÀM RPC ĐĂNG KÝ USERNAME TRỰC TIẾP VÀO AUTH.USERS (KHÔNG CẦN EMAIL)
+-- 7. HÀM RPC ĐĂNG KÝ USERNAME TRỰC TIẾP VÀO AUTH.USERS & AUTH.IDENTITIES CHUẨN GOTRUE V2
 -- ==============================================================================
+
+-- Sửa chữa các tài khoản đã tạo bị NULL cột token trong auth.users (tránh lỗi 500 Database error querying schema)
+UPDATE auth.users
+SET
+    confirmation_token = COALESCE(confirmation_token, ''),
+    recovery_token = COALESCE(recovery_token, ''),
+    email_change_token_new = COALESCE(email_change_token_new, ''),
+    email_change = COALESCE(email_change, ''),
+    email_change_token_current = COALESCE(email_change_token_current, ''),
+    email_change_confirm_status = COALESCE(email_change_confirm_status, 0),
+    phone_change = COALESCE(phone_change, ''),
+    phone_change_token = COALESCE(phone_change_token, ''),
+    reauthentication_token = COALESCE(reauthentication_token, ''),
+    is_sso_user = COALESCE(is_sso_user, false),
+    is_anonymous = COALESCE(is_anonymous, false),
+    raw_app_meta_data = COALESCE(raw_app_meta_data, '{"provider": "email", "providers": ["email"]}'::jsonb)
+WHERE
+    confirmation_token IS NULL
+    OR recovery_token IS NULL
+    OR email_change_token_new IS NULL
+    OR email_change IS NULL
+    OR email_change_token_current IS NULL
+    OR email_change_confirm_status IS NULL
+    OR phone_change IS NULL
+    OR phone_change_token IS NULL
+    OR reauthentication_token IS NULL
+    OR is_sso_user IS NULL
+    OR is_anonymous IS NULL;
+
+INSERT INTO auth.identities (
+    id,
+    user_id,
+    provider_id,
+    identity_data,
+    provider,
+    last_sign_in_at,
+    created_at,
+    updated_at
+)
+SELECT
+    gen_random_uuid(),
+    u.id,
+    u.id::text,
+    jsonb_build_object(
+        'sub', u.id::text,
+        'email', u.email,
+        'email_verified', true,
+        'phone_verified', false
+    ),
+    'email',
+    now(),
+    COALESCE(u.created_at, now()),
+    COALESCE(u.updated_at, now())
+FROM auth.users u
+WHERE NOT EXISTS (
+    SELECT 1 FROM auth.identities i WHERE i.user_id = u.id
+);
+
 CREATE OR REPLACE FUNCTION public.register_user_by_username(
     p_username TEXT,
     p_password TEXT,
@@ -594,7 +652,7 @@ BEGIN
     END IF;
 
     v_user_id := gen_random_uuid();
-    v_encrypted_pw := crypt(p_password, gen_salt('bf'));
+    v_encrypted_pw := crypt(p_password, gen_salt('bf', 10));
 
     INSERT INTO auth.users (
         instance_id,
@@ -604,8 +662,20 @@ BEGIN
         email,
         encrypted_password,
         email_confirmed_at,
+        last_sign_in_at,
+        confirmation_token,
+        recovery_token,
+        email_change_token_new,
+        email_change,
+        email_change_token_current,
+        email_change_confirm_status,
+        phone_change,
+        phone_change_token,
+        reauthentication_token,
         raw_app_meta_data,
         raw_user_meta_data,
+        is_sso_user,
+        is_anonymous,
         created_at,
         updated_at
     ) VALUES (
@@ -616,11 +686,52 @@ BEGIN
         v_email,
         v_encrypted_pw,
         now(),
+        now(),
+        '',
+        '',
+        '',
+        '',
+        '',
+        0,
+        '',
+        '',
+        '',
         '{"provider": "email", "providers": ["email"]}'::jsonb,
         jsonb_build_object(
+            'sub', v_user_id::text,
+            'email', v_email,
             'username', p_username,
-            'full_name', v_display_name
+            'full_name', v_display_name,
+            'email_verified', true,
+            'phone_verified', false
         ),
+        false,
+        false,
+        now(),
+        now()
+    );
+
+    INSERT INTO auth.identities (
+        id,
+        user_id,
+        provider_id,
+        identity_data,
+        provider,
+        last_sign_in_at,
+        created_at,
+        updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        v_user_id,
+        v_user_id::text,
+        jsonb_build_object(
+            'sub', v_user_id::text,
+            'email', v_email,
+            'email_verified', true,
+            'phone_verified', false
+        ),
+        'email',
+        now(),
         now(),
         now()
     );

@@ -118,7 +118,10 @@
         const lower = String(errMsg).toLowerCase();
 
         if (lower.includes('invalid login credentials')) {
-            return 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.';
+            return 'Tên tài khoản/Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.';
+        }
+        if (lower.includes('database error querying schema')) {
+            return 'Cấu trúc tài khoản đang cần cập nhật. Vui lòng chạy lại file supabase/05_username_auth.sql trong Supabase SQL Editor để hoàn tất đồng bộ.';
         }
         if (lower.includes('email not confirmed')) {
             return 'Địa chỉ email này chưa được xác thực. Vui lòng kiểm tra hộp thư đến (hoặc hòm thư rác Spam) để kích hoạt tài khoản.';

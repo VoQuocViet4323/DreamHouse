@@ -250,10 +250,12 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tích hợp nút con mắt ẩn/hiện xác nhận mật khẩu thời gian thực (`#toggle-auth-confirm-pass-visibility`).
   - Kiểm tra bảo vệ trước khi gửi form: Mật khẩu tối thiểu 6 ký tự và **bắt buộc trùng khớp 100%** giữa Mật khẩu và Xác nhận mật khẩu; hiển thị cảnh báo trực quan nếu có sai lệch.
   - Ẩn liên kết *"Quên mật khẩu?"* khi đang ở chế độ Đăng ký để tối ưu thị giác người dùng.
-- [x] **Cập nhật Database & Đồng bộ tài liệu:**
+- [x] **Cập nhật Database & Khắc phục lỗi 500 `Database error querying schema` của GoTrue v2:**
   - Khởi tạo script [`supabase/05_username_auth.sql`](file:///d:/DreamHouse/supabase/05_username_auth.sql) và tích hợp vào [`supabase/all_in_one_setup.sql`](file:///d:/DreamHouse/supabase/all_in_one_setup.sql): bổ sung cột `username` và index `UNIQUE` trong bảng `public.profiles`.
+  - Chuẩn hóa câu lệnh `INSERT INTO auth.users` trong hàm `register_user_by_username`: khởi tạo đầy đủ chuỗi rỗng `''` cho toàn bộ 8 cột token (`confirmation_token`, `recovery_token`, `email_change_token_new`, `email_change`, `email_change_token_current`, `phone_change`, `phone_change_token`, `reauthentication_token`), `0` cho `email_change_confirm_status` và chèn bản ghi định danh vào bảng `auth.identities`.
+  - Tích hợp khối lệnh sửa chữa tự động (`UPDATE auth.users ...` & `INSERT INTO auth.identities ...`) ở đầu file `05_username_auth.sql` để phục hồi ngay lập tức các tài khoản đã đăng ký trước đó (như `vietvq`).
   - Đa ngôn ngữ đầy đủ cho các trường mới trong `js/i18n.js` (`auth_username`, `auth_confirm_pass`, `auth_username_placeholder`, `auth_login_placeholder`).
-  - Tăng tham số phiên bản cache-busting lên **`?v=2.7`** trên toàn bộ `index.html` và `admin.html`.
+  - Tăng tham số phiên bản cache-busting lên **`?v=2.8`** trên toàn bộ `index.html` và `admin.html`.
 
 
 
