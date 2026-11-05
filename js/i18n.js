@@ -102,9 +102,17 @@ const I18N = {
         profile_phone: "Số điện thoại liên hệ",
         profile_email: "Địa chỉ Email",
         profile_avatar_url: "Đường dẫn ảnh đại diện (Avatar URL)",
-        profile_change_pass_title: "Đổi mật khẩu tài khoản (Tùy chọn)",
+        profile_change_pass_title: "Đổi mật khẩu tài khoản",
+        profile_change_pass_sub: "Cập nhật mật khẩu bảo mật (tối thiểu 6 ký tự)",
         profile_new_pass: "Mật khẩu mới",
-        profile_confirm_pass: "Xác nhận mật khẩu mới",
+        profile_confirm_pass: "Xác nhận mật khẩu",
+        profile_pass_strength: "Độ mạnh mật khẩu",
+        profile_pass_weak: "Yếu",
+        profile_pass_medium: "Trung bình",
+        profile_pass_good: "Khá",
+        profile_pass_strong: "Rất mạnh",
+        profile_pass_match: "Mật khẩu khớp",
+        profile_pass_mismatch: "Mật khẩu chưa khớp",
         profile_save_btn: "Lưu thay đổi",
         profile_saving: "Đang lưu...",
         profile_save_success: "Cập nhật hồ sơ thành công!",
@@ -224,9 +232,17 @@ const I18N = {
         profile_phone: "Phone Number",
         profile_email: "Email Address",
         profile_avatar_url: "Avatar Image URL",
-        profile_change_pass_title: "Change Password (Optional)",
+        profile_change_pass_title: "Change Account Password",
+        profile_change_pass_sub: "Update your secure password (min. 6 characters)",
         profile_new_pass: "New Password",
-        profile_confirm_pass: "Confirm New Password",
+        profile_confirm_pass: "Confirm Password",
+        profile_pass_strength: "Password Strength",
+        profile_pass_weak: "Weak",
+        profile_pass_medium: "Medium",
+        profile_pass_good: "Good",
+        profile_pass_strong: "Strong",
+        profile_pass_match: "Passwords match",
+        profile_pass_mismatch: "Passwords do not match",
         profile_save_btn: "Save Changes",
         profile_saving: "Saving...",
         profile_save_success: "Profile updated successfully!",
@@ -304,8 +320,9 @@ class I18nManager {
     updateDOM() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            const text = this.t(key);
-            if (text) {
+            const dict = I18N[this.currentLang] || I18N.vi;
+            const text = dict[key] || (I18N.vi ? I18N.vi[key] : null);
+            if (text && text !== key) {
                 if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     if (el.getAttribute('placeholder')) {
                         el.setAttribute('placeholder', text);

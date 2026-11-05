@@ -838,11 +838,42 @@ class DreamHouseApp {
         document.getElementById('toggle-password-section')?.addEventListener('click', () => {
             const body = document.getElementById('password-section-body');
             const toggle = document.getElementById('toggle-password-section');
+            const pillText = document.getElementById('pass-toggle-pill-text');
             if (body && toggle) {
                 const isHidden = body.classList.toggle('hidden');
                 toggle.setAttribute('aria-expanded', String(!isHidden));
+                const isVi = window.i18n.getLang() === 'vi';
+                if (pillText) {
+                    pillText.textContent = isHidden ? (isVi ? 'Mở' : 'Expand') : (isVi ? 'Thu gọn' : 'Collapse');
+                }
             }
         });
+
+        // Toggle mắt ẩn/hiện mật khẩu
+        const setupEyeToggle = (btnId, inputId) => {
+            const btn = document.getElementById(btnId);
+            const input = document.getElementById(inputId);
+            if (btn && input) {
+                btn.addEventListener('click', () => {
+                    const isPass = input.type === 'password';
+                    input.type = isPass ? 'text' : 'password';
+                    btn.innerHTML = isPass
+                        ? `<svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+                        : `<svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+                });
+            }
+        };
+        setupEyeToggle('toggle-new-pass-visibility', 'profile-new-pass');
+        setupEyeToggle('toggle-confirm-pass-visibility', 'profile-confirm-pass');
+
+        // Theo dõi realtime độ mạnh mật khẩu và so sánh khớp
+        const newPassEl = document.getElementById('profile-new-pass');
+        const confirmPassEl = document.getElementById('profile-confirm-pass');
+        const onPassInput = () => {
+            this.updatePasswordSecurityMetrics(newPassEl?.value || '', confirmPassEl?.value || '');
+        };
+        newPassEl?.addEventListener('input', onPassInput);
+        confirmPassEl?.addEventListener('input', onPassInput);
 
         // Preset Chips chọn ảnh avatar nhanh
         document.querySelectorAll('.preset-chip').forEach(chip => {
@@ -988,10 +1019,7 @@ class DreamHouseApp {
             userId.textContent = this.currentUser.id.slice(0, 8) + '...';
         }
 
-        if (newPassInput) newPassInput.value = '';
-        if (confirmPassInput) confirmPassInput.value = '';
-        if (passSection) passSection.classList.add('hidden');
-        if (passToggle) passToggle.setAttribute('aria-expanded', 'false');
+        this.resetPasswordSection();
 
         if (alertBox) {
             alertBox.className = 'profile-alert hidden';
@@ -1000,6 +1028,94 @@ class DreamHouseApp {
 
         this.renderProfileModalAvatar(avatarUrl, displayName);
         modal.classList.remove('hidden');
+    }
+
+    resetPasswordSection() {
+        const newPassInput = document.getElementById('profile-new-pass');
+        const confirmPassInput = document.getElementById('profile-confirm-pass');
+        const passSection = document.getElementById('password-section-body');
+        const passToggle = document.getElementById('toggle-password-section');
+        const pillText = document.getElementById('pass-toggle-pill-text');
+
+        if (newPassInput) {
+            newPassInput.value = '';
+            newPassInput.type = 'password';
+        }
+        if (confirmPassInput) {
+            confirmPassInput.value = '';
+            confirmPassInput.type = 'password';
+        }
+        if (passSection) passSection.classList.add('hidden');
+        if (passToggle) passToggle.setAttribute('aria-expanded', 'false');
+        if (pillText) {
+            pillText.textContent = window.i18n.getLang() === 'vi' ? 'Mở' : 'Expand';
+        }
+
+        this.updatePasswordSecurityMetrics('', '');
+    }
+
+    updatePasswordSecurityMetrics(pass, confirmPass) {
+        const meterBars = [
+            document.getElementById('meter-bar-1'),
+            document.getElementById('meter-bar-2'),
+            document.getElementById('meter-bar-3'),
+            document.getElementById('meter-bar-4')
+        ];
+        const strengthVal = document.getElementById('strength-val');
+        const matchChip = document.getElementById('pass-match-chip');
+        const critLength = document.getElementById('crit-length');
+        const critAlpha = document.getElementById('crit-alphanumeric');
+
+        const isVi = window.i18n.getLang() === 'vi';
+
+        // 1. Kiểm tra tiêu chuẩn
+        const hasLength = pass.length >= 6;
+        const hasLetters = /[a-zA-Z]/.test(pass);
+        const hasNumbers = /[0-9]/.test(pass);
+        const hasSymbols = /[^a-zA-Z0-9]/.test(pass);
+        const hasAlphaNum = hasLetters && hasNumbers;
+
+        if (critLength) critLength.classList.toggle('valid', hasLength);
+        if (critAlpha) critAlpha.classList.toggle('valid', hasAlphaNum);
+
+        // 2. Tính điểm độ mạnh (0 - 4)
+        let score = 0;
+        if (pass.length > 0) {
+            score = 1;
+            if (hasLength) score++;
+            if (hasAlphaNum) score++;
+            if (pass.length >= 8 && (hasSymbols || (/[A-Z]/.test(pass) && /[a-z]/.test(pass)))) score++;
+        }
+
+        const colors = ['', '#ef4444', '#f97316', '#eab308', '#10b981'];
+        const labels = isVi 
+            ? ['Chưa nhập', 'Yếu', 'Trung bình', 'Khá', 'Rất mạnh']
+            : ['None', 'Weak', 'Medium', 'Good', 'Strong'];
+
+        meterBars.forEach((bar, idx) => {
+            if (bar) {
+                bar.style.backgroundColor = (idx < score) ? colors[score] : '';
+            }
+        });
+
+        if (strengthVal) {
+            strengthVal.textContent = labels[score];
+            strengthVal.style.color = (score > 0) ? colors[score] : '';
+        }
+
+        // 3. Kiểm tra khớp mật khẩu
+        if (matchChip) {
+            if (!confirmPass) {
+                matchChip.className = 'pass-match-chip hidden';
+                matchChip.textContent = '';
+            } else if (pass === confirmPass) {
+                matchChip.className = 'pass-match-chip match';
+                matchChip.textContent = isVi ? '✓ Khớp hoàn toàn' : '✓ Passwords match';
+            } else {
+                matchChip.className = 'pass-match-chip mismatch';
+                matchChip.textContent = isVi ? '⚠️ Chưa khớp' : '⚠️ Passwords do not match';
+            }
+        }
     }
 
     renderProfileModalAvatar(avatarUrl, name) {
