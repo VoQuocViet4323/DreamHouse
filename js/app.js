@@ -1187,8 +1187,9 @@ class DreamHouseApp {
             return;
         }
 
+        const isVi = window.i18n.getLang() === 'vi';
         if (submitBtn) submitBtn.disabled = true;
-        if (submitBtnText) submitBtnText.textContent = window.i18n.t('profile_saving') || 'Đang lưu...';
+        if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang lưu...' : 'Saving...';
 
         try {
             // 1. Cập nhật bảng profiles
@@ -1239,7 +1240,7 @@ class DreamHouseApp {
             // 4. Cập nhật UI Header ngay lập tức
             this.updateAuthUI();
 
-            showAlert(window.i18n.t('profile_save_success') || 'Cập nhật hồ sơ thành công!');
+            showAlert(isVi ? 'Cập nhật hồ sơ thành công!' : 'Profile updated successfully!');
 
             // Tự động đóng modal sau 1.2s
             setTimeout(() => {
@@ -1251,7 +1252,7 @@ class DreamHouseApp {
             showAlert('Lỗi: ' + (err.message || 'Không thể lưu hồ sơ.'), true);
         } finally {
             if (submitBtn) submitBtn.disabled = false;
-            if (submitBtnText) submitBtnText.textContent = window.i18n.t('profile_save_btn') || 'Lưu thay đổi';
+            if (submitBtnText) submitBtnText.textContent = isVi ? 'Lưu thay đổi' : 'Save Changes';
         }
     }
 
