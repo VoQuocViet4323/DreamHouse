@@ -7,11 +7,15 @@
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT,
+    phone TEXT,
     avatar_url TEXT,
     role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
+
+-- Bổ sung cột phone nếu bảng đã tồn tại từ trước
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone TEXT;
 
 -- Bật Row Level Security cho profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;

@@ -469,6 +469,117 @@
         </div>
     </div>
 
+    <!-- 6.2. MODAL CHỈNH SỬA HỒ SƠ (PROFILE PANEL) -->
+    <div id="profile-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+        <div class="modal-window profile-dialog">
+            <button id="close-profile-modal" class="modal-close" aria-label="Đóng">&times;</button>
+            
+            <div class="profile-header-card">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar-box" id="profile-avatar-preview">
+                        <span id="profile-avatar-char">A</span>
+                    </div>
+                    <div class="profile-role-badge" id="profile-role-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <span id="profile-role-text">Admin</span>
+                    </div>
+                </div>
+                <div class="profile-header-details">
+                    <h3 id="profile-modal-title" class="profile-title" data-i18n="profile_title">Hồ sơ cá nhân & Tài khoản</h3>
+                    <p class="profile-subtitle" data-i18n="profile_subtitle">Quản lý và cập nhật thông tin tài khoản của bạn</p>
+                </div>
+            </div>
+
+            <!-- Khung thông báo Alert trong modal -->
+            <div id="profile-alert" class="profile-alert hidden" role="alert"></div>
+
+            <form id="profile-form" class="profile-form">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="profile-name">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span data-i18n="profile_name">Họ và tên hiển thị</span>
+                        </label>
+                        <input type="text" id="profile-name" required placeholder="Nhập họ và tên..." />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-phone">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span data-i18n="profile_phone">Số điện thoại liên hệ</span>
+                        </label>
+                        <input type="tel" id="profile-phone" placeholder="09xx xxx xxx" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile-email">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <span data-i18n="profile_email">Địa chỉ Email</span>
+                    </label>
+                    <div class="input-with-badge">
+                        <input type="email" id="profile-email" readonly disabled />
+                        <span class="field-badge-verified">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            Đã xác thực
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile-avatar-url">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span data-i18n="profile_avatar_url">Đường dẫn ảnh đại diện (Avatar URL)</span>
+                    </label>
+                    <input type="url" id="profile-avatar-url" placeholder="Dán link ảnh https://... hoặc chọn mẫu bên dưới" />
+                    <div class="avatar-presets">
+                        <span class="preset-label">Mẫu nhanh:</span>
+                        <button type="button" class="preset-chip" data-avatar="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80">Kiến trúc sư</button>
+                        <button type="button" class="preset-chip" data-avatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80">Kỹ sư</button>
+                        <button type="button" class="preset-chip" data-avatar="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80">Thiết kế</button>
+                        <button type="button" class="preset-chip" data-avatar="">Dùng chữ cái</button>
+                    </div>
+                </div>
+
+                <!-- Mục Đổi Mật Khẩu Tùy Chọn -->
+                <div class="profile-password-box">
+                    <button type="button" class="password-box-toggle" id="toggle-password-section" aria-expanded="false">
+                        <span class="toggle-left">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <span data-i18n="profile_change_pass_title">Đổi mật khẩu tài khoản (Tùy chọn)</span>
+                        </span>
+                        <svg class="pass-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div id="password-section-body" class="password-section-body hidden">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="profile-new-pass" data-i18n="profile_new_pass">Mật khẩu mới</label>
+                                <input type="password" id="profile-new-pass" minlength="6" placeholder="Tối thiểu 6 ký tự" />
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-confirm-pass" data-i18n="profile_confirm_pass">Xác nhận mật khẩu</label>
+                                <input type="password" id="profile-confirm-pass" minlength="6" placeholder="Nhập lại mật khẩu mới" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-meta-info">
+                    <span>Thành viên từ: <strong id="profile-created-date">-</strong></span>
+                    <span>Mã ID: <code id="profile-user-id">-</code></span>
+                </div>
+
+                <div class="profile-modal-actions">
+                    <button type="button" id="btn-cancel-profile" class="btn-cancel" data-i18n="btn_cancel">Hủy</button>
+                    <button type="submit" id="btn-save-profile" class="btn-primary btn-save-profile">
+                        <svg class="save-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        <span id="save-btn-text" data-i18n="profile_save_btn">Lưu thay đổi</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- 7. CHÂN TRANG (FOOTER) -->
     <footer class="site-footer">
         <div class="container footer-content">

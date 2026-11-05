@@ -805,25 +805,69 @@ class DreamHouseApp {
             }
         });
 
-        // Click Chỉnh sửa hồ sơ hoặc Cài đặt
+        // Click Chỉnh sửa hồ sơ -> Mở Panel Hồ sơ cá nhân
         document.getElementById('menu-edit-profile-btn')?.addEventListener('click', () => {
-            dropdownMenu?.classList.add('hidden');
-            const newName = prompt('Nhập họ tên mới của bạn:', this.currentProfile?.full_name || '');
-            if (newName && newName.trim() && this.currentUser) {
-                const client = this.getSupabase();
-                if (client) {
-                    client.from('profiles').update({ full_name: newName.trim() }).eq('id', this.currentUser.id)
-                        .then(({ error }) => {
-                            if (!error) {
-                                alert('Cập nhật họ tên thành công!');
-                                if (this.currentProfile) this.currentProfile.full_name = newName.trim();
-                                this.updateAuthUI();
-                            } else {
-                                alert('Lỗi: ' + error.message);
-                            }
-                        });
-                }
+            this.openProfileModal();
+        });
+
+        // Đóng Profile Modal
+        document.getElementById('close-profile-modal')?.addEventListener('click', () => {
+            this.closeProfileModal();
+        });
+        document.getElementById('btn-cancel-profile')?.addEventListener('click', () => {
+            this.closeProfileModal();
+        });
+
+        // Click ra ngoài dialog để đóng Profile Modal
+        document.getElementById('profile-modal')?.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                this.closeProfileModal();
             }
+        });
+
+        // Phím Escape đóng tất cả modal đang mở
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeAuthModal();
+                this.closeProfileModal();
+                this.closeDetailPanel();
+            }
+        });
+
+        // Toggle mục đổi mật khẩu trong Profile Modal
+        document.getElementById('toggle-password-section')?.addEventListener('click', () => {
+            const body = document.getElementById('password-section-body');
+            const toggle = document.getElementById('toggle-password-section');
+            if (body && toggle) {
+                const isHidden = body.classList.toggle('hidden');
+                toggle.setAttribute('aria-expanded', String(!isHidden));
+            }
+        });
+
+        // Preset Chips chọn ảnh avatar nhanh
+        document.querySelectorAll('.preset-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const url = chip.getAttribute('data-avatar') || '';
+                const avatarInput = document.getElementById('profile-avatar-url');
+                const nameInput = document.getElementById('profile-name');
+                if (avatarInput) avatarInput.value = url;
+                this.renderProfileModalAvatar(url, nameInput?.value || '');
+            });
+        });
+
+        // Live preview khi người dùng gõ link ảnh hoặc đổi tên
+        document.getElementById('profile-avatar-url')?.addEventListener('input', (e) => {
+            const nameInput = document.getElementById('profile-name');
+            this.renderProfileModalAvatar(e.target.value, nameInput?.value || '');
+        });
+        document.getElementById('profile-name')?.addEventListener('input', (e) => {
+            const avatarInput = document.getElementById('profile-avatar-url');
+            this.renderProfileModalAvatar(avatarInput?.value || '', e.target.value);
+        });
+
+        // Submit form lưu hồ sơ
+        document.getElementById('profile-form')?.addEventListener('submit', (e) => {
+            this.handleSaveProfile(e);
         });
 
         document.getElementById('menu-settings-btn')?.addEventListener('click', () => {
@@ -895,6 +939,206 @@ class DreamHouseApp {
         if (modal) modal.classList.add('hidden');
     }
 
+    openProfileModal() {
+        const dropdownMenu = document.getElementById('user-dropdown-menu');
+        dropdownMenu?.classList.add('hidden');
+        document.getElementById('user-menu-btn')?.setAttribute('aria-expanded', 'false');
+
+        if (!this.currentUser) return;
+
+        const modal = document.getElementById('profile-modal');
+        if (!modal) return;
+
+        const nameInput = document.getElementById('profile-name');
+        const emailInput = document.getElementById('profile-email');
+        const phoneInput = document.getElementById('profile-phone');
+        const avatarInput = document.getElementById('profile-avatar-url');
+        const roleText = document.getElementById('profile-role-text');
+        const createdDate = document.getElementById('profile-created-date');
+        const userId = document.getElementById('profile-user-id');
+        const alertBox = document.getElementById('profile-alert');
+        const newPassInput = document.getElementById('profile-new-pass');
+        const confirmPassInput = document.getElementById('profile-confirm-pass');
+        const passSection = document.getElementById('password-section-body');
+        const passToggle = document.getElementById('toggle-password-section');
+
+        const displayName = this.currentProfile?.full_name || 
+                            this.currentUser.user_metadata?.full_name || 
+                            this.currentUser.email.split('@')[0];
+
+        if (nameInput) nameInput.value = displayName;
+        if (emailInput) emailInput.value = this.currentUser.email || '';
+        if (phoneInput) phoneInput.value = this.currentProfile?.phone || this.currentUser.user_metadata?.phone || '';
+        
+        const avatarUrl = this.currentProfile?.avatar_url || this.currentUser.user_metadata?.avatar_url || '';
+        if (avatarInput) avatarInput.value = avatarUrl;
+
+        const isAdmin = this.currentProfile?.role === 'admin';
+        if (roleText) {
+            const isVi = window.i18n.getLang() === 'vi';
+            roleText.textContent = isAdmin ? (isVi ? 'Quản trị viên (Admin)' : 'Administrator') : (isVi ? 'Thành viên' : 'Member');
+        }
+
+        if (createdDate && this.currentUser.created_at) {
+            const d = new Date(this.currentUser.created_at);
+            createdDate.textContent = d.toLocaleDateString(window.i18n.getLang() === 'vi' ? 'vi-VN' : 'en-US');
+        }
+
+        if (userId && this.currentUser.id) {
+            userId.textContent = this.currentUser.id.slice(0, 8) + '...';
+        }
+
+        if (newPassInput) newPassInput.value = '';
+        if (confirmPassInput) confirmPassInput.value = '';
+        if (passSection) passSection.classList.add('hidden');
+        if (passToggle) passToggle.setAttribute('aria-expanded', 'false');
+
+        if (alertBox) {
+            alertBox.className = 'profile-alert hidden';
+            alertBox.textContent = '';
+        }
+
+        this.renderProfileModalAvatar(avatarUrl, displayName);
+        modal.classList.remove('hidden');
+    }
+
+    renderProfileModalAvatar(avatarUrl, name) {
+        const preview = document.getElementById('profile-avatar-preview');
+        if (!preview) return;
+        const initial = (name && name.trim()) ? name.trim().charAt(0).toUpperCase() : 'U';
+
+        if (avatarUrl && avatarUrl.trim()) {
+            preview.innerHTML = `<img src="${avatarUrl.trim()}" alt="Avatar" onerror="this.parentElement.innerHTML='<span id=\\'profile-avatar-char\\'>${initial}</span>'" />`;
+        } else {
+            preview.innerHTML = `<span id="profile-avatar-char">${initial}</span>`;
+        }
+    }
+
+    closeProfileModal() {
+        const modal = document.getElementById('profile-modal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    async handleSaveProfile(e) {
+        e.preventDefault();
+        if (!this.currentUser) return;
+
+        const nameInput = document.getElementById('profile-name');
+        const phoneInput = document.getElementById('profile-phone');
+        const avatarInput = document.getElementById('profile-avatar-url');
+        const newPassInput = document.getElementById('profile-new-pass');
+        const confirmPassInput = document.getElementById('profile-confirm-pass');
+        const alertBox = document.getElementById('profile-alert');
+        const submitBtn = document.getElementById('btn-save-profile');
+        const submitBtnText = document.getElementById('save-btn-text');
+
+        const fullName = nameInput ? nameInput.value.trim() : '';
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+        const avatarUrl = avatarInput ? avatarInput.value.trim() : '';
+        const newPassword = newPassInput ? newPassInput.value : '';
+        const confirmPassword = confirmPassInput ? confirmPassInput.value : '';
+
+        const showAlert = (msg, isError = false) => {
+            if (alertBox) {
+                alertBox.className = `profile-alert ${isError ? 'error' : 'success'}`;
+                alertBox.innerHTML = `<span>${isError ? '⚠️' : '✅'}</span> <span>${msg}</span>`;
+                alertBox.classList.remove('hidden');
+            }
+        };
+
+        if (!fullName) {
+            showAlert('Vui lòng nhập họ và tên hiển thị.', true);
+            nameInput?.focus();
+            return;
+        }
+
+        if (newPassword) {
+            if (newPassword.length < 6) {
+                showAlert('Mật khẩu mới phải có tối thiểu 6 ký tự.', true);
+                newPassInput?.focus();
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showAlert('Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.', true);
+                confirmPassInput?.focus();
+                return;
+            }
+        }
+
+        const client = this.getSupabase();
+        if (!client) {
+            showAlert('Không thể kết nối Supabase.', true);
+            return;
+        }
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitBtnText) submitBtnText.textContent = window.i18n.t('profile_saving') || 'Đang lưu...';
+
+        try {
+            // 1. Cập nhật bảng profiles
+            const profilePayload = {
+                full_name: fullName,
+                avatar_url: avatarUrl,
+                updated_at: new Date().toISOString()
+            };
+            const { error: profileError } = await client
+                .from('profiles')
+                .update(profilePayload)
+                .eq('id', this.currentUser.id);
+
+            if (profileError) throw profileError;
+
+            // Thử cập nhật thêm phone vào profiles nếu cột phone đã tồn tại
+            if (phone) {
+                try {
+                    await client.from('profiles').update({ phone }).eq('id', this.currentUser.id);
+                } catch (_) {}
+            }
+
+            // 2. Cập nhật Auth user metadata & đổi mật khẩu nếu có
+            const userUpdatePayload = {
+                data: {
+                    full_name: fullName,
+                    avatar_url: avatarUrl,
+                    phone: phone
+                }
+            };
+            if (newPassword) {
+                userUpdatePayload.password = newPassword;
+            }
+
+            const { data: authData, error: authError } = await client.auth.updateUser(userUpdatePayload);
+            if (authError) throw authError;
+
+            // 3. Cập nhật cache cục bộ
+            if (this.currentProfile) {
+                this.currentProfile.full_name = fullName;
+                this.currentProfile.avatar_url = avatarUrl;
+                this.currentProfile.phone = phone;
+            }
+            if (authData?.user) {
+                this.currentUser = authData.user;
+            }
+
+            // 4. Cập nhật UI Header ngay lập tức
+            this.updateAuthUI();
+
+            showAlert(window.i18n.t('profile_save_success') || 'Cập nhật hồ sơ thành công!');
+
+            // Tự động đóng modal sau 1.2s
+            setTimeout(() => {
+                this.closeProfileModal();
+            }, 1200);
+
+        } catch (err) {
+            console.error('Save profile error:', err);
+            showAlert('Lỗi: ' + (err.message || 'Không thể lưu hồ sơ.'), true);
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+            if (submitBtnText) submitBtnText.textContent = window.i18n.t('profile_save_btn') || 'Lưu thay đổi';
+        }
+    }
+
     updateAuthUI() {
         const loginBtn = document.getElementById('btn-open-login');
         const userDropdown = document.getElementById('user-menu');
@@ -902,6 +1146,7 @@ class DreamHouseApp {
         const roleBadge = document.getElementById('dropdown-user-role');
         const emailBadge = document.getElementById('dropdown-user-email');
         const adminMenuLink = document.getElementById('menu-admin-link');
+        const avatarCircle = document.getElementById('user-avatar-initials');
 
         if (this.currentUser) {
             if (loginBtn) loginBtn.classList.add('hidden');
@@ -911,6 +1156,16 @@ class DreamHouseApp {
                                 this.currentUser.user_metadata?.full_name || 
                                 this.currentUser.email.split('@')[0];
             if (userNameSpan) userNameSpan.textContent = displayName;
+
+            // Hiển thị ảnh Avatar trên thanh điều hướng hoặc chữ cái đầu
+            const avatarUrl = this.currentProfile?.avatar_url || this.currentUser.user_metadata?.avatar_url;
+            if (avatarCircle) {
+                if (avatarUrl && avatarUrl.trim()) {
+                    avatarCircle.innerHTML = `<img src="${avatarUrl.trim()}" alt="${displayName}" class="nav-avatar-img" onerror="this.parentElement.textContent='${displayName.charAt(0).toUpperCase()}'" />`;
+                } else {
+                    avatarCircle.textContent = displayName.charAt(0).toUpperCase();
+                }
+            }
 
             const isAdmin = this.currentProfile?.role === 'admin';
             if (roleBadge) roleBadge.textContent = isAdmin ? 'Quản trị viên (Admin)' : 'Thành viên';

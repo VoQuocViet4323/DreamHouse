@@ -95,6 +95,21 @@ const I18N = {
         auth_welcome: "Xin chào",
         auth_sync_favorites: "Đã đồng bộ các mẫu yêu thích trên máy này vào tài khoản của bạn.",
 
+        // Hồ sơ cá nhân (Profile Panel)
+        profile_title: "Hồ sơ cá nhân & Tài khoản",
+        profile_subtitle: "Quản lý và cập nhật thông tin tài khoản của bạn",
+        profile_name: "Họ và tên hiển thị",
+        profile_phone: "Số điện thoại liên hệ",
+        profile_email: "Địa chỉ Email",
+        profile_avatar_url: "Đường dẫn ảnh đại diện (Avatar URL)",
+        profile_change_pass_title: "Đổi mật khẩu tài khoản (Tùy chọn)",
+        profile_new_pass: "Mật khẩu mới",
+        profile_confirm_pass: "Xác nhận mật khẩu mới",
+        profile_save_btn: "Lưu thay đổi",
+        profile_saving: "Đang lưu...",
+        profile_save_success: "Cập nhật hồ sơ thành công!",
+        btn_cancel: "Hủy bỏ",
+
         // Trang quản trị
         admin_title: "Hệ Thống Quản Trị - Nhà Mơ Ước",
         admin_tab_templates: "Quản lý mẫu nhà",
@@ -201,6 +216,21 @@ const I18N = {
         auth_reset_action: "Send Reset Link",
         auth_welcome: "Welcome",
         auth_sync_favorites: "Your local favorite models have been synced to your account.",
+
+        // Profile Panel
+        profile_title: "Profile & Account Settings",
+        profile_subtitle: "Manage and update your personal information",
+        profile_name: "Display Name",
+        profile_phone: "Phone Number",
+        profile_email: "Email Address",
+        profile_avatar_url: "Avatar Image URL",
+        profile_change_pass_title: "Change Password (Optional)",
+        profile_new_pass: "New Password",
+        profile_confirm_pass: "Confirm New Password",
+        profile_save_btn: "Save Changes",
+        profile_saving: "Saving...",
+        profile_save_success: "Profile updated successfully!",
+        btn_cancel: "Cancel",
 
         // Admin
         admin_title: "Dream House Management",
