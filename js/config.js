@@ -16,7 +16,12 @@ const CONTACT_INFO = {
 
 // Khởi tạo Supabase client
 let supabaseClient = null;
-if (typeof supabase !== 'undefined' && SUPABASE_CONFIG.url && SUPABASE_CONFIG.url.indexOf('YOUR_PROJECT_ID') === -1) {
+if (
+    typeof supabase !== 'undefined' &&
+    SUPABASE_CONFIG.url &&
+    !SUPABASE_CONFIG.url.toLowerCase().includes('your-project-id') &&
+    !SUPABASE_CONFIG.url.toLowerCase().includes('your_project_id')
+) {
     try {
         supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
     } catch (e) {

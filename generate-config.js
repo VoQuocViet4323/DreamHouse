@@ -35,9 +35,15 @@ const parseEnv = (content) => {
     return env;
 };
 
+const DEFAULT_SUPABASE_URL = 'https://qdkhqvsbtmbgkmoldazt.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'sb_publishable_HNBq9BOkrn7bmJxsG4ZHbQ_p937j35i';
+
+const isPlaceholderUrl = (val) => !val || val.toLowerCase().includes('your-project-id') || val.toLowerCase().includes('your_project_id');
+const isPlaceholderKey = (val) => !val || val.toLowerCase().includes('your-supabase') || val.toLowerCase().includes('your_anon_key');
+
 const envVars = parseEnv(envContent);
-const supabaseUrl = envVars.SUPABASE_URL || 'https://qdkhqvsbtmbgkmoldazt.supabase.co';
-const supabaseKey = envVars.SUPABASE_ANON_KEY || 'sb_publishable_HNBq9BOkrn7bmJxsG4ZHbQ_p937j35i';
+const supabaseUrl = isPlaceholderUrl(envVars.SUPABASE_URL) ? DEFAULT_SUPABASE_URL : envVars.SUPABASE_URL;
+const supabaseKey = isPlaceholderKey(envVars.SUPABASE_ANON_KEY) ? DEFAULT_SUPABASE_KEY : envVars.SUPABASE_ANON_KEY;
 const phone = envVars.CONTACT_PHONE || '0367020403';
 const zalo = envVars.CONTACT_ZALO || 'https://zalo.me/0367020403';
 const email = envVars.CONTACT_EMAIL || 'voviet4323@gmail.com';
@@ -61,7 +67,12 @@ const CONTACT_INFO = {
 
 // Khởi tạo Supabase client
 let supabaseClient = null;
-if (typeof supabase !== 'undefined' && SUPABASE_CONFIG.url && SUPABASE_CONFIG.url.indexOf('YOUR_PROJECT_ID') === -1) {
+if (
+    typeof supabase !== 'undefined' &&
+    SUPABASE_CONFIG.url &&
+    !SUPABASE_CONFIG.url.toLowerCase().includes('your-project-id') &&
+    !SUPABASE_CONFIG.url.toLowerCase().includes('your_project_id')
+) {
     try {
         supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
     } catch (e) {
