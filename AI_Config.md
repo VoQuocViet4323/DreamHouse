@@ -145,3 +145,19 @@ Dự án đã hỗ trợ **cơ chế tự động sinh file cấu hình** từ `
    *Script sẽ tự động đọc `.env`, kiểm tra tránh ghi đè URL giả lập, và sinh file `js/config.js` chuẩn xác.*
 4. Chạy hệ thống bằng file `start.bat` (nhấp đúp chuột) hoặc lệnh `npm run dev`. Trình duyệt sẽ tự động mở tại `http://localhost:3000`.
 
+---
+
+## 7. CẤU HÌNH ĐĂNG KÝ TÀI KHOẢN BẰNG USERNAME (KHÔNG CẦN EMAIL)
+
+Hệ thống hỗ trợ tính năng đăng ký tài khoản nhanh bằng **Tên tài khoản (Username)** kèm ô xác nhận mật khẩu, không phụ thuộc vào hòm thư Email.
+
+Để kích hoạt tính năng tự động tạo user và tránh hoàn toàn giới hạn Rate Limit gửi mail của Supabase Free tier:
+1. Mở **Supabase Dashboard** > chọn mục **SQL Editor**.
+2. Mở file [`supabase/05_username_auth.sql`](supabase/05_username_auth.sql) trong thư mục dự án, copy toàn bộ nội dung và dán vào SQL Editor.
+3. Nhấn **Run**.
+4. Script sẽ tự động:
+   - Thêm cột `username` và index `UNIQUE` vào bảng `public.profiles`.
+   - Cập nhật trigger `handle_new_user()` để lưu username.
+   - Tạo hàm RPC `public.register_user_by_username()` giúp chèn người dùng xác thực trực tiếp vào `auth.users` với cờ `email_confirmed_at = now()`. Người dùng có thể đăng ký và đăng nhập được ngay lập tức!
+
+

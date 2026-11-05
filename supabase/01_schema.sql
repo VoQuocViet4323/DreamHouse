@@ -7,6 +7,7 @@
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT,
+    username TEXT,
     phone TEXT,
     avatar_url TEXT,
     role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
@@ -14,8 +15,10 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
--- Bổ sung cột phone nếu bảng đã tồn tại từ trước
+-- Bổ sung cột phone và username nếu bảng đã tồn tại từ trước
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS username TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(LOWER(username));
 
 -- Bật Row Level Security cho profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -28,12 +31,17 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    INSERT INTO public.profiles (id, full_name, avatar_url, role)
+    INSERT INTO public.profiles (id, full_name, username, avatar_url, role)
     VALUES (
         NEW.id,
         COALESCE(
             NEW.raw_user_meta_data->>'full_name',
             NEW.raw_user_meta_data->>'name',
+            NEW.raw_user_meta_data->>'username',
+            split_part(NEW.email, '@', 1)
+        ),
+        COALESCE(
+            NEW.raw_user_meta_data->>'username',
             split_part(NEW.email, '@', 1)
         ),
         COALESCE(
@@ -46,6 +54,7 @@ BEGIN
     ON CONFLICT (id) DO UPDATE
     SET 
         full_name = EXCLUDED.full_name,
+        username = COALESCE(EXCLUDED.username, public.profiles.username),
         avatar_url = EXCLUDED.avatar_url,
         updated_at = timezone('utc'::text, now());
     RETURN NEW;

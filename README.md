@@ -21,7 +21,8 @@
    - Tự động chuẩn hoá đơn vị tiền tệ dự toán (Bản tiếng Việt: "1.85 tỷ VNĐ", "850 triệu VNĐ"; Bản tiếng Anh: "≈ 1.85 billion VND").
 
 4. **Xác thực & Bảo mật Supabase:**
-   - Đăng nhập/Đăng ký qua Email + Mật khẩu (có tính năng khôi phục mật khẩu).
+   - Đăng ký tài khoản nhanh chóng bằng **Tên tài khoản (Username)** kèm ô xác nhận mật khẩu (không cần Email).
+   - Đăng nhập linh hoạt bằng Tên tài khoản hoặc Email, có tính năng "Ghi nhớ tài khoản".
    - Đăng nhập 1-chạm với Google OAuth.
    - Tự động đồng bộ danh sách mẫu yêu thích từ trình duyệt vào tài khoản khi người dùng đăng nhập.
    - Phân quyền Quản trị viên (Admin) chặt chẽ bằng PostgreSQL Row Level Security (RLS).
@@ -52,7 +53,8 @@ DreamHouse/
 │   ├── 01_schema.sql        # Khởi tạo các bảng (profiles, templates, favorites, inquiries...) & Triggers
 │   ├── 02_security.sql      # Cấu hình Row Level Security (RLS) & hàm is_admin()
 │   ├── 03_storage.sql       # Khởi tạo Storage buckets (template-images, template-models) & Policies
-│   └── 04_sample_data.sql   # Dữ liệu ban đầu (6 mẫu nhà thực tế)
+│   ├── 04_sample_data.sql   # Dữ liệu ban đầu (6 mẫu nhà thực tế)
+│   └── 05_username_auth.sql # Hỗ trợ Đăng ký/Đăng nhập bằng Username & hàm RPC tạo user trực tiếp
 ├── memories.md              # Bối cảnh, quyết định thiết kế cốt lõi và nhật ký tiến trình phát triển
 ├── README.md                # Tài liệu tổng quan và hướng dẫn sử dụng
 ├── AI_Config.md             # Hướng dẫn cấu hình chi tiết từng bước cho người mới và AI

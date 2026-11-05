@@ -236,6 +236,26 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Hỗ trợ đầy đủ phím tắt `Escape`, click backdrop hoặc click logo để quay về trang chủ.
   - Nâng tham số cache-busting lên `?v=2.6` trên toàn bộ tệp `index.html` và `admin.html`.
 
+### Giai đoạn 15: Chuyển đổi Đăng ký sang Username & Bổ sung Ô Xác nhận Mật khẩu
+- [x] **Chuyển đổi đăng ký bằng Email sang Username (Tên tài khoản):**
+  - Loại bỏ hoàn toàn sự phụ thuộc vào hòm thư Email khi đăng ký thành viên mới.
+  - Nhãn hiển thị linh hoạt theo chế độ:
+    - Khi Đăng ký: Nhãn đổi thành **`Tên tài khoản (Username)`** với placeholder *"Ví dụ: quocviet99"*.
+    - Khi Đăng nhập: Nhãn đổi thành **`Tên tài khoản hoặc Email`** với placeholder *"Nhập tên tài khoản hoặc email..."*.
+  - Kiểm tra tính hợp lệ của Tên tài khoản: độ dài từ 3 đến 30 ký tự, định dạng `/^[a-zA-Z0-9_.-]{3,30}$/`, cấm khoảng trắng và ký tự đặc biệt.
+  - Cơ chế đồng bộ kép với Supabase: Tự động ánh xạ username thành định dạng nội bộ `${username}@dreamhouse.internal` kết hợp lưu trữ metadata `username` và `full_name`.
+  - Hỗ trợ hàm RPC [`public.register_user_by_username`](file:///d:/DreamHouse/supabase/05_username_auth.sql) khởi tạo tài khoản xác thực trực tiếp trong `auth.users` và `public.profiles` với `email_confirmed_at = now()`, triệt tiêu hoàn toàn lỗi Rate Limit gửi Email của Supabase.
+- [x] **Bổ sung Ô Xác nhận Mật khẩu (Confirm Password):**
+  - Tích hợp ô nhập `#auth-confirm-password` và nhóm `#auth-confirm-pass-group`, tự động hiển thị khi ở chế độ Đăng ký và ẩn khi ở chế độ Đăng nhập.
+  - Tích hợp nút con mắt ẩn/hiện xác nhận mật khẩu thời gian thực (`#toggle-auth-confirm-pass-visibility`).
+  - Kiểm tra bảo vệ trước khi gửi form: Mật khẩu tối thiểu 6 ký tự và **bắt buộc trùng khớp 100%** giữa Mật khẩu và Xác nhận mật khẩu; hiển thị cảnh báo trực quan nếu có sai lệch.
+  - Ẩn liên kết *"Quên mật khẩu?"* khi đang ở chế độ Đăng ký để tối ưu thị giác người dùng.
+- [x] **Cập nhật Database & Đồng bộ tài liệu:**
+  - Khởi tạo script [`supabase/05_username_auth.sql`](file:///d:/DreamHouse/supabase/05_username_auth.sql) và tích hợp vào [`supabase/all_in_one_setup.sql`](file:///d:/DreamHouse/supabase/all_in_one_setup.sql): bổ sung cột `username` và index `UNIQUE` trong bảng `public.profiles`.
+  - Đa ngôn ngữ đầy đủ cho các trường mới trong `js/i18n.js` (`auth_username`, `auth_confirm_pass`, `auth_username_placeholder`, `auth_login_placeholder`).
+  - Tăng tham số phiên bản cache-busting lên **`?v=2.7`** trên toàn bộ `index.html` và `admin.html`.
+
+
 
 
 
