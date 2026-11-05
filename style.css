@@ -42,6 +42,18 @@
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-full: 9999px;
+
+  /* Hệ biến đồng bộ cho tất cả nút Đóng (X) và nút phụ (Preset/Chip) */
+  --btn-close-bg: rgba(15, 23, 42, 0.06);
+  --btn-close-border: rgba(15, 23, 42, 0.14);
+  --btn-close-color: #334155;
+  --btn-close-hover-bg: #ef4444;
+  --btn-close-hover-border: #ef4444;
+  --btn-close-hover-color: #ffffff;
+
+  --btn-subtle-bg: #f1f5f9;
+  --btn-subtle-border: rgba(15, 23, 42, 0.12);
+  --btn-subtle-color: #1e293b;
 }
 
 *, *::before, *::after {
@@ -555,7 +567,7 @@ body::before {
 }
 
 .house-card:hover .card-title {
-  color: #000;
+  color: var(--color-accent);
 }
 
 .card-specs {
@@ -568,10 +580,11 @@ body::before {
 }
 
 .card-specs span {
-  background: #f8fafc;
+  background: var(--btn-subtle-bg);
+  color: var(--btn-subtle-color);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--btn-subtle-border);
 }
 
 .card-footer {
@@ -579,7 +592,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--color-border);
   padding-top: 18px;
 }
 
@@ -653,25 +666,48 @@ body::before {
   to { transform: scale(1); opacity: 1; }
 }
 
-.modal-close {
+/* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website */
+.modal-close,
+.profile-close-btn,
+[id^="close-"][id$="-modal"] {
   position: absolute;
   top: 16px;
   right: 18px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #f1f5f9;
-  border: none;
-  font-size: 1.1rem;
+  background: var(--btn-close-bg) !important;
+  border: 1px solid var(--btn-close-border) !important;
+  color: var(--btn-close-color) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0;
   cursor: pointer;
-  z-index: 10;
+  z-index: 25;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: all var(--duration-fast) var(--ease-spring);
 }
 
-.modal-close:hover {
-  background: #0f172a;
-  color: #fff;
-  transform: rotate(90deg);
+.modal-close svg,
+.profile-close-btn svg,
+[id^="close-"][id$="-modal"] svg {
+  stroke: currentColor;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.modal-close:hover,
+.profile-close-btn:hover,
+[id^="close-"][id$="-modal"]:hover {
+  background: var(--btn-close-hover-bg) !important;
+  border-color: var(--btn-close-hover-border) !important;
+  color: var(--btn-close-hover-color) !important;
+  transform: rotate(90deg) scale(1.05);
 }
 
 .detail-grid {
@@ -735,9 +771,10 @@ body::before {
 }
 
 .camera-presets button {
-  background: #f1f5f9;
-  border: 1px solid var(--color-border);
-  padding: 5px 10px;
+  background: var(--btn-subtle-bg);
+  color: var(--btn-subtle-color);
+  border: 1px solid var(--btn-subtle-border);
+  padding: 5px 11px;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: var(--radius-sm);
@@ -746,8 +783,9 @@ body::before {
 }
 
 .camera-presets button:hover {
-  background: #09090b;
-  color: #ffffff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #09090b;
 }
 
 .threejs-canvas {
@@ -822,7 +860,7 @@ body::before {
 
 .detail-desc-block {
   margin-bottom: 32px;
-  color: #334155;
+  color: var(--color-text-muted);
   font-size: 0.98rem;
   line-height: 1.7;
 }
@@ -836,6 +874,7 @@ body::before {
 
 .btn-outline-fav {
   background: none;
+  color: var(--color-text);
   border: 1px solid var(--color-border);
   padding: 12px;
   font-size: 0.92rem;
@@ -958,7 +997,7 @@ body::before {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 8px;
-  color: #475569;
+  color: var(--color-text-muted);
 }
 
 .form-group input,
@@ -1042,6 +1081,30 @@ body::before {
   padding: 0 12px;
   font-size: 0.78rem;
   color: var(--color-text-muted);
+}
+
+.auth-helper-links {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8px 0 18px;
+}
+
+.auth-footer-toggle {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.auth-link {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
 }
 
 /* 10. FOOTER */
@@ -1133,6 +1196,18 @@ body.dark-theme {
   --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
   --shadow-glow: 0 0 25px rgba(229, 185, 93, 0.25);
+
+  /* Hệ biến đồng bộ cho tất cả nút Đóng (X) và nút phụ trong Dark Mode */
+  --btn-close-bg: rgba(255, 255, 255, 0.08);
+  --btn-close-border: rgba(255, 255, 255, 0.18);
+  --btn-close-color: #cbd5e1;
+  --btn-close-hover-bg: rgba(239, 68, 68, 0.25);
+  --btn-close-hover-border: rgba(239, 68, 68, 0.5);
+  --btn-close-hover-color: #fca5a5;
+
+  --btn-subtle-bg: rgba(255, 255, 255, 0.08);
+  --btn-subtle-border: rgba(255, 255, 255, 0.14);
+  --btn-subtle-color: #e2e8f0;
 }
 
 :root[data-theme="dark"] body::before {
@@ -1168,6 +1243,37 @@ body.dark-theme {
   color: #f1f5f9;
 }
 
+:root[data-theme="dark"] .modal-close,
+body.dark-theme .modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .modal-close:hover,
+body.dark-theme .modal-close:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+  transform: rotate(90deg);
+}
+
+:root[data-theme="dark"] .auth-divider span,
+body.dark-theme .auth-divider span {
+  background: #11131d;
+  color: #94a3b8;
+}
+
+:root[data-theme="dark"] .auth-link,
+body.dark-theme .auth-link {
+  color: #94a3b8;
+}
+
+:root[data-theme="dark"] .auth-link:hover,
+body.dark-theme .auth-link:hover {
+  color: var(--color-accent);
+}
+
 :root[data-theme="dark"] .card-specs span,
 :root[data-theme="dark"] .specs-table,
 :root[data-theme="dark"] .detail-visual-col,
@@ -1186,11 +1292,45 @@ body.dark-theme {
 :root[data-theme="dark"] .filter-fav-toggle,
 :root[data-theme="dark"] .form-group input,
 :root[data-theme="dark"] .form-group textarea,
+:root[data-theme="dark"] .form-group select,
 :root[data-theme="dark"] .btn-secondary,
 :root[data-theme="dark"] .btn-google {
   background: #151824;
   color: #f1f5f9;
   border-color: rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme="dark"] .detail-desc-block {
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .btn-outline-fav {
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+:root[data-theme="dark"] .btn-outline-fav:hover {
+  background: rgba(244, 63, 94, 0.16);
+  border-color: #f43f5e;
+  color: #fda4af;
+}
+
+:root[data-theme="dark"] .btn-outline-fav.active {
+  background: rgba(244, 63, 94, 0.22);
+  border-color: #f43f5e;
+  color: #fda4af;
+}
+
+:root[data-theme="dark"] .card-fav-btn {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .card-fav-btn.active {
+  background: rgba(15, 23, 42, 0.92);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.45);
 }
 
 :root[data-theme="dark"] .btn-primary {
