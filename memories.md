@@ -173,3 +173,12 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Bổ sung thông báo Toast xúc giác tức thì cho các thao tác người dùng trước đây còn thiếu: Thêm/Gỡ mục yêu thích (`toggleFavorite`), Đăng xuất tài khoản (`logout`).
   - Cập nhật tham số phiên bản cache-busting lên `?v=2.1` trên toàn bộ tệp `index.html` và `admin.html`.
 
+### Giai đoạn 10: Chuẩn hóa Tiêu đề Tab Trình duyệt (Browser Tab Title) & Favicon SVG
+- [x] **Thay đổi tiêu đề trên thanh tab trình duyệt:**
+  - Cập nhật tiêu đề trang chủ từ *"Nhà Mơ Ước - Kiến Trúc & Xây Dựng"* thành **`DreamHouse - Kiến Trúc & Xây Dựng`** trong `index.html`.
+  - Cập nhật tiêu đề trang quản trị thành **`Hệ Thống Quản Trị - DreamHouse`** trong `admin.html`.
+  - Tích hợp cơ chế đa ngôn ngữ i18n linh hoạt (`data-i18n="page_title"` / `data-i18n="admin_title"`) trong `js/i18n.js`: khi chuyển sang Tiếng Anh, tiêu đề tab tự động đổi sang `DreamHouse - Architecture & Construction` / `DreamHouse Management`.
+  - Bổ sung Favicon vector SVG vàng kim hoàng gia sắc nét (`data:image/svg+xml`), triệt tiêu hoàn toàn lỗi 404 `/favicon.ico` trên Console trình duyệt.
+  - Nâng tham số cache-busting lên `?v=2.2` trên toàn bộ tệp `index.html` và `admin.html`.
+
+

@@ -3,6 +3,7 @@
 const I18N = {
     vi: {
         site_name: "Nhà Mơ Ước",
+        page_title: "DreamHouse - Kiến Trúc & Xây Dựng",
         tagline: "Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ",
         hero_title: "Không gian sống lý tưởng trong tầm tay bạn",
         hero_sub: "Khám phá bộ sưu tập mẫu nhà phố, biệt thự và nhà cấp 4 hiện đại cùng mô hình 3D tương tác thực tế.",
@@ -119,7 +120,7 @@ const I18N = {
         btn_cancel: "Hủy bỏ",
 
         // Trang quản trị
-        admin_title: "Hệ Thống Quản Trị - Nhà Mơ Ước",
+        admin_title: "Hệ Thống Quản Trị - DreamHouse",
         admin_tab_templates: "Quản lý mẫu nhà",
         admin_tab_inquiries: "Yêu cầu tư vấn",
         admin_btn_new: "+ Thêm mẫu nhà mới",
@@ -133,6 +134,7 @@ const I18N = {
     },
     en: {
         site_name: "Dream House",
+        page_title: "DreamHouse - Architecture & Construction",
         tagline: "Architectural Excellence - Crafting Your Ideal Living",
         hero_title: "Your Dream Living Space Within Reach",
         hero_sub: "Explore our curated collection of townhouses, luxury villas, and country bungalows with interactive 3D models.",
@@ -327,6 +329,9 @@ class I18nManager {
                     if (el.getAttribute('placeholder')) {
                         el.setAttribute('placeholder', text);
                     }
+                } else if (el.tagName === 'TITLE') {
+                    document.title = text;
+                    el.textContent = text;
                 } else {
                     el.textContent = text;
                 }
