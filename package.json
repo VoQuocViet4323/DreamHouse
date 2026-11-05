@@ -1,0 +1,12 @@
+{
+  "name": "dream-house",
+  "version": "1.0.0",
+  "description": "Website trưng bày kiến trúc và mô hình 3D - Nhà Mơ Ước",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "start": "python -m http.server 3000"
+  },
+  "keywords": ["architecture", "threejs", "supabase"],
+  "author": "Vo Quoc Viet",
+  "license": "MIT"
+}
