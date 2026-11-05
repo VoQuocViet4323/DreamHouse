@@ -1674,7 +1674,7 @@ body.dark-theme {
 
 .profile-header-card {
   background: linear-gradient(135deg, rgba(196, 154, 69, 0.08) 0%, rgba(21, 24, 36, 0.03) 100%);
-  padding: 24px 28px 20px;
+  padding: 24px 64px 20px 28px;
   border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
@@ -1686,8 +1686,8 @@ body.dark-theme {
 }
 
 .profile-avatar-box {
-  width: 66px;
-  height: 66px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-accent), #dfb858);
   color: #ffffff;
@@ -1715,11 +1715,10 @@ body.dark-theme {
   gap: 4px;
 }
 
-.profile-title-row {
+.profile-badge-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  margin-bottom: 2px;
 }
 
 .profile-title {
@@ -1739,7 +1738,7 @@ body.dark-theme {
   color: var(--color-accent);
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 3px 9px;
+  padding: 2px 9px;
   border-radius: 999px;
   border: 1px solid rgba(196, 154, 69, 0.3);
   white-space: nowrap;
