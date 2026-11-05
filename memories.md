@@ -209,6 +209,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     - Tương thích 100% Dark Mode & Light Mode, đa ngôn ngữ VI / EN.
     - Nâng tham số cache-busting lên `?v=2.4` trên toàn bộ tệp `index.html` và `admin.html`.
 
+### Giai đoạn 13: Tự động Chuyển hướng Màn hình Login khi Đăng xuất & Tinh chỉnh Toast Logout
+- [x] **Tự động chuyển về màn hình đăng nhập khi đăng xuất (Logout to Login Flow):**
+  - Khi người dùng đăng xuất từ thanh điều hướng `index.html` hoặc từ bảng quản trị `admin.html`, hệ thống tự động dọn dẹp phiên và kích hoạt mở ngay **Màn hình đăng nhập chuyên biệt (`#login`)**.
+  - Reset form về chế độ đăng nhập (`Login mode`), tự động xóa trắng trường mật khẩu cũ và focus vào ô nhập Email sau hiệu ứng chuyển cảnh mượt mà.
+  - Tự động đóng Menu Dropdown tài khoản khi bấm Đăng xuất.
+- [x] **Nâng cấp nội dung & Phân hệ Toast Notification khi Logout:**
+  - Chuyển phân hệ thông báo từ `toast.info` (icon chữ i màu xanh dương thông báo chung) sang **`toast.success`** (icon vector dấu tích xanh ngọc hoàng gia) mang lại cảm giác tích cực và hoàn tất trọn vẹn.
+  - Tiêu đề thông báo: `Đăng xuất thành công` / `Signed Out`.
+  - Nội dung thông báo: *"Bạn đã đăng xuất an toàn khỏi tài khoản. Hẹn sớm gặp lại bạn!"* / *"You have been signed out safely. See you again soon!"*.
+  - Bổ sung cơ chế lưu cờ `sessionStorage.setItem('just_logged_out', '1')` khi đăng xuất từ trang `admin.html` để hiển thị Toast thông báo mượt mà sau khi chuyển trang.
+  - Nâng tham số cache-busting lên `?v=2.5` trên toàn bộ tệp `index.html` và `admin.html`.
+
+
 
 
 

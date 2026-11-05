@@ -293,11 +293,55 @@ class DreamHouseApp {
         this.currentUser = null;
         this.currentProfile = null;
         this.updateAuthUI();
+
+        // 1. Thông báo Toast đăng xuất thành công cao cấp
+        const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
+            ? window.i18n.getLang() === 'vi' 
+            : true;
+
         if (window.toast) {
-            const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
-                ? window.i18n.getLang() === 'vi' 
-                : true;
-            window.toast.info(isVi ? 'Đã đăng xuất tài khoản thành công.' : 'Logged out successfully.', 3500);
+            const title = isVi ? 'Đăng xuất thành công' : 'Signed Out';
+            const msg = isVi 
+                ? 'Bạn đã đăng xuất an toàn khỏi tài khoản. Hẹn sớm gặp lại bạn!' 
+                : 'You have been signed out safely. See you again soon!';
+            window.toast.success(msg, 4000, title);
+        }
+
+        // 2. Tự động chuyển ngay sang màn hình / trang login chuyên biệt
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+            const alertBox = document.getElementById('auth-alert');
+            if (alertBox) {
+                alertBox.className = 'auth-alert hidden';
+                alertBox.textContent = '';
+            }
+
+            // Đảm bảo ở chế độ Đăng nhập (Login mode)
+            const nameGroup = document.getElementById('auth-name-group');
+            if (nameGroup) nameGroup.style.display = 'none';
+
+            const modalTitle = document.getElementById('auth-modal-title');
+            if (modalTitle) modalTitle.textContent = window.i18n ? window.i18n.t('auth_title_login') : 'Log in';
+
+            const methodHint = document.getElementById('auth-method-hint');
+            if (methodHint) methodHint.textContent = window.i18n ? window.i18n.t('auth_email_hint') : 'Log in using email address';
+
+            const submitBtn = document.getElementById('auth-submit-btn');
+            if (submitBtn) submitBtn.textContent = window.i18n ? window.i18n.t('auth_login_action') : 'Log In';
+
+            const switchLink = document.getElementById('auth-switch-mode');
+            if (switchLink) switchLink.textContent = window.i18n ? window.i18n.t('auth_no_acc') : 'Need to create an account? Sign Up';
+
+            // Xóa trường mật khẩu cũ
+            const passInput = document.getElementById('auth-password');
+            if (passInput) passInput.value = '';
+
+            modal.classList.remove('hidden');
+            window.location.hash = 'login';
+
+            setTimeout(() => {
+                document.getElementById('auth-email')?.focus();
+            }, 300);
         }
     }
 
@@ -1128,8 +1172,25 @@ class DreamHouseApp {
         });
 
         document.getElementById('btn-logout')?.addEventListener('click', () => {
+            dropdownMenu?.classList.add('hidden');
+            profileTrigger?.setAttribute('aria-expanded', 'false');
             this.logout();
         });
+
+        // Kiểm tra thông báo nếu vừa đăng xuất từ trang Admin chuyển về
+        if (sessionStorage.getItem('just_logged_out')) {
+            sessionStorage.removeItem('just_logged_out');
+            if (window.toast) {
+                const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
+                    ? window.i18n.getLang() === 'vi' 
+                    : true;
+                const title = isVi ? 'Đăng xuất thành công' : 'Signed Out';
+                const msg = isVi 
+                    ? 'Bạn đã đăng xuất an toàn khỏi tài khoản. Hẹn sớm gặp lại bạn!' 
+                    : 'You have been signed out safely. See you again soon!';
+                window.toast.success(msg, 4000, title);
+            }
+        }
     }
 
     setupThemeToggle() {
