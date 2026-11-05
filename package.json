@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Website trưng bày kiến trúc và mô hình 3D - Nhà Mơ Ước",
   "scripts": {
-    "postinstall": "node generate-config.js",
     "config": "node generate-config.js",
-    "dev": "node generate-config.js && python -m http.server 3000",
-    "start": "node generate-config.js && python -m http.server 3000"
+    "dev": "node generate-config.js && npx serve -p 3000",
+    "start": "node generate-config.js && npx serve -p 3000"
   },
   "keywords": [
     "architecture",
