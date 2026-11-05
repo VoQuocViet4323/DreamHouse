@@ -9,3 +9,4 @@
 3. **Ngôn ngữ & Phong cách giao tiếp:**
    - Luôn phản hồi bằng tiếng Việt rõ ràng, ngắn gọn, chuyên nghiệp.
    - Khi thay đổi CSS/JS trong `index.html` hoặc `admin.html`, luôn tăng tham số phiên bản cache-busting (`?v=...`) để trình duyệt của người dùng nhận giao diện mới ngay lập tức.
+
