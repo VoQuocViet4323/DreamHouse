@@ -2,7 +2,7 @@
 // Bộ từ điển song ngữ Việt - Anh hoàn chỉnh
 const I18N = {
     vi: {
-        site_name: "Nhà Mơ Ước",
+        site_name: "Dream House",
         page_title: "DreamHouse - Kiến Trúc & Xây Dựng",
         tagline: "Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ",
         hero_title: "Không gian sống lý tưởng trong tầm tay bạn",

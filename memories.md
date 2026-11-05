@@ -181,4 +181,12 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Bổ sung Favicon vector SVG vàng kim hoàng gia sắc nét (`data:image/svg+xml`), triệt tiêu hoàn toàn lỗi 404 `/favicon.ico` trên Console trình duyệt.
   - Nâng tham số cache-busting lên `?v=2.2` trên toàn bộ tệp `index.html` và `admin.html`.
 
+### Giai đoạn 11: Cố định Nhận diện Thương hiệu 'Dream House' trên Toàn bộ Giao diện
+- [x] **Cố định thương hiệu "Dream House" khi đổi ngôn ngữ:**
+  - Thiết lập giá trị `site_name: "Dream House"` cho cả hai bộ từ điển `vi` và `en` trong `js/i18n.js`. Khi người dùng chuyển sang Tiếng Việt hay Tiếng Anh, logo thương hiệu trên thanh điều hướng Navbar và Footer luôn giữ nguyên là **Dream House**.
+  - Cập nhật mã nguồn HTML tĩnh tại `index.html` (Navbar & Footer) và `admin.html` (Navbar) thành `Dream House`.
+  - Cập nhật dòng bản quyền chân trang: `© 2026 Dream House. All rights reserved.`.
+  - Nâng tham số cache-busting lên `?v=2.3` trên toàn bộ tệp `index.html` và `admin.html`.
+
+
 
