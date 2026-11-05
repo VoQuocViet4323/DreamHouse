@@ -1,12 +1,12 @@
-/* ==============================================================================
-   STYLE.CSS - Äáº¬M CHáº¤T ANIMATE-UI & KIáº¾N TRÃšC CAO Cáº¤P
-   Láº¥y cáº£m há»©ng tá»«: animate-ui.com (Shadcn + Motion Spring Physics)
-   Äáº·c Ä‘iá»ƒm:
-   - Subtle Grid & Gradient Background hiá»‡u á»©ng phÃ¡t sÃ¡ng má» áº£o
-   - Shimmering / Gradient Text trÃªn tiÃªu Ä‘á» chÃ­nh
-   - Spring-motion Hover Cards vá»›i hiá»‡u á»©ng tia sÃ¡ng viá»n (Glow / Spotlight)
-   - Ripple Button & Glassmorphism thanh thoÃ¡t
-   - Micro-interactions tinh táº¿, siÃªu mÆ°á»£t 60fps
+﻿/* ==============================================================================
+   STYLE.CSS - Ã„ÂÃ¡ÂºÂ¬M CHÃ¡ÂºÂ¤T ANIMATE-UI & KIÃ¡ÂºÂ¾N TRÃƒÅ¡C CAO CÃ¡ÂºÂ¤P
+   LÃ¡ÂºÂ¥y cÃ¡ÂºÂ£m hÃ¡Â»Â©ng tÃ¡Â»Â«: animate-ui.com (Shadcn + Motion Spring Physics)
+   Ã„ÂÃ¡ÂºÂ·c Ã„â€˜iÃ¡Â»Æ’m:
+   - Subtle Grid & Gradient Background hiÃ¡Â»â€¡u Ã¡Â»Â©ng phÃƒÂ¡t sÃƒÂ¡ng mÃ¡Â»Â Ã¡ÂºÂ£o
+   - Shimmering / Gradient Text trÃƒÂªn tiÃƒÂªu Ã„â€˜Ã¡Â»Â chÃƒÂ­nh
+   - Spring-motion Hover Cards vÃ¡Â»â€ºi hiÃ¡Â»â€¡u Ã¡Â»Â©ng tia sÃƒÂ¡ng viÃ¡Â»Ân (Glow / Spotlight)
+   - Ripple Button & Glassmorphism thanh thoÃƒÂ¡t
+   - Micro-interactions tinh tÃ¡ÂºÂ¿, siÃƒÂªu mÃ†Â°Ã¡Â»Â£t 60fps
    ============================================================================== */
 
 :root {
@@ -187,7 +187,7 @@ body::before {
   gap: 14px;
 }
 
-/* NÃšT CHUYá»‚N NGÃ”N NGá»® (SPRING TOGGLER) */
+/* NÃƒÅ¡T CHUYÃ¡Â»â€šN NGÃƒâ€N NGÃ¡Â»Â® (SPRING TOGGLER) */
 .lang-switch-btn {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--color-border);
@@ -238,7 +238,7 @@ body::before {
   margin: 0;
 }
 
-/* TIÃŠU Äá»€ SHIMMERING / GRADIENT TEXT */
+/* TIÃƒÅ U Ã„ÂÃ¡Â»â‚¬ SHIMMERING / GRADIENT TEXT */
 .hero-headline {
   font-family: var(--font-serif);
   font-size: clamp(2.6rem, 5.5vw, 4.4rem);
@@ -1110,7 +1110,7 @@ body::before {
 
 /* ==============================================================================
    CIRCULAR-REVEAL DARK MODE (219, Navigation)
-   MIT License (c) 2026 Seokwoooo Â· https://lucianlabs.dev/uxui-prompt/#219
+   MIT License (c) 2026 Seokwoooo Ã‚Â· https://lucianlabs.dev/uxui-prompt/#219
    ============================================================================== */
 
 :root[data-theme="dark"],
@@ -1256,7 +1256,7 @@ body.dark-theme {
 }
 
 
-/* NÃšT CIRCULAR-REVEAL SUN/MOON (219) */
+/* NÃƒÅ¡T CIRCULAR-REVEAL SUN/MOON (219) */
 .u219-tg {
   width: 40px;
   height: 40px;
@@ -1313,14 +1313,14 @@ body.dark-theme {
   transform: rotate(-90deg);
 }
 
-/* NATIVE VIEW TRANSITION CHO CIRCULAR REVEAL SIÊU MƯỢT */
+/* NATIVE VIEW TRANSITION CHO CIRCULAR REVEAL SIÃŠU MÆ¯á»¢T */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-/* Luôn để view mới (màn hình sắp chuyển tới) nằm ở trên cùng để mở rộng vòng tròn */
+/* LuÃ´n Ä‘á»ƒ view má»›i (mÃ n hÃ¬nh sáº¯p chuyá»ƒn tá»›i) náº±m á»Ÿ trÃªn cÃ¹ng Ä‘á»ƒ má»Ÿ rá»™ng vÃ²ng trÃ²n */
 ::view-transition-old(root) {
   z-index: 1;
 }
@@ -1329,7 +1329,7 @@ body.dark-theme {
   z-index: 999999;
 }
 
-/* FALLBACK CIRCULAR REVEAL CHO TRÃŒNH DUYá»†T KHÃ”NG Há»– TRá»¢ VIEW TRANSITION */
+/* FALLBACK CIRCULAR REVEAL CHO TRÃƒÅ’NH DUYÃ¡Â»â€ T KHÃƒâ€NG HÃ¡Â»â€“ TRÃ¡Â»Â¢ VIEW TRANSITION */
 .u219-fallback-overlay {
   position: fixed;
   inset: 0;
@@ -1373,7 +1373,7 @@ body.dark-theme {
   gap: 12px;
 }
 
-/* 1. NÃºt chuyá»ƒn Ä‘á»•i ngÃ´n ngá»¯ (VI | EN Pill) */
+/* 1. NÃƒÂºt chuyÃ¡Â»Æ’n Ã„â€˜Ã¡Â»â€¢i ngÃƒÂ´n ngÃ¡Â»Â¯ (VI | EN Pill) */
 .lang-switch-btn {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1404,7 +1404,7 @@ body.dark-theme {
   transform: translateY(0) scale(0.96);
 }
 
-/* 2. NÃºt ÄÄƒng nháº­p (Sign In Button) */
+/* 2. NÃƒÂºt Ã„ÂÃ„Æ’ng nhÃ¡ÂºÂ­p (Sign In Button) */
 .btn-auth-outline {
   display: inline-flex;
   align-items: center;
@@ -1433,35 +1433,44 @@ body.dark-theme {
   transform: translateY(0) scale(0.96);
 }
 
-/* 3. Cá»¥m NgÆ°á»i dÃ¹ng & NÃºt ÄÄƒng xuáº¥t Hiá»‡n Äáº¡i (User Badge & Modern Logout) */
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: 4px 6px 4px 12px;
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.25s ease;
+
+/* 3. MODERN USER MENU & DROPDOWN COMPONENT */
+.user-menu-container {
+  position: relative;
+  display: inline-block;
 }
 
-.user-menu:hover {
-  border-color: rgba(196, 154, 69, 0.4);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-
-.user-profile-badge {
-  display: flex;
+.user-profile-trigger {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 6px 14px 6px 8px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.user-profile-trigger:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 14px rgba(196, 154, 69, 0.2);
+}
+
+.user-profile-trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .user-avatar-circle {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent), #d4af37);
+  background: linear-gradient(135deg, var(--color-accent), #dfb858);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1481,80 +1490,145 @@ body.dark-theme {
   letter-spacing: -0.01em;
 }
 
-/* NÃšT SIGN OUT: HIá»†N Äáº I, HOVER ANIMATION Náº¢Y LÃ’ XO & ICON BAY RA */
-.btn-logout {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(241, 245, 249, 0.9);
-  color: #475569;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.btn-logout .logout-icon {
+.chevron-down {
+  color: var(--color-text-muted);
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.btn-logout:hover {
-  background: #fee2e2;
-  color: #dc2626;
-  border-color: #fca5a5;
-  transform: translateY(-1px) scale(1.04);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.18);
+.user-profile-trigger[aria-expanded="true"] .chevron-down {
+  transform: rotate(180deg);
 }
 
-.btn-logout:hover .logout-icon {
-  transform: translateX(3px);
+/* KHá»I DROPDOWN MENU Xá»” XUá»NG HIá»†N Äáº I */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  background: var(--color-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  transform-origin: top right;
+  animation: dropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-logout:active {
-  transform: translateY(0) scale(0.95);
+@keyframes dropdownPop {
+  0% { opacity: 0; transform: scale(0.95) translateY(-6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* DARK MODE CUSTOM OVERRIDES CHO CÃC NÃšT */
-:root[data-theme="dark"] .lang-switch-btn,
-:root[data-theme="dark"] .btn-auth-outline,
-:root[data-theme="dark"] .user-menu {
+.dropdown-header {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-user-role {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.dropdown-user-email {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 6px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dropdown-item svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(196, 154, 69, 0.1);
+  color: var(--color-accent);
+}
+
+.dropdown-item:hover svg {
+  color: var(--color-accent);
+  transform: translateX(2px);
+}
+
+.dropdown-logout-btn {
+  color: #dc2626 !important;
+}
+
+.dropdown-logout-btn svg {
+  color: #dc2626 !important;
+}
+
+.dropdown-logout-btn:hover {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+/* DARK MODE CHO DROPDOWN MENU */
+:root[data-theme="dark"] .user-profile-trigger {
   background: rgba(21, 24, 36, 0.9);
   border-color: rgba(255, 255, 255, 0.12);
   color: #f1f5f9;
 }
 
-:root[data-theme="dark"] .lang-switch-btn:hover {
-  background: #1c2030;
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  box-shadow: 0 0 16px rgba(229, 185, 93, 0.25);
-}
-
-:root[data-theme="dark"] .btn-auth-outline:hover {
-  background: #ffffff;
-  color: #090a0f;
-  border-color: #ffffff;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
-}
-
-:root[data-theme="dark"] .btn-logout {
-  background: rgba(30, 35, 52, 0.9);
-  color: #cbd5e1;
+:root[data-theme="dark"] .user-dropdown-menu {
+  background: rgba(18, 20, 30, 0.95);
   border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
 }
 
-:root[data-theme="dark"] .btn-logout:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  border-color: rgba(239, 68, 68, 0.4);
-  box-shadow: 0 0 14px rgba(239, 68, 68, 0.3);
+:root[data-theme="dark"] .dropdown-item {
+  color: #f1f5f9;
 }
 
-:root[data-theme="dark"] .user-name {
-  color: #f8fafc;
+:root[data-theme="dark"] .dropdown-item:hover {
+  background: rgba(229, 185, 93, 0.15);
+  color: var(--color-accent);
+}
+
+:root[data-theme="dark"] .dropdown-logout-btn {
+  color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .dropdown-logout-btn svg {
+  color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .dropdown-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
 }

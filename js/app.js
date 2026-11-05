@@ -775,6 +775,62 @@ class DreamHouseApp {
 
         let isRegisterMode = false;
 
+        // User dropdown toggle (Menu xổ xuống khi click vào Avatar hoặc Tên)
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const dropdownMenu = document.getElementById('user-dropdown-menu');
+
+        profileTrigger?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = !dropdownMenu.classList.contains('hidden');
+            dropdownMenu.classList.toggle('hidden', isOpen);
+            profileTrigger.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        // Click ra ngoài thì tự đóng dropdown
+        document.addEventListener('click', (e) => {
+            if (!dropdownMenu?.classList.contains('hidden') && !e.target.closest('#user-menu')) {
+                dropdownMenu?.classList.add('hidden');
+                profileTrigger?.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Click mục Yêu thích trong dropdown
+        document.getElementById('menu-favorites-link')?.addEventListener('click', () => {
+            dropdownMenu?.classList.add('hidden');
+            const favCheckbox = document.getElementById('filter-fav-only');
+            if (favCheckbox) {
+                favCheckbox.checked = true;
+                this.activeFilter.onlyFavorites = true;
+                this.renderGallery();
+            }
+        });
+
+        // Click Chỉnh sửa hồ sơ hoặc Cài đặt
+        document.getElementById('menu-edit-profile-btn')?.addEventListener('click', () => {
+            dropdownMenu?.classList.add('hidden');
+            const newName = prompt('Nhập họ tên mới của bạn:', this.currentProfile?.full_name || '');
+            if (newName && newName.trim() && this.currentUser) {
+                const client = this.getSupabase();
+                if (client) {
+                    client.from('profiles').update({ full_name: newName.trim() }).eq('id', this.currentUser.id)
+                        .then(({ error }) => {
+                            if (!error) {
+                                alert('Cập nhật họ tên thành công!');
+                                if (this.currentProfile) this.currentProfile.full_name = newName.trim();
+                                this.updateAuthUI();
+                            } else {
+                                alert('Lỗi: ' + error.message);
+                            }
+                        });
+                }
+            }
+        });
+
+        document.getElementById('menu-settings-btn')?.addEventListener('click', () => {
+            dropdownMenu?.classList.add('hidden');
+            alert('Hệ thống đang hoạt động tối ưu với Supabase và Three.js.');
+        });
+
         loginBtn?.addEventListener('click', () => {
             modal.classList.remove('hidden');
         });
@@ -843,7 +899,10 @@ class DreamHouseApp {
         const loginBtn = document.getElementById('btn-open-login');
         const userDropdown = document.getElementById('user-menu');
         const userNameSpan = document.getElementById('user-display-name');
-        const adminLink = document.getElementById('nav-admin-link');
+        const roleBadge = document.getElementById('dropdown-user-role');
+        const emailBadge = document.getElementById('dropdown-user-email');
+        const adminMenuLink = document.getElementById('menu-admin-link');
+        const addTemplateMenuLink = document.getElementById('menu-add-template-link');
 
         if (this.currentUser) {
             if (loginBtn) loginBtn.classList.add('hidden');
@@ -854,15 +913,16 @@ class DreamHouseApp {
                                 this.currentUser.email.split('@')[0];
             if (userNameSpan) userNameSpan.textContent = displayName;
 
-            // Hiển thị link Admin nếu role = 'admin'
-            if (adminLink) {
-                const isAdmin = this.currentProfile?.role === 'admin';
-                adminLink.classList.toggle('hidden', !isAdmin);
-            }
+            const isAdmin = this.currentProfile?.role === 'admin';
+            if (roleBadge) roleBadge.textContent = isAdmin ? 'Quản trị viên (Admin)' : 'Thành viên';
+            if (emailBadge) emailBadge.textContent = this.currentUser.email || '';
+
+            // Hiển thị các mục đặc quyền Admin trong Menu xổ xuống
+            if (adminMenuLink) adminMenuLink.classList.toggle('hidden', !isAdmin);
+            if (addTemplateMenuLink) addTemplateMenuLink.classList.toggle('hidden', !isAdmin);
         } else {
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (userDropdown) userDropdown.classList.add('hidden');
-            if (adminLink) adminLink.classList.add('hidden');
         }
     }
 }

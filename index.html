@@ -33,7 +33,6 @@
             <nav class="main-nav">
                 <a href="#gallery-section" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
                 <a href="#contact-section" class="nav-link" data-i18n="nav_contact">Liên hệ</a>
-                <a href="admin.html" id="nav-admin-link" class="nav-link admin-pill hidden" data-i18n="nav_admin">Quản trị</a>
             </nav>
 
             <div class="header-actions">
@@ -153,22 +152,53 @@
                     <strong>VI</strong> | EN
                 </button>
 
-                <!-- Auth Buttons -->
+                <!-- Auth Buttons & Modern Dropdown -->
                 <button id="btn-open-login" class="btn-auth-outline" data-i18n="nav_login">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     <span>Đăng nhập</span>
                 </button>
-                <div id="user-menu" class="user-menu hidden">
-                    <div class="user-profile-badge">
+                <div id="user-menu" class="user-menu-container hidden">
+                    <button type="button" id="user-profile-trigger" class="user-profile-trigger" aria-haspopup="true" aria-expanded="false" title="Menu tài khoản">
                         <span class="user-avatar-circle" aria-hidden="true">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         </span>
                         <span id="user-display-name" class="user-name">User</span>
-                    </div>
-                    <button id="btn-logout" class="btn-logout" data-i18n="nav_logout" title="Đăng xuất khỏi tài khoản">
-                        <span>Đăng xuất</span>
-                        <svg class="logout-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <svg class="chevron-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
+
+                    <!-- Dropdown Menu xổ xuống -->
+                    <div id="user-dropdown-menu" class="user-dropdown-menu hidden" role="menu">
+                        <div class="dropdown-header">
+                            <span class="dropdown-user-role" id="dropdown-user-role">Thành viên</span>
+                            <span class="dropdown-user-email" id="dropdown-user-email">email@example.com</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="admin.html" id="menu-admin-link" class="dropdown-item hidden" role="menuitem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            <span>Bảng quản trị Admin</span>
+                        </a>
+                        <a href="admin.html#panel-templates" id="menu-add-template-link" class="dropdown-item hidden" role="menuitem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            <span>Cấu hình thêm mẫu mới</span>
+                        </a>
+                        <a href="#gallery-section" id="menu-favorites-link" class="dropdown-item" role="menuitem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span>Mẫu nhà đã lưu yêu thích</span>
+                        </a>
+                        <button type="button" id="menu-edit-profile-btn" class="dropdown-item" role="menuitem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>Chỉnh sửa hồ sơ</span>
+                        </button>
+                        <button type="button" id="menu-settings-btn" class="dropdown-item" role="menuitem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            <span>Cài đặt hệ thống</span>
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button type="button" id="btn-logout" class="dropdown-item dropdown-logout-btn" role="menuitem">
+                            <svg class="logout-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            <span data-i18n="nav_logout">Đăng xuất</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
