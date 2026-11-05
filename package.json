@@ -5,12 +5,14 @@
   "scripts": {
     "config": "node generate-config.js",
     "dev": "node generate-config.js && npx serve -p 3000",
-    "start": "node generate-config.js && npx serve -p 3000"
+    "start": "node generate-config.js && npx serve -p 3000",
+    "audit:help": "echo Huong dan: AI se tu dong kich hoat skill tai .gemini/skills/security-audit khi kiem tra bao mat"
   },
   "keywords": [
     "architecture",
     "threejs",
-    "supabase"
+    "supabase",
+    "security-audit"
   ],
   "author": "Vo Quoc Viet",
   "license": "MIT"
