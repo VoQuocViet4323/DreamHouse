@@ -277,6 +277,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Thêm thuộc tính `autocomplete="off"` vào thẻ `<form id="auth-form">` trong [index.html](file:///d:/DreamHouse/index.html).
   - Tăng tham số cache-busting lên **`?v=3.0`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 18: Tách biệt và Đồng bộ Tuyệt đối Trạng thái Auth (Auth State Synchronization & Submit Guard)
+- [x] **Khắc phục triệt để lỗi nhập đúng mật khẩu ở form Đăng nhập nhưng lại báo sai/báo "Mật khẩu xác nhận không trùng khớp":**
+  - Nguyên nhân: Biến `isRegisterMode` trước đó là biến cục bộ (closure) trong `setupAuthModalEvents()`. Khi người dùng đăng xuất (`logout()`), code cập nhật giao diện thành Đăng nhập nhưng không cập nhật biến cờ `isRegisterMode`, dẫn đến khi submit form Đăng nhập, hệ thống vẫn lầm tưởng đang Đăng ký và gọi `registerWithUsername()`. Do ô Xác nhận mật khẩu đang ẩn và có giá trị rỗng nên phát sinh lỗi `Mật khẩu xác nhận không trùng khớp`.
+  - Chuyển `isAuthRegisterMode` thành thuộc tính của class `DreamHouseApp` (`this.isAuthRegisterMode`).
+  - Hợp nhất toàn bộ logic chuyển chế độ Auth thành một phương thức duy nhất [`setAuthMode(mode)`](file:///d:/DreamHouse/js/app.js) dùng chung cho: khởi tạo ban đầu, bấm nút Đăng nhập Header, bấm chuyển đổi qua lại, lắng nghe hash URL và hàm `logout()`.
+  - Tích hợp **chốt chặn kép (Double Guard Clause)** trong sự kiện submit form: Chỉ kích hoạt luồng Đăng ký khi `this.isAuthRegisterMode === true` ĐỒNG THỜI ô xác nhận mật khẩu đang thực sự hiển thị trên màn hình (`#auth-confirm-pass-group.style.display !== 'none'`). Nếu ô xác nhận mật khẩu đang ẩn, hệ thống đảm bảo 100% luôn chạy luồng Đăng nhập (`loginWithEmail`).
+  - Nâng tham số cache-busting lên **`?v=3.1`** trên toàn bộ `index.html` và `admin.html`.
+
+
 
 
 

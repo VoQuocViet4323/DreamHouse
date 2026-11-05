@@ -15,6 +15,7 @@ class DreamHouseApp {
             sort: 'default',
             onlyFavorites: false
         };
+        this.isAuthRegisterMode = false;
 
         this.init();
     }
@@ -479,65 +480,11 @@ class DreamHouseApp {
         // 2. Tự động chuyển ngay sang màn hình / trang login chuyên biệt
         const modal = document.getElementById('auth-modal');
         if (modal) {
-            const alertBox = document.getElementById('auth-alert');
-            if (alertBox) {
-                alertBox.className = 'auth-alert hidden';
-                alertBox.textContent = '';
-            }
-
-            // Đảm bảo ở chế độ Đăng nhập (Login mode)
-            const nameGroup = document.getElementById('auth-name-group');
-            if (nameGroup) nameGroup.style.display = 'none';
-
-            const confirmGroup = document.getElementById('auth-confirm-pass-group');
-            if (confirmGroup) confirmGroup.style.display = 'none';
-
-            const confirmInput = document.getElementById('auth-confirm-password');
-            if (confirmInput) {
-                confirmInput.value = '';
-                confirmInput.required = false;
-            }
-
-            const identifierLabel = document.getElementById('auth-identifier-label');
-            if (identifierLabel) {
-                identifierLabel.textContent = window.i18n ? window.i18n.t('auth_email') : 'Tên tài khoản hoặc Email';
-            }
-
-            const emailInput = document.getElementById('auth-email');
-            if (emailInput) {
-                emailInput.placeholder = window.i18n ? window.i18n.t('auth_login_placeholder') : 'Nhập tên tài khoản hoặc email...';
-            }
-
-            const forgotLink = document.getElementById('auth-forgot-password');
-            if (forgotLink) {
-                forgotLink.style.display = 'inline-block';
-            }
-
-            const modalTitle = document.getElementById('auth-modal-title');
-            if (modalTitle) modalTitle.textContent = window.i18n ? window.i18n.t('auth_title_login') : 'Log in';
-
-            const methodHint = document.getElementById('auth-method-hint');
-            if (methodHint) methodHint.textContent = window.i18n ? window.i18n.t('auth_email_hint') : 'Log in using username or email';
-
-            const submitBtn = document.getElementById('auth-submit-btn');
-            if (submitBtn) submitBtn.textContent = window.i18n ? window.i18n.t('auth_login_action') : 'Log In';
-
-            const switchLink = document.getElementById('auth-switch-mode');
-            if (switchLink) switchLink.textContent = window.i18n ? window.i18n.t('auth_no_acc') : 'Need to create an account? Sign Up';
-
-            // Xóa sạch toàn bộ các ô nhập dữ liệu cũ
-            const passInput = document.getElementById('auth-password');
-            if (passInput) passInput.value = '';
-            if (confirmInput) confirmInput.value = '';
-            if (emailInput) emailInput.value = '';
-
-            // Chỉ nạp lại tài khoản nếu ĐÃ ĐƯỢC LƯU trong localStorage
-            this.loadRememberedAccount();
-            const rememberedEmail = localStorage.getItem('dream_house_remember_email');
-
+            this.setAuthMode('login');
             modal.classList.remove('hidden');
             window.location.hash = 'login';
 
+            const rememberedEmail = localStorage.getItem('dream_house_remember_email');
             setTimeout(() => {
                 if (rememberedEmail) {
                     document.getElementById('auth-password')?.focus();
@@ -1100,8 +1047,6 @@ class DreamHouseApp {
         const switchModeLink = document.getElementById('auth-switch-mode');
         const forgotLink = document.getElementById('auth-forgot-password');
 
-        let isRegisterMode = false;
-
         // Tự động kiểm tra và điền tài khoản đã ghi nhớ (nếu có)
         this.loadRememberedAccount();
 
@@ -1246,130 +1191,11 @@ class DreamHouseApp {
             }
         });
 
-        const updateAuthFormMode = (registerMode) => {
-            isRegisterMode = registerMode;
-            const alertBox = document.getElementById('auth-alert');
-            if (alertBox) {
-                alertBox.className = 'auth-alert hidden';
-                alertBox.textContent = '';
-            }
-            const nameGroup = document.getElementById('auth-name-group');
-            if (nameGroup) nameGroup.style.display = isRegisterMode ? 'block' : 'none';
-
-            const confirmPassGroup = document.getElementById('auth-confirm-pass-group');
-            if (confirmPassGroup) confirmPassGroup.style.display = isRegisterMode ? 'block' : 'none';
-
-            const confirmPassInput = document.getElementById('auth-confirm-password');
-            if (confirmPassInput) {
-                confirmPassInput.required = isRegisterMode;
-                if (!isRegisterMode) confirmPassInput.value = '';
-            }
-
-            const identifierLabel = document.getElementById('auth-identifier-label');
-            const identifierInput = document.getElementById('auth-email');
-            if (identifierLabel) {
-                identifierLabel.setAttribute('data-i18n', isRegisterMode ? 'auth_username' : 'auth_email');
-                identifierLabel.textContent = window.i18n.t(isRegisterMode ? 'auth_username' : 'auth_email');
-            }
-            if (identifierInput) {
-                identifierInput.placeholder = window.i18n.t(isRegisterMode ? 'auth_username_placeholder' : 'auth_login_placeholder');
-            }
-
-            const forgotLink = document.getElementById('auth-forgot-password');
-            if (forgotLink) {
-                forgotLink.style.display = isRegisterMode ? 'none' : 'inline-block';
-            }
-
-            const titleEl = document.getElementById('auth-modal-title');
-            if (titleEl) {
-                titleEl.setAttribute('data-i18n', isRegisterMode ? 'auth_title_register' : 'auth_title_login');
-                titleEl.textContent = window.i18n.t(isRegisterMode ? 'auth_title_register' : 'auth_title_login');
-            }
-
-            const methodHint = document.getElementById('auth-method-hint');
-            if (methodHint) {
-                methodHint.setAttribute('data-i18n', isRegisterMode ? 'auth_email_hint_register' : 'auth_email_hint');
-                methodHint.textContent = window.i18n.t(
-                    isRegisterMode ? 'auth_email_hint_register' : 'auth_email_hint'
-                );
-            }
-
-            const submitBtn = document.getElementById('auth-submit-btn');
-            if (submitBtn) {
-                submitBtn.setAttribute('data-i18n', isRegisterMode ? 'auth_register_action' : 'auth_login_action');
-                submitBtn.textContent = window.i18n.t(
-                    isRegisterMode ? 'auth_register_action' : 'auth_login_action'
-                );
-            }
-
-            if (switchModeLink) {
-                switchModeLink.setAttribute('data-i18n', isRegisterMode ? 'auth_has_acc' : 'auth_no_acc');
-                switchModeLink.textContent = window.i18n.t(
-                    isRegisterMode ? 'auth_has_acc' : 'auth_no_acc'
-                );
-            }
-
-            const nameInput = document.getElementById('auth-name');
-            const passInput = document.getElementById('auth-password');
-            const rememberCheckbox = document.getElementById('auth-remember-me');
-            const rememberLabel = document.querySelector('.auth-remember-label');
-
-            if (rememberLabel) {
-                rememberLabel.style.display = isRegisterMode ? 'none' : 'inline-flex';
-            }
-
-            if (isRegisterMode) {
-                // KHI CHUYỂN SANG ĐĂNG KÝ: TUYỆT ĐỐI XÓA SẠCH TẤT CẢ CÁC TRƯỜNG NHẬP LIỆU
-                if (nameInput) nameInput.value = '';
-                if (identifierInput) {
-                    identifierInput.value = '';
-                    identifierInput.setAttribute('autocomplete', 'off');
-                }
-                if (passInput) {
-                    passInput.value = '';
-                    passInput.setAttribute('autocomplete', 'new-password');
-                }
-                if (confirmPassInput) {
-                    confirmPassInput.value = '';
-                    confirmPassInput.setAttribute('autocomplete', 'new-password');
-                }
-                if (rememberCheckbox) rememberCheckbox.checked = false;
-
-                // Cơ chế chống trình duyệt (Chrome/Edge) tự động điền mật khẩu / tài khoản đã lưu
-                setTimeout(() => {
-                    if (isRegisterMode) {
-                        if (nameInput) nameInput.value = '';
-                        if (identifierInput) identifierInput.value = '';
-                        if (passInput) passInput.value = '';
-                        if (confirmPassInput) confirmPassInput.value = '';
-                    }
-                }, 50);
-                setTimeout(() => {
-                    if (isRegisterMode) {
-                        if (nameInput) nameInput.value = '';
-                        if (identifierInput) identifierInput.value = '';
-                        if (passInput) passInput.value = '';
-                        if (confirmPassInput) confirmPassInput.value = '';
-                    }
-                }, 200);
-            } else {
-                // KHI QUAY LẠI ĐĂNG NHẬP: KHÔI PHỤC THUỘC TÍNH AUTOCOMPLETE VÀ NẠP TÀI KHOẢN GHI NHỚ NẾU CÓ
-                if (identifierInput) identifierInput.setAttribute('autocomplete', 'username');
-                if (passInput) passInput.setAttribute('autocomplete', 'current-password');
-                this.loadRememberedAccount();
-            }
-        };
-
-        // Mặc định ở chế độ Đăng nhập
-        updateAuthFormMode(false);
+        // Mặc định khởi tạo ở chế độ Đăng nhập
+        this.setAuthMode('login');
 
         loginBtn?.addEventListener('click', () => {
-            const alertBox = document.getElementById('auth-alert');
-            if (alertBox) {
-                alertBox.className = 'auth-alert hidden';
-                alertBox.textContent = '';
-            }
-            updateAuthFormMode(false);
+            this.setAuthMode('login');
             const passInput = document.getElementById('auth-password');
             if (passInput) passInput.value = '';
             const confirmInput = document.getElementById('auth-confirm-password');
@@ -1408,9 +1234,9 @@ class DreamHouseApp {
 
         switchModeLink?.addEventListener('click', (e) => {
             e.preventDefault();
-            const targetMode = !isRegisterMode;
-            updateAuthFormMode(targetMode);
-            window.location.hash = targetMode ? 'register' : 'login';
+            const targetMode = this.isAuthRegisterMode ? 'login' : 'register';
+            this.setAuthMode(targetMode);
+            window.location.hash = targetMode;
         });
 
         // Nút con mắt ẩn/hiện mật khẩu trong form Auth
@@ -1462,12 +1288,7 @@ class DreamHouseApp {
 
         // Kiểm tra mở Auth tự động nếu URL có hash #login hoặc #register
         if (window.location.hash === '#login' || window.location.hash === '#register') {
-            if (window.location.hash === '#register') {
-                updateAuthFormMode(true);
-            } else {
-                updateAuthFormMode(false);
-                this.loadRememberedAccount();
-            }
+            this.setAuthMode(window.location.hash === '#register' ? 'register' : 'login');
             modal?.classList.remove('hidden');
         }
 
@@ -1512,7 +1333,12 @@ class DreamHouseApp {
             const name = document.getElementById('auth-name')?.value.trim();
             const confirmPass = document.getElementById('auth-confirm-password')?.value;
 
-            if (isRegisterMode) {
+            // Chốt chặn kép: Chỉ xử lý đăng ký khi cờ isAuthRegisterMode là true VÀ nhóm xác nhận mật khẩu đang hiển thị trên giao diện
+            const confirmPassGroup = document.getElementById('auth-confirm-pass-group');
+            const isConfirmVisible = confirmPassGroup && confirmPassGroup.style.display !== 'none';
+            const isActuallyRegister = Boolean(this.isAuthRegisterMode && isConfirmVisible);
+
+            if (isActuallyRegister) {
                 this.registerWithUsername(identifier, pass, confirmPass, name);
             } else {
                 this.loginWithEmail(identifier, pass);
@@ -1555,6 +1381,116 @@ class DreamHouseApp {
         }
         if (window.location.hash === '#login' || window.location.hash === '#register') {
             history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    }
+
+    setAuthMode(mode) {
+        const isRegister = (mode === 'register');
+        this.isAuthRegisterMode = isRegister;
+
+        const alertBox = document.getElementById('auth-alert');
+        if (alertBox) {
+            alertBox.className = 'auth-alert hidden';
+            alertBox.textContent = '';
+        }
+
+        const nameGroup = document.getElementById('auth-name-group');
+        if (nameGroup) nameGroup.style.display = isRegister ? 'block' : 'none';
+
+        const confirmPassGroup = document.getElementById('auth-confirm-pass-group');
+        if (confirmPassGroup) confirmPassGroup.style.display = isRegister ? 'block' : 'none';
+
+        const confirmPassInput = document.getElementById('auth-confirm-password');
+        if (confirmPassInput) {
+            confirmPassInput.required = isRegister;
+            confirmPassInput.value = '';
+        }
+
+        const identifierLabel = document.getElementById('auth-identifier-label');
+        const identifierInput = document.getElementById('auth-email');
+        if (identifierLabel) {
+            identifierLabel.setAttribute('data-i18n', isRegister ? 'auth_username' : 'auth_email');
+            identifierLabel.textContent = window.i18n ? window.i18n.t(isRegister ? 'auth_username' : 'auth_email') : (isRegister ? 'Tên tài khoản (Username)' : 'Tên tài khoản hoặc Email');
+        }
+        if (identifierInput) {
+            identifierInput.placeholder = window.i18n ? window.i18n.t(isRegister ? 'auth_username_placeholder' : 'auth_login_placeholder') : (isRegister ? 'Ví dụ: quocviet99' : 'Nhập tên tài khoản hoặc email...');
+        }
+
+        const forgotLink = document.getElementById('auth-forgot-password');
+        if (forgotLink) {
+            forgotLink.style.display = isRegister ? 'none' : 'inline-block';
+        }
+
+        const titleEl = document.getElementById('auth-modal-title');
+        if (titleEl) {
+            titleEl.setAttribute('data-i18n', isRegister ? 'auth_title_register' : 'auth_title_login');
+            titleEl.textContent = window.i18n ? window.i18n.t(isRegister ? 'auth_title_register' : 'auth_title_login') : (isRegister ? 'Sign Up' : 'Log in');
+        }
+
+        const methodHint = document.getElementById('auth-method-hint');
+        if (methodHint) {
+            methodHint.setAttribute('data-i18n', isRegister ? 'auth_email_hint_register' : 'auth_email_hint');
+            methodHint.textContent = window.i18n ? window.i18n.t(isRegister ? 'auth_email_hint_register' : 'auth_email_hint') : (isRegister ? 'Đăng ký tài khoản bằng Username' : 'Đăng nhập bằng tên tài khoản hoặc email');
+        }
+
+        const submitBtn = document.getElementById('auth-submit-btn');
+        if (submitBtn) {
+            submitBtn.setAttribute('data-i18n', isRegister ? 'auth_register_action' : 'auth_login_action');
+            submitBtn.textContent = window.i18n ? window.i18n.t(isRegister ? 'auth_register_action' : 'auth_login_action') : (isRegister ? 'Đăng ký' : 'Đăng nhập');
+        }
+
+        const switchModeLink = document.getElementById('auth-switch-mode');
+        if (switchModeLink) {
+            switchModeLink.setAttribute('data-i18n', isRegister ? 'auth_has_acc' : 'auth_no_acc');
+            switchModeLink.textContent = window.i18n ? window.i18n.t(isRegister ? 'auth_has_acc' : 'auth_no_acc') : (isRegister ? 'Đã có tài khoản? Đăng nhập' : 'Chưa có tài khoản? Đăng ký ngay');
+        }
+
+        const nameInput = document.getElementById('auth-name');
+        const passInput = document.getElementById('auth-password');
+        const rememberCheckbox = document.getElementById('auth-remember-me');
+        const rememberLabel = document.querySelector('.auth-remember-label');
+
+        if (rememberLabel) {
+            rememberLabel.style.display = isRegister ? 'none' : 'inline-flex';
+        }
+
+        if (isRegister) {
+            if (nameInput) nameInput.value = '';
+            if (identifierInput) {
+                identifierInput.value = '';
+                identifierInput.setAttribute('autocomplete', 'off');
+            }
+            if (passInput) {
+                passInput.value = '';
+                passInput.setAttribute('autocomplete', 'new-password');
+            }
+            if (confirmPassInput) {
+                confirmPassInput.value = '';
+                confirmPassInput.setAttribute('autocomplete', 'new-password');
+            }
+            if (rememberCheckbox) rememberCheckbox.checked = false;
+
+            // Cơ chế chống trình duyệt tự động điền trễ
+            setTimeout(() => {
+                if (this.isAuthRegisterMode) {
+                    if (nameInput) nameInput.value = '';
+                    if (identifierInput) identifierInput.value = '';
+                    if (passInput) passInput.value = '';
+                    if (confirmPassInput) confirmPassInput.value = '';
+                }
+            }, 50);
+            setTimeout(() => {
+                if (this.isAuthRegisterMode) {
+                    if (nameInput) nameInput.value = '';
+                    if (identifierInput) identifierInput.value = '';
+                    if (passInput) passInput.value = '';
+                    if (confirmPassInput) confirmPassInput.value = '';
+                }
+            }, 200);
+        } else {
+            if (identifierInput) identifierInput.setAttribute('autocomplete', 'username');
+            if (passInput) passInput.setAttribute('autocomplete', 'current-password');
+            this.loadRememberedAccount();
         }
     }
 

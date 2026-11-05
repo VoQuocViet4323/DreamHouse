@@ -234,6 +234,32 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 16: Nhập đúng mật khẩu ở form Đăng nhập nhưng hệ thống lại báo "Đăng ký không thành công: Mật khẩu xác nhận không trùng khớp"
+- **Hiện tượng:** Người dùng đang ở màn hình Đăng nhập (nút bấm màu vàng hiển thị chữ "Đăng nhập"), nhập đúng tên tài khoản và mật khẩu, nhưng khi ấn nút gửi thì màn hình báo lỗi *"Mật khẩu xác nhận không trùng khớp. Vui lòng kiểm tra lại!"* và Toast đỏ *"Đăng ký không thành công"*.
+- **Nguyên nhân cốt lõi:**
+  1. Biến cờ `isRegisterMode` được khai báo dạng biến đóng cục bộ (`let isRegisterMode = false`) bên trong hàm `setupAuthModalEvents()`.
+  2. Khi người dùng thực hiện đăng xuất (`logout()`), hàm này trực tiếp can thiệp DOM để giao diện trông giống form Đăng nhập, nhưng **không cập nhật biến `isRegisterMode` về `false`**.
+  3. Khi người dùng nhấn nút Submit, sự kiện submit kiểm tra `if (isRegisterMode)` vẫn nhận giá trị `true` nên đã gọi hàm `registerWithUsername(...)` thay vì `loginWithEmail(...)`.
+  4. Vì form đang ở giao diện Đăng nhập, ô `#auth-confirm-password` đang ẩn và có giá trị chuỗi rỗng `""`. Điều kiện `password !== confirmPassword` bị kích hoạt (`"111111" !== ""`), khiến hệ thống báo lỗi không trùng khớp mật khẩu xác nhận.
+- **Cách khắc phục dứt điểm:**
+  1. Chuyển `isAuthRegisterMode` thành thuộc tính toàn cục gắn trên instance của class `DreamHouseApp` (`this.isAuthRegisterMode`).
+  2. Khởi tạo phương thức chuẩn hóa [`setAuthMode(mode)`](file:///d:/DreamHouse/js/app.js) để quản lý tập trung 100% việc đổi qua lại giữa `login` và `register`. Bất kỳ khi nào mở modal (kể cả trong `logout()`), đều gọi qua phương thức này để đồng bộ tuyệt đối giữa giao diện và cờ logic.
+  3. Thêm chốt chặn kép (Double Guard Clause) vào sự kiện `form.addEventListener('submit')`:
+     ```javascript
+     const confirmPassGroup = document.getElementById('auth-confirm-pass-group');
+     const isConfirmVisible = confirmPassGroup && confirmPassGroup.style.display !== 'none';
+     const isActuallyRegister = Boolean(this.isAuthRegisterMode && isConfirmVisible);
+     if (isActuallyRegister) {
+         this.registerWithUsername(...);
+     } else {
+         this.loginWithEmail(...);
+     }
+     ```
+     Nhờ chốt chặn này, nếu ô xác nhận mật khẩu không hiển thị trên màn hình, hệ thống đảm bảo 100% sẽ chạy luồng Đăng nhập (`loginWithEmail`), triệt tiêu hoàn toàn lỗi chạy sai luồng.
+  4. Nâng tham số cache-busting lên `?v=3.1` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
