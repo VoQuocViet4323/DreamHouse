@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Trị - Nhà Mơ Ước</title>
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=2.1">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=2.0"></script>
-    <script src="js/i18n.js?v=2.0"></script>
-    <script src="js/toast.js?v=2.0"></script>
+    <script src="js/config.js?v=2.1"></script>
+    <script src="js/i18n.js?v=2.1"></script>
+    <script src="js/toast.js?v=2.1"></script>
     <style>
         .admin-page { padding: 40px 0; }
         .admin-nav-tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--color-border); }
@@ -346,7 +346,13 @@
 
             // Xoá mẫu nhà
             window.deleteTemplate = async function(id) {
-                if (!confirm('Bạn có chắc chắn muốn xoá mẫu nhà này?')) return;
+                const confirmed = await window.confirmModal('Bạn có chắc chắn muốn xoá vĩnh viễn mẫu nhà này khỏi hệ thống? Dữ liệu đã xoá sẽ không thể khôi phục.', {
+                    title: 'Xác nhận xoá mẫu nhà',
+                    confirmText: 'Xoá vĩnh viễn',
+                    cancelText: 'Huỷ bỏ',
+                    type: 'danger'
+                });
+                if (!confirmed) return;
                 const { error } = await client.from('templates').delete().eq('id', id);
                 if (error) {
                     if (window.toast) window.toast.error('Lỗi: ' + error.message);

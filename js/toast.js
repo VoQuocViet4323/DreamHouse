@@ -141,20 +141,127 @@
         return errMsg;
     }
 
-    // 5. Export ra window toàn cục
+    // 5. Hệ thống Confirm Modal cao cấp (Animate-UI Custom Confirm Dialog)
+    function confirmModal(message, options = {}) {
+        return new Promise((resolve) => {
+            const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
+                ? window.i18n.getLang() === 'vi' 
+                : true;
+
+            const {
+                title = isVi ? 'Xác nhận thao tác' : 'Confirm Action',
+                confirmText = isVi ? 'Đồng ý' : 'Confirm',
+                cancelText = isVi ? 'Huỷ bỏ' : 'Cancel',
+                type = 'danger' // 'danger' | 'warning' | 'info'
+            } = options;
+
+            const overlay = document.createElement('div');
+            overlay.className = 'confirm-modal-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+
+            const iconMap = {
+                danger: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                warning: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+                info: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
+            };
+
+            const headerIcon = iconMap[type] || iconMap.danger;
+
+            overlay.innerHTML = `
+                <div class="confirm-modal-card confirm-modal-${type}">
+                    <div class="confirm-modal-header">
+                        <div class="confirm-icon-box confirm-icon-${type}">
+                            ${headerIcon}
+                        </div>
+                        <div class="confirm-header-text">
+                            <h3 class="confirm-title">${title}</h3>
+                        </div>
+                        <button type="button" class="confirm-close-btn" aria-label="Đóng hộp thoại">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    <div class="confirm-modal-body">
+                        <p class="confirm-message">${message}</p>
+                    </div>
+                    <div class="confirm-modal-actions">
+                        <button type="button" class="btn-confirm-cancel">${cancelText}</button>
+                        <button type="button" class="btn-confirm-submit btn-confirm-${type}">${confirmText}</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            requestAnimationFrame(() => {
+                overlay.classList.add('confirm-modal-active');
+            });
+
+            let isHandled = false;
+            function cleanup(result) {
+                if (isHandled) return;
+                isHandled = true;
+                overlay.classList.remove('confirm-modal-active');
+                overlay.classList.add('confirm-modal-closing');
+                document.removeEventListener('keydown', handleKeyDown);
+                setTimeout(() => {
+                    if (overlay.parentElement) overlay.remove();
+                }, 260);
+                resolve(result);
+            }
+
+            function handleKeyDown(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cleanup(false);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    cleanup(true);
+                }
+            }
+
+            document.addEventListener('keydown', handleKeyDown);
+
+            let isMouseDownOnBackdrop = false;
+            overlay.addEventListener('mousedown', (e) => {
+                isMouseDownOnBackdrop = (e.target === overlay);
+            });
+            overlay.addEventListener('click', (e) => {
+                if (isMouseDownOnBackdrop && e.target === overlay) {
+                    cleanup(false);
+                }
+            });
+
+            const cancelBtn = overlay.querySelector('.btn-confirm-cancel');
+            cancelBtn?.addEventListener('click', () => cleanup(false));
+
+            const closeBtn = overlay.querySelector('.confirm-close-btn');
+            closeBtn?.addEventListener('click', () => cleanup(false));
+
+            const submitBtn = overlay.querySelector('.btn-confirm-submit');
+            submitBtn?.addEventListener('click', () => cleanup(true));
+
+            submitBtn?.focus();
+        });
+    }
+
+    // 6. Export ra window toàn cục
     window.showToast = showToast;
+    window.confirmModal = confirmModal;
     window.translateAuthError = translateAuthError;
     window.toast = {
         success: (msg, dur, title) => showToast(msg, 'success', dur, title),
         error: (msg, dur, title) => showToast(msg, 'error', dur, title),
         warning: (msg, dur, title) => showToast(msg, 'warning', dur, title),
-        info: (msg, dur, title) => showToast(msg, 'info', dur, title)
+        info: (msg, dur, title) => showToast(msg, 'info', dur, title),
+        confirm: confirmModal
     };
 
-    // 6. Ghi đè window.alert để triệt để loại bỏ popup mặc định của browser
+    // 7. Ghi đè window.alert để triệt để loại bỏ popup mặc định của browser
     window.alert = function(msg) {
         window.toast.info(msg);
     };
 
-    console.log('✅ Hệ thống Toast Notification (Animate-UI) đã sẵn sàng.');
+    console.log('✅ Hệ thống Toast & Confirm Modal (Animate-UI) đã sẵn sàng.');
 })();
+

@@ -91,6 +91,18 @@ class DreamHouseApp {
 
         this.renderGallery();
         this.updateDetailFavButton();
+
+        // Thông báo Toast phong cách Animate-UI đồng bộ
+        if (window.toast) {
+            const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
+                ? window.i18n.getLang() === 'vi' 
+                : true;
+            if (!isFav) {
+                window.toast.success(isVi ? 'Đã lưu mẫu nhà vào danh sách yêu thích!' : 'Added to your favorites!', 3000);
+            } else {
+                window.toast.info(isVi ? 'Đã gỡ mẫu nhà khỏi danh sách yêu thích.' : 'Removed from your favorites.', 3000);
+            }
+        }
     }
 
     async syncFavoritesWithSupabase() {
@@ -281,6 +293,12 @@ class DreamHouseApp {
         this.currentUser = null;
         this.currentProfile = null;
         this.updateAuthUI();
+        if (window.toast) {
+            const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
+                ? window.i18n.getLang() === 'vi' 
+                : true;
+            window.toast.info(isVi ? 'Đã đăng xuất tài khoản thành công.' : 'Logged out successfully.', 3500);
+        }
     }
 
     // 4. NẠP DỮ LIỆU TEMPLATES (TỪ SUPABASE HOẶC FALLBACK DỮ LIỆU BAN ĐẦU)
