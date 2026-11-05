@@ -79,3 +79,4 @@ window.APP_CONFIG = {
 
 fs.writeFileSync(configJsPath, newConfigContent, 'utf8');
 console.log('✅ Đã đồng bộ cấu hình từ .env vào js/config.js thành công!');
+
