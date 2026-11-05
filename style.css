@@ -1395,3 +1395,54 @@ body.dark-theme {
     transition-duration: 0.001ms !important;
   }
 }
+:root[data-theme="dark"] .contact-section {
+  background: rgba(14, 17, 26, 0.85);
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="dark"] .channel-btn {
+  background: #151824;
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="dark"] .channel-btn:hover {
+  background: #1c2030;
+  border-color: var(--color-accent);
+}
+
+:root[data-theme="dark"] .selected-model-banner {
+  background: #1b1915;
+  border-color: var(--color-accent);
+  color: #f1f5f9;
+}
+
+:root[data-theme="dark"] .lang-switch-btn {
+  background: #151824;
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme="dark"] .btn-auth-outline {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #f1f5f9;
+}
+
+:root[data-theme="dark"] .btn-auth-outline:hover {
+  background: #ffffff;
+  color: #090a0f;
+}
+
+:root[data-theme="dark"] .nav-link {
+  color: #94a3b8;
+}
+
+:root[data-theme="dark"] .nav-link:hover {
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .brand-title {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
