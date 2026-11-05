@@ -1,0 +1,14 @@
+# Logs & cache
+.DS_Store
+Thumbs.db
+node_modules/
+npm-debug.log*
+
+# Environment & credentials
+.env
+.env.local
+.env.*.local
+
+# Temporary / Scratch
+scratch/
+tmp/

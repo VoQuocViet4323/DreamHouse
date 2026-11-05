@@ -1,0 +1,99 @@
+# NHÀ MƠ ƯỚC (DREAM HOUSE) - KIẾN TRÚC & XÂY DỰNG
+
+> Website trưng bày thiết kế kiến trúc nhà ở cao cấp, tích hợp mô hình 3D tương tác thời gian thực, song ngữ Việt - Anh, kết nối dữ liệu đám mây Supabase (PostgreSQL + Auth + Storage).
+
+---
+
+## 🌟 TÍNH NĂNG NỔI BẬT
+
+1. **Bộ sưu tập thiết kế đa dạng:**
+   - Phân loại rõ ràng: Nhà phố, Biệt thự vườn, Biệt thự tân cổ điển, Nhà cấp 4 mái Nhật / mái Thái.
+   - Bộ lọc thông minh: Lọc theo loại hình nhà, tìm kiếm từ khoá tức thì, sắp xếp theo chi phí / diện tích sàn, lọc nhanh các mẫu đã đánh dấu yêu thích.
+
+2. **Panel chi tiết kiến trúc chuyên sâu:**
+   - **Ảnh thiết kế & phối cảnh thực tế:** Mặt đứng, ngoại thất sân vườn sắc nét.
+   - **Mô hình 3D tương tác thực tế:** Xoay 360 độ bằng chuột hoặc cảm ứng trên điện thoại, con lăn thu phóng, các nút chuyển nhanh góc máy (Mặt tiền, Góc bên hông, Từ trên cao, Góc chuẩn).
+   - **Cơ chế 3D kép thông minh:** Tự động nạp file `.glb` nếu có; nếu chưa có file 3D, hệ thống tự động sinh khối kiến trúc theo đúng số đo (rộng × sâu × số tầng × kiểu mái × ban công).
+
+3. **Song ngữ Việt - Anh (VI | EN):**
+   - Chuyển đổi tức thì tại thanh điều hướng mà không cần tải lại trang.
+   - Nhớ lựa chọn của người dùng vào `localStorage`, tự nhận diện theo ngôn ngữ trình duyệt.
+   - Tự động chuẩn hoá đơn vị tiền tệ dự toán (Bản tiếng Việt: "1.85 tỷ VNĐ", "850 triệu VNĐ"; Bản tiếng Anh: "≈ 1.85 billion VND").
+
+4. **Xác thực & Bảo mật Supabase:**
+   - Đăng nhập/Đăng ký qua Email + Mật khẩu (có tính năng khôi phục mật khẩu).
+   - Đăng nhập 1-chạm với Google OAuth.
+   - Tự động đồng bộ danh sách mẫu yêu thích từ trình duyệt vào tài khoản khi người dùng đăng nhập.
+   - Phân quyền Quản trị viên (Admin) chặt chẽ bằng PostgreSQL Row Level Security (RLS).
+
+5. **Kênh liên hệ đa dạng & Form tư vấn:**
+   - Tích hợp Zalo, Hotline, Facebook Messenger và Email.
+   - Nút "Nhận báo giá mẫu này" tự động đính kèm thông tin mẫu nhà đang xem vào nội dung liên hệ.
+
+---
+
+## 📂 CẤU TRÚC THƯ MỤC DỰ ÁN
+
+```text
+e:\Dream-house\
+├── index.html               # Trang chủ chính: Hero, Thư viện, Modal chi tiết, Modal Auth, Form liên hệ
+├── admin.html               # Trang quản trị: Thêm/Sửa/Xoá mẫu nhà, Upload Storage, Xử lý Inquiry
+├── style.css                # CSS giao diện tinh tế, phong cách Editorial Minimalist, Responsive
+├── js\
+│   ├── config.js            # Cấu hình Supabase (URL, anon key) & Thông tin liên hệ
+│   ├── i18n.js              # Bộ từ điển song ngữ Việt - Anh & Hàm định dạng tiền tệ
+│   ├── viewer3d.js          # Bộ dựng Three.js: Orbiting, ánh sáng, nạp .glb hoặc dựng procedural
+│   └── app.js               # Logic điều phối giao diện, Auth, lọc dữ liệu và tương tác người dùng
+├── supabase\
+│   ├── 01_schema.sql        # Khởi tạo các bảng (profiles, templates, favorites, inquiries...) & Triggers
+│   ├── 02_security.sql      # Cấu hình Row Level Security (RLS) & hàm is_admin()
+│   ├── 03_storage.sql       # Khởi tạo Storage buckets (template-images, template-models) & Policies
+│   └── 04_sample_data.sql   # Dữ liệu ban đầu (6 mẫu nhà thực tế)
+├── memories.md              # Bối cảnh, quyết định thiết kế cốt lõi và quy ước dự án
+├── README.md                # Tài liệu tổng quan và hướng dẫn sử dụng
+├── AI_Config.md             # Hướng dẫn cấu hình chi tiết từng bước cho người mới và AI
+└── AI_Debug.md              # Cẩm nang chẩn đoán & xử lý các lỗi thường gặp
+```
+
+---
+
+## 🚀 HƯỚNG DẪN CÀI ĐẶT & CHẠY DỰ ÁN
+
+### Bước 1: Khởi tạo Cơ sở dữ liệu trên Supabase
+1. Đăng nhập vào [Supabase Dashboard](https://supabase.com).
+2. Tạo một Project mới (đặt tên ví dụ: `dream-house`).
+3. Mở tab **SQL Editor** trong thanh menu bên trái.
+4. Chạy tuần tự các file SQL theo đúng thứ tự số:
+   - Chạy `supabase/01_schema.sql` (Tạo bảng và trigger user profile).
+   - Chạy `supabase/02_security.sql` (Cài đặt hàm `is_admin` và các chính sách bảo mật RLS).
+   - Chạy `supabase/03_storage.sql` (Tạo các bucket lưu ảnh và mô hình 3D).
+   - Chạy `supabase/04_sample_data.sql` (Nạp 6 mẫu nhà ban đầu).
+
+### Bước 2: Cấu hình mã nguồn Web
+1. Mở file [js/config.js](file:///e:/Dream-house/js/config.js).
+2. Lấy **Project URL** và **anon public key** tại mục **Project Settings > API** trên Supabase.
+3. Thay thế vào:
+   ```javascript
+   const SUPABASE_CONFIG = {
+       url: 'https://xyzcompany.supabase.co',
+       anonKey: 'eyJhbGciOiJIUzI1Ni...'
+   };
+   ```
+
+### Bước 3: Chạy thử trên máy tính
+Vì dự án dùng Three.js và Supabase JS qua CDN, bạn có thể chạy bằng bất kỳ HTTP Server tĩnh nào:
+- Dùng VS Code Extension: **Live Server** (Click chuột phải vào `index.html` > Open with Live Server).
+- Hoặc dùng Python:
+  ```powershell
+  python -m http.server 3000
+  ```
+  Truy cập: `http://localhost:3000`
+
+---
+
+## 🔒 THÔNG TIN BẢN QUYỀN & LIÊN HỆ
+- **Đại diện kỹ thuật & Kiến trúc:** Võ Quốc Việt
+- **Hotline / Zalo:** 0367020403
+- **Email:** voviet4323@gmail.com
+- **Facebook cá nhân:** [facebook.com/quocviet43](https://www.facebook.com/quocviet43)
+

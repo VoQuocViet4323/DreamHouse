@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi" id="html-root">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhà Mơ Ước - Kiến Trúc & Xây Dựng</title>
+    <!-- Google Fonts: Inter & Playfair Display hỗ trợ tiếng Việt đầy đủ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Supabase JS Client & Three.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- Các module JavaScript -->
+    <script src="js/config.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/viewer3d.js"></script>
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+    <!-- 1. THANH ĐIỀU HƯỚNG TỐI GIẢN (NAVBAR) -->
+    <header class="site-header">
+        <div class="header-inner container">
+            <a href="index.html" class="brand">
+                <span class="brand-title" data-i18n="site_name">Nhà Mơ Ước</span>
+                <span class="brand-sub">Architectural Design</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="#gallery-section" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
+                <a href="#contact-section" class="nav-link" data-i18n="nav_contact">Liên hệ</a>
+                <a href="admin.html" id="nav-admin-link" class="nav-link admin-pill hidden" data-i18n="nav_admin">Quản trị</a>
+            </nav>
+
+            <div class="header-actions">
+                <!-- Nút chuyển ngôn ngữ VI | EN -->
+                <button id="lang-toggle" class="lang-switch-btn" title="Đổi ngôn ngữ / Switch Language">
+                    <strong>VI</strong> | EN
+                </button>
+
+                <!-- Auth Buttons -->
+                <button id="btn-open-login" class="btn-auth-outline" data-i18n="nav_login">Đăng nhập</button>
+                <div id="user-menu" class="user-menu hidden">
+                    <span id="user-display-name" class="user-name"></span>
+                    <button id="btn-logout" class="btn-logout" data-i18n="nav_logout">Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. KHU VỰC HERO ĐẶC TẢ BIÊN TẬP (EDITORIAL HERO) -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <p class="hero-tagline" data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</p>
+            <h1 class="hero-headline" data-i18n="hero_title">Không gian sống lý tưởng trong tầm tay bạn</h1>
+            <p class="hero-description" data-i18n="hero_sub">
+                Khám phá bộ sưu tập mẫu nhà phố, biệt thự và nhà cấp 4 hiện đại cùng mô hình 3D tương tác thực tế.
+            </p>
+            <div class="hero-cta-group">
+                <a href="#gallery-section" class="btn-primary" data-i18n="hero_cta">Khám phá mẫu nhà ↓</a>
+                <a href="#contact-section" class="btn-secondary" data-i18n="nav_contact">Nhận tư vấn ngay</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. THƯ VIỆN MẪU NHÀ & BỘ LỌC (GALLERY SECTION) -->
+    <main id="gallery-section" class="gallery-section container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title" data-i18n="nav_gallery">Thư viện mẫu</h2>
+                <p class="section-sub">Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.</p>
+            </div>
+
+            <!-- Bộ lọc và Tìm kiếm -->
+            <div class="filter-controls">
+                <div class="filter-search-box">
+                    <input type="text" id="filter-search" data-i18n="filter_search_placeholder" placeholder="Tìm kiếm mẫu nhà, phong cách..." />
+                </div>
+                <div class="filter-dropdowns">
+                    <select id="filter-type">
+                        <option value="all" data-i18n="filter_all_types">Tất cả loại nhà</option>
+                        <option value="nha-pho" data-i18n="filter_townhouse">Nhà phố</option>
+                        <option value="biet-thu" data-i18n="filter_villa">Biệt thự</option>
+                        <option value="nha-cap-4" data-i18n="filter_level4">Nhà cấp 4</option>
+                    </select>
+
+                    <select id="filter-sort">
+                        <option value="default" data-i18n="filter_sort_default">Mặc định sắp xếp</option>
+                        <option value="price_asc" data-i18n="filter_sort_price_asc">Ngân sách: Thấp đến Cao</option>
+                        <option value="price_desc" data-i18n="filter_sort_price_desc">Ngân sách: Cao đến Thấp</option>
+                        <option value="area_desc" data-i18n="filter_sort_area_desc">Diện tích lớn nhất</option>
+                    </select>
+                </div>
+                <label class="filter-fav-toggle">
+                    <input type="checkbox" id="filter-fav-only" />
+                    <span data-i18n="filter_only_favorites">Chỉ hiện mục yêu thích</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Lưới thẻ mẫu nhà -->
+        <div id="gallery" class="house-grid"></div>
+    </main>
+
+    <!-- 4. MODAL PANEL CHI TIẾT MẪU NHÀ (PHOTO + 3D + THÔNG SỐ) -->
+    <div id="detail-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+        <div class="modal-window">
+            <button id="close-detail-modal" class="modal-close" aria-label="Đóng panel">✕</button>
+
+            <div class="detail-grid">
+                <!-- Cột bên trái: Ảnh phối cảnh thiết kế -->
+                <div class="detail-visual-col">
+                    <div class="media-box photo-box">
+                        <span class="media-badge" data-i18n="detail_tab_photo">Ảnh thiết kế</span>
+                        <img id="detail-photo" src="" alt="House Design" />
+                    </div>
+
+                    <!-- Cột 3D Viewer tương tác -->
+                    <div class="media-box viewer-box">
+                        <div class="viewer-header">
+                            <span class="media-badge" data-i18n="detail_tab_3d">Mô hình 3D tương tác</span>
+                            <div class="camera-presets">
+                                <button data-cam-preset="front" data-i18n="detail_cam_front">Mặt tiền</button>
+                                <button data-cam-preset="side" data-i18n="detail_cam_side">Góc bên</button>
+                                <button data-cam-preset="top" data-i18n="detail_cam_top">Trên cao</button>
+                                <button data-cam-preset="reset" data-i18n="detail_cam_reset">Gốc</button>
+                            </div>
+                        </div>
+                        <div id="threejs-canvas-wrapper" class="threejs-canvas"></div>
+                        <div class="viewer-footer">
+                            <span class="hint" data-i18n="detail_3d_hint">Kéo chuột/chạm để xoay • Cuộn để thu phóng</span>
+                            <span id="viewer-status-text" class="status"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột bên phải: Thông số, Dự toán, Mô tả và Kêu gọi hành động -->
+                <div class="detail-info-col">
+                    <div class="detail-header-block">
+                        <h2 id="detail-title" class="detail-title">Tên Mẫu Nhà</h2>
+                        <div class="detail-price-badge">
+                            <span data-i18n="spec_estimate">Dự toán tham khảo</span>:
+                            <strong id="detail-spec-price">0 VNĐ</strong>
+                        </div>
+                    </div>
+
+                    <div class="specs-table">
+                        <div class="spec-row">
+                            <span class="spec-name" data-i18n="spec_size">Kích thước</span>
+                            <strong class="spec-val" id="detail-spec-size">-</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-name" data-i18n="spec_floors">Số tầng</span>
+                            <strong class="spec-val" id="detail-spec-floors">-</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-name" data-i18n="spec_gfa">Diện tích sàn</span>
+                            <strong class="spec-val" id="detail-spec-gfa">-</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-name" data-i18n="spec_roof">Kiểu mái</span>
+                            <strong class="spec-val" id="detail-spec-roof">-</strong>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-name" data-i18n="spec_balcony">Ban công</span>
+                            <strong class="spec-val" id="detail-spec-balcony">-</strong>
+                        </div>
+                        <div class="spec-row full-width">
+                            <span class="spec-name" data-i18n="spec_rooms">Công năng bố trí</span>
+                            <strong class="spec-val" id="detail-spec-rooms">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="detail-desc-block">
+                        <p id="detail-desc" class="desc-text"></p>
+                    </div>
+
+                    <div class="detail-actions">
+                        <button id="detail-inquire-btn" class="btn-primary full-btn" data-i18n="btn_inquire_this">
+                            Nhận báo giá mẫu này →
+                        </button>
+                        <button id="detail-fav-btn" class="btn-outline-fav" data-i18n="btn_favorite_add">
+                            ♡ Lưu vào yêu thích
+                        </button>
+                    </div>
+
+                    <div class="detail-nav-footer">
+                        <button id="detail-prev-btn" class="btn-text">← <span data-i18n="btn_prev">Mẫu trước</span></button>
+                        <button id="detail-next-btn" class="btn-text"><span data-i18n="btn_next">Mẫu tiếp theo</span> →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. PHẦN LIÊN HỆ & FORM TƯ VẤN BÁO GIÁ (CONTACT SECTION) -->
+    <section id="contact-section" class="contact-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="section-title" data-i18n="contact_section_title">Liên Hệ Tư Vấn & Nhận Dự Toán</h2>
+                <p class="section-sub" data-i18n="contact_section_sub">Đội ngũ kiến trúc sư và kỹ sư sẵn sàng hỗ trợ bạn 24/7.</p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Kênh liên hệ trực tiếp -->
+                <div class="contact-card direct-channels">
+                    <h3 data-i18n="contact_direct_title">Kết nối trực tiếp</h3>
+                    <p class="note">Thông tin liên hệ trực tiếp của phụ trách dự án Võ Quốc Việt:</p>
+
+                    <div class="channel-list">
+                        <a href="https://zalo.me/0367020403" target="_blank" rel="noopener" class="channel-btn btn-zalo">
+                            <span class="icon">💬</span>
+                            <div>
+                                <strong data-i18n="contact_btn_zalo">Nhắn Zalo (0367020403)</strong>
+                                <small>Phản hồi nhanh trong 15 phút</small>
+                            </div>
+                        </a>
+                        <a href="tel:0367020403" class="channel-btn btn-call">
+                            <span class="icon">📞</span>
+                            <div>
+                                <strong data-i18n="contact_btn_call">Hotline: 0367020403</strong>
+                                <small>Tư vấn kỹ thuật xây dựng</small>
+                            </div>
+                        </a>
+                        <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener" class="channel-btn btn-fb">
+                            <span class="icon">🌐</span>
+                            <div>
+                                <strong data-i18n="contact_btn_fb">Facebook Võ Quốc Việt</strong>
+                                <small>facebook.com/quocviet43</small>
+                            </div>
+                        </a>
+                        <a href="mailto:voviet4323@gmail.com" class="channel-btn btn-mail">
+                            <span class="icon">✉️</span>
+                            <div>
+                                <strong data-i18n="contact_btn_email">Email: voviet4323@gmail.com</strong>
+                                <small>Gửi hồ sơ mặt bằng & bản vẽ</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Form gửi yêu cầu tư vấn -->
+                <div class="contact-card form-card">
+                    <h3 data-i18n="contact_form_title">Để lại thông tin tư vấn</h3>
+                    <div class="selected-model-banner">
+                        <span data-i18n="form_template_refer">Mẫu nhà quan tâm:</span>
+                        <strong id="inquiry-selected-model">-</strong>
+                    </div>
+
+                    <form id="inquiry-form" class="inquiry-form">
+                        <div class="form-group">
+                            <label for="inquiry-name" data-i18n="form_name">Họ và tên của bạn</label>
+                            <input type="text" id="inquiry-name" required placeholder="Nguyễn Văn A" minlength="2" maxlength="100" />
+                        </div>
+                        <div class="form-group">
+                            <label for="inquiry-contact" data-i18n="form_contact">Số điện thoại hoặc Email</label>
+                            <input type="text" id="inquiry-contact" required placeholder="0901234567 hoặc yourname@gmail.com" minlength="5" maxlength="150" />
+                        </div>
+                        <div class="form-group">
+                            <label for="inquiry-message" data-i18n="form_message">Nội dung cần tư vấn</label>
+                            <textarea id="inquiry-message" rows="4" required placeholder="Diện tích khu đất, ngân sách dự kiến, số thành viên gia đình..." minlength="5" maxlength="2000"></textarea>
+                        </div>
+                        <button type="submit" id="inquiry-submit-btn" class="btn-primary full-btn" data-i18n="form_submit">
+                            Gửi yêu cầu tư vấn
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. MODAL ĐĂNG NHẬP / ĐĂNG KÝ (AUTH DIALOG) -->
+    <div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+        <div class="auth-dialog">
+            <button id="close-auth-modal" class="modal-close">✕</button>
+            <h3 id="auth-modal-title" class="auth-title" data-i18n="auth_title_login">Đăng nhập</h3>
+
+            <!-- Nút đăng nhập Google OAuth -->
+            <button id="auth-google-btn" class="btn-google">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                <span data-i18n="auth_btn_google">Tiếp tục với Google</span>
+            </button>
+
+            <div class="auth-divider">
+                <span data-i18n="auth_or">HOẶC</span>
+            </div>
+
+            <!-- Form đăng nhập/đăng ký bằng Email -->
+            <form id="auth-form" class="auth-form">
+                <div class="form-group" id="auth-name-group" style="display: none;">
+                    <label for="auth-name" data-i18n="auth_name">Họ tên hiển thị</label>
+                    <input type="text" id="auth-name" placeholder="Nguyễn Văn A" />
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-email" data-i18n="auth_email">Địa chỉ Email</label>
+                    <input type="email" id="auth-email" required placeholder="name@example.com" />
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-password" data-i18n="auth_pass">Mật khẩu</label>
+                    <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" />
+                </div>
+
+                <div class="auth-helper-links">
+                    <a href="#" id="auth-forgot-password" class="auth-link" data-i18n="auth_forgot">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="btn-primary full-btn" data-i18n="auth_login_action">
+                    Đăng nhập
+                </button>
+            </form>
+
+            <div class="auth-footer-toggle">
+                <a href="#" id="auth-switch-mode" class="auth-link" data-i18n="auth_no_acc">Chưa có tài khoản? Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. CHÂN TRANG (FOOTER) -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div class="footer-left">
+                <h4 data-i18n="site_name">Nhà Mơ Ước</h4>
+                <p data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</p>
+                <p class="copyright">© 2026 Nhà Mơ Ước. All rights reserved.</p>
+            </div>
+            <div class="footer-right">
+                <p><strong>Hotline/Zalo:</strong> 0367020403</p>
+                <p><strong>Email:</strong> voviet4323@gmail.com</p>
+                <p><strong>Facebook:</strong> <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener">quocviet43</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

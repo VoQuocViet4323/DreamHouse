@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Trị - Nhà Mơ Ước</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/i18n.js"></script>
+    <style>
+        .admin-page { padding: 40px 0; }
+        .admin-nav-tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--color-border); }
+        .tab-btn { padding: 12px 24px; background: none; border: none; font-size: 1rem; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; }
+        .tab-btn.active { border-color: var(--color-primary); font-weight: 700; }
+        .admin-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+        .admin-table th, .admin-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); text-align: left; font-size: 0.9rem; }
+        .admin-table th { background: #f7f6f2; font-weight: 600; }
+        .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
+        .badge-new { background: #e3f2fd; color: #1976d2; }
+        .badge-handled { background: #e8f5e9; color: #388e3c; }
+        .action-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .table-thumb { width: 60px; height: 40px; object-fit: cover; border-radius: 4px; }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    </style>
+</head>
+<body class="admin-body">
+    <header class="site-header">
+        <div class="header-inner container">
+            <a href="index.html" class="brand">
+                <span class="brand-title">Nhà Mơ Ước</span>
+                <span class="brand-sub">Admin Portal</span>
+            </a>
+            <div class="header-actions">
+                <a href="index.html" class="btn-secondary">← Về trang chủ</a>
+                <button id="admin-logout-btn" class="btn-auth-outline">Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container admin-page">
+        <div class="action-row">
+            <h1 class="section-title">Bảng Quản Trị Hệ Thống</h1>
+        </div>
+
+        <div class="admin-nav-tabs">
+            <button id="tab-templates-btn" class="tab-btn active">Quản lý Mẫu Nhà</button>
+            <button id="tab-inquiries-btn" class="tab-btn">Yêu Cầu Tư Vấn & Báo Giá</button>
+        </div>
+
+        <!-- TAB 1: QUẢN LÝ MẪU NHÀ -->
+        <section id="panel-templates">
+            <div class="action-row">
+                <p>Danh sách các mẫu thiết kế kiến trúc đang có trên hệ thống.</p>
+                <button id="btn-add-template" class="btn-primary">+ Thêm mẫu nhà mới</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tên mẫu nhà (VI / EN)</th>
+                            <th>Loại</th>
+                            <th>Kích thước</th>
+                            <th>Số tầng</th>
+                            <th>Dự toán (VNĐ)</th>
+                            <th>File 3D (.glb)</th>
+                            <th>Hiện</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-templates-tbody">
+                        <tr><td colspan="9" style="text-align: center;">Đang nạp dữ liệu từ Supabase...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 2: QUẢN LÝ YÊU CẦU TƯ VẤN (INQUIRIES) -->
+        <section id="panel-inquiries" class="hidden">
+            <p>Danh sách khách hàng đã để lại thông tin xin tư vấn và dự toán.</p>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Khách hàng</th>
+                            <th>SĐT / Email</th>
+                            <th>Mẫu quan tâm</th>
+                            <th>Nội dung yêu cầu</th>
+                            <th>Ngôn ngữ</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-inquiries-tbody">
+                        <tr><td colspan="8" style="text-align: center;">Đang nạp danh sách yêu cầu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL THÊM / SỬA MẪU NHÀ -->
+    <div id="template-modal" class="modal-overlay hidden">
+        <div class="modal-window" style="max-width: 800px; padding: 32px;">
+            <button id="close-template-modal" class="modal-close">✕</button>
+            <h3 id="modal-template-title" class="auth-title">Thêm Mẫu Thiết Kế Mới</h3>
+
+            <form id="template-form" class="inquiry-form">
+                <input type="hidden" id="edit-id" />
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Slug (duy nhất, không dấu):</label>
+                        <input type="text" id="tpl-slug" required placeholder="nha-pho-3-tang-mat-tien-5m" />
+                    </div>
+                    <div class="form-group">
+                        <label>Loại nhà:</label>
+                        <select id="tpl-type">
+                            <option value="nha-pho">Nhà phố</option>
+                            <option value="biet-thu">Biệt thự</option>
+                            <option value="nha-cap-4">Nhà cấp 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Tên tiếng Việt:</label>
+                        <input type="text" id="tpl-name-vi" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Tên tiếng Anh:</label>
+                        <input type="text" id="tpl-name-en" required />
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Rộng mặt tiền (m):</label>
+                        <input type="number" id="tpl-width" step="0.1" value="5.0" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Chiều sâu (m):</label>
+                        <input type="number" id="tpl-depth" step="0.1" value="16.0" required />
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Số tầng:</label>
+                        <input type="number" id="tpl-floors" min="1" value="2" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Kiểu mái:</label>
+                        <select id="tpl-roof">
+                            <option value="flat">Mái bằng (flat)</option>
+                            <option value="hip">Mái Nhật (hip)</option>
+                            <option value="gable">Mái Thái chữ A (gable)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Diện tích sàn GFA (m²):</label>
+                        <input type="number" id="tpl-gfa" step="1" value="150" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Dự toán tham khảo (VNĐ):</label>
+                        <input type="number" id="tpl-cost" step="1000000" value="1500000000" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tải ảnh phối cảnh (hoặc dán URL):</label>
+                    <input type="file" id="tpl-photo-file" accept="image/*" />
+                    <input type="text" id="tpl-photo-path" placeholder="Hoặc dán URL ảnh trực tiếp" style="margin-top: 6px;" />
+                </div>
+
+                <div class="form-group">
+                    <label>Tải mô hình 3D (.glb từ SketchUp/Blender, < 10MB):</label>
+                    <input type="file" id="tpl-model-file" accept=".glb,model/gltf-binary" />
+                    <input type="text" id="tpl-model-path" placeholder="Đường dẫn file .glb (để trống nếu dùng mô hình khối dựng tạm)" style="margin-top: 6px;" />
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="tpl-published" checked />
+                        Xuất bản công khai mẫu nhà này
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="submit" id="btn-save-tpl" class="btn-primary">Lưu thông tin</button>
+                    <button type="button" id="btn-cancel-tpl" class="btn-secondary">Huỷ bỏ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT QUẢN TRỊ ADMIN -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const client = window.APP_CONFIG ? window.APP_CONFIG.getClient() : null;
+            if (!client) {
+                alert('Chưa cấu hình Supabase trong js/config.js. Không thể tải trang admin.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // 1. Kiểm tra phiên đăng nhập và quyền Admin
+            const { data: { session } } = await client.auth.getSession();
+            if (!session || !session.user) {
+                alert('Vui lòng đăng nhập với tài khoản Quản trị viên để truy cập trang này.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Gọi kiểm tra role trong bảng profiles
+            const { data: profile, error: profErr } = await client
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profErr || !profile || profile.role !== 'admin') {
+                alert('Bạn không có quyền quản trị viên! Đang quay lại trang chủ...');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // 2. Chuyển đổi tab
+            const tabTplBtn = document.getElementById('tab-templates-btn');
+            const tabInqBtn = document.getElementById('tab-inquiries-btn');
+            const panelTpl = document.getElementById('panel-templates');
+            const panelInq = document.getElementById('panel-inquiries');
+
+            tabTplBtn.addEventListener('click', () => {
+                tabTplBtn.classList.add('active');
+                tabInqBtn.classList.remove('active');
+                panelTpl.classList.remove('hidden');
+                panelInq.classList.add('hidden');
+                loadTemplates();
+            });
+
+            tabInqBtn.addEventListener('click', () => {
+                tabInqBtn.classList.add('active');
+                tabTplBtn.classList.remove('active');
+                panelInq.classList.remove('hidden');
+                panelTpl.classList.add('hidden');
+                loadInquiries();
+            });
+
+            // Đăng xuất
+            document.getElementById('admin-logout-btn').addEventListener('click', async () => {
+                await client.auth.signOut();
+                window.location.href = 'index.html';
+            });
+
+            // 3. Tải danh sách Mẫu Nhà
+            async function loadTemplates() {
+                const tbody = document.getElementById('admin-templates-tbody');
+                const { data, error } = await client
+                    .from('templates')
+                    .select('*')
+                    .order('sort_order', { ascending: true })
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    tbody.innerHTML = `<tr><td colspan="9" style="color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">Chưa có mẫu nhà nào. Hãy thêm mẫu mới!</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><img class="table-thumb" src="${item.photo_path || ''}" alt="thumb" /></td>
+                        <td>
+                            <strong>${item.name_vi}</strong><br>
+                            <small style="color:#666;">${item.name_en}</small>
+                        </td>
+                        <td>${item.type}</td>
+                        <td>${item.width_m}m × ${item.depth_m}m</td>
+                        <td>${item.floors}</td>
+                        <td>${Number(item.cost_estimate_vnd).toLocaleString('vi-VN')} đ</td>
+                        <td>${item.model_path ? '✅ File .glb' : '⚡ Khối tự động'}</td>
+                        <td>${item.published ? '✅ Hiện' : '🔒 Ẩn'}</td>
+                        <td>
+                            <button onclick="editTemplate('${item.id}')" class="btn-text">Sửa</button> |
+                            <button onclick="deleteTemplate('${item.id}')" class="btn-text" style="color:red;">Xoá</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // 4. Tải danh sách Yêu cầu tư vấn
+            async function loadInquiries() {
+                const tbody = document.getElementById('admin-inquiries-tbody');
+                const { data, error } = await client
+                    .from('inquiries')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="color:red;">Lỗi: ${error.message}</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.map(row => `
+                    <tr>
+                        <td>${new Date(row.created_at).toLocaleString('vi-VN')}</td>
+                        <td><strong>${row.name}</strong></td>
+                        <td>${row.contact}</td>
+                        <td>${row.template_id || 'Chung'}</td>
+                        <td style="max-width:240px; word-break: break-word;">${row.message}</td>
+                        <td>${row.lang.toUpperCase()}</td>
+                        <td><span class="badge-status ${row.status === 'handled' ? 'badge-handled' : 'badge-new'}">${row.status}</span></td>
+                        <td>
+                            ${row.status === 'new' 
+                                ? `<button onclick="markHandled('${row.id}')" class="btn-text" style="color:green;">Đánh dấu đã xử lý</button>`
+                                : '<span>Đã xong</span>'
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Đánh dấu đã xử lý Inquiry
+            window.markHandled = async function(id) {
+                const { error } = await client.from('inquiries').update({ status: 'handled' }).eq('id', id);
+                if (error) alert('Lỗi: ' + error.message);
+                else loadInquiries();
+            };
+
+            // Xoá mẫu nhà
+            window.deleteTemplate = async function(id) {
+                if (!confirm('Bạn có chắc chắn muốn xoá mẫu nhà này?')) return;
+                const { error } = await client.from('templates').delete().eq('id', id);
+                if (error) alert('Lỗi: ' + error.message);
+                else loadTemplates();
+            };
+
+            // Mở modal thêm mẫu
+            const modal = document.getElementById('template-modal');
+            document.getElementById('btn-add-template').addEventListener('click', () => {
+                document.getElementById('template-form').reset();
+                document.getElementById('edit-id').value = '';
+                document.getElementById('modal-template-title').textContent = 'Thêm Mẫu Thiết Kế Mới';
+                modal.classList.remove('hidden');
+            });
+
+            document.getElementById('close-template-modal').addEventListener('click', () => modal.classList.add('hidden'));
+            document.getElementById('btn-cancel-tpl').addEventListener('click', () => modal.classList.add('hidden'));
+
+            // Xử lý lưu mẫu nhà (Upload ảnh & file 3D lên Supabase Storage nếu có)
+            document.getElementById('template-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('btn-save-tpl');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Đang lưu & tải tệp...';
+
+                try {
+                    let photoPath = document.getElementById('tpl-photo-path').value.trim();
+                    let modelPath = document.getElementById('tpl-model-path').value.trim();
+
+                    // 1. Upload ảnh nếu chọn file
+                    const photoFile = document.getElementById('tpl-photo-file').files[0];
+                    if (photoFile) {
+                        const fileExt = photoFile.name.split('.').pop();
+                        const fileName = `img_${Date.now()}.${fileExt}`;
+                        const { data: uploadData, error: upErr } = await client.storage
+                            .from('template-images')
+                            .upload(fileName, photoFile);
+                        if (upErr) throw upErr;
+                        const { data: { publicUrl } } = client.storage.from('template-images').getPublicUrl(fileName);
+                        photoPath = publicUrl;
+                    }
+
+                    // 2. Upload file .glb nếu chọn file
+                    const modelFile = document.getElementById('tpl-model-file').files[0];
+                    if (modelFile) {
+                        const fileExt = modelFile.name.split('.').pop();
+                        const fileName = `model_${Date.now()}.${fileExt}`;
+                        const { data: upModData, error: modErr } = await client.storage
+                            .from('template-models')
+                            .upload(fileName, modelFile);
+                        if (modErr) throw modErr;
+                        const { data: { publicUrl } } = client.storage.from('template-models').getPublicUrl(fileName);
+                        modelPath = publicUrl;
+                    }
+
+                    const payload = {
+                        slug: document.getElementById('tpl-slug').value.trim(),
+                        type: document.getElementById('tpl-type').value,
+                        name_vi: document.getElementById('tpl-name-vi').value.trim(),
+                        name_en: document.getElementById('tpl-name-en').value.trim(),
+                        width_m: parseFloat(document.getElementById('tpl-width').value),
+                        depth_m: parseFloat(document.getElementById('tpl-depth').value),
+                        floors: parseInt(document.getElementById('tpl-floors').value, 10),
+                        roof: document.getElementById('tpl-roof').value,
+                        gfa_m2: parseFloat(document.getElementById('tpl-gfa').value),
+                        cost_estimate_vnd: parseInt(document.getElementById('tpl-cost').value, 10),
+                        photo_path: photoPath,
+                        model_path: modelPath,
+                        published: document.getElementById('tpl-published').checked
+                    };
+
+                    const editId = document.getElementById('edit-id').value;
+                    if (editId) {
+                        const { error } = await client.from('templates').update(payload).eq('id', editId);
+                        if (error) throw error;
+                    } else {
+                        const { error } = await client.from('templates').insert([payload]);
+                        if (error) throw error;
+                    }
+
+                    alert('Lưu mẫu nhà thành công!');
+                    modal.classList.add('hidden');
+                    loadTemplates();
+                } catch (err) {
+                    alert('Lỗi: ' + err.message);
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Lưu thông tin';
+                }
+            });
+
+            // Nạp dữ liệu ban đầu
+            loadTemplates();
+        });
+    </script>
+</body>
+</html>

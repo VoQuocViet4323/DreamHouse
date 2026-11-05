@@ -1,0 +1,303 @@
+// js/i18n.js
+// Bộ từ điển song ngữ Việt - Anh hoàn chỉnh
+const I18N = {
+    vi: {
+        site_name: "Nhà Mơ Ước",
+        tagline: "Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ",
+        hero_title: "Không gian sống lý tưởng trong tầm tay bạn",
+        hero_sub: "Khám phá bộ sưu tập mẫu nhà phố, biệt thự và nhà cấp 4 hiện đại cùng mô hình 3D tương tác thực tế.",
+        hero_cta: "Khám phá mẫu nhà",
+        nav_gallery: "Thư viện mẫu",
+        nav_favorites: "Đã lưu",
+        nav_contact: "Liên hệ",
+        nav_admin: "Quản trị",
+        nav_login: "Đăng nhập",
+        nav_logout: "Đăng xuất",
+
+        // Bộ lọc
+        filter_all_types: "Tất cả loại nhà",
+        filter_townhouse: "Nhà phố",
+        filter_villa: "Biệt thự",
+        filter_level4: "Nhà cấp 4",
+        filter_sort_default: "Mặc định sắp xếp",
+        filter_sort_price_asc: "Ngân sách: Thấp đến Cao",
+        filter_sort_price_desc: "Ngân sách: Cao đến Thấp",
+        filter_sort_area_desc: "Diện tích lớn nhất",
+        filter_search_placeholder: "Tìm kiếm mẫu nhà, phong cách...",
+        filter_only_favorites: "Chỉ hiện mục yêu thích",
+
+        // Thẻ & Thông số
+        spec_size: "Kích thước",
+        spec_floors: "Số tầng",
+        spec_gfa: "Diện tích sàn",
+        spec_estimate: "Dự toán tham khảo",
+        spec_rooms: "Công năng",
+        spec_roof: "Kiểu mái",
+        spec_balcony: "Ban công",
+        balcony_yes: "Có ban công",
+        balcony_no: "Không có",
+        btn_view_detail: "Xem chi tiết & 3D",
+        empty_gallery: "Không tìm thấy mẫu nhà nào phù hợp với bộ lọc.",
+
+        // Kiểu mái
+        roof_flat: "Mái bằng hiện đại",
+        roof_hip: "Mái Nhật",
+        roof_gable: "Mái Thái",
+
+        // Chi tiết mẫu
+        detail_tab_photo: "Ảnh thiết kế & Phối cảnh",
+        detail_tab_3d: "Mô hình 3D tương tác",
+        detail_3d_hint: "Kéo chuột/chạm để xoay • Cuộn để thu phóng",
+        detail_cam_front: "Mặt tiền",
+        detail_cam_side: "Góc bên",
+        detail_cam_top: "Trên cao",
+        detail_cam_reset: "Gốc",
+        btn_inquire_this: "Nhận báo giá mẫu này",
+        btn_favorite_add: "Lưu vào yêu thích",
+        btn_favorite_remove: "Bỏ yêu thích",
+        btn_prev: "Mẫu trước",
+        btn_next: "Mẫu tiếp theo",
+        status_fallback_3d: "Đang hiển thị mô hình khối mô phỏng theo kích thước thực tế.",
+        status_webgl_error: "Trình duyệt không hỗ trợ WebGL hoặc tải 3D gặp sự cố.",
+
+        // Liên hệ & Báo giá
+        contact_section_title: "Liên Hệ Tư Vấn & Nhận Dự Toán",
+        contact_section_sub: "Đội ngũ kiến trúc sư và kỹ sư sẵn sàng hỗ trợ bạn 24/7.",
+        contact_direct_title: "Kết nối trực tiếp",
+        contact_btn_zalo: "Nhắn Zalo ngay (0367020403)",
+        contact_btn_call: "Gọi điện thoại",
+        contact_btn_fb: "Nhắn tin Facebook",
+        contact_btn_email: "Gửi Email",
+        contact_form_title: "Để lại thông tin tư vấn",
+        form_name: "Họ và tên của bạn",
+        form_contact: "Số điện thoại hoặc Email",
+        form_message: "Nội dung cần tư vấn (diện tích đất, ngân sách, phong cách...)",
+        form_template_refer: "Mẫu nhà quan tâm:",
+        form_submit: "Gửi yêu cầu tư vấn",
+        form_sending: "Đang gửi thông tin...",
+        form_success: "Cảm ơn bạn! Yêu cầu tư vấn đã được gửi thành công. Chúng tôi sẽ liên hệ trong ít phút.",
+        form_error: "Có lỗi khi gửi tin nhắn. Vui lòng liên hệ trực tiếp qua Zalo hoặc Hotline.",
+
+        // Hộp thoại Auth
+        auth_title_login: "Đăng nhập",
+        auth_title_register: "Đăng ký tài khoản",
+        auth_btn_google: "Tiếp tục với Google",
+        auth_or: "HOẶC",
+        auth_email: "Địa chỉ Email",
+        auth_pass: "Mật khẩu (tối thiểu 6 ký tự)",
+        auth_name: "Họ tên hiển thị",
+        auth_forgot: "Quên mật khẩu?",
+        auth_no_acc: "Chưa có tài khoản? Đăng ký ngay",
+        auth_has_acc: "Đã có tài khoản? Đăng nhập",
+        auth_login_action: "Đăng nhập",
+        auth_register_action: "Đăng ký",
+        auth_reset_action: "Gửi email khôi phục",
+        auth_welcome: "Xin chào",
+        auth_sync_favorites: "Đã đồng bộ các mẫu yêu thích trên máy này vào tài khoản của bạn.",
+
+        // Trang quản trị
+        admin_title: "Hệ Thống Quản Trị - Nhà Mơ Ước",
+        admin_tab_templates: "Quản lý mẫu nhà",
+        admin_tab_inquiries: "Yêu cầu tư vấn",
+        admin_btn_new: "+ Thêm mẫu nhà mới",
+        admin_btn_save: "Lưu thông tin",
+        admin_btn_cancel: "Huỷ bỏ",
+        admin_delete_confirm: "Bạn có chắc chắn muốn xoá mẫu nhà này?",
+        admin_status_new: "Mới",
+        admin_status_handled: "Đã xử lý",
+        admin_mark_handled: "Đánh dấu đã xử lý",
+        admin_unauthorized: "Bạn không có quyền quản trị! Đang quay lại trang chủ..."
+    },
+    en: {
+        site_name: "Dream House",
+        tagline: "Architectural Excellence - Crafting Your Ideal Living",
+        hero_title: "Your Dream Living Space Within Reach",
+        hero_sub: "Explore our curated collection of townhouses, luxury villas, and country bungalows with interactive 3D models.",
+        hero_cta: "Browse House Models",
+        nav_gallery: "Gallery",
+        nav_favorites: "Saved",
+        nav_contact: "Contact",
+        nav_admin: "Admin",
+        nav_login: "Sign In",
+        nav_logout: "Sign Out",
+
+        // Filters
+        filter_all_types: "All House Types",
+        filter_townhouse: "Townhouse",
+        filter_villa: "Villa",
+        filter_level4: "Country House",
+        filter_sort_default: "Default Order",
+        filter_sort_price_asc: "Estimate: Low to High",
+        filter_sort_price_desc: "Estimate: High to Low",
+        filter_sort_area_desc: "Largest Floor Area",
+        filter_search_placeholder: "Search models, styles...",
+        filter_only_favorites: "Only show saved favorites",
+
+        // Specs
+        spec_size: "Dimensions",
+        spec_floors: "Floors",
+        spec_gfa: "Gross Floor Area",
+        spec_estimate: "Estimated Cost",
+        spec_rooms: "Layout & Rooms",
+        spec_roof: "Roof Style",
+        spec_balcony: "Balcony",
+        balcony_yes: "Yes",
+        balcony_no: "No",
+        btn_view_detail: "View Details & 3D",
+        empty_gallery: "No house models match your criteria.",
+
+        // Roof styles
+        roof_flat: "Modern Flat Roof",
+        roof_hip: "Hip Roof (Japanese Style)",
+        roof_gable: "Gable Roof (Thai Style)",
+
+        // Modal
+        detail_tab_photo: "Design Photos & Perspectives",
+        detail_tab_3d: "Interactive 3D Walkthrough",
+        detail_3d_hint: "Drag to rotate • Scroll to zoom",
+        detail_cam_front: "Front",
+        detail_cam_side: "Side",
+        detail_cam_top: "Top",
+        detail_cam_reset: "Reset",
+        btn_inquire_this: "Inquire About This Model",
+        btn_favorite_add: "Save to Favorites",
+        btn_favorite_remove: "Remove Favorite",
+        btn_prev: "Previous",
+        btn_next: "Next",
+        status_fallback_3d: "Displaying procedural 3D block rendered from actual building dimensions.",
+        status_webgl_error: "WebGL is not supported by your browser or 3D failed to load.",
+
+        // Contact
+        contact_section_title: "Get in Touch & Request an Estimate",
+        contact_section_sub: "Our team of architects and structural engineers is here to bring your vision to life.",
+        contact_direct_title: "Direct Channels",
+        contact_btn_zalo: "Chat on Zalo (0367020403)",
+        contact_btn_call: "Call Phone",
+        contact_btn_fb: "Message on Facebook",
+        contact_btn_email: "Send Email (voviet4323@gmail.com)",
+        contact_form_title: "Send a Consultation Request",
+        form_name: "Your Full Name",
+        form_contact: "Email or Phone Number",
+        form_message: "Your requirements (land size, budget, preferences...)",
+        form_template_refer: "Selected Model:",
+        form_submit: "Submit Request",
+        form_sending: "Sending request...",
+        form_success: "Thank you! Your request has been received. We will contact you promptly.",
+        form_error: "Failed to send inquiry. Please reach out via Email or Facebook directly.",
+
+        // Auth
+        auth_title_login: "Sign In",
+        auth_title_register: "Create an Account",
+        auth_btn_google: "Continue with Google",
+        auth_or: "OR",
+        auth_email: "Email address",
+        auth_pass: "Password (min 6 characters)",
+        auth_name: "Full Name",
+        auth_forgot: "Forgot password?",
+        auth_no_acc: "Don't have an account? Sign up",
+        auth_has_acc: "Already have an account? Sign in",
+        auth_login_action: "Sign In",
+        auth_register_action: "Sign Up",
+        auth_reset_action: "Send Reset Link",
+        auth_welcome: "Welcome",
+        auth_sync_favorites: "Your local favorite models have been synced to your account.",
+
+        // Admin
+        admin_title: "Dream House Management",
+        admin_tab_templates: "House Templates",
+        admin_tab_inquiries: "Inquiries",
+        admin_btn_new: "+ Add New Template",
+        admin_btn_save: "Save Changes",
+        admin_btn_cancel: "Cancel",
+        admin_delete_confirm: "Are you sure you want to delete this template?",
+        admin_status_new: "New",
+        admin_status_handled: "Handled",
+        admin_mark_handled: "Mark as Handled",
+        admin_unauthorized: "Access denied. Admin privileges required. Redirecting to home..."
+    }
+};
+
+class I18nManager {
+    constructor() {
+        // Lấy ngôn ngữ: Ưu tiên localStorage, sau đó lấy theo ngôn ngữ trình duyệt
+        const savedLang = localStorage.getItem('dream_house_lang');
+        const browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+        this.currentLang = savedLang || (browserLang.startsWith('vi') ? 'vi' : 'en');
+    }
+
+    getLang() {
+        return this.currentLang;
+    }
+
+    setLang(lang) {
+        if (lang !== 'vi' && lang !== 'en') return;
+        this.currentLang = lang;
+        localStorage.setItem('dream_house_lang', lang);
+        document.documentElement.lang = lang;
+        this.updateDOM();
+    }
+
+    toggle() {
+        this.setLang(this.currentLang === 'vi' ? 'en' : 'vi');
+    }
+
+    t(key) {
+        const dict = I18N[this.currentLang] || I18N.vi;
+        return dict[key] || I18N.vi[key] || key;
+    }
+
+    // Định dạng tiền tệ theo quy ước:
+    // Tiếng Việt: "1.85 tỷ", "850 triệu"
+    // Tiếng Anh: "≈ 1.85 billion VND" hoặc "≈ 850 million VND"
+    formatCost(vnd) {
+        if (!vnd || isNaN(vnd)) return this.currentLang === 'vi' ? 'Liên hệ' : 'Contact us';
+        const num = Number(vnd);
+        if (this.currentLang === 'vi') {
+            if (num >= 1000000000) {
+                const billions = (num / 1000000000).toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+                return `${billions} tỷ VNĐ`;
+            } else {
+                const millions = Math.round(num / 1000000).toLocaleString('vi-VN');
+                return `${millions} triệu VNĐ`;
+            }
+        } else {
+            if (num >= 1000000000) {
+                const billions = (num / 1000000000).toFixed(2).replace(/\.00$/, '');
+                return `≈ ${billions} billion VND`;
+            } else {
+                const millions = (num / 1000000).toFixed(0);
+                return `≈ ${millions} million VND`;
+            }
+        }
+    }
+
+    updateDOM() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const text = this.t(key);
+            if (text) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    if (el.getAttribute('placeholder')) {
+                        el.setAttribute('placeholder', text);
+                    }
+                } else {
+                    el.textContent = text;
+                }
+            }
+        });
+
+        // Cập nhật nhãn nút đổi ngôn ngữ (HIỂN THỊ NGÔN NGỮ ĐỐI LẬP HOẶC MENU)
+        const toggleBtn = document.getElementById('lang-toggle');
+        if (toggleBtn) {
+            toggleBtn.innerHTML = this.currentLang === 'vi' 
+                ? '<strong>VI</strong> | EN' 
+                : 'VI | <strong>EN</strong>';
+        }
+
+        // Kích hoạt sự kiện thay đổi ngôn ngữ cho các thành phần khác cập nhật dữ liệu mẫu
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: this.currentLang } }));
+    }
+}
+
+window.i18n = new I18nManager();
+
