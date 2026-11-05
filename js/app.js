@@ -220,6 +220,14 @@ class DreamHouseApp {
                 window.toast.error(friendlyMsg, 4500, 'Đăng nhập không thành công');
             }
         } else {
+            // Xử lý cơ chế Ghi nhớ tài khoản (Remember Me)
+            const rememberCheckbox = document.getElementById('auth-remember-me');
+            if (rememberCheckbox && rememberCheckbox.checked) {
+                localStorage.setItem('dream_house_remember_email', email);
+            } else {
+                localStorage.removeItem('dream_house_remember_email');
+            }
+
             if (window.toast) {
                 window.toast.success('Đăng nhập thành công! Chào mừng bạn quay trở lại.', 3500);
             }
@@ -336,11 +344,19 @@ class DreamHouseApp {
             const passInput = document.getElementById('auth-password');
             if (passInput) passInput.value = '';
 
+            // Nạp lại email đã ghi nhớ (nếu có)
+            this.loadRememberedAccount();
+            const rememberedEmail = localStorage.getItem('dream_house_remember_email');
+
             modal.classList.remove('hidden');
             window.location.hash = 'login';
 
             setTimeout(() => {
-                document.getElementById('auth-email')?.focus();
+                if (rememberedEmail) {
+                    document.getElementById('auth-password')?.focus();
+                } else {
+                    document.getElementById('auth-email')?.focus();
+                }
             }, 300);
         }
     }
@@ -891,13 +907,16 @@ class DreamHouseApp {
     setupAuthModalEvents() {
         const modal = document.getElementById('auth-modal');
         const loginBtn = document.getElementById('btn-open-login');
-        const closeBtn = document.getElementById('close-auth-modal');
+        const closeBtn = document.getElementById('auth-back-btn') || document.getElementById('close-auth-modal');
         const googleBtn = document.getElementById('auth-google-btn');
         const form = document.getElementById('auth-form');
         const switchModeLink = document.getElementById('auth-switch-mode');
         const forgotLink = document.getElementById('auth-forgot-password');
 
         let isRegisterMode = false;
+
+        // Tự động kiểm tra và điền tài khoản đã ghi nhớ (nếu có)
+        this.loadRememberedAccount();
 
         // User dropdown toggle (Menu xổ xuống khi click vào Avatar hoặc Tên)
         const profileTrigger = document.getElementById('user-profile-trigger');
@@ -1046,11 +1065,17 @@ class DreamHouseApp {
                 alertBox.className = 'auth-alert hidden';
                 alertBox.textContent = '';
             }
-            modal.classList.remove('hidden');
+            this.loadRememberedAccount();
+            modal?.classList.remove('hidden');
             window.location.hash = 'login';
         });
 
-        closeBtn?.addEventListener('click', () => {
+        closeBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.closeAuthModal();
+        });
+        document.getElementById('auth-back-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
             this.closeAuthModal();
         });
 
@@ -1135,6 +1160,7 @@ class DreamHouseApp {
             if (window.location.hash === '#register' && !isRegisterMode) {
                 switchModeLink?.click();
             }
+            this.loadRememberedAccount();
             modal?.classList.remove('hidden');
         }
 
@@ -1207,6 +1233,23 @@ class DreamHouseApp {
         }
         if (window.location.hash === '#login' || window.location.hash === '#register') {
             history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    }
+
+    loadRememberedAccount() {
+        try {
+            const rememberedEmail = localStorage.getItem('dream_house_remember_email');
+            const emailInput = document.getElementById('auth-email');
+            const rememberCheckbox = document.getElementById('auth-remember-me');
+            if (rememberedEmail) {
+                if (emailInput) emailInput.value = rememberedEmail;
+                if (rememberCheckbox) rememberCheckbox.checked = true;
+            } else {
+                if (emailInput && !emailInput.value) emailInput.value = '';
+                if (rememberCheckbox) rememberCheckbox.checked = false;
+            }
+        } catch (e) {
+            console.warn('Lỗi khi nạp tài khoản đã ghi nhớ:', e);
         }
     }
 

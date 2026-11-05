@@ -171,6 +171,17 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 11: Nút điều hướng "Quay lại trang chủ" trên màn hình Auth bị ép thành hình tròn 36px và chữ bị xếp chồng thành cột dọc
+- **Hiện tượng:** Tại màn hình đăng nhập/đăng ký chuyên biệt, nút quay lại trang chủ hiển thị chữ "Quay lại trang chủ" bị gãy thành từng dòng dọc và bị bó hẹp trong một hình tròn 36px.
+- **Nguyên nhân:** Nút ban đầu mang `id="close-auth-modal"`. Selector CSS toàn cục `[id^="close-"][id$="-modal"]` (dành riêng cho các nút dấu 'X' đóng modal thông thường) đã tự động khớp và áp đặt các thuộc tính: `width: 36px; height: 36px; border-radius: 50% !important;` và `transform: rotate(90deg) scale(1.05);` khi hover.
+- **Cách khắc phục dứt điểm:**
+  1. Tách biệt danh tính ID: Đổi ID từ `close-auth-modal` sang `auth-back-btn` với class chuyên biệt `.auth-back-nav-btn`.
+  2. Định nghĩa phong cách viên thuốc nổi (Floating Pill) với các thuộc tính bảo vệ: `width: auto !important; height: 42px !important; padding: 0 20px 0 16px !important; white-space: nowrap !important; border-radius: 9999px !important;`.
+  3. Bổ sung mũi tên SVG động trượt mượt sang trái (`translateX(-3px)`) khi hover, nền kính mờ Glassmorphism `backdrop-filter: blur(12px)`.
+  4. Đồng bộ màu sắc và viền tương phản hoàn hảo giữa Light Mode và Dark Mode (`:root[data-theme="dark"] .auth-back-nav-btn`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

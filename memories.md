@@ -221,6 +221,22 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Bổ sung cơ chế lưu cờ `sessionStorage.setItem('just_logged_out', '1')` khi đăng xuất từ trang `admin.html` để hiển thị Toast thông báo mượt mà sau khi chuyển trang.
   - Nâng tham số cache-busting lên `?v=2.5` trên toàn bộ tệp `index.html` và `admin.html`.
 
+### Giai đoạn 14: Cơ chế Ghi nhớ Tài khoản (Remember Me) & Khắc phục Triệt để UI Nút Quay lại
+- [x] **Xây dựng Cơ chế Ghi nhớ Tài khoản (Persistent Remember Me):**
+  - Bổ sung hàng tuỳ chọn `.auth-options-row` gồm checkbox Ghi nhớ tài khoản (`#auth-remember-me`) bên trái và liên kết Quên mật khẩu (`#auth-forgot-password`) bên phải.
+  - Thiết kế checkbox tuỳ biến cao cấp (`.auth-checkbox-box` + `.auth-check-icon` SVG): trạng thái checked hiển thị màu xanh tím thương hiệu (hoặc vàng hoàng gia Obsidian trong Dark Mode) với dấu tích vector sắc nét, tương thích hoàn toàn trên cả mobile và desktop.
+  - Đa ngôn ngữ i18n đầy đủ cho nhãn: *"Ghi nhớ tài khoản"* (VI) và *"Remember me"* (EN).
+  - Tích hợp hàm `loadRememberedAccount()` trong `DreamHouseApp` (`js/app.js`):
+    - Khi đăng nhập thành công: Nếu tích chọn, lưu email vào `localStorage.setItem('dream_house_remember_email', email)`; nếu không tích, tự động xoá bản ghi ghi nhớ.
+    - Khi mở modal đăng nhập, khởi động ứng dụng hoặc khi vừa đăng xuất: Hệ thống tự động nạp lại email đã ghi nhớ vào ô `#auth-email` và bật sẵn checkbox, đồng thời tự động trỏ tiêu điểm (focus) vào ô nhập mật khẩu để người dùng đăng nhập ngay chỉ với 1 cú click.
+- [x] **Khắc phục Triệt để Lỗi UI Nút Back trên Màn hình Auth:**
+  - Xử lý tận gốc nguyên nhân xung đột CSS: Selector toàn cục `[id^="close-"][id$="-modal"]` đã ép nút Back mang ID cũ `close-auth-modal` thành hình tròn 36px và làm chữ bị xếp chồng thành cột dọc.
+  - Đổi ID thành `#auth-back-btn` và áp dụng class `.auth-back-nav-btn` kiểu viên thuốc nổi (Floating Pill) với các thuộc tính bảo vệ (`width: auto !important; height: 42px !important; white-space: nowrap !important; padding: 0 20px 0 16px !important`).
+  - Tích hợp mũi tên SVG động trượt nhẹ sang trái (`translateX(-3px)`) khi hover, hiệu ứng kính mờ cao cấp `backdrop-filter: blur(12px)`.
+  - Hỗ trợ đầy đủ phím tắt `Escape`, click backdrop hoặc click logo để quay về trang chủ.
+  - Nâng tham số cache-busting lên `?v=2.6` trên toàn bộ tệp `index.html` và `admin.html`.
+
+
 
 
 
