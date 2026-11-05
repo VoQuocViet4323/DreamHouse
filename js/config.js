@@ -1,11 +1,10 @@
 // js/config.js
 // Cấu hình kết nối Supabase và Thông tin liên hệ
-// THAY THẾ SUPABASE_URL VÀ SUPABASE_ANON_KEY BẰNG THÔNG TIN TỪ DỰ ÁN SUPABASE CỦA BẠN.
-// Tuyệt đối KHÔNG đưa service_role key vào file này.
+// Dự án: DreamHouse Supabase Live DB
 
 const SUPABASE_CONFIG = {
-    url: 'https://YOUR_PROJECT_ID.supabase.co', // Ví dụ: https://xyzcompany.supabase.co
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.YOUR_ANON_KEY_HERE'
+    url: 'https://qdkhqvsbtmbgkmoldazt.supabase.co',
+    anonKey: 'sb_publishable_HNBq9BOkrn7bmJxsG4ZHbQ_p937j35i'
 };
 
 const CONTACT_INFO = {
@@ -15,7 +14,7 @@ const CONTACT_INFO = {
     facebook: 'https://www.facebook.com/quocviet43'
 };
 
-// Khởi tạo Supabase client nếu thư viện đã tải
+// Khởi tạo Supabase client
 let supabaseClient = null;
 if (typeof supabase !== 'undefined' && SUPABASE_CONFIG.url.indexOf('YOUR_PROJECT_ID') === -1) {
     try {
@@ -31,4 +30,3 @@ window.APP_CONFIG = {
     contactInfo: CONTACT_INFO,
     getClient: () => supabaseClient
 };
-
