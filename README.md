@@ -35,24 +35,28 @@
 ## 📂 CẤU TRÚC THƯ MỤC DỰ ÁN
 
 ```text
-e:\Dream-house\
-├── index.html               # Trang chủ chính: Hero, Thư viện, Modal chi tiết, Modal Auth, Form liên hệ
-├── admin.html               # Trang quản trị: Thêm/Sửa/Xoá mẫu nhà, Upload Storage, Xử lý Inquiry
-├── style.css                # CSS giao diện tinh tế, phong cách Editorial Minimalist, Responsive
+DreamHouse/
+├── index.html               # Trang chủ chính: Hero, Thư viện, Modal chi tiết, Modal Auth, Profile Modal
+├── admin.html               # Trang quản trị: Quản lý mẫu nhà, Upload Storage, Xử lý Inquiry
+├── style.css                # CSS giao diện tinh tế, phong cách Editorial Minimalist, Dark/Light Mode
+├── generate-config.js       # Script Node.js tự động đọc .env và sinh js/config.js an toàn
+├── start.bat                # Khởi động máy chủ Node.js cục bộ (Port 3000) với 1-click
+├── .env.example             # File mẫu biến môi trường dự phòng
 ├── js\
-│   ├── config.js            # Cấu hình Supabase (URL, anon key) & Thông tin liên hệ
+│   ├── config.js            # Cấu hình Supabase (URL, anon key) & Thông tin liên hệ (auto-generated)
 │   ├── i18n.js              # Bộ từ điển song ngữ Việt - Anh & Hàm định dạng tiền tệ
 │   ├── viewer3d.js          # Bộ dựng Three.js: Orbiting, ánh sáng, nạp .glb hoặc dựng procedural
-│   └── app.js               # Logic điều phối giao diện, Auth, lọc dữ liệu và tương tác người dùng
+│   └── app.js               # Logic điều phối giao diện, Auth, Profile Modal, lọc dữ liệu
 ├── supabase\
 │   ├── 01_schema.sql        # Khởi tạo các bảng (profiles, templates, favorites, inquiries...) & Triggers
 │   ├── 02_security.sql      # Cấu hình Row Level Security (RLS) & hàm is_admin()
 │   ├── 03_storage.sql       # Khởi tạo Storage buckets (template-images, template-models) & Policies
 │   └── 04_sample_data.sql   # Dữ liệu ban đầu (6 mẫu nhà thực tế)
-├── memories.md              # Bối cảnh, quyết định thiết kế cốt lõi và quy ước dự án
+├── memories.md              # Bối cảnh, quyết định thiết kế cốt lõi và nhật ký tiến trình phát triển
 ├── README.md                # Tài liệu tổng quan và hướng dẫn sử dụng
 ├── AI_Config.md             # Hướng dẫn cấu hình chi tiết từng bước cho người mới và AI
-└── AI_Debug.md              # Cẩm nang chẩn đoán & xử lý các lỗi thường gặp
+├── AI_Debug.md              # Cẩm nang chẩn đoán & xử lý các lỗi thường gặp
+└── GEMINI.md                # Quy tắc tự động cho AI Agent (Auto-log, auto-sync, cache-busting)
 ```
 
 ---
@@ -69,25 +73,22 @@ e:\Dream-house\
    - Chạy `supabase/03_storage.sql` (Tạo các bucket lưu ảnh và mô hình 3D).
    - Chạy `supabase/04_sample_data.sql` (Nạp 6 mẫu nhà ban đầu).
 
-### Bước 2: Cấu hình mã nguồn Web
-1. Mở file [js/config.js](file:///e:/Dream-house/js/config.js).
-2. Lấy **Project URL** và **anon public key** tại mục **Project Settings > API** trên Supabase.
-3. Thay thế vào:
-   ```javascript
-   const SUPABASE_CONFIG = {
-       url: 'https://xyzcompany.supabase.co',
-       anonKey: 'eyJhbGciOiJIUzI1Ni...'
-   };
+### Bước 2: Cấu hình biến môi trường
+1. Kiểm tra hoặc sao chép file `.env` từ `.env.example`.
+2. Điền `SUPABASE_URL` và `SUPABASE_ANON_KEY` của dự án Supabase.
+3. Chạy lệnh sinh cấu hình:
+   ```powershell
+   node generate-config.js
    ```
 
 ### Bước 3: Chạy thử trên máy tính
-Vì dự án dùng Three.js và Supabase JS qua CDN, bạn có thể chạy bằng bất kỳ HTTP Server tĩnh nào:
-- Dùng VS Code Extension: **Live Server** (Click chuột phải vào `index.html` > Open with Live Server).
-- Hoặc dùng Python:
+- **Cách 1 (Nhanh nhất trên Windows):** Nhấp đúp chuột vào file `start.bat`. Máy chủ Node.js sẽ tự động chạy tại cổng 3000 và mở trình duyệt tại `http://localhost:3000`.
+- **Cách 2 (Bằng npm / npx):**
   ```powershell
-  python -m http.server 3000
+  npm run dev
+  # hoặc: npx serve -p 3000
   ```
-  Truy cập: `http://localhost:3000`
+- **Cách 3:** Dùng VS Code Extension **Live Server** (chuột phải vào `index.html` > Open with Live Server).
 
 ---
 

@@ -11,7 +11,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   `WHERE (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'`
   Khi đó PostgreSQL phải đọc bảng `profiles` để kiểm tra điều kiện, nhưng việc đọc lại kích hoạt policy SELECT của `profiles`, dẫn đến vòng lặp vô tận làm sập request.
 - **Cách khắc phục:**
-  Tạo hàm `is_admin()` với thuộc tính `SECURITY DEFINER` và `STABLE` (đã được viết chuẩn trong [supabase/02_security.sql](file:///e:/Dream-house/supabase/02_security.sql)):
+  Tạo hàm `is_admin()` với thuộc tính `SECURITY DEFINER` và `STABLE` (đã được viết chuẩn trong [supabase/02_security.sql](supabase/02_security.sql)):
   ```sql
   CREATE OR REPLACE FUNCTION public.is_admin()
   RETURNS BOOLEAN
@@ -106,7 +106,61 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
-## 3. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
+## 3. CÁC LỖI GIAO DIỆN & TỰ ĐỘNG HÓA CẤU HÌNH (UI/UX & CONFIG SYNC)
+
+### 🔴 Lỗi 8: Đăng nhập thất bại `Failed to fetch` (`net::ERR_NAME_NOT_RESOLVED`) khi clone/chuyển mã nguồn sang máy mới
+- **Hiện tượng:** Mở web trên máy mới hoặc kéo từ GitHub về, bấm đăng nhập (bằng Email hoặc Google) đều bị báo `Đăng nhập thất bại: Failed to fetch`. F12 Console báo đỏ: `POST https://your-project-id.supabase.co/auth/v1/token net::ERR_NAME_NOT_RESOLVED`.
+- **Nguyên nhân:**
+  1. Khi sang máy mới, file `.env` chưa có, script `generate-config.js` tự động copy từ `.env.example`.
+  2. File `.env.example` trước đó chứa URL mẫu giả định `https://your-project-id.supabase.co`.
+  3. Script `generate-config.js` đã đọc URL giả lập này và ghi đè vào `js/config.js`.
+- **Cách khắc phục dứt điểm:**
+  1. Trong `generate-config.js`, bổ sung hàm kiểm tra nhận diện giá trị mẫu (`isPlaceholderUrl`, `isPlaceholderKey`). Nếu phát hiện URL/Key chứa chữ `your-project-id` hoặc bị trống, script **luôn tự động fallback** về URL và Publishable Anon Key chuẩn của dự án (`https://qdkhqvsbtmbgkmoldazt.supabase.co`).
+  2. Đồng thời điền sẵn cấu hình chuẩn vào `.env` và `.env.example`.
+  3. Bổ sung tham số phiên bản cache-busting `?v=...` cho `js/config.js` trong cả `index.html` và `admin.html`.
+
+---
+
+### 🔴 Lỗi 9: Nút đóng `✕` (Close Button) và các nút bấm phụ bị nền trắng chữ trắng / chói loá trong Dark Mode
+- **Hiện tượng:** Khi bật Circular Dark Mode, mở các modal (Đăng nhập, Chi tiết mẫu nhà, Hồ sơ cá nhân) thì nút đóng `✕` góc trên bên phải bị biến thành một vòng tròn màu trắng xóa chói mắt. Các nút chọn góc máy 3D (`Front`, `Side`, `Top`, `Reset`) cũng bị nền trắng chữ trắng không nhìn thấy chữ.
+- **Nguyên nhân:**
+  1. CSS cũ dùng giá trị cứng: `.modal-close { background: #f1f5f9; }` và `.camera-presets button { background: #f1f5f9; }`.
+  2. Thiếu quy tắc ghi đè trong selector dark mode `:root[data-theme="dark"]`, hoặc các class nút đóng modal bị phân mảnh (`.modal-close`, `.profile-close-btn`).
+  3. Sử dụng ký tự text thô `✕` thay vì vector SVG dẫn đến sai lệch căn giữa và kích thước hiển thị.
+- **Cách khắc phục dứt điểm (Tránh tái phát sau này):**
+  1. **Thiết lập Design Tokens biến CSS tập trung tại `:root`:**
+     ```css
+     /* Light Mode */
+     --btn-close-bg: rgba(15, 23, 42, 0.06);
+     --btn-close-border: rgba(15, 23, 42, 0.14);
+     --btn-close-color: #334155;
+     --btn-close-hover-bg: #ef4444;
+     --btn-close-hover-border: #ef4444;
+     --btn-close-hover-color: #ffffff;
+     --btn-subtle-bg: #f1f5f9;
+     --btn-subtle-border: rgba(15, 23, 42, 0.12);
+     --btn-subtle-color: #1e293b;
+     ```
+     ```css
+     /* Dark Mode (:root[data-theme="dark"], body.dark-theme) */
+     --btn-close-bg: rgba(255, 255, 255, 0.08);
+     --btn-close-border: rgba(255, 255, 255, 0.18);
+     --btn-close-color: #cbd5e1;
+     --btn-close-hover-bg: rgba(239, 68, 68, 0.25);
+     --btn-close-hover-border: rgba(239, 68, 68, 0.5);
+     --btn-close-hover-color: #fca5a5;
+     --btn-subtle-bg: rgba(255, 255, 255, 0.08);
+     --btn-subtle-border: rgba(255, 255, 255, 0.14);
+     --btn-subtle-color: #e2e8f0;
+     ```
+  2. **Gom toàn bộ selector nút đóng hiện tại và tương lai:**
+     `.modal-close, .profile-close-btn, [id^="close-"][id$="-modal"]` đều dùng chung biến `--btn-close-...`. Bất kỳ modal mới nào tạo ra chỉ cần dùng class hoặc id theo quy ước này là tự động đẹp chuẩn cả 2 chế độ sáng/tối.
+  3. **Thay ký tự text bằng icon SVG:**
+     Dùng SVG vector `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>` với `stroke: currentColor` để icon luôn sắc nét trên mọi màn hình Retina / 4K.
+
+---
+
+## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
 | :--- | :--- | :---: |

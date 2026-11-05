@@ -123,15 +123,25 @@ Khi bạn chạy file `supabase/03_storage.sql`, 2 bucket sau đã được cấ
 
 ---
 
-## 6. TÍCH HỢP KHÓA VÀO MÃ NGUỒN WEB
+## 6. TÍCH HỢP KHÓA VÀO MÃ NGUỒN WEB (TỰ ĐỘNG HÓA QUA .ENV)
 
-Mở tệp `e:\Dream-house\js\config.js` và cập nhật thông tin:
+Dự án đã hỗ trợ **cơ chế tự động sinh file cấu hình** từ `.env` để bảo vệ mã nguồn và dễ dàng triển khai đa máy:
 
-```javascript
-const SUPABASE_CONFIG = {
-    url: 'https://mã-dự-án-của-bạn.supabase.co',
-    anonKey: 'chuỗi-anon-key-của-bạn'
-};
-```
-Lưu file lại và bạn đã sẵn sàng sử dụng toàn bộ hệ thống!
+1. Mở file `.env` tại thư mục gốc dự án (hoặc sao chép từ `.env.example` nếu chưa có).
+2. Điền thông số Supabase của bạn:
+   ```env
+   SUPABASE_URL=https://qdkhqvsbtmbgkmoldazt.supabase.co
+   SUPABASE_ANON_KEY=sb_publishable_HNBq9BOkrn7bmJxsG4ZHbQ_p937j35i
+   CONTACT_PHONE=0367020403
+   CONTACT_ZALO=https://zalo.me/0367020403
+   CONTACT_EMAIL=voviet4323@gmail.com
+   CONTACT_FACEBOOK=https://www.facebook.com/quocviet43
+   PORT=3000
+   ```
+3. Chạy script đồng bộ tự động:
+   ```powershell
+   node generate-config.js
+   ```
+   *Script sẽ tự động đọc `.env`, kiểm tra tránh ghi đè URL giả lập, và sinh file `js/config.js` chuẩn xác.*
+4. Chạy hệ thống bằng file `start.bat` (nhấp đúp chuột) hoặc lệnh `npm run dev`. Trình duyệt sẽ tự động mở tại `http://localhost:3000`.
 
