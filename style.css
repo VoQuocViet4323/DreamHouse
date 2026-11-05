@@ -1,4 +1,4 @@
-﻿/* ==============================================================================
+/* ==============================================================================
    STYLE.CSS - Äáº¬M CHáº¤T ANIMATE-UI & KIáº¾N TRÃšC CAO Cáº¤P
    Láº¥y cáº£m há»©ng tá»«: animate-ui.com (Shadcn + Motion Spring Physics)
    Äáº·c Ä‘iá»ƒm:
@@ -1313,27 +1313,20 @@ body.dark-theme {
   transform: rotate(-90deg);
 }
 
-/* NATIVE VIEW TRANSITION CHO CIRCULAR REVEAL SIÃŠU MÆ¯á»¢T */
+/* NATIVE VIEW TRANSITION CHO CIRCULAR REVEAL SIÊU MƯỢT */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
+/* Luôn để view mới (màn hình sắp chuyển tới) nằm ở trên cùng để mở rộng vòng tròn */
 ::view-transition-old(root) {
   z-index: 1;
 }
 
 ::view-transition-new(root) {
   z-index: 999999;
-}
-
-:root[data-theme="dark"]::view-transition-old(root) {
-  z-index: 999999;
-}
-
-:root[data-theme="dark"]::view-transition-new(root) {
-  z-index: 1;
 }
 
 /* FALLBACK CIRCULAR REVEAL CHO TRÃŒNH DUYá»†T KHÃ”NG Há»– TRá»¢ VIEW TRANSITION */
