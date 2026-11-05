@@ -1,0 +1,223 @@
+<!-- Lucian UX/UI Prompt #021 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#021 -->
+<style>
+/* CSS Tokens Mapping & Day-Night Sky Switch Component Styles */
+.ux-theme-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.u021 {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Compact scale for nav header integration */
+.u021-sw {
+  position: relative;
+  width: 74px;
+  height: 36px;
+  border: 0;
+  padding: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  background: linear-gradient(180deg, #5DB7FF, #9ED8FF);
+  box-shadow: inset 0 2px 5px rgba(0,30,80,.28), inset 0 -1px 2px rgba(255,255,255,.4), 0 4px 12px -3px rgba(40,110,200,.6);
+  transition: box-shadow .8s var(--ease-spring, cubic-bezier(.2,.8,.2,1));
+  flex-shrink: 0;
+}
+
+.u021-sw::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, #141A3A, #232C5C);
+  opacity: 0;
+  transition: opacity .8s cubic-bezier(.2,.8,.2,1);
+}
+
+.u021-sw:focus-visible {
+  outline: 2px solid var(--color-accent, #c49a45);
+  outline-offset: 3px;
+}
+
+:root[data-theme="dark"] .u021-sw::before,
+.u021.is-night .u021-sw::before {
+  opacity: 1;
+}
+
+:root[data-theme="dark"] .u021-sw,
+.u021.is-night .u021-sw {
+  box-shadow: inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 2px rgba(255,255,255,.08), 0 4px 12px -3px rgba(20,24,70,.8);
+}
+
+.u021-halo {
+  position: absolute;
+  z-index: 1;
+  left: 18px;
+  top: 18px;
+  width: 0;
+  height: 0;
+  transition: transform .9s cubic-bezier(.34,1.45,.64,1);
+}
+
+.u021-halo i {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+}
+
+.u021-halo i:nth-child(1) { width: 50px; height: 50px; margin: -25px; }
+.u021-halo i:nth-child(2) { width: 70px; height: 70px; margin: -35px; }
+.u021-halo i:nth-child(3) { width: 90px; height: 90px; margin: -45px; }
+
+:root[data-theme="dark"] .u021-halo,
+.u021.is-night .u021-halo {
+  transform: translateX(38px);
+}
+
+.u021-knob {
+  position: absolute;
+  z-index: 3;
+  left: 3px;
+  top: 3px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 35% 30%, #FFF1A8, #FFD23F 45%, #F8A91E);
+  box-shadow: 0 3px 8px -2px rgba(140,80,0,.5), inset -2px -3px 5px rgba(200,110,0,.35), inset 2px 2px 4px rgba(255,255,255,.5);
+  transition: transform .9s cubic-bezier(.34,1.45,.64,1);
+}
+
+.u021-moon {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #F4F6FB, #C9CFDD 60%, #A9B0C2);
+  opacity: 0;
+  transform: translateX(100%);
+  transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .4s cubic-bezier(.2,.8,.2,1);
+}
+
+.u021-moon i {
+  position: absolute;
+  border-radius: 50%;
+  background: #A3AABC;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,.2);
+}
+
+.u021-moon i:nth-child(1) { left: 8px; top: 6px; width: 8px; height: 8px; }
+.u021-moon i:nth-child(2) { left: 18px; top: 15px; width: 5px; height: 5px; }
+.u021-moon i:nth-child(3) { left: 9px; top: 19px; width: 4px; height: 4px; }
+
+:root[data-theme="dark"] .u021-knob,
+.u021.is-night .u021-knob {
+  transform: translateX(38px) rotate(200deg);
+}
+
+:root[data-theme="dark"] .u021-moon,
+.u021.is-night .u021-moon {
+  opacity: 1;
+  transform: none;
+}
+
+.u021-clouds {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .6s cubic-bezier(.2,.8,.2,1);
+}
+
+.u021-clouds i {
+  position: absolute;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.u021-clouds i:nth-child(1) {
+  right: -4px;
+  bottom: -8px;
+  width: 48px;
+  height: 24px;
+  box-shadow: -18px 4px 0 -3px #fff, -32px 8px 0 -5px #fff;
+}
+
+.u021-clouds i:nth-child(2) {
+  right: 8px;
+  bottom: -12px;
+  width: 38px;
+  height: 20px;
+  background: #E3F1FF;
+  box-shadow: -16px 3px 0 -4px #E3F1FF;
+  z-index: -1;
+}
+
+:root[data-theme="dark"] .u021-clouds,
+.u021.is-night .u021-clouds {
+  transform: translateY(35px);
+  opacity: 0;
+}
+
+.u021-stars {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .6s cubic-bezier(.2,.8,.2,1);
+}
+
+.u021-stars i {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px #fff;
+  animation: u021-tw 2.4s ease-in-out infinite;
+}
+
+:root[data-theme="dark"] .u021-stars,
+.u021.is-night .u021-stars {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes u021-tw {
+  50% { opacity: .25; transform: scale(.6); }
+}
+
+/* Reduced motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  .u021-sw, .u021-sw::before, .u021-halo, .u021-knob, .u021-moon, .u021-clouds, .u021-stars, .u021-stars i {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+</style>
+
+<div class="ux-theme-wrap">
+  <div class="u021" id="day-night-root">
+    <button class="u021-sw" type="button" role="switch" id="day-night-toggle" aria-checked="false" aria-label="Chuyển chế độ ngày đêm / Day-night sky mode" title="Chuyển chế độ ngày đêm / Toggle Dark Mode">
+      <span class="u021-halo" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="u021-stars" aria-hidden="true">
+        <i style="left:12px;top:8px"></i>
+        <i style="left:24px;top:22px;animation-delay:-.6s;width:2px;height:2px"></i>
+        <i style="left:34px;top:10px;animation-delay:-1.2s"></i>
+        <i style="left:18px;top:28px;animation-delay:-1.8s;width:2px;height:2px"></i>
+        <i style="left:44px;top:24px;animation-delay:-.9s;width:1.5px;height:1.5px"></i>
+        <i style="left:8px;top:18px;animation-delay:-1.5s;width:1.5px;height:1.5px"></i>
+      </span>
+      <span class="u021-clouds" aria-hidden="true"><i></i><i></i></span>
+      <span class="u021-knob" aria-hidden="true"><span class="u021-moon"><i></i><i></i><i></i></span></span>
+    </button>
+  </div>
+</div>

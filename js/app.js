@@ -621,6 +621,9 @@ class DreamHouseApp {
 
     // 8. ĐIỀU KHIỂN SỰ KIỆN GIAO DIỆN CHUNG
     setupUIEvents() {
+        // Nút chuyển đổi ngày - đêm (Day–night sky switch 021)
+        this.setupThemeToggle();
+
         // Nút đổi ngôn ngữ
         const langToggle = document.getElementById('lang-toggle');
         if (langToggle) {
@@ -824,6 +827,40 @@ class DreamHouseApp {
 
         document.getElementById('btn-logout')?.addEventListener('click', () => {
             this.logout();
+        });
+    }
+
+    setupThemeToggle() {
+        const root = document.getElementById('day-night-root');
+        const sw = document.getElementById('day-night-toggle');
+        if (!sw || !root) return;
+
+        // Đọc cấu hình theme từ localStorage hoặc theo hệ điều hành
+        const savedTheme = localStorage.getItem('dream_house_theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+        const applyTheme = (night) => {
+            root.classList.toggle('is-night', night);
+            sw.setAttribute('aria-checked', String(night));
+            if (night) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('dream_house_theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.classList.remove('dark-theme');
+                localStorage.setItem('dream_house_theme', 'light');
+            }
+        };
+
+        // Khởi tạo trạng thái ban đầu
+        applyTheme(isDark);
+
+        // Xử lý sự kiện click chuyển ngày - đêm
+        sw.addEventListener('click', () => {
+            const currentIsNight = root.classList.contains('is-night');
+            applyTheme(!currentIsNight);
         });
     }
 

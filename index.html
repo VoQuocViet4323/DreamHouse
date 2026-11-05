@@ -37,6 +37,23 @@
             </nav>
 
             <div class="header-actions">
+                <!-- Day-night sky switch (021, Toggles & Pickers) -->
+                <div class="u021" id="day-night-root">
+                    <button class="u021-sw" type="button" role="switch" id="day-night-toggle" aria-checked="false" aria-label="Chuyển chế độ ngày đêm / Day-night sky mode" title="Chuyển chế độ ngày đêm / Toggle Dark Mode">
+                        <span class="u021-halo" aria-hidden="true"><i></i><i></i><i></i></span>
+                        <span class="u021-stars" aria-hidden="true">
+                            <i style="left:12px;top:8px"></i>
+                            <i style="left:24px;top:22px;animation-delay:-.6s;width:2px;height:2px"></i>
+                            <i style="left:34px;top:10px;animation-delay:-1.2s"></i>
+                            <i style="left:18px;top:28px;animation-delay:-1.8s;width:2px;height:2px"></i>
+                            <i style="left:44px;top:24px;animation-delay:-.9s;width:1.5px;height:1.5px"></i>
+                            <i style="left:8px;top:18px;animation-delay:-1.5s;width:1.5px;height:1.5px"></i>
+                        </span>
+                        <span class="u021-clouds" aria-hidden="true"><i></i><i></i></span>
+                        <span class="u021-knob" aria-hidden="true"><span class="u021-moon"><i></i><i></i><i></i></span></span>
+                    </button>
+                </div>
+
                 <!-- Nút chuyển ngôn ngữ VI | EN -->
                 <button id="lang-toggle" class="lang-switch-btn" title="Đổi ngôn ngữ / Switch Language">
                     <strong>VI</strong> | EN
