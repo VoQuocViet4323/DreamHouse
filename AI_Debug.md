@@ -216,6 +216,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 15: Chuyển sang form Đăng ký vẫn bị điền sẵn Username và Mật khẩu từ tài khoản đã ghi nhớ
+- **Hiện tượng:** Khi người dùng đang ở form Đăng nhập (đã có email/username ghi nhớ từ trước), bấm vào nút *"Chưa có tài khoản? Đăng ký ngay"*, hoặc khi mở trực tiếp URL có hash `#register`, thì ở màn hình Đăng ký, ô "Tên tài khoản (Username)" và các ô mật khẩu/xác nhận mật khẩu vẫn bị điền sẵn thông tin của tài khoản cũ.
+- **Nguyên nhân cốt lõi:**
+  1. Form Đăng nhập và Đăng ký sử dụng chung các phần tử input DOM (`#auth-email`, `#auth-password`). Khi người dùng bấm chuyển chế độ, hàm `loadRememberedAccount()` vẫn được kích hoạt hoặc vô tình chạy do kiểm tra hash URL chung `#login || #register` mà không phân biệt chế độ.
+  2. Hàm `loadRememberedAccount()` thiếu lớp chắn (Guard Clause) kiểm tra xem modal có đang ở chế độ Đăng ký hay không.
+  3. Trình duyệt (Chrome/Edge Password Manager) khi phát hiện form có trường username và password sẽ tự động kích hoạt tính năng Autofill không đồng bộ sau khi các phần tử input thay đổi hiển thị.
+  4. Hàng tùy chọn "Ghi nhớ tài khoản" không được ẩn đi khi ở form Đăng ký gây nhầm lẫn thị giác.
+- **Cách khắc phục dứt điểm:**
+  1. Thêm Guard Clause trong `loadRememberedAccount()`: Kiểm tra nếu `#auth-name-group` đang hiển thị (`display !== 'none'`) hoặc URL hash là `#register`, lập tức xóa trắng các ô và `return` ngay.
+  2. Trong khối kiểm tra hash mở modal tự động: Chỉ gọi `loadRememberedAccount()` khi hash chính xác là `#login`; tuyệt đối không gọi khi hash là `#register`.
+  3. Trong hàm `updateAuthFormMode(registerMode)`: Khi `registerMode === true`, xóa rỗng toàn bộ giá trị các ô `#auth-name`, `#auth-email`, `#auth-password`, `#auth-confirm-password`, đặt `autocomplete="off"` và `autocomplete="new-password"`.
+  4. Thiết lập 2 nhịp dọn dẹp trễ (`setTimeout` 50ms & 200ms) trong `updateAuthFormMode(true)` để xóa đè mọi hành vi tự động điền trễ của trình duyệt.
+  5. Ẩn khối checkbox "Ghi nhớ tài khoản" (`.auth-remember-label`) khi ở chế độ Đăng ký và chỉ phục hồi khi chuyển về Đăng nhập.
+  6. Thêm `autocomplete="off"` trực tiếp vào thẻ `<form id="auth-form">` trong [index.html](file:///d:/DreamHouse/index.html).
+  7. Tăng phiên bản cache-busting lên `?v=3.0`.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

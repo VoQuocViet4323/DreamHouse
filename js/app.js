@@ -1308,6 +1308,56 @@ class DreamHouseApp {
                     isRegisterMode ? 'auth_has_acc' : 'auth_no_acc'
                 );
             }
+
+            const nameInput = document.getElementById('auth-name');
+            const passInput = document.getElementById('auth-password');
+            const rememberCheckbox = document.getElementById('auth-remember-me');
+            const rememberLabel = document.querySelector('.auth-remember-label');
+
+            if (rememberLabel) {
+                rememberLabel.style.display = isRegisterMode ? 'none' : 'inline-flex';
+            }
+
+            if (isRegisterMode) {
+                // KHI CHUYỂN SANG ĐĂNG KÝ: TUYỆT ĐỐI XÓA SẠCH TẤT CẢ CÁC TRƯỜNG NHẬP LIỆU
+                if (nameInput) nameInput.value = '';
+                if (identifierInput) {
+                    identifierInput.value = '';
+                    identifierInput.setAttribute('autocomplete', 'off');
+                }
+                if (passInput) {
+                    passInput.value = '';
+                    passInput.setAttribute('autocomplete', 'new-password');
+                }
+                if (confirmPassInput) {
+                    confirmPassInput.value = '';
+                    confirmPassInput.setAttribute('autocomplete', 'new-password');
+                }
+                if (rememberCheckbox) rememberCheckbox.checked = false;
+
+                // Cơ chế chống trình duyệt (Chrome/Edge) tự động điền mật khẩu / tài khoản đã lưu
+                setTimeout(() => {
+                    if (isRegisterMode) {
+                        if (nameInput) nameInput.value = '';
+                        if (identifierInput) identifierInput.value = '';
+                        if (passInput) passInput.value = '';
+                        if (confirmPassInput) confirmPassInput.value = '';
+                    }
+                }, 50);
+                setTimeout(() => {
+                    if (isRegisterMode) {
+                        if (nameInput) nameInput.value = '';
+                        if (identifierInput) identifierInput.value = '';
+                        if (passInput) passInput.value = '';
+                        if (confirmPassInput) confirmPassInput.value = '';
+                    }
+                }, 200);
+            } else {
+                // KHI QUAY LẠI ĐĂNG NHẬP: KHÔI PHỤC THUỘC TÍNH AUTOCOMPLETE VÀ NẠP TÀI KHOẢN GHI NHỚ NẾU CÓ
+                if (identifierInput) identifierInput.setAttribute('autocomplete', 'username');
+                if (passInput) passInput.setAttribute('autocomplete', 'current-password');
+                this.loadRememberedAccount();
+            }
         };
 
         // Mặc định ở chế độ Đăng nhập
@@ -1325,7 +1375,6 @@ class DreamHouseApp {
             const confirmInput = document.getElementById('auth-confirm-password');
             if (confirmInput) confirmInput.value = '';
 
-            this.loadRememberedAccount();
             modal?.classList.remove('hidden');
             window.location.hash = 'login';
         });
@@ -1359,17 +1408,9 @@ class DreamHouseApp {
 
         switchModeLink?.addEventListener('click', (e) => {
             e.preventDefault();
-            updateAuthFormMode(!isRegisterMode);
-            const passInput = document.getElementById('auth-password');
-            if (passInput) passInput.value = '';
-            const confirmInput = document.getElementById('auth-confirm-password');
-            if (confirmInput) confirmInput.value = '';
-            if (!isRegisterMode) {
-                this.loadRememberedAccount();
-            } else {
-                const rememberCheckbox = document.getElementById('auth-remember-me');
-                if (rememberCheckbox) rememberCheckbox.checked = false;
-            }
+            const targetMode = !isRegisterMode;
+            updateAuthFormMode(targetMode);
+            window.location.hash = targetMode ? 'register' : 'login';
         });
 
         // Nút con mắt ẩn/hiện mật khẩu trong form Auth
@@ -1425,8 +1466,8 @@ class DreamHouseApp {
                 updateAuthFormMode(true);
             } else {
                 updateAuthFormMode(false);
+                this.loadRememberedAccount();
             }
-            this.loadRememberedAccount();
             modal?.classList.remove('hidden');
         }
 
@@ -1519,6 +1560,17 @@ class DreamHouseApp {
 
     loadRememberedAccount() {
         try {
+            // NẾU ĐANG Ở CHẾ ĐỘ ĐĂNG KÝ HOẶC HASH #register: TUYỆT ĐỐI KHÔNG NẠP DỮ LIỆU
+            const nameGroup = document.getElementById('auth-name-group');
+            const isReg = (nameGroup && nameGroup.style.display !== 'none') || window.location.hash === '#register';
+            if (isReg) {
+                const emailInput = document.getElementById('auth-email');
+                if (emailInput) emailInput.value = '';
+                const rememberCheckbox = document.getElementById('auth-remember-me');
+                if (rememberCheckbox) rememberCheckbox.checked = false;
+                return;
+            }
+
             const rememberedEmail = localStorage.getItem('dream_house_remember_email');
             const emailInput = document.getElementById('auth-email');
             const rememberCheckbox = document.getElementById('auth-remember-me');

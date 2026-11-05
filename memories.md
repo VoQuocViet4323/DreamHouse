@@ -265,6 +265,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Dọn sạch toàn bộ trường mật khẩu và tài khoản cũ trong hàm `logout()` và khi bấm nút Đăng nhập từ Header.
   - Nâng tham số cache-busting lên **`?v=2.9`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 17: Tuyệt đối Không Điền sẵn Dữ liệu khi Chuyển sang Màn hình Đăng ký (Register Form Isolation)
+- [x] **Cô lập dữ liệu hoàn toàn giữa Form Đăng nhập và Form Đăng ký:**
+  - Ngăn chặn triệt để hiện tượng khi chuyển từ Đăng nhập sang Đăng ký thì ô "Tên tài khoản (Username)" và các ô mật khẩu bị tự động điền giá trị của tài khoản đã ghi nhớ hoặc bị trình duyệt Autofill chèn thông tin.
+  - Cập nhật hàm `updateAuthFormMode(registerMode)` trong [js/app.js](file:///d:/DreamHouse/js/app.js):
+    - Khi `isRegisterMode === true`: Xóa trắng toàn bộ các ô nhập `#auth-name`, `#auth-email`, `#auth-password`, `#auth-confirm-password`, bỏ chọn checkbox Ghi nhớ, đặt `autocomplete="off"` cho ô username và `autocomplete="new-password"` cho ô mật khẩu/xác nhận mật khẩu.
+    - Ẩn hoàn toàn nhãn "Ghi nhớ tài khoản" (`.auth-remember-label`) khi ở chế độ Đăng ký (chỉ hiển thị ở chế độ Đăng nhập).
+    - Tích hợp 2 nhịp dọn dẹp trễ (`setTimeout` 50ms & 200ms) để loại trừ triệt để hành vi can thiệp trễ của trình quản lý mật khẩu trình duyệt (Chrome/Edge Password Manager).
+  - Tái cấu trúc `loadRememberedAccount()`: Kiểm tra nếu giao diện đang ở chế độ Đăng ký (`#auth-name-group` hiển thị) hoặc URL hash là `#register`, hàm lập tức ngắt (`return`) và dọn sạch các trường dữ liệu, tuyệt đối không chèn tài khoản đã lưu vào form Đăng ký.
+  - Sửa logic kiểm tra hash khởi tạo: Chỉ gọi `loadRememberedAccount()` khi hash là `#login`; nếu hash là `#register` thì tuyệt đối không gọi nạp tài khoản.
+  - Thêm thuộc tính `autocomplete="off"` vào thẻ `<form id="auth-form">` trong [index.html](file:///d:/DreamHouse/index.html).
+  - Tăng tham số cache-busting lên **`?v=3.0`** trên toàn bộ `index.html` và `admin.html`.
+
+
 
 
 
