@@ -1003,6 +1003,7 @@ class DreamHouseApp {
                 alertBox.textContent = '';
             }
             modal.classList.remove('hidden');
+            window.location.hash = 'login';
         });
 
         closeBtn?.addEventListener('click', () => {
@@ -1039,6 +1040,12 @@ class DreamHouseApp {
             document.getElementById('auth-modal-title').textContent = window.i18n.t(
                 isRegisterMode ? 'auth_title_register' : 'auth_title_login'
             );
+            const methodHint = document.getElementById('auth-method-hint');
+            if (methodHint) {
+                methodHint.textContent = window.i18n.t(
+                    isRegisterMode ? 'auth_email_hint_register' : 'auth_email_hint'
+                );
+            }
             document.getElementById('auth-submit-btn').textContent = window.i18n.t(
                 isRegisterMode ? 'auth_register_action' : 'auth_login_action'
             );
@@ -1046,6 +1053,46 @@ class DreamHouseApp {
                 isRegisterMode ? 'auth_has_acc' : 'auth_no_acc'
             );
         });
+
+        // Nút con mắt ẩn/hiện mật khẩu trong form Auth
+        const passInput = document.getElementById('auth-password');
+        const eyeBtn = document.getElementById('toggle-auth-pass-visibility');
+        eyeBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!passInput) return;
+            const isPass = passInput.type === 'password';
+            passInput.type = isPass ? 'text' : 'password';
+            eyeBtn.classList.toggle('active', isPass);
+            eyeBtn.setAttribute('title', isPass ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+            eyeBtn.innerHTML = isPass
+                ? `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="2" x2="23" y2="23"></line></svg>`
+                : `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        });
+
+        // Nút quay lại trang chủ & Khám phá mẫu nhà từ cột Showcase
+        document.getElementById('auth-back-to-home')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.closeAuthModal();
+        });
+        document.getElementById('auth-explore-cta')?.addEventListener('click', () => {
+            this.closeAuthModal();
+            document.getElementById('gallery-section')?.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Nhấn phím Escape để đóng nhanh màn hình Auth
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+                this.closeAuthModal();
+            }
+        });
+
+        // Kiểm tra mở Auth tự động nếu URL có hash #login hoặc #register
+        if (window.location.hash === '#login' || window.location.hash === '#register') {
+            if (window.location.hash === '#register' && !isRegisterMode) {
+                switchModeLink?.click();
+            }
+            modal?.classList.remove('hidden');
+        }
 
         forgotLink?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1096,6 +1143,9 @@ class DreamHouseApp {
         if (alertBox) {
             alertBox.className = 'auth-alert hidden';
             alertBox.textContent = '';
+        }
+        if (window.location.hash === '#login' || window.location.hash === '#register') {
+            history.pushState("", document.title, window.location.pathname + window.location.search);
         }
     }
 

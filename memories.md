@@ -188,5 +188,27 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Cập nhật dòng bản quyền chân trang: `© 2026 Dream House. All rights reserved.`.
   - Nâng tham số cache-busting lên `?v=2.3` trên toàn bộ tệp `index.html` và `admin.html`.
 
+### Giai đoạn 12: Thiết kế Màn hình Đăng nhập Chuyên biệt Toàn màn hình (Dedicated Split-Screen Auth Page)
+- [x] **Xây dựng Màn hình Đăng nhập / Đăng ký chuyên biệt chuẩn xu hướng Deel & Mobbin:**
+  - Thay thế cửa sổ pop-up nhỏ cũ bằng **Trang đăng nhập toàn màn hình (Full-Screen Takeover)** chia đôi bố cục (Split Layout).
+  - **Cột trái (Showcase Kiến trúc sư độc bản & Animation)**:
+    - Bàn vẽ kiến trúc sư (Drafting Table) bằng đồ họa vector SVG tinh xảo: mặt bàn nghiêng, bản vẽ Blueprint trải rộng, ống bút thước kỹ thuật, mô hình biệt thự 3D mini.
+    - Đèn bàn kiến trúc khớp nối kim loại với ánh sáng vàng ấm toả xuống mặt bàn kèm hiệu ứng nhấp nháy êm dịu (`lampLightGlow`).
+    - Ghế kiến trúc sư công thái học màu vàng mù tạc hiện đại.
+    - Hệ thống nhãn công nghệ lơ lửng chuyển động nổi (`3D Walkthrough`, `BIM Standards`) với góc trỏ pointer và chuyển động nhịp nhàng.
+    - Tiêu đề nghệ thuật ấn tượng: *Kiến tạo không gian sống &* kèm pill viền nổi bật *tổ ấm trong mơ*, nút CTA dẫn tới thư viện mẫu nhà.
+  - **Cột phải (Card Đăng nhập / Đăng ký nổi đè lên nền)**:
+    - Thiết kế thẻ nổi (Floating Card) màu trắng tinh tế (hoặc kính mờ Obsidian trong Dark Mode) đổ bóng đa tầng.
+    - Tiêu đề kiểu chữ Serif sang trọng (`Log in` / `Create an account`).
+    - Nút đăng nhập Google với logo chính thức.
+    - Ô nhập Email và Mật khẩu viền bo tròn hiện đại, kèm **nút con mắt ẩn/hiện mật khẩu tương tác thời gian thực (`👁️`)**.
+    - Nút submit đen tuyền / vàng hoàng gia vững chãi, liên kết chuyển đổi linh hoạt Đăng nhập <-> Đăng ký <-> Quên mật khẩu.
+  - **Tối ưu trải nghiệm điều hướng**:
+    - Nút quay lại trang chủ ở thanh header trên cùng và hỗ trợ bấm phím `Escape` để thoát nhanh.
+    - Hỗ trợ URL hash `#login` / `#register` và tệp chuyển tiếp `login.html`.
+    - Tương thích 100% Dark Mode & Light Mode, đa ngôn ngữ VI / EN.
+    - Nâng tham số cache-busting lên `?v=2.4` trên toàn bộ tệp `index.html` và `admin.html`.
+
+
 
 

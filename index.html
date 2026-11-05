@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3" />
+    <link rel="stylesheet" href="style.css?v=2.4" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,11 +17,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=2.3"></script>
-    <script src="js/i18n.js?v=2.3"></script>
-    <script src="js/toast.js?v=2.3"></script>
-    <script src="js/viewer3d.js?v=2.3"></script>
-    <script src="js/app.js?v=2.3" defer></script>
+    <script src="js/config.js?v=2.4"></script>
+    <script src="js/i18n.js?v=2.4"></script>
+    <script src="js/toast.js?v=2.4"></script>
+    <script src="js/viewer3d.js?v=2.4"></script>
+    <script src="js/app.js?v=2.4" defer></script>
 </head>
 <body>
     <!-- 1. THANH ĐIỀU HƯỚNG TỐI GIẢN (NAVBAR) -->
@@ -433,55 +433,229 @@
         </div>
     </section>
 
-    <!-- 6. MODAL ĐĂNG NHẬP / ĐĂNG KÝ (AUTH DIALOG) -->
-    <div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
-        <div class="auth-dialog">
-            <button type="button" id="close-auth-modal" class="modal-close" aria-label="Đóng">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-            <h3 id="auth-modal-title" class="auth-title" data-i18n="auth_title_login">Đăng nhập</h3>
+    <!-- 6. TRANG ĐĂNG NHẬP / ĐĂNG KÝ CHUYÊN BIỆT (DEDICATED FULL-SCREEN AUTH PAGE) -->
+    <div id="auth-modal" class="auth-page-takeover hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <!-- Thanh điều hướng trên cùng của trang Auth -->
+        <div class="auth-top-bar">
+            <a href="index.html" class="auth-brand" id="auth-back-to-home" title="Quay lại trang chủ Dream House">
+                <span class="auth-brand-logo">Dream House</span>
+                <span class="auth-brand-badge">ARCHITECTURAL DESIGN</span>
+            </a>
 
-            <!-- Nút đăng nhập Google OAuth -->
-            <button id="auth-google-btn" class="btn-google">
-                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
-                <span data-i18n="auth_btn_google">Tiếp tục với Google</span>
-            </button>
+            <div class="auth-top-actions">
+                <button type="button" id="close-auth-modal" class="auth-close-btn" aria-label="Đóng và quay lại trang chủ" title="Quay lại trang chủ (Esc)">
+                    <span class="auth-close-text" data-i18n="btn_back_home">Quay lại trang chủ</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
 
-            <div class="auth-divider">
-                <span data-i18n="auth_or">HOẶC</span>
+        <div class="auth-page-container">
+            <!-- CỘT BÊN TRÁI: SHOWCASE KIẾN TRÚC SƯ & TRANH MINH HOẠ ĐỘNG -->
+            <div class="auth-showcase-column">
+                <div class="auth-showcase-inner">
+                    <!-- Khung minh hoạ bàn làm việc kiến trúc sư độc bản (Animated Architect Studio) -->
+                    <div class="auth-illustration-wrapper">
+                        <!-- Nhãn tính năng lơ lửng số 1 (3D Walkthrough) -->
+                        <div class="auth-floating-badge badge-top-left">
+                            <div class="badge-icon-wrap">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            </div>
+                            <div class="badge-text">
+                                <span class="badge-title">3D Walkthrough</span>
+                                <span class="badge-sub">Mô hình thực tế</span>
+                            </div>
+                            <span class="badge-pointer"></span>
+                        </div>
+
+                        <!-- Nhãn tính năng lơ lửng số 2 (Architectural Blueprint) -->
+                        <div class="auth-floating-badge badge-center-right">
+                            <div class="badge-icon-wrap badge-icon-cyan">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            </div>
+                            <div class="badge-text">
+                                <span class="badge-title">BIM Standards</span>
+                                <span class="badge-sub">Bản vẽ kỹ thuật chuẩn</span>
+                            </div>
+                        </div>
+
+                        <!-- Vector Bàn vẽ & Không gian làm việc kiến trúc sư -->
+                        <svg class="architect-studio-svg" viewBox="0 0 540 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="lampSpotlight" cx="370" cy="110" r="260" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fef08a" stop-opacity="0.45"/>
+                                    <stop offset="45%" stop-color="#fef08a" stop-opacity="0.18"/>
+                                    <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
+                                </radialGradient>
+                                <linearGradient id="chairGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#fbbf24"/>
+                                    <stop offset="100%" stop-color="#d97706"/>
+                                </linearGradient>
+                                <linearGradient id="deskTopGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffffff"/>
+                                    <stop offset="100%" stop-color="#f1f5f9"/>
+                                </linearGradient>
+                                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%" filterUnits="userSpaceOnUse">
+                                    <feDropShadow dx="0" dy="12" stdDeviation="15" flood-color="rgba(30,20,80,0.22)"/>
+                                </filter>
+                            </defs>
+
+                            <!-- Vầng hào quang nền kiến trúc mờ -->
+                            <ellipse cx="260" cy="220" rx="190" ry="120" fill="rgba(255,255,255,0.2)" />
+
+                            <!-- Ánh sáng từ đèn bàn tỏa xuống mặt bàn -->
+                            <polygon points="360,115 140,290 480,290" fill="url(#lampSpotlight)" class="lamp-beam-pulse"/>
+
+                            <!-- Bóng đổ bàn vẽ -->
+                            <ellipse cx="280" cy="295" rx="170" ry="24" fill="rgba(30,20,80,0.18)" />
+
+                            <!-- Chân bàn kiến trúc sư kim loại thanh mảnh -->
+                            <line x1="145" y1="180" x2="135" y2="290" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
+                            <line x1="175" y1="180" x2="165" y2="290" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="420" y1="180" x2="430" y2="290" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
+                            <line x1="390" y1="180" x2="400" y2="290" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+
+                            <!-- Ngăn kéo và thân bàn vẽ -->
+                            <rect x="120" y="160" width="320" height="30" rx="4" fill="url(#deskTopGradient)" stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)"/>
+                            <!-- Rãnh chia 3 hộc kéo -->
+                            <line x1="220" y1="160" x2="220" y2="190" stroke="#cbd5e1" stroke-width="2"/>
+                            <line x1="340" y1="160" x2="340" y2="190" stroke="#cbd5e1" stroke-width="2"/>
+                            <!-- Tay nắm kim loại ngăn kéo -->
+                            <rect x="155" y="172" width="30" height="5" rx="2" fill="#94a3b8"/>
+                            <rect x="265" y="172" width="30" height="5" rx="2" fill="#94a3b8"/>
+                            <rect x="375" y="172" width="30" height="5" rx="2" fill="#94a3b8"/>
+
+                            <!-- Mặt bàn nghiêng (Drafting Board) -->
+                            <polygon points="120,160 440,160 455,145 135,145" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+
+                            <!-- Bản vẽ kiến trúc Blueprint trải phẳng trên bàn -->
+                            <polygon points="170,154 310,154 320,147 180,147" fill="#3b82f6" opacity="0.9"/>
+                            <line x1="185" y1="150" x2="240" y2="150" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="3 2"/>
+                            <line x1="255" y1="150" x2="305" y2="150" stroke="#ffffff" stroke-width="1.2"/>
+
+                            <!-- Ống cắm bút & thước kẻ -->
+                            <rect x="145" y="132" width="16" height="22" rx="3" fill="#334155"/>
+                            <line x1="150" y1="132" x2="147" y2="118" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+                            <line x1="154" y1="132" x2="154" y2="114" stroke="#e5b95d" stroke-width="2.5" stroke-linecap="round"/>
+                            <line x1="158" y1="132" x2="161" y2="120" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+
+                            <!-- Mô hình nhà phố 3D mini đặt trên góc bàn -->
+                            <g class="mini-3d-house-model" transform="translate(325, 120)">
+                                <polygon points="10,25 35,12 60,25 35,38" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+                                <polygon points="10,25 35,38 35,18 10,5" fill="#cbd5e1"/>
+                                <polygon points="35,38 60,25 60,5 35,18" fill="#94a3b8"/>
+                                <polygon points="35,-2 10,5 35,18 60,5" fill="#e5b95d" stroke="#b45309" stroke-width="1"/>
+                                <polygon points="35,-2 60,5 50,0 25,-7" fill="#d97706"/>
+                            </g>
+
+                            <!-- Đèn bàn kiến trúc sư (Architect Drafting Lamp) -->
+                            <g class="architect-lamp" transform="translate(355, 60)">
+                                <ellipse cx="15" cy="85" rx="10" ry="4" fill="#1e293b"/>
+                                <line x1="15" y1="85" x2="5" y2="45" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+                                <circle cx="5" cy="45" r="4" fill="#fbbf24"/>
+                                <line x1="5" y1="45" x2="25" y2="15" stroke="#334155" stroke-width="3.5" stroke-linecap="round"/>
+                                <circle cx="25" cy="15" r="4" fill="#fbbf24"/>
+                                <path d="M 12 18 Q 25 -2 38 18 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+                                <ellipse cx="25" cy="18" rx="8" ry="3" fill="#fef08a" class="lamp-bulb-glow"/>
+                            </g>
+
+                            <!-- Ghế kiến trúc sư công thái học màu vàng hiện đại (Architect Chair) -->
+                            <g class="architect-chair" transform="translate(190, 135)">
+                                <ellipse cx="85" cy="165" rx="50" ry="12" fill="rgba(30,20,80,0.18)"/>
+                                <line x1="85" y1="125" x2="85" y2="160" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                                <line x1="85" y1="160" x2="45" y2="168" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+                                <line x1="85" y1="160" x2="125" y2="168" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+                                <line x1="85" y1="160" x2="80" y2="175" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+                                <line x1="85" y1="160" x2="60" y2="155" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+                                <line x1="85" y1="160" x2="110" y2="155" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+                                <circle cx="45" cy="170" r="3" fill="#1e293b"/>
+                                <circle cx="125" cy="170" r="3" fill="#1e293b"/>
+                                <circle cx="80" cy="177" r="3" fill="#1e293b"/>
+
+                                <path d="M 35 85 Q 85 95 135 80 L 125 115 Q 85 125 45 115 Z" fill="url(#chairGradient)" stroke="#b45309" stroke-width="2" filter="url(#softShadow)"/>
+                                <path d="M 105 10 Q 145 35 130 85 Q 95 90 85 45 Q 95 15 105 10 Z" fill="url(#chairGradient)" stroke="#b45309" stroke-width="2"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Tiêu đề lớn & Lời dẫn truyền cảm hứng -->
+                    <div class="auth-showcase-copy">
+                        <h1 class="auth-showcase-headline">
+                            Kiến tạo không gian sống &amp;
+                            <span class="auth-headline-highlight">tổ ấm trong mơ</span>
+                        </h1>
+                        <p class="auth-showcase-sub">
+                            Trải nghiệm trực quan mô hình 3D thực tế, lựa chọn phong cách kiến trúc độc bản và đồng hành cùng chuyên gia xây dựng tổ ấm hoàn mỹ.
+                        </p>
+                        <div class="auth-showcase-actions">
+                            <button type="button" class="auth-showcase-cta" id="auth-explore-cta">
+                                <span>Khám phá bộ sưu tập mẫu</span>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Khung thông báo Alert trong modal đăng nhập -->
-            <div id="auth-alert" class="auth-alert hidden" role="alert"></div>
+            <!-- CỘT BÊN PHẢI: FORM ĐĂNG NHẬP / ĐĂNG KÝ NẰM ĐÈ LÊN NỀN -->
+            <div class="auth-form-column">
+                <div class="auth-floating-card">
+                    <h2 id="auth-modal-title" class="auth-card-title" data-i18n="auth_title_login">Log in</h2>
 
-            <!-- Form đăng nhập/đăng ký bằng Email -->
-            <form id="auth-form" class="auth-form">
-                <div class="form-group" id="auth-name-group" style="display: none;">
-                    <label for="auth-name" data-i18n="auth_name">Họ tên hiển thị</label>
-                    <input type="text" id="auth-name" placeholder="Nguyễn Văn A" />
+                    <!-- Nút đăng nhập Google OAuth -->
+                    <button type="button" id="auth-google-btn" class="auth-google-btn">
+                        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                        <span data-i18n="auth_btn_google">Log In Using Google</span>
+                    </button>
+
+                    <div class="auth-card-divider">
+                        <span data-i18n="auth_or">or</span>
+                    </div>
+
+                    <p class="auth-method-subtitle" id="auth-method-hint" data-i18n="auth_email_hint">
+                        Log in using email address
+                    </p>
+
+                    <!-- Khung thông báo Alert trong modal đăng nhập -->
+                    <div id="auth-alert" class="auth-alert hidden" role="alert"></div>
+
+                    <!-- Form đăng nhập / đăng ký -->
+                    <form id="auth-form" class="auth-card-form">
+                        <div class="auth-field-group" id="auth-name-group" style="display: none;">
+                            <label for="auth-name" class="auth-field-label" data-i18n="auth_name">Họ tên hiển thị</label>
+                            <input type="text" id="auth-name" class="auth-card-input" placeholder="Nguyễn Văn A" />
+                        </div>
+
+                        <div class="auth-field-group">
+                            <label for="auth-email" class="auth-field-label" data-i18n="auth_email">Email address</label>
+                            <input type="email" id="auth-email" class="auth-card-input" required placeholder="name@example.com" />
+                        </div>
+
+                        <div class="auth-field-group">
+                            <label for="auth-password" class="auth-field-label" data-i18n="auth_pass">Password</label>
+                            <div class="auth-password-wrapper">
+                                <input type="password" id="auth-password" class="auth-card-input" required minlength="6" placeholder="••••••••••••" />
+                                <button type="button" class="auth-eye-toggle-btn" id="toggle-auth-pass-visibility" title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
+                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="auth-forgot-container">
+                            <a href="#" id="auth-forgot-password" class="auth-forgot-link" data-i18n="auth_forgot">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" id="auth-submit-btn" class="auth-card-submit-btn" data-i18n="auth_login_action">
+                            Log In
+                        </button>
+                    </form>
+
+                    <div class="auth-switch-wrapper">
+                        <a href="#" id="auth-switch-mode" class="auth-switch-link" data-i18n="auth_no_acc">
+                            Need to create an account? Sign Up
+                        </a>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="auth-email" data-i18n="auth_email">Địa chỉ Email</label>
-                    <input type="email" id="auth-email" required placeholder="name@example.com" />
-                </div>
-
-                <div class="form-group">
-                    <label for="auth-password" data-i18n="auth_pass">Mật khẩu</label>
-                    <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" />
-                </div>
-
-                <div class="auth-helper-links">
-                    <a href="#" id="auth-forgot-password" class="auth-link" data-i18n="auth_forgot">Quên mật khẩu?</a>
-                </div>
-
-                <button type="submit" id="auth-submit-btn" class="btn-primary full-btn" data-i18n="auth_login_action">
-                    Đăng nhập
-                </button>
-            </form>
-
-            <div class="auth-footer-toggle">
-                <a href="#" id="auth-switch-mode" class="auth-link" data-i18n="auth_no_acc">Chưa có tài khoản? Đăng ký ngay</a>
             </div>
         </div>
     </div>
