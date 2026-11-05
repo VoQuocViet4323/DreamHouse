@@ -45,6 +45,7 @@ DreamHouse/
 ├── js\
 │   ├── config.js            # Cấu hình Supabase (URL, anon key) & Thông tin liên hệ (auto-generated)
 │   ├── i18n.js              # Bộ từ điển song ngữ Việt - Anh & Hàm định dạng tiền tệ
+│   ├── toast.js             # Hệ thống Toast Notification cao cấp (thay thế hoàn toàn alert)
 │   ├── viewer3d.js          # Bộ dựng Three.js: Orbiting, ánh sáng, nạp .glb hoặc dựng procedural
 │   └── app.js               # Logic điều phối giao diện, Auth, Profile Modal, lọc dữ liệu
 ├── supabase\

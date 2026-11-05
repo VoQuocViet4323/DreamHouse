@@ -2566,3 +2566,255 @@ body.dark-theme .lang-switch-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
+
+/* ==============================================================================
+   HỆ THỐNG TOAST NOTIFICATION CAO CẤP (ANIMATE-UI LUXURY TOAST)
+   ============================================================================== */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 440px;
+  width: calc(100% - 48px);
+}
+
+@media (max-width: 600px) {
+  .toast-container {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+.toast-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-16px) scale(0.96);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.toast-card:hover {
+  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.22);
+}
+
+.toast-card.toast-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.toast-card.toast-hiding {
+  opacity: 0;
+  transform: translateX(45px) scale(0.94);
+  pointer-events: none;
+}
+
+.toast-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toast-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-right: 16px;
+}
+
+.toast-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.toast-msg {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.toast-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.toast-close-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Các loại phân hệ màu Toast */
+.toast-success {
+  border-left: 4px solid #10b981;
+}
+.toast-success .toast-icon-box {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.toast-error {
+  border-left: 4px solid #ef4444;
+}
+.toast-error .toast-icon-box {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.toast-warning {
+  border-left: 4px solid #f59e0b;
+}
+.toast-warning .toast-icon-box {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.toast-info {
+  border-left: 4px solid #3b82f6;
+}
+.toast-info .toast-icon-box {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* Thanh tiến trình Progress Bar co dần */
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  animation: toastProgressBar linear forwards;
+}
+
+.toast-success .toast-progress-bar { background: #10b981; }
+.toast-error .toast-progress-bar { background: #ef4444; }
+.toast-warning .toast-progress-bar { background: #f59e0b; }
+.toast-info .toast-progress-bar { background: #3b82f6; }
+
+@keyframes toastProgressBar {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* DARK MODE CHO TOAST NOTIFICATION */
+:root[data-theme="dark"] .toast-card,
+body.dark-theme .toast-card {
+  background: rgba(18, 20, 30, 0.94);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.7);
+}
+
+:root[data-theme="dark"] .toast-title {
+  color: #f8fafc;
+}
+
+:root[data-theme="dark"] .toast-msg {
+  color: #94a3b8;
+}
+
+:root[data-theme="dark"] .toast-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fca5a5;
+}
+
+:root[data-theme="dark"] .toast-success .toast-icon-box {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+}
+
+:root[data-theme="dark"] .toast-error .toast-icon-box {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+:root[data-theme="dark"] .toast-warning .toast-icon-box {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+}
+
+:root[data-theme="dark"] .toast-info .toast-icon-box {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+}
+
+/* KHUNG INLINE ALERT TRONG MODAL AUTH */
+.auth-alert {
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.auth-alert.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.auth-alert.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+:root[data-theme="dark"] .auth-alert.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+:root[data-theme="dark"] .auth-alert.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #a7f3d0;
+  border-color: rgba(16, 185, 129, 0.3);
+}

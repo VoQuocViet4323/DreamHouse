@@ -173,7 +173,7 @@ class DreamHouseApp {
     async loginWithGoogle() {
         const client = this.getSupabase();
         if (!client) {
-            alert('Supabase chưa được cấu hình. Vui lòng cập nhật js/config.js');
+            if (window.toast) window.toast.warning('Supabase chưa được cấu hình. Vui lòng kiểm tra file .env');
             return;
         }
         const { error } = await client.auth.signInWithOAuth({
@@ -182,19 +182,35 @@ class DreamHouseApp {
                 redirectTo: window.location.origin + window.location.pathname
             }
         });
-        if (error) alert(error.message);
+        if (error) {
+            const msg = window.translateAuthError ? window.translateAuthError(error.message) : error.message;
+            if (window.toast) window.toast.error(msg);
+        }
     }
 
     async loginWithEmail(email, password) {
         const client = this.getSupabase();
         if (!client) {
-            alert('Supabase chưa được cấu hình trong js/config.js');
+            if (window.toast) window.toast.warning('Supabase chưa được cấu hình trong js/config.js');
             return;
         }
+
+        const alertBox = document.getElementById('auth-alert');
         const { data, error } = await client.auth.signInWithPassword({ email, password });
         if (error) {
-            alert('Đăng nhập thất bại: ' + error.message);
+            const friendlyMsg = window.translateAuthError ? window.translateAuthError(error.message) : error.message;
+            if (alertBox) {
+                alertBox.className = 'auth-alert error';
+                alertBox.innerHTML = `<span>⚠️</span> <span>${friendlyMsg}</span>`;
+                alertBox.classList.remove('hidden');
+            }
+            if (window.toast) {
+                window.toast.error(friendlyMsg, 4500, 'Đăng nhập không thành công');
+            }
         } else {
+            if (window.toast) {
+                window.toast.success('Đăng nhập thành công! Chào mừng bạn quay trở lại.', 3500);
+            }
             this.closeAuthModal();
         }
     }
@@ -202,6 +218,7 @@ class DreamHouseApp {
     async registerWithEmail(email, password, fullName) {
         const client = this.getSupabase();
         if (!client) return;
+        const alertBox = document.getElementById('auth-alert');
         const { data, error } = await client.auth.signUp({
             email,
             password,
@@ -210,9 +227,19 @@ class DreamHouseApp {
             }
         });
         if (error) {
-            alert('Đăng ký thất bại: ' + error.message);
+            const friendlyMsg = window.translateAuthError ? window.translateAuthError(error.message) : error.message;
+            if (alertBox) {
+                alertBox.className = 'auth-alert error';
+                alertBox.innerHTML = `<span>⚠️</span> <span>${friendlyMsg}</span>`;
+                alertBox.classList.remove('hidden');
+            }
+            if (window.toast) {
+                window.toast.error(friendlyMsg, 4500, 'Đăng ký thất bại');
+            }
         } else {
-            alert('Đăng ký thành công! Hãy kiểm tra hòm thư email để xác nhận tài khoản.');
+            if (window.toast) {
+                window.toast.success('Đăng ký thành công! Hãy kiểm tra hòm thư email để kích hoạt tài khoản.', 6000);
+            }
             this.closeAuthModal();
         }
     }
@@ -220,13 +247,29 @@ class DreamHouseApp {
     async resetPassword(email) {
         const client = this.getSupabase();
         if (!client) return;
+        const alertBox = document.getElementById('auth-alert');
         const { error } = await client.auth.resetPasswordForEmail(email, {
             redirectTo: window.location.origin + window.location.pathname
         });
         if (error) {
-            alert('Lỗi: ' + error.message);
+            const friendlyMsg = window.translateAuthError ? window.translateAuthError(error.message) : error.message;
+            if (alertBox) {
+                alertBox.className = 'auth-alert error';
+                alertBox.innerHTML = `<span>⚠️</span> <span>${friendlyMsg}</span>`;
+                alertBox.classList.remove('hidden');
+            }
+            if (window.toast) {
+                window.toast.error(friendlyMsg);
+            }
         } else {
-            alert('Đã gửi email khôi phục mật khẩu. Vui lòng kiểm tra hộp thư!');
+            if (alertBox) {
+                alertBox.className = 'auth-alert success';
+                alertBox.innerHTML = `<span>✅</span> <span>Đã gửi email khôi phục mật khẩu. Vui lòng kiểm tra hộp thư!</span>`;
+                alertBox.classList.remove('hidden');
+            }
+            if (window.toast) {
+                window.toast.success('Đã gửi email khôi phục mật khẩu. Vui lòng kiểm tra hộp thư!', 5000);
+            }
         }
     }
 
@@ -759,7 +802,9 @@ class DreamHouseApp {
 
                 try {
                     await this.submitInquiry({ name, contact, message, template_id });
-                    alert(window.i18n.t('form_success'));
+                    if (window.toast) {
+                        window.toast.success(window.i18n.t('form_success'), 5000);
+                    }
                     form.reset();
                     if (refLabel) {
                         refLabel.textContent = '-';
@@ -767,7 +812,9 @@ class DreamHouseApp {
                     }
                 } catch (err) {
                     console.error(err);
-                    alert(window.i18n.t('form_error'));
+                    if (window.toast) {
+                        window.toast.error(window.i18n.t('form_error'), 5000);
+                    }
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
@@ -926,10 +973,17 @@ class DreamHouseApp {
 
         document.getElementById('menu-settings-btn')?.addEventListener('click', () => {
             dropdownMenu?.classList.add('hidden');
-            alert('Hệ thống đang hoạt động tối ưu với Supabase và Three.js.');
+            if (window.toast) {
+                window.toast.info('Hệ thống đang hoạt động tối ưu với Supabase và Three.js.');
+            }
         });
 
         loginBtn?.addEventListener('click', () => {
+            const alertBox = document.getElementById('auth-alert');
+            if (alertBox) {
+                alertBox.className = 'auth-alert hidden';
+                alertBox.textContent = '';
+            }
             modal.classList.remove('hidden');
         });
 
@@ -958,6 +1012,11 @@ class DreamHouseApp {
         switchModeLink?.addEventListener('click', (e) => {
             e.preventDefault();
             isRegisterMode = !isRegisterMode;
+            const alertBox = document.getElementById('auth-alert');
+            if (alertBox) {
+                alertBox.className = 'auth-alert hidden';
+                alertBox.textContent = '';
+            }
             document.getElementById('auth-name-group').style.display = isRegisterMode ? 'block' : 'none';
             document.getElementById('auth-modal-title').textContent = window.i18n.t(
                 isRegisterMode ? 'auth_title_register' : 'auth_title_login'
@@ -974,7 +1033,17 @@ class DreamHouseApp {
             e.preventDefault();
             const email = document.getElementById('auth-email').value.trim();
             if (!email) {
-                alert('Vui lòng nhập địa chỉ email vào ô trên trước khi yêu cầu khôi phục.');
+                const alertBox = document.getElementById('auth-alert');
+                const warningMsg = 'Vui lòng nhập địa chỉ email vào ô bên dưới trước khi yêu cầu khôi phục.';
+                if (alertBox) {
+                    alertBox.className = 'auth-alert error';
+                    alertBox.innerHTML = `<span>⚠️</span> <span>${warningMsg}</span>`;
+                    alertBox.classList.remove('hidden');
+                }
+                if (window.toast) {
+                    window.toast.warning(warningMsg);
+                }
+                document.getElementById('auth-email')?.focus();
                 return;
             }
             this.resetPassword(email);
@@ -1005,6 +1074,11 @@ class DreamHouseApp {
     closeAuthModal() {
         const modal = document.getElementById('auth-modal');
         if (modal) modal.classList.add('hidden');
+        const alertBox = document.getElementById('auth-alert');
+        if (alertBox) {
+            alertBox.className = 'auth-alert hidden';
+            alertBox.textContent = '';
+        }
     }
 
     openProfileModal() {
@@ -1196,6 +1270,10 @@ class DreamHouseApp {
                 alertBox.className = `profile-alert ${isError ? 'error' : 'success'}`;
                 alertBox.innerHTML = `<span>${isError ? '⚠️' : '✅'}</span> <span>${msg}</span>`;
                 alertBox.classList.remove('hidden');
+            }
+            if (window.toast) {
+                if (isError) window.toast.error(msg);
+                else window.toast.success(msg);
             }
         };
 
