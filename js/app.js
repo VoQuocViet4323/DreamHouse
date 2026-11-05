@@ -902,7 +902,6 @@ class DreamHouseApp {
         const roleBadge = document.getElementById('dropdown-user-role');
         const emailBadge = document.getElementById('dropdown-user-email');
         const adminMenuLink = document.getElementById('menu-admin-link');
-        const addTemplateMenuLink = document.getElementById('menu-add-template-link');
 
         if (this.currentUser) {
             if (loginBtn) loginBtn.classList.add('hidden');
@@ -919,7 +918,6 @@ class DreamHouseApp {
 
             // Hiển thị các mục đặc quyền Admin trong Menu xổ xuống
             if (adminMenuLink) adminMenuLink.classList.toggle('hidden', !isAdmin);
-            if (addTemplateMenuLink) addTemplateMenuLink.classList.toggle('hidden', !isAdmin);
         } else {
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (userDropdown) userDropdown.classList.add('hidden');
