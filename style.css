@@ -200,24 +200,7 @@ body::before {
 }
 
 /* NÃƒÅ¡T CHUYÃ¡Â»â€šN NGÃƒâ€N NGÃ¡Â»Â® (SPRING TOGGLER) */
-.lang-switch-btn {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid var(--color-border);
-  padding: 7px 16px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-text);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--duration-fast) var(--ease-spring);
-}
 
-.lang-switch-btn:hover {
-  transform: scale(1.04);
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-glow);
-}
 
 /* 3. ANIMATE-UI HERO: SHIMMER TEXT & GLOW ORB */
 .hero-section {
@@ -1372,10 +1355,21 @@ body.dark-theme .auth-link:hover {
   color: #f1f5f9;
 }
 
-:root[data-theme="dark"] .lang-switch-btn {
+:root[data-theme="dark"] .lang-switch-btn,
+body.dark-theme .lang-switch-btn {
   background: #151824;
   color: #f1f5f9;
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+:root[data-theme="dark"] .lang-switch-btn:hover,
+body.dark-theme .lang-switch-btn:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 16px rgba(229, 185, 93, 0.3);
+}
+
+:root[data-theme="dark"] .lang-switch-btn.lang-en .lang-code-en {
+  color: #fde68a;
 }
 
 :root[data-theme="dark"] .btn-auth-outline {
@@ -1521,13 +1515,15 @@ body.dark-theme .auth-link:hover {
 }
 
 /* 1. NÃƒÂºt chuyÃ¡Â»Æ’n Ã„â€˜Ã¡Â»â€¢i ngÃƒÂ´n ngÃ¡Â»Â¯ (VI | EN Pill) */
+/* NÚT CHUYỂN ĐỔI NGÔN NGỮ ĐỘNG (VI / EN) VỚI ANIMATION SPRING & FLIP */
 .lang-switch-btn {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  padding: 8px 16px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: var(--radius-full);
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--color-text);
@@ -1535,20 +1531,88 @@ body.dark-theme .auth-link:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 7px;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
+  user-select: none;
 }
 
 .lang-switch-btn:hover {
   transform: translateY(-2px);
   border-color: var(--color-accent);
-  box-shadow: 0 4px 14px rgba(196, 154, 69, 0.22);
+  box-shadow: 0 4px 14px rgba(196, 154, 69, 0.25);
   color: var(--color-accent);
 }
 
 .lang-switch-btn:active {
-  transform: translateY(0) scale(0.96);
+  transform: translateY(0) scale(0.92);
+}
+
+.lang-globe-icon {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lang-switch-btn.lang-en .lang-globe-icon {
+  transform: rotate(180deg);
+}
+
+/* Track trượt mượt mà cho VI / EN */
+.lang-pill-track {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  height: 20px;
+  line-height: 20px;
+  overflow: hidden;
+  width: 24px;
+  text-align: center;
+}
+
+.lang-code {
+  display: block;
+  height: 20px;
+  line-height: 20px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  letter-spacing: 0.05em;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+}
+
+/* Khi ở Tiếng Việt */
+.lang-switch-btn.lang-vi .lang-code {
+  transform: translateY(0);
+}
+.lang-switch-btn.lang-vi .lang-code-vi {
+  opacity: 1;
+}
+.lang-switch-btn.lang-vi .lang-code-en {
+  opacity: 0;
+}
+
+/* Khi ở Tiếng Anh (trượt lên hiện EN) */
+.lang-switch-btn.lang-en .lang-code {
+  transform: translateY(-20px);
+}
+.lang-switch-btn.lang-en .lang-code-vi {
+  opacity: 0;
+}
+.lang-switch-btn.lang-en .lang-code-en {
+  opacity: 1;
+  color: var(--color-accent);
+}
+
+/* Hiệu ứng nhún đàn hồi khi click đổi chế độ */
+.lang-switch-btn.switching {
+  animation: langToggleBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes langToggleBounce {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.06); box-shadow: 0 0 16px rgba(196, 154, 69, 0.35); }
+  100% { transform: scale(1); }
 }
 
 /* 2. NÃƒÂºt Ã„ÂÃ„Æ’ng nhÃ¡ÂºÂ­p (Sign In Button) */

@@ -333,12 +333,34 @@ class I18nManager {
             }
         });
 
-        // Cập nhật nhãn nút đổi ngôn ngữ (HIỂN THỊ NGÔN NGỮ ĐỐI LẬP HOẶC MENU)
+        // Cập nhật trạng thái nút đổi ngôn ngữ (HIỂN THỊ VI KHI TIẾNG VIỆT, EN KHI TIẾNG ANH)
         const toggleBtn = document.getElementById('lang-toggle');
         if (toggleBtn) {
-            toggleBtn.innerHTML = this.currentLang === 'vi' 
-                ? '<strong>VI</strong> | EN' 
-                : 'VI | <strong>EN</strong>';
+            const isEn = this.currentLang === 'en';
+            toggleBtn.classList.toggle('lang-en', isEn);
+            toggleBtn.classList.toggle('lang-vi', !isEn);
+            toggleBtn.setAttribute('title', isEn ? 'Switch to Vietnamese / Chuyển sang Tiếng Việt' : 'Chuyển sang Tiếng Anh / Switch to English');
+            toggleBtn.setAttribute('aria-label', isEn ? 'Current language: English. Click to switch to Vietnamese' : 'Ngôn ngữ hiện tại: Tiếng Việt. Bấm để đổi sang Tiếng Anh');
+
+            // Nếu nút chưa có cấu trúc track (fallback), tự động render cấu trúc track
+            if (!toggleBtn.querySelector('.lang-pill-track')) {
+                toggleBtn.innerHTML = `
+                    <svg class="lang-globe-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span class="lang-pill-track" aria-hidden="true">
+                        <span class="lang-code lang-code-vi">VI</span>
+                        <span class="lang-code lang-code-en">EN</span>
+                    </span>
+                `;
+            }
+
+            // Kích hoạt animation nhún nảy (bounce/pulse) khi đổi chế độ
+            toggleBtn.classList.remove('switching');
+            void toggleBtn.offsetWidth; // force reflow
+            toggleBtn.classList.add('switching');
         }
 
         // Kích hoạt sự kiện thay đổi ngôn ngữ cho các thành phần khác cập nhật dữ liệu mẫu
