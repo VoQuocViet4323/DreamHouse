@@ -37,51 +37,73 @@
             </nav>
 
             <div class="header-actions">
-                <!-- Day-night sky switch (021, Toggles & Pickers) -->
-                <div class="u021" id="day-night-root">
-                    <button class="u021-sw" type="button" role="switch" id="day-night-toggle" aria-checked="false" aria-label="Chuyển chế độ ngày đêm / Day-night sky mode" title="Chuyển chế độ ngày đêm / Toggle Dark Mode">
-                        <span class="u021-halo" aria-hidden="true"><i></i><i></i><i></i></span>
-                        <span class="u021-stars" aria-hidden="true">
-                            <i style="left:12px;top:8px"></i>
-                            <i style="left:24px;top:22px;animation-delay:-.6s;width:2px;height:2px"></i>
-                            <i style="left:34px;top:10px;animation-delay:-1.2s"></i>
-                            <i style="left:18px;top:28px;animation-delay:-1.8s;width:2px;height:2px"></i>
-                            <i style="left:44px;top:24px;animation-delay:-.9s;width:1.5px;height:1.5px"></i>
-                            <i style="left:8px;top:18px;animation-delay:-1.5s;width:1.5px;height:1.5px"></i>
-                        </span>
-                        <span class="u021-clouds" aria-hidden="true"><i></i><i></i></span>
-                        <span class="u021-knob" aria-hidden="true"><span class="u021-moon"><i></i><i></i><i></i></span></span>
-                    </button>
-                </div>
+                <!-- Circular-reveal dark mode (219, Navigation) -->
+                <button type="button" class="u219-tg" id="circular-theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Chuyển chế độ giao diện / Switch Theme">
+                    <svg class="u219-icon-sun" viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="8" cy="8" r="3" fill="currentColor"/>
+                        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <path d="M8 1.5v1.4M8 13.1v1.4M1.5 8h1.4M13.1 8h1.4M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/>
+                        </g>
+                    </svg>
+                    <svg class="u219-icon-moon" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M13.5 9.8A5.6 5.6 0 0 1 6.2 2.5a5.6 5.6 0 1 0 7.3 7.3z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <div id="u219-reveal-overlay" class="u219-overlay" aria-hidden="true"></div>
+
                 <script>
                 (function() {
-                    var root = document.getElementById('day-night-root');
-                    var sw = document.getElementById('day-night-toggle');
-                    if (!sw || !root) return;
+                    var btn = document.getElementById('circular-theme-toggle');
+                    var overlay = document.getElementById('u219-reveal-overlay');
+                    if (!btn) return;
 
-                    function apply(night) {
-                        root.classList.toggle('is-night', night);
-                        sw.setAttribute('aria-checked', String(night));
-                        if (night) {
+                    var isAnimating = false;
+
+                    function setTheme(dark, withAnimation, clickEvent) {
+                        if (dark) {
                             document.documentElement.setAttribute('data-theme', 'dark');
                             document.body.classList.add('dark-theme');
                             localStorage.setItem('dream_house_theme', 'dark');
+                            btn.setAttribute('aria-label', 'Switch to light mode');
+                            btn.setAttribute('aria-pressed', 'true');
                         } else {
                             document.documentElement.setAttribute('data-theme', 'light');
                             document.body.classList.remove('dark-theme');
                             localStorage.setItem('dream_house_theme', 'light');
+                            btn.setAttribute('aria-label', 'Switch to dark mode');
+                            btn.setAttribute('aria-pressed', 'false');
                         }
+
+                        if (!withAnimation || !overlay) return;
+
+                        var rect = btn.getBoundingClientRect();
+                        var cx = clickEvent ? clickEvent.clientX : (rect.left + rect.width / 2);
+                        var cy = clickEvent ? clickEvent.clientY : (rect.top + rect.height / 2);
+
+                        document.documentElement.style.setProperty('--reveal-x', cx + 'px');
+                        document.documentElement.style.setProperty('--reveal-y', cy + 'px');
+
+                        isAnimating = true;
+                        overlay.className = 'u219-overlay ' + (dark ? 'revealing-dark' : 'revealing-light');
+
+                        setTimeout(function() {
+                            overlay.className = 'u219-overlay';
+                            isAnimating = false;
+                        }, 750);
                     }
 
+                    // Khởi tạo trạng thái ban đầu (không chạy animation lần đầu load trang)
                     var saved = localStorage.getItem('dream_house_theme');
                     var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    var isDark = saved === 'dark' || (!saved && prefersDark);
-                    apply(isDark);
+                    var initDark = saved === 'dark' || (!saved && prefersDark);
+                    setTheme(initDark, false);
 
-                    sw.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        var current = root.classList.contains('is-night');
-                        apply(!current);
+                    // Xử lý click tạo hiệu ứng Circular Reveal lan tỏa từ nút
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (isAnimating) return;
+                        var isDarkNow = document.documentElement.getAttribute('data-theme') === 'dark';
+                        setTheme(!isDarkNow, true, e);
                     });
                 })();
                 </script>

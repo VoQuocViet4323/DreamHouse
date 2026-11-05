@@ -1,0 +1,111 @@
+<!-- Lucian UX/UI Prompt #219 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#219 -->
+<style>
+/* ==============================================================================
+   CIRCULAR-REVEAL DARK MODE (219, Navigation)
+   MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#219
+   ============================================================================== */
+
+/* Nút chuyển đổi giao diện Sun/Moon trong Header */
+.u219-tg {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  background: var(--color-surface, rgba(255, 255, 255, 0.85));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-text, #0f172a);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 102;
+}
+
+.u219-tg:hover {
+  transform: translateY(-1px) scale(1.05);
+  border-color: var(--color-accent, #c49a45);
+  box-shadow: 0 0 16px rgba(196, 154, 69, 0.25);
+}
+
+.u219-tg:focus-visible {
+  outline: 2px solid var(--color-accent, #c49a45);
+  outline-offset: 3px;
+}
+
+.u219-tg svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.6s cubic-bezier(.3, 1.4, .5, 1);
+  fill: currentColor;
+}
+
+/* Biểu tượng quay mượt khi đổi chế độ */
+.u219-tg .u219-icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .u219-tg .u219-icon-sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .u219-tg .u219-icon-moon {
+  display: block;
+}
+
+:root[data-theme="dark"] .u219-tg svg {
+  transform: rotate(-90deg);
+}
+
+/* Lớp phủ Circular Reveal lan tỏa tròn toàn màn hình từ vị trí nút */
+.u219-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  background: #090a0f;
+  clip-path: circle(0px at var(--reveal-x, 85vw) var(--reveal-y, 38px));
+  transition: clip-path 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+  opacity: 0;
+}
+
+.u219-overlay.is-active {
+  opacity: 1;
+  clip-path: circle(150vmax at var(--reveal-x, 85vw) var(--reveal-y, 38px));
+}
+
+.u219-overlay.is-closing {
+  opacity: 1;
+  clip-path: circle(0px at var(--reveal-x, 85vw) var(--reveal-y, 38px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u219-overlay {
+    transition: none !important;
+  }
+  .u219-tg svg {
+    transition: none !important;
+  }
+}
+</style>
+
+<div class="u219-wrap">
+  <button type="button" class="u219-tg" id="circular-theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Chuyển chế độ giao diện / Switch Theme">
+    <svg class="u219-icon-sun" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="3" fill="currentColor"/>
+      <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M8 1.5v1.4M8 13.1v1.4M1.5 8h1.4M13.1 8h1.4M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/>
+      </g>
+    </svg>
+    <svg class="u219-icon-moon" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M13.5 9.8A5.6 5.6 0 0 1 6.2 2.5a5.6 5.6 0 1 0 7.3 7.3z" fill="currentColor"/>
+    </svg>
+  </button>
+</div>
+<div id="u219-reveal-overlay" class="u219-overlay" aria-hidden="true"></div>

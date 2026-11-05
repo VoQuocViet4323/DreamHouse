@@ -1,12 +1,12 @@
-/* ==============================================================================
-   STYLE.CSS - ĐẬM CHẤT ANIMATE-UI & KIẾN TRÚC CAO CẤP
-   Lấy cảm hứng từ: animate-ui.com (Shadcn + Motion Spring Physics)
-   Đặc điểm:
-   - Subtle Grid & Gradient Background hiệu ứng phát sáng mờ ảo
-   - Shimmering / Gradient Text trên tiêu đề chính
-   - Spring-motion Hover Cards với hiệu ứng tia sáng viền (Glow / Spotlight)
-   - Ripple Button & Glassmorphism thanh thoát
-   - Micro-interactions tinh tế, siêu mượt 60fps
+﻿/* ==============================================================================
+   STYLE.CSS - Äáº¬M CHáº¤T ANIMATE-UI & KIáº¾N TRÃšC CAO Cáº¤P
+   Láº¥y cáº£m há»©ng tá»«: animate-ui.com (Shadcn + Motion Spring Physics)
+   Äáº·c Ä‘iá»ƒm:
+   - Subtle Grid & Gradient Background hiá»‡u á»©ng phÃ¡t sÃ¡ng má» áº£o
+   - Shimmering / Gradient Text trÃªn tiÃªu Ä‘á» chÃ­nh
+   - Spring-motion Hover Cards vá»›i hiá»‡u á»©ng tia sÃ¡ng viá»n (Glow / Spotlight)
+   - Ripple Button & Glassmorphism thanh thoÃ¡t
+   - Micro-interactions tinh táº¿, siÃªu mÆ°á»£t 60fps
    ============================================================================== */
 
 :root {
@@ -187,7 +187,7 @@ body::before {
   gap: 14px;
 }
 
-/* NÚT CHUYỂN NGÔN NGỮ (SPRING TOGGLER) */
+/* NÃšT CHUYá»‚N NGÃ”N NGá»® (SPRING TOGGLER) */
 .lang-switch-btn {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--color-border);
@@ -238,7 +238,7 @@ body::before {
   margin: 0;
 }
 
-/* TIÊU ĐỀ SHIMMERING / GRADIENT TEXT */
+/* TIÃŠU Äá»€ SHIMMERING / GRADIENT TEXT */
 .hero-headline {
   font-family: var(--font-serif);
   font-size: clamp(2.6rem, 5.5vw, 4.4rem);
@@ -1107,8 +1107,10 @@ body::before {
   .filter-search-box input { width: 100%; }
 }
 /* ==============================================================================
-   DARK THEME & DAY-NIGHT SKY SWITCH (021)
-   MIT License (c) 2026 Seokwoooo Â· https://lucianlabs.dev/uxui-prompt/#021
+
+/* ==============================================================================
+   CIRCULAR-REVEAL DARK MODE (219, Navigation)
+   MIT License (c) 2026 Seokwoooo Â· https://lucianlabs.dev/uxui-prompt/#219
    ============================================================================== */
 
 :root[data-theme="dark"],
@@ -1201,200 +1203,6 @@ body.dark-theme {
   background: #e2e8f0;
 }
 
-/* Day-night sky switch (021, Toggles & Pickers) */
-.u021 {
-  position: relative;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-}
-
-.u021-sw {
-  position: relative;
-  width: 74px;
-  height: 36px;
-  border: 0;
-  padding: 0;
-  border-radius: 999px;
-  overflow: hidden;
-  isolation: isolate;
-  cursor: pointer;
-  background: linear-gradient(180deg, #5DB7FF, #9ED8FF);
-  box-shadow: inset 0 2px 5px rgba(0,30,80,.28), inset 0 -1px 2px rgba(255,255,255,.4), 0 4px 12px -3px rgba(40,110,200,.6);
-  transition: box-shadow .8s cubic-bezier(.2,.8,.2,1);
-  flex-shrink: 0;
-}
-
-.u021-sw::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(180deg, #141A3A, #232C5C);
-  opacity: 0;
-  transition: opacity .8s cubic-bezier(.2,.8,.2,1);
-}
-
-.u021-sw:focus-visible {
-  outline: 2px solid var(--color-accent, #c49a45);
-  outline-offset: 3px;
-}
-
-:root[data-theme="dark"] .u021-sw::before,
-.u021.is-night .u021-sw::before {
-  opacity: 1;
-}
-
-:root[data-theme="dark"] .u021-sw,
-.u021.is-night .u021-sw {
-  box-shadow: inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 2px rgba(255,255,255,.08), 0 4px 12px -3px rgba(20,24,70,.8);
-}
-
-.u021-halo {
-  position: absolute;
-  z-index: 1;
-  left: 18px;
-  top: 18px;
-  width: 0;
-  height: 0;
-  transition: transform .9s cubic-bezier(.34,1.45,.64,1);
-}
-
-.u021-halo i {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255,255,255,.14);
-}
-
-.u021-halo i:nth-child(1) { width: 50px; height: 50px; margin: -25px; }
-.u021-halo i:nth-child(2) { width: 70px; height: 70px; margin: -35px; }
-.u021-halo i:nth-child(3) { width: 90px; height: 90px; margin: -45px; }
-
-:root[data-theme="dark"] .u021-halo,
-.u021.is-night .u021-halo {
-  transform: translateX(38px);
-}
-
-.u021-knob {
-  position: absolute;
-  z-index: 3;
-  left: 3px;
-  top: 3px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: radial-gradient(circle at 35% 30%, #FFF1A8, #FFD23F 45%, #F8A91E);
-  box-shadow: 0 3px 8px -2px rgba(140,80,0,.5), inset -2px -3px 5px rgba(200,110,0,.35), inset 2px 2px 4px rgba(255,255,255,.5);
-  transition: transform .9s cubic-bezier(.34,1.45,.64,1);
-}
-
-.u021-moon {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #F4F6FB, #C9CFDD 60%, #A9B0C2);
-  opacity: 0;
-  transform: translateX(100%);
-  transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .4s cubic-bezier(.2,.8,.2,1);
-}
-
-.u021-moon i {
-  position: absolute;
-  border-radius: 50%;
-  background: #A3AABC;
-  box-shadow: inset 1px 1px 2px rgba(0,0,0,.2);
-}
-
-.u021-moon i:nth-child(1) { left: 8px; top: 6px; width: 8px; height: 8px; }
-.u021-moon i:nth-child(2) { left: 18px; top: 15px; width: 5px; height: 5px; }
-.u021-moon i:nth-child(3) { left: 9px; top: 19px; width: 4px; height: 4px; }
-
-:root[data-theme="dark"] .u021-knob,
-.u021.is-night .u021-knob {
-  transform: translateX(38px) rotate(200deg);
-}
-
-:root[data-theme="dark"] .u021-moon,
-.u021.is-night .u021-moon {
-  opacity: 1;
-  transform: none;
-}
-
-.u021-clouds {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .6s cubic-bezier(.2,.8,.2,1);
-}
-
-.u021-clouds i {
-  position: absolute;
-  border-radius: 999px;
-  background: #fff;
-}
-
-.u021-clouds i:nth-child(1) {
-  right: -4px;
-  bottom: -8px;
-  width: 48px;
-  height: 24px;
-  box-shadow: -18px 4px 0 -3px #fff, -32px 8px 0 -5px #fff;
-}
-
-.u021-clouds i:nth-child(2) {
-  right: 8px;
-  bottom: -12px;
-  width: 38px;
-  height: 20px;
-  background: #E3F1FF;
-  box-shadow: -16px 3px 0 -4px #E3F1FF;
-  z-index: -1;
-}
-
-:root[data-theme="dark"] .u021-clouds,
-.u021.is-night .u021-clouds {
-  transform: translateY(35px);
-  opacity: 0;
-}
-
-.u021-stars {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  opacity: 0;
-  transform: translateY(-15px);
-  transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .6s cubic-bezier(.2,.8,.2,1);
-}
-
-.u021-stars i {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 4px #fff;
-  animation: u021-tw 2.4s ease-in-out infinite;
-}
-
-:root[data-theme="dark"] .u021-stars,
-.u021.is-night .u021-stars {
-  opacity: 1;
-  transform: none;
-}
-
-@keyframes u021-tw {
-  50% { opacity: .25; transform: scale(.6); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .u021-sw, .u021-sw::before, .u021-halo, .u021-knob, .u021-moon, .u021-clouds, .u021-stars, .u021-stars i {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}
 :root[data-theme="dark"] .contact-section {
   background: rgba(14, 17, 26, 0.85);
   border-top-color: rgba(255, 255, 255, 0.08);
@@ -1445,4 +1253,93 @@ body.dark-theme {
   background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* NÃšT CIRCULAR-REVEAL SUN/MOON (219) */
+.u219-tg {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100001;
+}
+
+.u219-tg:hover {
+  transform: translateY(-1px) scale(1.05);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 16px rgba(196, 154, 69, 0.3);
+}
+
+.u219-tg:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.u219-tg svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.6s cubic-bezier(.3, 1.4, .5, 1);
+  fill: currentColor;
+}
+
+.u219-tg .u219-icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .u219-tg .u219-icon-sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .u219-tg .u219-icon-moon {
+  display: block;
+}
+
+:root[data-theme="dark"] .u219-tg svg {
+  transform: rotate(-90deg);
+}
+
+/* Lá»šP PHá»¦ CIRCULAR REVEAL TOÃ€N MÃ€N HÃŒNH */
+.u219-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  pointer-events: none;
+  clip-path: circle(0px at var(--reveal-x, 90vw) var(--reveal-y, 38px));
+  transition: clip-path 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+  opacity: 0;
+}
+
+.u219-overlay.revealing-dark {
+  background: #090a0f;
+  opacity: 1;
+  clip-path: circle(160vmax at var(--reveal-x, 90vw) var(--reveal-y, 38px));
+}
+
+.u219-overlay.revealing-light {
+  background: #fcfbf9;
+  opacity: 1;
+  clip-path: circle(160vmax at var(--reveal-x, 90vw) var(--reveal-y, 38px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u219-overlay {
+    transition: none !important;
+  }
+  .u219-tg svg {
+    transition: none !important;
+  }
 }
