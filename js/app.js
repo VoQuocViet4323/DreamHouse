@@ -674,6 +674,21 @@ class DreamHouseApp {
             closeDetail.addEventListener('click', () => this.closeDetailPanel());
         }
 
+        // Đóng panel chi tiết khi bấm vào khoảng trống bên ngoài (Backdrop click)
+        const detailModal = document.getElementById('detail-modal');
+        if (detailModal) {
+            let isMouseDownOnDetailBackdrop = false;
+            detailModal.addEventListener('mousedown', (e) => {
+                isMouseDownOnDetailBackdrop = (e.target === detailModal);
+            });
+            detailModal.addEventListener('click', (e) => {
+                if (e.target === detailModal && isMouseDownOnDetailBackdrop) {
+                    this.closeDetailPanel();
+                }
+                isMouseDownOnDetailBackdrop = false;
+            });
+        }
+
         // Phím Esc đóng modal
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -818,12 +833,20 @@ class DreamHouseApp {
             this.closeProfileModal();
         });
 
-        // Click ra ngoài dialog để đóng Profile Modal
-        document.getElementById('profile-modal')?.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                this.closeProfileModal();
-            }
-        });
+        // Click ra ngoài khoảng trống backdrop để đóng Profile Modal
+        const profileModal = document.getElementById('profile-modal');
+        if (profileModal) {
+            let isMouseDownOnProfileBackdrop = false;
+            profileModal.addEventListener('mousedown', (e) => {
+                isMouseDownOnProfileBackdrop = (e.target === profileModal);
+            });
+            profileModal.addEventListener('click', (e) => {
+                if (e.target === profileModal && isMouseDownOnProfileBackdrop) {
+                    this.closeProfileModal();
+                }
+                isMouseDownOnProfileBackdrop = false;
+            });
+        }
 
         // Phím Escape đóng tất cả modal đang mở
         document.addEventListener('keydown', (e) => {
@@ -913,6 +936,20 @@ class DreamHouseApp {
         closeBtn?.addEventListener('click', () => {
             this.closeAuthModal();
         });
+
+        // Đóng Auth Modal khi click ra ngoài khoảng trống backdrop
+        if (modal) {
+            let isMouseDownOnAuthBackdrop = false;
+            modal.addEventListener('mousedown', (e) => {
+                isMouseDownOnAuthBackdrop = (e.target === modal);
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal && isMouseDownOnAuthBackdrop) {
+                    this.closeAuthModal();
+                }
+                isMouseDownOnAuthBackdrop = false;
+            });
+        }
 
         googleBtn?.addEventListener('click', () => {
             this.loginWithGoogle();

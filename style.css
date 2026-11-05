@@ -641,6 +641,13 @@ body::before {
   justify-content: center;
   padding: 24px;
   animation: fadeIn 0.25s ease-out;
+  cursor: pointer;
+}
+
+.modal-window,
+.auth-dialog,
+.profile-dialog {
+  cursor: default;
 }
 
 @keyframes fadeIn {
