@@ -42,7 +42,6 @@ DreamHouse/
 ├── style.css                # CSS giao diện tinh tế, phong cách Editorial Minimalist, Dark/Light Mode
 ├── generate-config.js       # Script Node.js tự động đọc .env và sinh js/config.js an toàn
 ├── start.bat                # Khởi động máy chủ Node.js cục bộ (Port 3000) với 1-click
-├── .env.example             # File mẫu biến môi trường dự phòng
 ├── components\
 │   ├── heart-burst-like.html        # Nút yêu thích Heart Burst Like (022, Toggles & Pickers)
 │   ├── circular-reveal-switch.html  # Chuyển đổi giao diện Circular Reveal (219, Navigation)
@@ -81,7 +80,7 @@ DreamHouse/
    - Chạy `supabase/04_sample_data.sql` (Nạp 6 mẫu nhà ban đầu).
 
 ### Bước 2: Cấu hình biến môi trường
-1. Kiểm tra hoặc sao chép file `.env` từ `.env.example`.
+1. Tạo hoặc chỉnh sửa file `.env` tại thư mục gốc.
 2. Điền `SUPABASE_URL` và `SUPABASE_ANON_KEY` của dự án Supabase.
 3. Chạy lệnh sinh cấu hình:
    ```powershell

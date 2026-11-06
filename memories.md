@@ -531,6 +531,14 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tự động đồng bộ thanh tiến trình chạy (`.toast-progress-bar` với `animation-duration: 1000ms`), tự động biến mất và trượt ẩn êm ái sau $1\text{s}$, không gây phiền toái hoặc cản trở tầm nhìn của người dùng khi duyệt mẫu nhà.
   - Tăng tham số phiên bản cache-busting lên **`?v=5.3`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 41: Loại Bỏ Hoàn Toàn File .env.example Khỏi Repository GitHub & Gia Cố .gitignore
+- [x] **Xóa triệt để file `.env.example` trên GitHub:**
+  - Thực hiện lệnh xóa hoàn toàn file `.env.example` khỏi Git tracking và khỏi repository GitHub theo yêu cầu bảo mật của người dùng (`git rm -f .env.example`).
+  - Gia cố [`.gitignore`](file:///d:/DreamHouse/.gitignore) với các quy tắc chặn toàn diện (`.env`, `.env.*`, `*.env`, `*.env.*`) ngăn ngừa triệt để mọi khả năng rò rỉ bất kỳ file môi trường nào lên mạng.
+  - Cập nhật [generate-config.js](file:///d:/DreamHouse/generate-config.js), [README.md](file:///d:/DreamHouse/README.md), [AI_Config.md](file:///d:/DreamHouse/AI_Config.md) loại bỏ toàn bộ liên kết phụ thuộc vào `.env.example`.
+
+
+
 
 
 

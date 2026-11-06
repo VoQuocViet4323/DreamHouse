@@ -7,11 +7,7 @@ const envPath = path.join(__dirname, '.env');
 const configJsPath = path.join(__dirname, 'js', 'config.js');
 
 if (!fs.existsSync(envPath)) {
-    console.log('[Notice] Không tìm thấy file .env, tạo file .env từ .env.example...');
-    const examplePath = path.join(__dirname, '.env.example');
-    if (fs.existsSync(examplePath)) {
-        fs.copyFileSync(examplePath, envPath);
-    }
+    console.log('[Notice] Không tìm thấy file .env cục bộ, áp dụng cấu hình hệ thống...');
 }
 
 let envContent = '';

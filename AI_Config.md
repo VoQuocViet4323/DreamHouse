@@ -127,7 +127,7 @@ Khi bạn chạy file `supabase/03_storage.sql`, 2 bucket sau đã được cấ
 
 Dự án đã hỗ trợ **cơ chế tự động sinh file cấu hình** từ `.env` để bảo vệ mã nguồn và dễ dàng triển khai đa máy:
 
-1. Mở file `.env` tại thư mục gốc dự án (hoặc sao chép từ `.env.example` nếu chưa có).
+1. Mở hoặc tạo file `.env` tại thư mục gốc dự án:
 2. Điền thông số Supabase của bạn:
    ```env
    SUPABASE_URL=https://qdkhqvsbtmbgkmoldazt.supabase.co
