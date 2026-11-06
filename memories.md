@@ -324,16 +324,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=3.5`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật chi tiết vào **Lỗi 18** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L295).
 
-### Giai đoạn 22: Cơ chế Tiền kiểm tra Google OAuth & Khắc phục Lỗi Chuyển hướng Provider (Google OAuth Graceful Fallback)
-- [x] **Xử lý triệt để lỗi chuyển hướng sang trang JSON `Unsupported provider: provider is not enabled`:**
-  - Nguyên nhân: Dự án Supabase `qdkhqvsbtmbgkmoldazt` chưa bật công tắc Google Provider trong Dashboard, khiến endpoint `/auth/v1/authorize?provider=google` trả về HTTP 400. Hàm trước đó tự động chuyển hướng trình duyệt nên người dùng bị văng sang trang đen hiển thị chuỗi JSON thô.
-  - Cơ chế Tiền kiểm tra (OAuth Pre-flight Check):
-    - Cập nhật hàm [`loginWithGoogle()`](file:///e:/Dream-house/js/app.js): Sử dụng `options.skipBrowserRedirect = true` để lấy URL ủy quyền mà không chuyển hướng ngay.
-    - Gửi request `fetch` thăm dò endpoint trước. Nếu Supabase phản hồi lỗi `Unsupported provider`, hệ thống chặn đứng việc chuyển hướng, giữ nguyên giao diện người dùng và hiển thị cảnh báo thân thiện: *"Đăng nhập Google chưa được kích hoạt trên Supabase Dashboard. Vui lòng đăng nhập bằng Tên tài khoản / Email hoặc cấu hình Google Provider trong Supabase."*
-    - Chỉ thực thi chuyển hướng `window.location.href = data.url` khi Google Provider đã được cấu hình hợp lệ trên Supabase.
-  - Hướng dẫn đầy đủ quy trình cấu hình Google OAuth Client ID & Secret trên Google Cloud Console và Supabase Dashboard.
-  - Nâng tham số phiên bản cache-busting lên **`?v=3.6`** trên toàn bộ `index.html` và `admin.html`.
-  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 19** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L313).
+### Giai đoạn 23: Quy trình Phân quyền Quản trị viên Thực sự (True Admin Privilege Elevation)
+- [x] **Cung cấp giải pháp và script nâng cấp tài khoản Admin (`admin@dreamhouse.internal` / UID: `6161ca01-621a-4281-9b21-05483d2a3a0e`):**
+  - Tạo file script SQL chuẩn hóa [`supabase/06_set_admin_role.sql`](file:///e:/Dream-house/supabase/06_set_admin_role.sql) nhằm:
+    1. Cập nhật trường `role = 'admin'` trong bảng `public.profiles` cho UID hoặc username `Admin`.
+    2. Đồng bộ `raw_app_meta_data` và `raw_user_meta_data` của tài khoản trong `auth.users` sang `{"role": "admin"}`.
+  - Hướng dẫn 2 phương thức thực hiện trực tiếp trên Supabase Dashboard:
+    - **Cách 1 (Nhanh nhất):** Mở Table Editor > Bảng `profiles` > Đổi giá trị cột `role` thành `'admin'`.
+    - **Cách 2 (Toàn diện bằng SQL):** Chạy lệnh từ `06_set_admin_role.sql` trong SQL Editor.
+  - Khi được cấp quyền admin:
+    - Giao diện `index.html` tự động nhận diện và hiển thị Badge vàng `★ Quản trị viên (Admin)` trong Profile Modal và Menu Avatar.
+    - Xuất hiện menu dẫn vào Bảng quản trị Admin ([admin.html](file:///e:/Dream-house/admin.html)).
+    - Hàm bảo mật RLS `public.is_admin()` trả về `true`, cho phép truy cập đầy đủ các quyền thêm, sửa, xóa mẫu nhà, upload ảnh/mô hình 3D lên Storage và quản lý danh sách yêu cầu tư vấn.
+
 
 
 
