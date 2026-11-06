@@ -213,9 +213,19 @@ class House3DViewer {
         const statusEl = document.getElementById('viewer-status-text');
 
         if (template.model_path && template.model_path.trim() !== '') {
-            // Nạp file .glb thật
-            if (statusEl) statusEl.textContent = 'Đang tải file 3D .glb từ máy chủ...';
-            this.loadGLTF(template.model_path, statusEl);
+            const modelUrl = template.model_path.trim();
+            const isGltf = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+            if (isGltf) {
+                // Nạp file .glb/.gltf tương thích Three.js
+                if (statusEl) statusEl.textContent = 'Đang tải mô hình 3D .glb từ máy chủ...';
+                this.loadGLTF(modelUrl, statusEl, template);
+            } else {
+                // File SketchUp (.skp) hoặc CAD khác: Hiển thị mô phỏng 3D tham số thực tế và cung cấp link tải
+                if (statusEl) {
+                    statusEl.innerHTML = `📦 <em>Mô hình SketchUp (.skp) đã sẵn sàng.</em> <a href="${modelUrl}" target="_blank" download style="color:#d97706; text-decoration:underline; margin-left:6px; font-weight:600;">Tải file .skp</a>`;
+                }
+                this.buildProceduralHouse(template);
+            }
         } else {
             // Dựng khối 3D tạm bằng thông số
             if (statusEl) {
@@ -225,9 +235,10 @@ class House3DViewer {
         }
     }
 
-    loadGLTF(url, statusEl) {
+    loadGLTF(url, statusEl, fallbackTemplate) {
         if (typeof THREE.GLTFLoader === 'undefined') {
             console.warn('GLTFLoader chưa được nạp, chuyển sang khối dựng mô phỏng');
+            if (fallbackTemplate) this.buildProceduralHouse(fallbackTemplate);
             return;
         }
         const loader = new THREE.GLTFLoader();
@@ -255,7 +266,8 @@ class House3DViewer {
             undefined,
             (err) => {
                 console.error('Lỗi khi nạp file GLB:', err);
-                if (statusEl) statusEl.textContent = 'Không tải được file 3D. Chuyển sang mô hình khối.';
+                if (statusEl) statusEl.textContent = 'Không đọc được file 3D. Chuyển sang mô hình khối.';
+                if (fallbackTemplate) this.buildProceduralHouse(fallbackTemplate);
             }
         );
     }

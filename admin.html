@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="admin_title">Hệ Thống Quản Trị - DreamHouse</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5b95d'><path d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z'/></svg>" />
-    <link rel="stylesheet" href="style.css?v=4.1">
+    <link rel="stylesheet" href="style.css?v=4.2">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=4.1"></script>
-    <script src="js/i18n.js?v=4.1"></script>
-    <script src="js/toast.js?v=4.1"></script>
+    <script src="js/config.js?v=4.2"></script>
+    <script src="js/i18n.js?v=4.2"></script>
+    <script src="js/toast.js?v=4.2"></script>
     <style>
         .admin-page { padding: 40px 0; }
         .admin-nav-tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--color-border); }
@@ -130,17 +130,6 @@
 
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Tên tiếng Việt:</label>
-                        <input type="text" id="tpl-name-vi" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Tên tiếng Anh:</label>
-                        <input type="text" id="tpl-name-en" required />
-                    </div>
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="form-group">
                         <label>Rộng mặt tiền (m):</label>
                         <input type="number" id="tpl-width" step="0.1" value="5.0" required />
                     </div>
@@ -183,9 +172,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Tải mô hình 3D (.glb từ SketchUp/Blender, < 10MB):</label>
-                    <input type="file" id="tpl-model-file" accept=".glb,model/gltf-binary" />
-                    <input type="text" id="tpl-model-path" placeholder="Đường dẫn file .glb (để trống nếu dùng mô hình khối dựng tạm)" style="margin-top: 6px;" />
+                    <label>Tải file 3D (.skp từ SketchUp, .glb, .obj, tối đa 100MB):</label>
+                    <input type="file" id="tpl-model-file" accept=".glb,.gltf,.skp,.obj,.zip,application/octet-stream,model/gltf-binary" />
+                    <input type="text" id="tpl-model-path" placeholder="Đường dẫn file 3D (hoặc để trống nếu dùng mô hình khối dựng tạm)" style="margin-top: 6px;" />
                 </div>
 
                 <div class="form-group">
@@ -293,7 +282,7 @@
                         <td>${item.width_m}m × ${item.depth_m}m</td>
                         <td>${item.floors}</td>
                         <td>${Number(item.cost_estimate_vnd).toLocaleString('vi-VN')} đ</td>
-                        <td>${item.model_path ? '✅ File .glb' : '⚡ Khối tự động'}</td>
+                        <td>${item.model_path ? (item.model_path.toLowerCase().endsWith('.skp') ? '📦 File .skp' : '✅ File .glb') : '⚡ Khối tự động'}</td>
                         <td>${item.published ? '✅ Hiện' : '🔒 Ẩn'}</td>
                         <td>
                             <button onclick="editTemplate('${item.id}')" class="btn-text">Sửa</button> |
@@ -364,11 +353,55 @@
                 }
             };
 
+            // Từ điển nhãn loại nhà tự động
+            const typeLabelsVi = {
+                'nha-pho': 'Nhà phố',
+                'biet-thu': 'Biệt thự',
+                'nha-cap-4': 'Nhà cấp 4'
+            };
+            const typeLabelsEn = {
+                'nha-pho': 'Modern Townhouse',
+                'biet-thu': 'Luxury Villa',
+                'nha-cap-4': 'Cozy Bungalow'
+            };
+
+            let currentEditingTemplate = null;
+
+            // Chỉnh sửa mẫu nhà
+            window.editTemplate = async function(id) {
+                try {
+                    const { data, error } = await client.from('templates').select('*').eq('id', id).single();
+                    if (error || !data) throw (error || new Error('Không tìm thấy dữ liệu mẫu nhà'));
+                    currentEditingTemplate = data;
+
+                    document.getElementById('edit-id').value = data.id;
+                    document.getElementById('tpl-slug').value = data.slug || '';
+                    document.getElementById('tpl-type').value = data.type || 'nha-pho';
+                    document.getElementById('tpl-width').value = data.width_m || 5.0;
+                    document.getElementById('tpl-depth').value = data.depth_m || 16.0;
+                    document.getElementById('tpl-floors').value = data.floors || 2;
+                    document.getElementById('tpl-roof').value = data.roof || 'flat';
+                    document.getElementById('tpl-gfa').value = data.gfa_m2 || 150;
+                    document.getElementById('tpl-cost').value = data.cost_estimate_vnd || 1500000000;
+                    document.getElementById('tpl-photo-path').value = data.photo_path || '';
+                    document.getElementById('tpl-model-path').value = data.model_path || '';
+                    document.getElementById('tpl-published').checked = !!data.published;
+
+                    document.getElementById('modal-template-title').textContent = 'Chỉnh Sửa Mẫu Nhà';
+                    modal.classList.remove('hidden');
+                } catch (err) {
+                    if (window.toast) window.toast.error('Lỗi: ' + err.message);
+                }
+            };
+
             // Mở modal thêm mẫu
             const modal = document.getElementById('template-modal');
             document.getElementById('btn-add-template').addEventListener('click', () => {
+                currentEditingTemplate = null;
                 document.getElementById('template-form').reset();
                 document.getElementById('edit-id').value = '';
+                document.getElementById('tpl-photo-path').value = '';
+                document.getElementById('tpl-model-path').value = '';
                 document.getElementById('modal-template-title').textContent = 'Thêm Mẫu Thiết Kế Mới';
                 modal.classList.remove('hidden');
             });
@@ -393,7 +426,7 @@
                 }
             });
 
-            // Xử lý lưu mẫu nhà (Upload ảnh & file 3D lên Supabase Storage nếu có)
+            // Xử lý lưu mẫu nhà (Upload ảnh & file 3D .skp/.glb lên Supabase Storage nếu có)
             document.getElementById('template-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const saveBtn = document.getElementById('btn-save-tpl');
@@ -407,46 +440,83 @@
                     // 1. Upload ảnh nếu chọn file
                     const photoFile = document.getElementById('tpl-photo-file').files[0];
                     if (photoFile) {
+                        if (photoFile.size > 26214400) {
+                            throw new Error(`File ảnh quá lớn (${(photoFile.size / 1024 / 1024).toFixed(1)}MB). Giới hạn cho phép là 25MB.`);
+                        }
                         const fileExt = photoFile.name.split('.').pop();
                         const fileName = `img_${Date.now()}.${fileExt}`;
                         const { data: uploadData, error: upErr } = await client.storage
                             .from('template-images')
                             .upload(fileName, photoFile);
-                        if (upErr) throw upErr;
+                        if (upErr) {
+                            if (upErr.message && upErr.message.includes('exceeded the maximum allowed size')) {
+                                throw new Error('Dung lượng ảnh vượt hạn mức Storage (3MB). Hãy chạy script 07_increase_storage_limits.sql trong Supabase SQL Editor để mở rộng lên 25MB!');
+                            }
+                            throw upErr;
+                        }
                         const { data: { publicUrl } } = client.storage.from('template-images').getPublicUrl(fileName);
                         photoPath = publicUrl;
                     }
 
-                    // 2. Upload file .glb nếu chọn file
+                    // 2. Upload file mô hình 3D (.skp, .glb, .obj,...) nếu chọn file
                     const modelFile = document.getElementById('tpl-model-file').files[0];
                     if (modelFile) {
+                        if (modelFile.size > 104857600) {
+                            throw new Error(`File 3D quá lớn (${(modelFile.size / 1024 / 1024).toFixed(1)}MB). Giới hạn cho phép là 100MB.`);
+                        }
                         const fileExt = modelFile.name.split('.').pop();
                         const fileName = `model_${Date.now()}.${fileExt}`;
                         const { data: upModData, error: modErr } = await client.storage
                             .from('template-models')
                             .upload(fileName, modelFile);
-                        if (modErr) throw modErr;
+                        if (modErr) {
+                            if (modErr.message && modErr.message.includes('exceeded the maximum allowed size')) {
+                                throw new Error('Dung lượng file 3D vượt hạn mức mặc định (10MB) của Supabase Storage. Vui lòng vào Supabase SQL Editor chạy file script 07_increase_storage_limits.sql để nâng hạn mức lên 100MB!');
+                            }
+                            throw modErr;
+                        }
                         const { data: { publicUrl } } = client.storage.from('template-models').getPublicUrl(fileName);
                         modelPath = publicUrl;
                     }
 
+                    const typeVal = document.getElementById('tpl-type').value;
+                    const widthVal = parseFloat(document.getElementById('tpl-width').value) || 5.0;
+                    const depthVal = parseFloat(document.getElementById('tpl-depth').value) || 16.0;
+                    const floorsVal = parseInt(document.getElementById('tpl-floors').value, 10) || 1;
+
+                    // Tự động sinh tên tiếng Việt và tiếng Anh đồng bộ theo thông số
+                    const editId = document.getElementById('edit-id').value;
+                    let nameVi = currentEditingTemplate?.name_vi;
+                    let nameEn = currentEditingTemplate?.name_en;
+
+                    if (!nameVi || !editId) {
+                        nameVi = `${typeLabelsVi[typeVal] || 'Mẫu nhà'} ${floorsVal} tầng ${widthVal}x${depthVal}m`;
+                    }
+                    if (!nameEn || !editId) {
+                        nameEn = `${typeLabelsEn[typeVal] || 'House Design'} ${floorsVal} Floors ${widthVal}x${depthVal}m`;
+                    }
+
+                    let slugVal = document.getElementById('tpl-slug').value.trim();
+                    if (!slugVal) {
+                        slugVal = `${typeVal}-${floorsVal}t-${widthVal}x${depthVal}-${Date.now().toString().slice(-4)}`;
+                    }
+
                     const payload = {
-                        slug: document.getElementById('tpl-slug').value.trim(),
-                        type: document.getElementById('tpl-type').value,
-                        name_vi: document.getElementById('tpl-name-vi').value.trim(),
-                        name_en: document.getElementById('tpl-name-en').value.trim(),
-                        width_m: parseFloat(document.getElementById('tpl-width').value),
-                        depth_m: parseFloat(document.getElementById('tpl-depth').value),
-                        floors: parseInt(document.getElementById('tpl-floors').value, 10),
+                        slug: slugVal,
+                        type: typeVal,
+                        name_vi: nameVi,
+                        name_en: nameEn,
+                        width_m: widthVal,
+                        depth_m: depthVal,
+                        floors: floorsVal,
                         roof: document.getElementById('tpl-roof').value,
-                        gfa_m2: parseFloat(document.getElementById('tpl-gfa').value),
-                        cost_estimate_vnd: parseInt(document.getElementById('tpl-cost').value, 10),
+                        gfa_m2: parseFloat(document.getElementById('tpl-gfa').value) || 150,
+                        cost_estimate_vnd: parseInt(document.getElementById('tpl-cost').value, 10) || 1500000000,
                         photo_path: photoPath,
                         model_path: modelPath,
                         published: document.getElementById('tpl-published').checked
                     };
 
-                    const editId = document.getElementById('edit-id').value;
                     if (editId) {
                         const { error } = await client.from('templates').update(payload).eq('id', editId);
                         if (error) throw error;

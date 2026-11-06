@@ -416,6 +416,29 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 24: Upload file 3D (.skp / .glb) bị lỗi 400 "The object exceeded the maximum allowed size" & Form thêm mẫu nhà rườm rà
+- **Hiện tượng:**
+  1. Khi Admin thêm mẫu nhà mới và tải lên file mô hình 3D (ví dụ file SketchUp `3d a.skp`), console báo lỗi HTTP 400 `POST https://qdkhqvsbtmbgkmoldazt.supabase.co/storage/v1/object/template-models/... 400 (Bad Request)` kèm thông báo Toast: *"Lỗi: The object exceeded the maximum allowed size"*.
+  2. Form thêm mẫu nhà yêu cầu nhập thủ công cả "Tên tiếng Việt" và "Tên tiếng Anh", gây mất thời gian và không cần thiết đối với Admin.
+- **Nguyên nhân cốt lõi:**
+  1. Trong script cấu hình ban đầu (`supabase/03_storage.sql`), bucket `template-models` được cấu hình dung lượng tối đa `file_size_limit = 10485760` (chỉ 10MB) và chỉ chấp nhận MIME type `['model/gltf-binary', 'application/octet-stream', 'model/gltf+json']`. Các file bản vẽ 3D SketchUp (.skp) hoặc GLB chi tiết từ kiến trúc sư thường có dung lượng từ 15MB – 50MB, do đó Supabase Storage lập tức từ chối với lỗi vượt quá dung lượng.
+  2. Database `public.templates` yêu cầu trường `name_vi` và `name_en` là `TEXT NOT NULL`.
+- **Cách khắc phục dứt điểm:**
+  1. **Nâng hạn mức Storage Buckets ([`supabase/07_increase_storage_limits.sql`](file:///e:/Dream-house/supabase/07_increase_storage_limits.sql)):**
+     - Nâng `file_size_limit` của `template-models` từ 10MB lên **100MB** (`104857600` bytes).
+     - Đặt `allowed_mime_types = NULL` để chấp nhận mọi định dạng 3D (`.skp`, `.glb`, `.gltf`, `.obj`, `.zip`,...).
+     - Nâng `template-images` lên **25MB** (`26214400` bytes) cho các ảnh phối cảnh 4K.
+  2. **Tối ưu Form & Tự động hoá Tên Mẫu ([`admin.html`](file:///e:/Dream-house/admin.html)):**
+     - Loại bỏ hoàn toàn 2 ô nhập "Tên tiếng Việt" và "Tên tiếng Anh" khỏi giao diện modal.
+     - Tự động sinh tên chuẩn hoá theo loại nhà và kích thước (Ví dụ: *"Nhà phố 2 tầng 5x16m"* và *"Modern Townhouse 2 Floors 5x16m"*), đồng thời tự sinh `slug` nếu để trống.
+     - Kiểm tra kích thước file client-side (< 100MB cho 3D, < 25MB cho ảnh) và hiển thị thông báo hướng dẫn rõ ràng nếu Storage chưa được chạy script nâng hạn mức.
+     - Xây dựng hoàn chỉnh hàm [`editTemplate(id)`](file:///e:/Dream-house/admin.html) để sửa mẫu nhà linh hoạt.
+  3. **Tương thích File SketchUp 3D kép ([`js/viewer3d.js`](file:///e:/Dream-house/js/viewer3d.js)):**
+     - Trình duyệt WebGL không thể đọc trực tiếp binary độc quyền của `.skp`. Nếu phát hiện file `.skp`, Three.js hiển thị ngay mô phỏng 3D kích thước thực tế, đồng thời cung cấp nút liên kết tải trực tiếp file gốc `.skp` về máy mà không làm crash GLTFLoader.
+  4. Nâng tham số cache-busting lên `?v=4.2` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

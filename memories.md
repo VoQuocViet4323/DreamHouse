@@ -399,6 +399,21 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.1`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 23** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L400).
 
+### Giai đoạn 29: Nâng Cấp Dung Lượng Storage 100MB cho File 3D (.skp), Loại Bỏ Ô Nhập Tên & Tối Ưu Form Admin
+- [x] **Xử lý dứt điểm lỗi tải file mô hình 3D (HTTP 400 "The object exceeded the maximum allowed size"):**
+  - Tạo script [`supabase/07_increase_storage_limits.sql`](file:///e:/Dream-house/supabase/07_increase_storage_limits.sql) nâng `file_size_limit` bucket `template-models` lên **100MB** và `template-images` lên **25MB**, gỡ bỏ kiểm tra MIME (`allowed_mime_types = NULL`) để chấp nhận đầy đủ file `.skp` (SketchUp), `.glb`, `.gltf`, `.obj`, `.zip`.
+  - Bổ sung kiểm tra dung lượng phía client và bắt lỗi Storage chi tiết kèm hướng dẫn rõ ràng.
+- [x] **Loại bỏ ô nhập Tên tiếng Việt và Tên tiếng Anh theo yêu cầu:**
+  - Gỡ bỏ hoàn toàn 2 trường `#tpl-name-vi` và `#tpl-name-en` khỏi modal thêm/sửa mẫu nhà trong [`admin.html`](file:///e:/Dream-house/admin.html).
+  - Thuật toán tự động sinh tên chuẩn hoá theo loại nhà, số tầng, mặt tiền và chiều sâu (ví dụ: *"Nhà phố 2 tầng 5x16m"* và *"Modern Townhouse 2 Floors 5x16m"*).
+  - Tự động sinh `slug` duy nhất nếu để trống.
+  - Xây dựng hoàn chỉnh hàm [`editTemplate(id)`](file:///e:/Dream-house/admin.html) nạp đầy đủ dữ liệu khi bấm nút "Sửa" trong danh sách quản trị.
+- [x] **Tương thích File SketchUp (.skp) trong Trình Xem 3D ([`js/viewer3d.js`](file:///e:/Dream-house/js/viewer3d.js)):**
+  - Three.js nhận diện file `.skp` để hiển thị mô hình khối 3D tham số theo đúng kích thước thực tế, đồng thời cung cấp link tải trực tiếp file `.skp` gốc cho khách hàng/kỹ sư.
+- [x] **Cache-Busting & Cập nhật Tài liệu:**
+  - Nâng phiên bản cache-busting lên **`?v=4.2`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 24** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L419).
+
 
 
 
