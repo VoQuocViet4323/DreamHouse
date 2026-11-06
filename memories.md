@@ -423,6 +423,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.3`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 25** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L445).
 
+### Giai đoạn 31: Mở Rộng Bộ Giải Mã 3D Trực Tiếp Native OBJLoader & Phân Tích Cơ Chế Chuyển Đổi Tự Động
+- [x] **Giải quyết nhu cầu tự động chuyển đổi file 3D:**
+  - Phân tích rào cản kỹ thuật của việc tự động cào/gửi ngầm file sang các trang web chuyển đổi online bên thứ 3: vi phạm chính sách bảo mật trình duyệt CORS (Cross-Origin Resource Sharing) và tường lửa Cloudflare/Captcha chống Bot, không thể tự động ngầm nếu không có API Server chuyên dụng trả phí (như Autodesk APS hoặc Aspose Cloud).
+  - Tích hợp trực tiếp bộ nạp **`THREE.OBJLoader`** vào [`index.html`](file:///e:/Dream-house/index.html) và [`js/viewer3d.js`](file:///e:/Dream-house/js/viewer3d.js).
+  - Khắc phục triệt để khó khăn của người dùng: Trong SketchUp, người dùng không cần cài thêm bất kỳ plugin nào, chỉ cần chọn tính năng có sẵn 100%: **File > Export > 3D Model > chọn `.obj`** (mất đúng 5 giây).
+  - Khi tải file `.obj` lên Admin, Three.js tự động nhận diện và render toàn bộ hình khối 3D chi tiết của ngôi nhà ngay trên web mà không cần thông qua bất kỳ trang web trung gian nào.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.4`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 26** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L465).
+
 
 
 

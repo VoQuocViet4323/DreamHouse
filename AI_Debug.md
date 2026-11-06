@@ -455,6 +455,20 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 26: Không thể tự động cào/gửi ngầm file .skp sang các trang web chuyển đổi online từ trình duyệt (CORS & Anti-Bot)
+- **Hiện tượng:** Yêu cầu hệ thống tự động kết nối ngầm tới các trang web chuyển đổi online (như ImageToStl, AnyConv, FabConvert) để nạp file `.skp` và tự tải file `.glb` về.
+- **Nguyên nhân cốt lõi:**
+  1. **Chính sách an toàn trình duyệt (CORS - Same-Origin Policy):** Trình duyệt web của người dùng nghiêm cấm các mã JavaScript từ website `DreamHouse` tự tiện gửi request POST file ngầm sang một website khác và đọc dữ liệu trả về nếu website đích không bật cờ `Access-Control-Allow-Origin: *`.
+  2. **Tường lửa chống Bot (Cloudflare Turnstile, reCAPTCHA, WAF):** Tất cả các trang chuyển đổi trực tuyến miễn phí đều có lớp bảo vệ chống tự động hoá, bắt buộc người dùng thật phải thao tác trên giao diện của họ. Mọi request tự động ngầm đều bị chặn với lỗi `403 Forbidden`.
+  3. Để tự động hoá 100% việc chuyển đổi `.skp` phía máy chủ, cần triển khai Backend CAD chuyên nghiệp trả phí (Autodesk Platform Services, Aspose Cloud API).
+- **Cách khắc phục dứt điểm:**
+  1. **Tích hợp bộ nạp Native `THREE.OBJLoader` ([`index.html`](file:///e:/Dream-house/index.html) & [`js/viewer3d.js`](file:///e:/Dream-house/js/viewer3d.js)):**
+     - Mọi phiên bản SketchUp từ trước đến nay đều có sẵn tính năng miễn phí 100% trong menu: **File > Export > 3D Model > chọn `.obj`** (không cần cài thêm bất kỳ plugin nào, không cần truy cập trang web chuyển đổi nào).
+     - Three.js được trang bị `THREE.OBJLoader` để nạp và hiển thị trực tiếp file `.obj` trên website ngay khi Admin tải lên.
+  2. Nâng tham số cache-busting lên `?v=4.4` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

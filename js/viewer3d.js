@@ -214,11 +214,16 @@ class House3DViewer {
 
         if (template.model_path && template.model_path.trim() !== '') {
             const modelUrl = template.model_path.trim();
-            const isGltf = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
-            if (isGltf) {
+            const cleanUrl = modelUrl.split('?')[0].split('#')[0].toLowerCase();
+
+            if (cleanUrl.endsWith('.glb') || cleanUrl.endsWith('.gltf')) {
                 // Nạp file .glb/.gltf tương thích Three.js
                 if (statusEl) statusEl.textContent = 'Đang tải mô hình 3D .glb từ máy chủ...';
                 this.loadGLTF(modelUrl, statusEl, template);
+            } else if (cleanUrl.endsWith('.obj')) {
+                // Nạp file .obj trực tiếp từ SketchUp Export
+                if (statusEl) statusEl.textContent = 'Đang tải mô hình 3D .obj từ máy chủ...';
+                this.loadOBJ(modelUrl, statusEl, template);
             } else {
                 // File SketchUp (.skp) hoặc CAD khác: Hiển thị mô phỏng 3D tham số thực tế và cung cấp link tải
                 if (statusEl) {
@@ -267,6 +272,51 @@ class House3DViewer {
             (err) => {
                 console.error('Lỗi khi nạp file GLB:', err);
                 if (statusEl) statusEl.textContent = 'Không đọc được file 3D. Chuyển sang mô hình khối.';
+                if (fallbackTemplate) this.buildProceduralHouse(fallbackTemplate);
+            }
+        );
+    }
+
+    loadOBJ(url, statusEl, fallbackTemplate) {
+        if (typeof THREE.OBJLoader === 'undefined') {
+            console.warn('OBJLoader chưa được nạp, chuyển sang khối dựng mô phỏng');
+            if (fallbackTemplate) this.buildProceduralHouse(fallbackTemplate);
+            return;
+        }
+        const loader = new THREE.OBJLoader();
+        loader.load(
+            url,
+            (obj) => {
+                this.currentMeshGroup = obj;
+                this.currentMeshGroup.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        // Phủ vật liệu bóng đẹp nếu vật liệu mặc định trống
+                        if (!child.material || (Array.isArray(child.material) && child.material.length === 0)) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: 0xe0e6ed,
+                                roughness: 0.5,
+                                metalness: 0.1
+                            });
+                        }
+                    }
+                });
+                this.scene.add(this.currentMeshGroup);
+                if (statusEl) statusEl.textContent = '';
+
+                // Căn chỉnh tâm camera theo bounding box
+                const box = new THREE.Box3().setFromObject(this.currentMeshGroup);
+                const size = box.getSize(new THREE.Vector3());
+                const center = box.getCenter(new THREE.Vector3());
+                this.target.copy(center);
+                this.spherical.radius = Math.max(size.x, size.y, size.z) * 2.2;
+                this.updateCameraPosition();
+            },
+            undefined,
+            (err) => {
+                console.error('Lỗi khi nạp file OBJ:', err);
+                if (statusEl) statusEl.textContent = 'Không đọc được file OBJ. Chuyển sang mô hình khối.';
                 if (fallbackTemplate) this.buildProceduralHouse(fallbackTemplate);
             }
         );
