@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="admin_title">Hệ Thống Quản Trị - DreamHouse</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5b95d'><path d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z'/></svg>" />
-    <link rel="stylesheet" href="style.css?v=4.6">
+    <link rel="stylesheet" href="style.css?v=4.7">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=4.6"></script>
-    <script src="js/i18n.js?v=4.6"></script>
-    <script src="js/toast.js?v=4.6"></script>
+    <script src="js/config.js?v=4.7"></script>
+    <script src="js/i18n.js?v=4.7"></script>
+    <script src="js/toast.js?v=4.7"></script>
     <style>
         .admin-page { padding: 40px 0; }
         .admin-nav-tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--color-border); }
@@ -113,10 +113,11 @@
 
             <form id="template-form" class="inquiry-form">
                 <input type="hidden" id="edit-id" />
+                <input type="hidden" id="tpl-slug" />
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Slug (duy nhất, không dấu):</label>
-                        <input type="text" id="tpl-slug" required placeholder="nha-pho-3-tang-mat-tien-5m" />
+                        <label>Tên mẫu nhà:</label>
+                        <input type="text" id="tpl-name" required placeholder="Nhập tên mẫu nhà (ví dụ: Biệt thự vườn, test...)" />
                     </div>
                     <div class="form-group">
                         <label>Loại nhà:</label>
@@ -278,8 +279,8 @@
                     <tr>
                         <td><img class="table-thumb" src="${item.photo_path || ''}" alt="thumb" /></td>
                         <td>
-                            <strong>${item.name_vi}</strong><br>
-                            <small style="color:#666;">${item.name_en}</small>
+                            <strong>${item.name_vi}</strong>
+                            ${item.name_en && item.name_en !== item.name_vi ? `<br><small style="color:#666;">${item.name_en}</small>` : ''}
                         </td>
                         <td>${item.type}</td>
                         <td>${item.width_m}m × ${item.depth_m}m</td>
@@ -378,6 +379,7 @@
                     currentEditingTemplate = data;
 
                     document.getElementById('edit-id').value = data.id;
+                    document.getElementById('tpl-name').value = data.name_vi || data.slug || '';
                     document.getElementById('tpl-slug').value = data.slug || '';
                     document.getElementById('tpl-type').value = data.type || 'nha-pho';
                     document.getElementById('tpl-width').value = data.width_m || 5.0;
@@ -403,6 +405,8 @@
                 currentEditingTemplate = null;
                 document.getElementById('template-form').reset();
                 document.getElementById('edit-id').value = '';
+                document.getElementById('tpl-name').value = '';
+                document.getElementById('tpl-slug').value = '';
                 document.getElementById('tpl-photo-path').value = '';
                 document.getElementById('tpl-model-path').value = '';
                 document.getElementById('modal-template-title').textContent = 'Thêm Mẫu Thiết Kế Mới';
@@ -487,21 +491,27 @@
                     const depthVal = parseFloat(document.getElementById('tpl-depth').value) || 16.0;
                     const floorsVal = parseInt(document.getElementById('tpl-floors').value, 10) || 1;
 
-                    // Tự động sinh tên tiếng Việt và tiếng Anh đồng bộ theo thông số
+                    // Lấy Tên mẫu nhà người dùng tự nhập (hoặc tự sinh nếu để trống)
                     const editId = document.getElementById('edit-id').value;
-                    let nameVi = currentEditingTemplate?.name_vi;
-                    let nameEn = currentEditingTemplate?.name_en;
+                    const nameInput = document.getElementById('tpl-name').value.trim();
+                    const autoFallbackVi = `${typeLabelsVi[typeVal] || 'Mẫu nhà'} ${floorsVal} tầng ${widthVal}x${depthVal}m`;
+                    const autoFallbackEn = `${typeLabelsEn[typeVal] || 'House Design'} ${floorsVal} Floors ${widthVal}x${depthVal}m`;
 
-                    if (!nameVi || !editId) {
-                        nameVi = `${typeLabelsVi[typeVal] || 'Mẫu nhà'} ${floorsVal} tầng ${widthVal}x${depthVal}m`;
-                    }
-                    if (!nameEn || !editId) {
-                        nameEn = `${typeLabelsEn[typeVal] || 'House Design'} ${floorsVal} Floors ${widthVal}x${depthVal}m`;
-                    }
+                    const nameVi = nameInput || autoFallbackVi;
+                    const nameEn = nameInput || autoFallbackEn;
+
+                    // Tạo slug tự động từ tên mẫu
+                    const slugify = (text) => {
+                        return text.toString().toLowerCase()
+                            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                            .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/^-+|-+$/g, '') || `mau-${Date.now().toString().slice(-4)}`;
+                    };
 
                     let slugVal = document.getElementById('tpl-slug').value.trim();
-                    if (!slugVal) {
-                        slugVal = `${typeVal}-${floorsVal}t-${widthVal}x${depthVal}-${Date.now().toString().slice(-4)}`;
+                    if (!slugVal || !editId) {
+                        slugVal = slugify(nameVi);
                     }
 
                     const payload = {

@@ -499,6 +499,19 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 29: Admin nhập tên mẫu nhà là "test" nhưng bảng dữ liệu vẫn hiển thị "Nhà phố 2 tầng 5x16m"
+- **Hiện tượng:** Admin mở modal Thêm hoặc Sửa mẫu nhà, nhập tên mẫu là `test` vào ô đầu tiên, nhưng khi lưu lại và nhìn vào bảng quản trị thì tên mẫu vẫn hiển thị là `Nhà phố 2 tầng 5x16m`.
+- **Nguyên nhân cốt lõi:**
+  1. Khi gỡ bỏ 2 ô nhập rườm rà "Tên tiếng Việt" và "Tên tiếng Anh", form Admin chỉ giữ lại trường đầu tiên là `Slug (duy nhất, không dấu)`. Người quản trị nhập `test` vào ô này với mong muốn đặt tên cho ngôi nhà.
+  2. Tuy nhiên, logic lưu dữ liệu lại tự động ghi đè trường `name_vi` bằng chuỗi tự sinh theo quy tắc thông số kiến trúc (`${type} ${floors} tầng ${width}x${depth}m` = `Nhà phố 2 tầng 5x16m`). Do đó, tên `test` người dùng vừa nhập bị bỏ qua và chỉ gán vào trường `slug`.
+- **Cách khắc phục dứt điểm:**
+  1. Đổi trường đầu tiên trong form [`admin.html`](file:///e:/Dream-house/admin.html) thành **"Tên mẫu nhà"** (`#tpl-name`, placeholder: *"Nhập tên mẫu nhà (ví dụ: Biệt thự vườn, test...)"*).
+  2. Ẩn trường `tpl-slug` xuống nền, bổ sung hàm `slugify()` tự động chuyển đổi tên mẫu nhà có dấu sang slug URL thân thiện chuẩn SEO.
+  3. Khi lưu thông tin: lưu chính xác tên người dùng nhập vào trường `name_vi` và `name_en`. Nếu để trống mới dùng tên tự sinh dự phòng.
+  4. Nâng tham số cache-busting lên `?v=4.7` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

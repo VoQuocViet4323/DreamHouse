@@ -450,6 +450,16 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.6`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 28** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L505).
 
+### Giai đoạn 34: Tinh Chỉnh Ô Nhập "Tên Mẫu Nhà" Độc Lập & Tự Động Sinh Slug Chuẩn Xác
+- [x] **Khắc phục lỗi người dùng nhập "test" nhưng bảng danh sách hiển thị "Nhà phố 2 tầng 5x16m":**
+  - Phát hiện nguyên nhân: Trước đó khi gỡ bỏ 2 ô nhập tên VI/EN, form Admin chỉ còn lại ô `tpl-slug`. Người dùng nhập tên mẫu nhà (ví dụ `test`) vào ô đầu tiên tưởng là tên nhà, nhưng hệ thống lại gán vào `slug`, đồng thời hàm lưu lại tự động gán đè `name_vi` thành tên sinh tự động từ loại nhà và kích thước (`Nhà phố 2 tầng 5x16m`).
+  - Giải pháp triệt để:
+    1. Chuyển đổi ô nhập đầu tiên thành **"Tên mẫu nhà"** (`#tpl-name`, placeholder: *"Nhập tên mẫu nhà (ví dụ: Biệt thự vườn, test...)"*).
+    2. Ẩn trường `tpl-slug`, tự động sinh slug từ tên người dùng nhập qua hàm `slugify()` chuẩn tiếng Việt không dấu.
+    3. Lưu chính xác chuỗi người dùng nhập vào trường `name_vi` và `name_en` để hiển thị đúng 100% tên mong muốn (`test`) ra ngoài trang chủ và bảng quản trị Admin.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.7`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 29** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L525).
+
 
 
 
