@@ -337,6 +337,20 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     - Xuất hiện menu dẫn vào Bảng quản trị Admin ([admin.html](file:///e:/Dream-house/admin.html)).
     - Hàm bảo mật RLS `public.is_admin()` trả về `true`, cho phép truy cập đầy đủ các quyền thêm, sửa, xóa mẫu nhà, upload ảnh/mô hình 3D lên Storage và quản lý danh sách yêu cầu tư vấn.
 
+### Giai đoạn 24: Chuẩn hóa Trải nghiệm Gợi ý Tài khoản Đã lưu của Trình duyệt (Chrome Autofill Credential Alignment)
+- [x] **Khắc phục lỗi menu tài khoản đã lưu trên Google Chrome chỉ hiển thị khi nhấp vào ô Mật khẩu:**
+  - Xác định nguyên nhân: Thẻ form có `autocomplete="off"`, tồn tại cặp input decoy ẩn ở đầu form và ô `#auth-email` thiếu thuộc tính `name="username"`, khiến thuật toán nhận diện form của Google Chrome không gán danh sách tài khoản đã lưu vào ô username mà chuyển sang ô mật khẩu khi người dùng tương tác.
+  - Chuẩn hóa form và các thuộc tính tiêu chuẩn HTML/Chrome Credential API:
+    - Bổ sung `name="username"` và `autocomplete="username"` cho ô Tên tài khoản hoặc Email (`#auth-email`).
+    - Bổ sung `name="password"` và `autocomplete="current-password"` cho ô Mật khẩu (`#auth-password`), gỡ bỏ thuộc tính `readonly`.
+    - Loại bỏ các thẻ decoy ẩn, kích hoạt `<form autocomplete="on">`.
+    - Cập nhật hàm [`setAuthMode()`](file:///e:/Dream-house/js/app.js) để linh hoạt chuyển giữa `current-password` (khi Đăng nhập) và `new-password` (khi Đăng ký).
+    - Cập nhật hàm [`logout()`](file:///e:/Dream-house/js/app.js) để làm sạch form một cách tự nhiên mà không cưỡng chế focus gây nháy popup.
+  - Kết quả: Khi người dùng nhấp chuột hoặc focus vào ô "Tên tài khoản hoặc Email", menu gợi ý các tài khoản đã lưu trên Google Chrome sẽ lập tức xuất hiện ngay dưới ô này. Khi chọn tài khoản, Chrome tự động điền cả tên tài khoản và mật khẩu tương ứng.
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.7`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 20** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L335).
+
+
 
 
 

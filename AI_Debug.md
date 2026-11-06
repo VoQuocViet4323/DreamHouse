@@ -333,6 +333,28 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 20: Google Chrome Password Manager chỉ hiện gợi ý tài khoản đã lưu khi bấm vào ô Mật khẩu thay vì ô Tên tài khoản
+- **Hiện tượng:** Khi mở form đăng nhập, người dùng bấm vào ô *"Tên tài khoản hoặc Email"* thì không xuất hiện danh sách gợi ý tài khoản đã lưu của Chrome; chỉ khi bấm vào ô *"Mật khẩu"* thì menu gợi ý tài khoản Google Chrome (`haruki24022003`, `Admin`, `vietvq`...) mới bật ra bên dưới ô mật khẩu.
+- **Nguyên nhân cốt lõi:**
+  1. Thẻ `<form>` chứa thuộc tính `autocomplete="off"` kết hợp các thẻ input ẩn decoy (`name="fake_username_prevent_autofill"`) đặt ở đầu form. Trình duyệt Chrome nhận diện thẻ decoy ẩn ở tọa độ `-9999px` là ô username chính của form và không thể liên kết ô `#auth-email` thật vào cơ chế autofill.
+  2. Thẻ input `#auth-email` bị thiếu thuộc tính chuẩn `name="username"`. Chrome's Credential Autofill Heuristics dựa vào thuộc tính `name="username"` kết hợp `autocomplete="username"` để xác định vị trí thả danh sách tài khoản đã lưu.
+  3. Thẻ input `#auth-password` được gán thuộc tính `autocomplete="new-password"` và ban đầu mang thuộc tính `readonly`. Khi người dùng click vào ô mật khẩu, JavaScript gỡ `readonly`, khiến Chrome phát hiện ra đây là trường mật khẩu duy nhất hợp lệ trong form và buộc phải thả dropdown gợi ý tại chính ô mật khẩu.
+- **Cách khắc phục dứt điểm:**
+  1. **Chuẩn hóa cấu trúc Form và Thuộc tính Credential:**
+     - Thiết lập `<form id="auth-form" autocomplete="on">`.
+     - Loại bỏ hoàn toàn khối input ẩn decoy.
+     - Ô Tên tài khoản / Email: bổ sung đầy đủ `name="username"` và `autocomplete="username"`.
+     - Ô Mật khẩu đăng nhập: gán `name="password"` và `autocomplete="current-password"`, loại bỏ thuộc tính `readonly`.
+     - Ô Xác nhận mật khẩu: gán `name="confirm_password"` và `autocomplete="new-password"`.
+  2. **Đồng bộ cơ chế chuyển đổi chế độ Đăng nhập / Đăng ký (`setAuthMode`):**
+     - Khi ở chế độ Đăng nhập: gán `#auth-password` thành `autocomplete="current-password"`.
+     - Khi ở chế độ Đăng ký: gán thành `autocomplete="new-password"`.
+  3. **Tối ưu trải nghiệm Đăng xuất (`logout`):**
+     - Dọn sạch form bằng `form.reset()`, khôi phục các ô trống mà không cưỡng chế focus tự động, đảm bảo form luôn sẵn sàng đón nhận tương tác click của người dùng để thả danh sách tài khoản chính xác tại ô Tên tài khoản.
+  4. Nâng tham số cache-busting lên `?v=3.7` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

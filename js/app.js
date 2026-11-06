@@ -536,16 +536,6 @@ class DreamHouseApp {
             this.clearAuthPasswordFields();
             modal.classList.remove('hidden');
             window.location.hash = 'login';
-
-            // Bảo vệ đa tầng: dọn sạch mật khẩu ở các nhịp trễ để chặn trình duyệt tự động điền trễ
-            setTimeout(() => this.clearAuthPasswordFields(), 50);
-            setTimeout(() => this.clearAuthPasswordFields(), 150);
-            setTimeout(() => this.clearAuthPasswordFields(), 300);
-
-            // Tuyệt đối không tự động focus vào ô mật khẩu khi vừa đăng xuất (tránh kích hoạt Autofill của trình duyệt)
-            setTimeout(() => {
-                document.getElementById('auth-email')?.focus();
-            }, 350);
         }
     }
 
@@ -1327,27 +1317,6 @@ class DreamHouseApp {
                 : `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         });
 
-        // Xử lý cơ chế chống Autofill: Mở khóa readonly khi người dùng chủ động tương tác
-        const setupAutofillProtection = (input) => {
-            if (!input) return;
-            const unlock = () => {
-                input.removeAttribute('readonly');
-            };
-            input.addEventListener('pointerdown', unlock);
-            input.addEventListener('mousedown', unlock);
-            input.addEventListener('touchstart', unlock);
-            input.addEventListener('keydown', unlock);
-            input.addEventListener('focus', unlock);
-
-            // Chặn đứng hành vi trình duyệt tự động điền khi ô vẫn đang ở trạng thái readonly
-            input.addEventListener('input', () => {
-                if (input.hasAttribute('readonly')) {
-                    input.value = '';
-                }
-            });
-        };
-        setupAutofillProtection(passInput);
-        setupAutofillProtection(confirmPassInput);
 
         // Nút quay lại trang chủ & Khám phá mẫu nhà từ cột Showcase
         document.getElementById('auth-back-to-home')?.addEventListener('click', (e) => {
@@ -1457,12 +1426,12 @@ class DreamHouseApp {
         if (passInput) {
             passInput.value = '';
             passInput.type = 'password';
-            passInput.setAttribute('readonly', 'readonly');
+            passInput.removeAttribute('readonly');
         }
         if (confirmInput) {
             confirmInput.value = '';
             confirmInput.type = 'password';
-            confirmInput.setAttribute('readonly', 'readonly');
+            confirmInput.removeAttribute('readonly');
         }
         const defaultEye = `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         const togglePassBtn = document.getElementById('toggle-auth-pass-visibility');
@@ -1562,40 +1531,41 @@ class DreamHouseApp {
         }
 
         if (isRegister) {
-            if (nameInput) nameInput.value = '';
+            if (nameInput) {
+                nameInput.value = '';
+                nameInput.setAttribute('name', 'name');
+                nameInput.setAttribute('autocomplete', 'name');
+            }
             if (identifierInput) {
                 identifierInput.value = '';
-                identifierInput.setAttribute('autocomplete', 'off');
+                identifierInput.setAttribute('name', 'username');
+                identifierInput.setAttribute('autocomplete', 'username');
             }
             this.clearAuthPasswordFields();
-            if (passInput) passInput.setAttribute('autocomplete', 'new-password');
-            if (confirmPassInput) confirmPassInput.setAttribute('autocomplete', 'new-password');
+            if (passInput) {
+                passInput.setAttribute('name', 'password');
+                passInput.setAttribute('autocomplete', 'new-password');
+            }
+            if (confirmPassInput) {
+                confirmPassInput.setAttribute('name', 'confirm_password');
+                confirmPassInput.setAttribute('autocomplete', 'new-password');
+            }
             if (rememberCheckbox) rememberCheckbox.checked = false;
-
-            // Cơ chế chống trình duyệt tự động điền trễ
-            setTimeout(() => {
-                if (this.isAuthRegisterMode) {
-                    if (nameInput) nameInput.value = '';
-                    if (identifierInput) identifierInput.value = '';
-                    this.clearAuthPasswordFields();
-                }
-            }, 50);
-            setTimeout(() => {
-                if (this.isAuthRegisterMode) {
-                    if (nameInput) nameInput.value = '';
-                    if (identifierInput) identifierInput.value = '';
-                    this.clearAuthPasswordFields();
-                }
-            }, 200);
         } else {
-            if (identifierInput) identifierInput.setAttribute('autocomplete', 'username');
-            if (passInput) passInput.setAttribute('autocomplete', 'new-password');
+            if (identifierInput) {
+                identifierInput.setAttribute('name', 'username');
+                identifierInput.setAttribute('autocomplete', 'username');
+            }
+            if (passInput) {
+                passInput.setAttribute('name', 'password');
+                passInput.setAttribute('autocomplete', 'current-password');
+            }
+            if (confirmPassInput) {
+                confirmPassInput.setAttribute('name', 'confirm_password');
+                confirmPassInput.setAttribute('autocomplete', 'new-password');
+            }
             this.clearAuthPasswordFields();
             this.loadRememberedAccount();
-
-            // Cơ chế bảo vệ form đăng nhập: tuyệt đối không cho phép điền sẵn mật khẩu
-            setTimeout(() => this.clearAuthPasswordFields(), 50);
-            setTimeout(() => this.clearAuthPasswordFields(), 200);
         }
     }
 
