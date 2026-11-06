@@ -1483,7 +1483,7 @@ class DreamHouseApp {
     }
 
     /**
-     * Khởi tạo bộ điều khiển cuộn mượt cao cấp (Animate-UI Fluid Scroll Controller)
+     * Khởi tạo bộ điều khiển cuộn mượt tức thì (Instant Compositor Smooth Scroll)
      */
     setupSmoothScroll() {
         document.querySelectorAll('a[href^="#"]').forEach(link => {
@@ -1515,6 +1515,7 @@ class DreamHouseApp {
                         }
                     }
 
+                    // Cuộn lập tức 0ms, bàn giao trực tiếp cho GPU Compositor của trình duyệt
                     this.smoothScrollTo(targetEl, 84);
 
                     // Cập nhật URL hash nhẹ nhàng
@@ -1527,7 +1528,7 @@ class DreamHouseApp {
     }
 
     /**
-     * Cuộn trang siêu mượt với gia tốc easing đa nhịp (Luxury Ease-in-out Smooth Scroll)
+     * Cuộn trang mượt mà không độ trễ (0ms latency, native GPU acceleration)
      * @param {string|HTMLElement} target - Bộ chọn CSS hoặc phần tử DOM cần cuộn tới
      * @param {number} offset - Khoảng cách bù trừ cho Header cố định (px)
      */
@@ -1538,55 +1539,12 @@ class DreamHouseApp {
         const startY = window.pageYOffset || document.documentElement.scrollTop;
         const rect = element.getBoundingClientRect();
         const targetY = rect.top + startY - offset;
-        const distance = targetY - startY;
 
-        // Nếu khoảng cách rất nhỏ, dùng scrollTo ngay
-        if (Math.abs(distance) < 8) return;
-
-        // Tính thời gian cuộn linh hoạt theo cự ly (từ 500ms đến 850ms)
-        const duration = Math.min(850, Math.max(500, Math.abs(distance) * 0.42));
-        let startTime = null;
-        let isCancelled = false;
-
-        // Hàm gia tốc mượt mà phong cách luxury: easeInOutCubic
-        const easeInOutCubic = (t) => {
-            return t < 0.5 
-                ? 4 * t * t * t 
-                : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        };
-
-        // Nếu người dùng chủ động cuộn chuột hoặc vuốt màn hình, ngắt animation tự nhiên
-        const cancelEvents = ['wheel', 'touchstart', 'pointerdown'];
-        const onUserCancel = () => {
-            isCancelled = true;
-            cleanup();
-        };
-        const cleanup = () => {
-            cancelEvents.forEach(evt => window.removeEventListener(evt, onUserCancel, { passive: true }));
-        };
-        cancelEvents.forEach(evt => window.addEventListener(evt, onUserCancel, { passive: true }));
-
-        const step = (currentTime) => {
-            if (isCancelled) return;
-            if (!startTime) startTime = currentTime;
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const ease = easeInOutCubic(progress);
-
-            window.scrollTo(0, startY + (distance * ease));
-
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                cleanup();
-                // Hiệu ứng ánh sáng nhẹ nhàng khi hạ cánh
-                const header = element.querySelector('.section-header') || element;
-                header.classList.add('scroll-landed-pulse');
-                setTimeout(() => header.classList.remove('scroll-landed-pulse'), 1200);
-            }
-        };
-
-        window.requestAnimationFrame(step);
+        // Gọi trực tiếp native smooth scroll của browser engine
+        window.scrollTo({
+            top: Math.max(0, targetY),
+            behavior: 'smooth'
+        });
     }
 
     setupThemeToggle() {

@@ -84,25 +84,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Hiệu ứng xung ánh sáng sang trọng khi hạ cánh cuộn (Scroll Landing Pulse) */
-.scroll-landed-pulse {
-  animation: scrollLandedGlow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes scrollLandedGlow {
-  0% {
-    transform: translateY(0);
-  }
-  35% {
-    transform: translateY(-2px);
-    filter: drop-shadow(0 4px 16px rgba(196, 154, 69, 0.3));
-  }
-  100% {
-    transform: translateY(0);
-    filter: none;
-  }
-}
-
 /* 1. ANIMATE-UI BACKGROUND: SUBTLE GRID & GLOWING MESH */
 body::before {
   content: "";

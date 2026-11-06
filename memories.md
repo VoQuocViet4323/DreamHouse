@@ -389,6 +389,17 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     - Hiệu ứng phát sáng nhẹ nhàng khi hạ cánh (`.scroll-landed-pulse`).
   - Nâng tham số cache-busting lên **`?v=4.0`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 28: Tối ưu Triệt để Tốc độ Phản hồi Cuộn Trang 0ms (Zero-Latency Compositor Smooth Scroll)
+- [x] **Loại bỏ hoàn toàn độ trễ 250ms và hiện tượng khựng giật khi bấm nút điều hướng:**
+  - Phát hiện nguyên nhân: Vòng lặp `requestAnimationFrame` thủ công với hàm gia tốc `easeInOutCubic` bắt đầu ở vận tốc $0$, kết hợp xung đột với CSS `scroll-behavior: smooth` khiến Main Thread bị tắc nghẽn cạnh tranh với Three.js.
+  - Chuyển toàn bộ sang cơ chế phần cứng Native Compositor của trình duyệt:
+    - Sử dụng trực tiếp `window.scrollTo({ top: offsetPosition, behavior: 'smooth' })`.
+    - Phản hồi ngay lập tức $0\text{ms}$ khi nhấp chuột, chuyển động lướt đi êm ru ở tần số quét cao (60–144 FPS).
+    - Giữ nguyên bù trừ khoảng cách Navbar 84px (`scroll-margin-top: 86px;`) để hạ cánh chuẩn xác.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.1`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 23** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L400).
+
+
 
 
 

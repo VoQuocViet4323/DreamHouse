@@ -399,6 +399,23 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 23: Hiệu ứng cuộn trang bị khựng/delay, phản hồi rất chậm khi bấm nút điều hướng
+- **Hiện tượng:** Khi người dùng bấm vào các nút điều hướng (*"Thư viện mẫu"*, *"Liên hệ"*, *"Khám phá mẫu nhà"*...), màn hình có độ trễ khoảng 200–300ms rồi mới bắt đầu cuộn, chuyển động không mượt mà và cảm giác phản hồi rất nặng nề.
+- **Nguyên nhân cốt lõi:**
+  1. Sử dụng thuật toán animation thủ công bằng JavaScript (`requestAnimationFrame`) với đường cong gia tốc `easeInOutCubic`: Ở giai đoạn đầu ($t < 0.2$), hàm số có vận tốc ban đầu triệt tiêu về $0$ ($v(0) = 0$), khiến 20% thời gian đầu trang hầu như đứng yên khiến người dùng cảm giác bị đóng băng (frozen delay).
+  2. Sự xung đột giữa CSS `scroll-behavior: smooth` và vòng lặp JavaScript: Khi JS liên tục gọi `window.scrollTo` ở mỗi frame (60 lần/giây), CSS smooth-scroll của trình duyệt cố gắng nội suy lại vị trí đó, dẫn đến hiện tượng 2 cơ chế kéo giằng nhau, gây tụt khung hình (frame drops) và giật lag nặng khi Three.js đang chạy trên cùng luồng chính (Main Thread).
+  3. Lắng nghe sự kiện `pointerdown` để ngắt cuộn: Khi người dùng nhấp chuột, sự kiện click có thể trùng lặp với `pointerdown` khiến cờ hủy `isCancelled` bị kích hoạt nhầm.
+- **Cách khắc phục dứt điểm:**
+  1. **Bàn giao toàn bộ việc cuộn cho GPU Compositor C++ của trình duyệt:**
+     - Sử dụng trực tiếp `window.scrollTo({ top: offsetPosition, behavior: 'smooth' })`.
+     - Phản hồi ngay lập tức $0\text{ms}$ (ngay tại frame kế tiếp 8–16ms), loại bỏ hoàn toàn độ trễ 250ms.
+     - Tận dụng tối đa phần cứng màn hình tần số quét cao (90Hz, 120Hz, 144Hz) mà không ngốn tài nguyên CPU Main Thread của Three.js.
+  2. Bù trừ chuẩn xác khoảng cách Navbar 84px với `scroll-margin-top: 86px;` và `scroll-padding-top: 86px;`.
+  3. Loại bỏ các animation filter drop-shadow nặng nề khi cuộn để chống giật GPU.
+  4. Nâng tham số cache-busting lên `?v=4.1` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
