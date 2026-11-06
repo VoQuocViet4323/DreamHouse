@@ -485,6 +485,20 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 28: Trình duyệt tự động điền (Autofill) mật khẩu cũ vào ô "Mật khẩu hiện tại" trong Modal Chỉnh sửa hồ sơ
+- **Hiện tượng:** Khi người dùng mở modal chỉnh sửa hồ sơ và mở mục "Đổi mật khẩu tài khoản", ô nhập "Mật khẩu hiện tại" đã bị điền sẵn một chuỗi mật khẩu (`•••••••••••`) kèm nền màu xanh nhạt (`#e8f0fe`) do trình duyệt Chrome tự động điền.
+- **Nguyên nhân cốt lõi:**
+  1. Trong form chỉnh sửa hồ sơ (`profile-form`), trình duyệt nhận diện ô `profile-email` (chứa email tài khoản) nằm cùng form với ô mật khẩu `profile-current-pass` có thuộc tính `autocomplete="current-password"`.
+  2. Thuật toán phân tích thông tin đăng nhập của trình duyệt (Chrome Password Manager Autofill Heuristics) xem đây là form tài khoản cần điền thông tin đăng nhập đã lưu, do đó tự động chèn mật khẩu cũ vào ô này.
+- **Cách khắc phục dứt điểm (Cơ chế bảo vệ 4 lớp):**
+  1. **Tách biệt thuộc tính:** Đổi `autocomplete="current-password"` thành `autocomplete="new-password"` và gắn `name="verify_current_pwd_prevent_autofill"`.
+  2. **Kỹ thuật Khóa Readonly (Readonly Lock Pattern):** Khóa `readonly` mặc định cho các ô mật khẩu trong [`index.html`](file:///e:/Dream-house/index.html), chỉ mở khi người dùng chủ động tương tác (`focus`, `pointerdown`, `click`). Trình duyệt tuyệt đối không autofill vào trường đang có cờ `readonly`.
+  3. **Làm sạch đa tầng bằng JS:** Trong [`js/app.js`](file:///e:/Dream-house/js/app.js), tự động gán `.value = ''` ngay khi mở modal và sau các mốc 100ms, 300ms khi người dùng nhấn mở mục đổi mật khẩu để dọn sạch mọi dữ liệu autofill ngầm.
+  4. **Triệt tiêu màu Autofill trong CSS ([`style.css`](file:///e:/Dream-house/style.css)):** Áp dụng `-webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;` cho `.password-input-box input:-webkit-autofill` để ngăn màu nền xanh nhạt của trình duyệt.
+  5. Nâng tham số cache-busting lên `?v=4.6` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

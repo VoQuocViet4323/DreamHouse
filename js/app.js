@@ -1162,6 +1162,9 @@ class DreamHouseApp {
             const body = document.getElementById('password-section-body');
             const toggle = document.getElementById('toggle-password-section');
             const pillText = document.getElementById('pass-toggle-pill-text');
+            const currentPassInput = document.getElementById('profile-current-pass');
+            const newPassInput = document.getElementById('profile-new-pass');
+            const confirmPassInput = document.getElementById('profile-confirm-pass');
             if (body && toggle) {
                 const isHidden = body.classList.toggle('hidden');
                 toggle.setAttribute('aria-expanded', String(!isHidden));
@@ -1170,11 +1173,41 @@ class DreamHouseApp {
                     pillText.textContent = isHidden ? (isVi ? 'Mở' : 'Expand') : (isVi ? 'Thu gọn' : 'Collapse');
                 }
                 if (!isHidden) {
+                    // Triệt để chống Chrome Password Manager tự động điền mật khẩu cũ
+                    [currentPassInput, newPassInput, confirmPassInput].forEach(inp => {
+                        if (inp) {
+                            inp.value = '';
+                            inp.setAttribute('readonly', 'readonly');
+                        }
+                    });
                     setTimeout(() => {
                         const secCard = document.getElementById('security-card');
                         secCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 120);
+                        [currentPassInput, newPassInput, confirmPassInput].forEach(inp => {
+                            if (inp && document.activeElement !== inp) {
+                                inp.value = '';
+                            }
+                        });
+                    }, 100);
+                    setTimeout(() => {
+                        [currentPassInput, newPassInput, confirmPassInput].forEach(inp => {
+                            if (inp && document.activeElement !== inp) {
+                                inp.value = '';
+                            }
+                        });
+                    }, 300);
                 }
+            }
+        });
+
+        // Gỡ bỏ readonly ngay khi người dùng chủ động click hoặc focus để nhập
+        ['profile-current-pass', 'profile-new-pass', 'profile-confirm-pass'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const enableInput = () => el.removeAttribute('readonly');
+                el.addEventListener('focus', enableInput);
+                el.addEventListener('pointerdown', enableInput);
+                el.addEventListener('click', enableInput);
             }
         });
 
@@ -1795,6 +1828,13 @@ class DreamHouseApp {
         }
 
         this.resetPasswordSection();
+        setTimeout(() => {
+            const currentPass = document.getElementById('profile-current-pass');
+            if (currentPass && document.activeElement !== currentPass) {
+                currentPass.value = '';
+                currentPass.setAttribute('readonly', 'readonly');
+            }
+        }, 150);
 
         if (alertBox) {
             alertBox.className = 'profile-alert hidden';
@@ -1816,14 +1856,17 @@ class DreamHouseApp {
         if (currentPassInput) {
             currentPassInput.value = '';
             currentPassInput.type = 'password';
+            currentPassInput.setAttribute('readonly', 'readonly');
         }
         if (newPassInput) {
             newPassInput.value = '';
             newPassInput.type = 'password';
+            newPassInput.setAttribute('readonly', 'readonly');
         }
         if (confirmPassInput) {
             confirmPassInput.value = '';
             confirmPassInput.type = 'password';
+            confirmPassInput.setAttribute('readonly', 'readonly');
         }
 
         const defaultEyeSvg = `<svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;

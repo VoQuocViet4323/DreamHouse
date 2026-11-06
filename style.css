@@ -3082,6 +3082,14 @@ body.dark-theme .lang-switch-btn:hover {
   border-radius: var(--radius-sm) !important;
 }
 
+.password-input-box input:-webkit-autofill,
+.password-input-box input:-webkit-autofill:hover,
+.password-input-box input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 .password-input-box input:focus {
   border-color: var(--color-accent) !important;
 }

@@ -439,6 +439,17 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.5`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 27** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L485).
 
+### Giai đoạn 33: Chống Tự Động Điền (Autofill) Mật Khẩu Cũ trong Modal Chỉnh Sửa Hồ Sơ
+- [x] **Xử lý triệt để hiện tượng trình duyệt tự động điền sẵn mật khẩu vào ô "Mật khẩu hiện tại":**
+  - Phát hiện nguyên nhân: Trong `profile-form`, trình duyệt nhận diện ô `profile-email` (tên tài khoản/email) đi kèm ô `profile-current-pass` có `autocomplete="current-password"`, do đó Chrome Password Manager tự động kích hoạt autofill, biến nền ô nhập thành màu xanh nhạt (`#e8f0fe`) và điền chuỗi mật khẩu đã lưu.
+  - Áp dụng cơ chế bảo vệ 4 lớp (4-Layer Autofill Protection):
+    1. Thay đổi thuộc tính: Đổi `autocomplete="current-password"` thành `autocomplete="new-password"` và gắn `name="verify_current_pwd_prevent_autofill"`.
+    2. Readonly Lock Pattern: Khóa `readonly` mặc định cho các ô mật khẩu trong modal hồ sơ, chỉ gỡ bỏ `readonly` khi người dùng chủ động click hoặc focus chuột vào để nhập.
+    3. Multi-stage JS Cleanup: Tự động reset `.value = ''` ngay khi mở modal và sau các mốc thời gian 100ms, 300ms khi mở khối đổi mật khẩu để xóa sạch mọi dữ liệu autofill ngầm từ Chrome.
+    4. CSS Autofill Neutralization: Thiết lập `-webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;` trong [`style.css`](file:///e:/Dream-house/style.css) để triệt tiêu hoàn toàn mảng màu xanh vàng lạ mắt của trình duyệt.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.6`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 28** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L505).
+
 
 
 
