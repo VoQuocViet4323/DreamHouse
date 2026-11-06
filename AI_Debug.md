@@ -258,37 +258,37 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      Nhờ chốt chặn này, nếu ô xác nhận mật khẩu không hiển thị trên màn hình, hệ thống đảm bảo 100% sẽ chạy luồng Đăng nhập (`loginWithEmail`), triệt tiêu hoàn toàn lỗi chạy sai luồng.
   4. Nâng tham số cache-busting lên `?v=3.1` trên toàn bộ dự án.
 
-### 🔴 Lỗi 17: Sau khi đăng xuất, ô nhập mật khẩu ở Modal Đăng nhập vẫn còn hiển thị sẵn mật khẩu cũ (••••••)
-- **Hiện tượng:** Người dùng đăng nhập thành công vào hệ thống, sau đó thực hiện bấm "Đăng xuất" từ Header. Modal đăng nhập tự động xuất hiện với thông báo "Đăng xuất thành công", nhưng trong ô nhập "Mật khẩu (tối thiểu 6 ký tự)" vẫn còn nguyên các dấu chấm tròn `••••••` của mật khẩu vừa sử dụng trước đó (trong khi ô tên tài khoản/email lại trống).
-- **Nguyên nhân cốt lõi:**
-  1. Khi người dùng đăng nhập thành công, hàm `loginWithEmail(...)` gọi `this.closeAuthModal()` để ẩn modal (`modal.classList.add('hidden')`) nhưng **hoàn toàn không xóa giá trị trong DOM của trường `#auth-password`**.
-  2. Khi người dùng bấm Đăng xuất (`logout()`), hàm này gọi `this.setAuthMode('login')` rồi mở lại modal (`modal.classList.remove('hidden')`). Do phương thức `setAuthMode('login')` và `logout()` không thực thi xóa `passInput.value = ''`, chuỗi mật khẩu cũ vẫn nằm nguyên trong bộ nhớ phần tử DOM của trình duyệt.
-  3. Thẻ input mang thuộc tính `autocomplete="current-password"` khiến tính năng Autofill của trình duyệt (Chrome/Edge) tự động duy trì hoặc cố gắng điền lại thông tin đăng nhập đã lưu trước đó.
-- **Cách khắc phục dứt điểm:**
-  1. Khởi tạo phương thức chuyên biệt [`clearAuthPasswordFields()`](file:///e:/Dream-house/js/app.js):
-     ```javascript
-     clearAuthPasswordFields() {
-         const passInput = document.getElementById('auth-password');
-         const confirmInput = document.getElementById('auth-confirm-password');
-         if (passInput) {
-             passInput.value = '';
-             passInput.type = 'password';
-         }
-         if (confirmInput) {
-             confirmInput.value = '';
-             confirmInput.type = 'password';
-         }
-         // Reset icon mắt hiển thị mật khẩu về trạng thái ẩn mặc định
-         const defaultEye = `<svg class="eye-icon" ...`;
-         document.getElementById('toggle-auth-pass-visibility')?.innerHTML = defaultEye;
-         document.getElementById('toggle-auth-confirm-pass-visibility')?.innerHTML = defaultEye;
-     }
-     ```
-  2. Triển khai cơ chế dọn sạch đa tầng (Multi-layer Wipe):
-     - Gọi `this.clearAuthPasswordFields()` ngay khi đóng modal (`closeAuthModal()`), khi đăng nhập thành công (`loginWithEmail`), và khi chuyển chế độ auth (`setAuthMode`).
-     - Trong hàm `logout()`, gọi `clearAuthPasswordFields()` ngay lập tức, kết hợp thêm 3 nhịp trễ (`setTimeout` 50ms, 150ms, 300ms) để xóa đè triệt để hành vi can thiệp tự động điền của trình duyệt.
-  3. Cập nhật thuộc tính trên [index.html](file:///e:/Dream-house/index.html): đổi `autocomplete="current-password"` thành `autocomplete="new-password"` để ngăn chặn trình duyệt tự động điền giá trị cũ vào ô mật khẩu khi hiển thị form.
-  4. Tăng tham số cache-busting lên `?v=3.3` trên toàn bộ dự án.
+### 🔴 Lỗi 17: Sau khi đăng xuất, ô nhập mật khẩu ở Modal Đăng nhập vẫn còn hiển thị sẵn mật khẩu cũ hoặc dấu chấm
+- **Hiện tượng:** Người dùng đăng nhập thành công vào hệ thống, sau đó thực hiện bấm "Đăng xuất" từ Header. Modal đăng nhập tự động xuất hiện với thông báo "Đăng xuất thành công", nhưng trong ô nhập "Mật khẩu (tối thiểu 6 ký tự)" vẫn bị điền sẵn mật khẩu cũ hoặc xuất hiện các dấu chấm tròn `••••••` (trong khi ô tên tài khoản/email lại trống).
+- **Nguyên nhân cốt lõi sâu xa:**
+  1. **Lệnh Focus kích hoạt Autofill của trình duyệt:** Trong hàm `logout()`, sau 350ms code thực hiện `document.getElementById('auth-password')?.focus()`. Khi một trường `type="password"` nhận tiêu điểm focus bằng script, cơ chế Password Manager của Google Chrome/Edge ngay lập tức nhận diện đây là hành động đăng nhập và tự động bơm (inject) thông tin mật khẩu đã lưu vào ô input ngay sau khi code JS hoàn tất xóa trễ.
+  2. **Placeholder dạng ký tự chấm (`••••••••••••`):** Thẻ HTML trước đây khai báo `placeholder="••••••••••••"`. Khi ô mật khẩu rỗng, người dùng vẫn nhìn thấy các dấu chấm và lầm tưởng rằng hệ thống đang điền sẵn mật khẩu.
+  3. **Trình duyệt tự động điền form (Browser Credential Autofill Heuristics):** Chrome liên tục theo dõi các form chứa thẻ `type="password"`. Kể cả khi script xóa `value = ''`, daemon autofill của trình duyệt vẫn kích hoạt sự kiện điền lại mật khẩu.
+- **Cách khắc phục dứt điểm (5 lớp bảo vệ - Bulletproof Defense):**
+  1. **Lớp 1 - Khóa ô mật khẩu bằng `readonly` và cơ chế Mở khóa thông minh (Interactive Unlock):**
+     - Đặt thuộc tính `readonly` mặc định cho `#auth-password` và `#auth-confirm-password`. Chrome/Edge **hoàn toàn bỏ qua và không bao giờ tự động điền** vào bất kỳ ô input nào có thuộc tính `readonly`.
+     - Lắng nghe các sự kiện tương tác thật từ người dùng (`pointerdown`, `mousedown`, `touchstart`, `keydown`, `focus`) để gỡ bỏ `readonly`:
+       ```javascript
+       const unlock = () => input.removeAttribute('readonly');
+       input.addEventListener('pointerdown', unlock);
+       input.addEventListener('focus', unlock);
+       ```
+     - Lắng nghe sự kiện `input`: Nếu trình duyệt vẫn cố tình bơm giá trị vào khi ô đang có `readonly`, lập tức xóa trắng:
+       ```javascript
+       input.addEventListener('input', () => {
+           if (input.hasAttribute('readonly')) input.value = '';
+       });
+       ```
+  2. **Lớp 2 - Cặp Input mồi nhử (Decoy Inputs):**
+     - Bổ sung 2 input ẩn ở đầu `<form id="auth-form">` nằm ngoài màn hình (`top: -9999px`) để đánh lừa thuật toán Autofill của Chrome, khiến trình duyệt bơm dữ liệu vào ô mồi nhử thay vì ô thật.
+  3. **Lớp 3 - Tuyệt đối không focus vào ô mật khẩu khi đăng xuất:**
+     - Loại bỏ hoàn toàn lệnh `passInput?.focus()` trong `logout()`. Chỉ focus vào ô tài khoản `#auth-email` để ngăn trình duyệt kích hoạt autofill.
+  4. **Lớp 4 - Gọi `form.reset()` và `clearAuthPasswordFields()` đa nhịp:**
+     - Gọi `form.reset()` để đặt lại toàn bộ form về trạng thái ban đầu.
+     - Hàm `clearAuthPasswordFields()` đặt lại `value = ''`, khôi phục `setAttribute('readonly', 'readonly')` và tắt trạng thái nút mắt.
+  5. **Lớp 5 - Thay thế Placeholder chấm bằng văn bản thuần (`auth_pass_placeholder`):**
+     - Thay đổi `placeholder="••••••••••••"` thành `placeholder="Nhập mật khẩu..."` (VI) và `"Enter password..."` (EN).
+  6. Nâng tham số cache-busting lên `?v=3.4` trên toàn bộ dự án.
 
 ---
 

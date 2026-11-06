@@ -299,12 +299,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=3.2`** trên toàn bộ `index.html` và `admin.html`.
 
 ### Giai đoạn 20: Triệt tiêu Hoàn toàn Hiện tượng Lưu sẵn Mật khẩu sau khi Đăng xuất (Zero Residual Password Policy)
-- [x] **Khắc phục lỗi ô mật khẩu vẫn hiển thị các dấu chấm tròn `••••••` sau khi đăng xuất:**
-  - Nguyên nhân: Trước đó `closeAuthModal()` và `logout()` chỉ ẩn modal hoặc chuyển chế độ mà không dọn sạch giá trị DOM của `#auth-password`, dẫn đến chuỗi mật khẩu từ phiên đăng nhập trước vẫn tồn tại nguyên vẹn.
-  - Xây dựng phương thức tập trung [`clearAuthPasswordFields()`](file:///e:/Dream-house/js/app.js): Xóa trắng toàn bộ `#auth-password.value = ''`, `#auth-confirm-password.value = ''`, khôi phục `type = 'password'` và reset icon con mắt hiển thị về mặc định.
-  - Cơ chế dọn sạch đa tầng (Multi-layer Wipe): Tự động kích hoạt `clearAuthPasswordFields()` ngay khi đóng modal (`closeAuthModal`), khi đăng nhập thành công (`loginWithEmail`), khi chuyển sang chế độ đăng nhập (`setAuthMode('login')`), và kết hợp 3 nhịp trễ (`setTimeout` 50ms, 150ms, 300ms) trong hàm `logout()` để triệt tiêu triệt để mọi hành vi autofill của trình duyệt.
-  - Đổi `autocomplete="current-password"` thành `autocomplete="new-password"` cho thẻ `#auth-password` trong [index.html](file:///e:/Dream-house/index.html) nhằm chặn trình duyệt tự động gán dữ liệu cũ vào input.
-  - Tăng tham số phiên bản cache-busting lên **`?v=3.3`** trên toàn bộ `index.html` và `admin.html`.
+- [x] **Khắc phục dứt điểm lỗi ô mật khẩu vẫn hiển thị các dấu chấm tròn `••••••` sau khi đăng xuất:**
+  - Phát hiện nguyên nhân sâu xa: (1) Lệnh `auth-password.focus()` chạy sau khi đăng xuất kích hoạt Password Manager của Chrome tự động điền mật khẩu đã lưu; (2) Thuộc tính `placeholder="••••••••••••"` khiến ô trống hiển thị giống hệt như đang có mật khẩu; (3) Tính năng Autofill tự động điền vào form đăng nhập chuẩn.
+  - Áp dụng 5 lớp bảo vệ toàn diện (Bulletproof Defense):
+    1. Khóa thuộc tính `readonly` mặc định cho các ô mật khẩu để vô hiệu hóa tính năng tự động điền của Chrome/Edge; tự động mở khóa `removeAttribute('readonly')` khi người dùng chủ động tương tác (`pointerdown`, `focus`, `keydown`); lập tức dọn sạch nếu trình duyệt cố tình bơm dữ liệu khi ô đang có `readonly`.
+    2. Bổ sung cặp decoy input ẩn ở đầu form nhằm thu hút và đánh lừa cơ chế autofill của trình duyệt.
+    3. Loại bỏ hoàn toàn hành vi focus vào ô mật khẩu khi đăng xuất trong `logout()`.
+    4. Gọi `form.reset()` kết hợp phương thức [`clearAuthPasswordFields()`](file:///e:/Dream-house/js/app.js) đa nhịp trễ để dọn sạch giá trị DOM, khôi phục `readonly` và đưa icon con mắt về mặc định.
+    5. Thay đổi placeholder từ dấu chấm `••••••••••••` sang văn bản thuần *"Nhập mật khẩu..."* (`auth_pass_placeholder`) để tránh gây nhầm lẫn thị giác.
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.4`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán lỗi vào Mục 3 của [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L261).
 
 

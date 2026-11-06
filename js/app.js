@@ -481,6 +481,9 @@ class DreamHouseApp {
         // 2. Tự động chuyển ngay sang màn hình / trang login chuyên biệt
         const modal = document.getElementById('auth-modal');
         if (modal) {
+            const form = document.getElementById('auth-form');
+            if (form) form.reset();
+
             this.setAuthMode('login');
             this.clearAuthPasswordFields();
             modal.classList.remove('hidden');
@@ -491,13 +494,9 @@ class DreamHouseApp {
             setTimeout(() => this.clearAuthPasswordFields(), 150);
             setTimeout(() => this.clearAuthPasswordFields(), 300);
 
-            const rememberedEmail = localStorage.getItem('dream_house_remember_email');
+            // Tuyệt đối không tự động focus vào ô mật khẩu khi vừa đăng xuất (tránh kích hoạt Autofill của trình duyệt)
             setTimeout(() => {
-                if (rememberedEmail) {
-                    document.getElementById('auth-password')?.focus();
-                } else {
-                    document.getElementById('auth-email')?.focus();
-                }
+                document.getElementById('auth-email')?.focus();
             }, 350);
         }
     }
@@ -1274,6 +1273,28 @@ class DreamHouseApp {
                 : `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         });
 
+        // Xử lý cơ chế chống Autofill: Mở khóa readonly khi người dùng chủ động tương tác
+        const setupAutofillProtection = (input) => {
+            if (!input) return;
+            const unlock = () => {
+                input.removeAttribute('readonly');
+            };
+            input.addEventListener('pointerdown', unlock);
+            input.addEventListener('mousedown', unlock);
+            input.addEventListener('touchstart', unlock);
+            input.addEventListener('keydown', unlock);
+            input.addEventListener('focus', unlock);
+
+            // Chặn đứng hành vi trình duyệt tự động điền khi ô vẫn đang ở trạng thái readonly
+            input.addEventListener('input', () => {
+                if (input.hasAttribute('readonly')) {
+                    input.value = '';
+                }
+            });
+        };
+        setupAutofillProtection(passInput);
+        setupAutofillProtection(confirmPassInput);
+
         // Nút quay lại trang chủ & Khám phá mẫu nhà từ cột Showcase
         document.getElementById('auth-back-to-home')?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1382,16 +1403,24 @@ class DreamHouseApp {
         if (passInput) {
             passInput.value = '';
             passInput.type = 'password';
+            passInput.setAttribute('readonly', 'readonly');
         }
         if (confirmInput) {
             confirmInput.value = '';
             confirmInput.type = 'password';
+            confirmInput.setAttribute('readonly', 'readonly');
         }
         const defaultEye = `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         const togglePassBtn = document.getElementById('toggle-auth-pass-visibility');
-        if (togglePassBtn) togglePassBtn.innerHTML = defaultEye;
+        if (togglePassBtn) {
+            togglePassBtn.innerHTML = defaultEye;
+            togglePassBtn.classList.remove('active');
+        }
         const toggleConfirmBtn = document.getElementById('toggle-auth-confirm-pass-visibility');
-        if (toggleConfirmBtn) toggleConfirmBtn.innerHTML = defaultEye;
+        if (toggleConfirmBtn) {
+            toggleConfirmBtn.innerHTML = defaultEye;
+            toggleConfirmBtn.classList.remove('active');
+        }
     }
 
     closeAuthModal() {
