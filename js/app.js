@@ -194,10 +194,6 @@ class DreamHouseApp {
             ? window.i18n.getLang() === 'vi' 
             : true;
 
-        if (window.toast) {
-            window.toast.info(isVi ? 'Đang kết nối tới Google...' : 'Connecting to Google...');
-        }
-
         try {
             const { data, error } = await client.auth.signInWithOAuth({
                 provider: 'google',
@@ -1210,12 +1206,79 @@ class DreamHouseApp {
         confirmPassEl?.addEventListener('input', onPassInput);
 
         // Preset Chips chọn ảnh avatar nhanh
+        // Xử lý Chọn ảnh từ máy tính cho Avatar
+        const avatarFileInput = document.getElementById('profile-avatar-file');
+        const btnBrowseAvatar = document.getElementById('btn-browse-avatar');
+        const avatarPreviewBox = document.getElementById('profile-avatar-preview');
+        const avatarFileName = document.getElementById('profile-avatar-filename');
+        const toggleAvatarUrlBtn = document.getElementById('toggle-avatar-url-mode');
+        const avatarUrlContainer = document.getElementById('avatar-url-container');
+        const avatarUrlInput = document.getElementById('profile-avatar-url');
+
+        btnBrowseAvatar?.addEventListener('click', () => avatarFileInput?.click());
+        avatarPreviewBox?.addEventListener('click', () => avatarFileInput?.click());
+
+        toggleAvatarUrlBtn?.addEventListener('click', () => {
+            if (avatarUrlContainer) {
+                avatarUrlContainer.classList.toggle('hidden');
+                if (!avatarUrlContainer.classList.contains('hidden')) {
+                    avatarUrlInput?.focus();
+                }
+            }
+        });
+
+        avatarFileInput?.addEventListener('change', async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                if (window.toast) window.toast.warning('Vui lòng chọn tệp định dạng hình ảnh (PNG, JPG, WEBP).');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                if (window.toast) window.toast.warning('Kích thước ảnh tối đa là 10 MB.');
+                return;
+            }
+
+            if (avatarFileName) {
+                const sizeKb = Math.round(file.size / 1024);
+                avatarFileName.textContent = `✓ ${file.name} (${sizeKb} KB)`;
+                avatarFileName.style.color = 'var(--color-accent)';
+            }
+
+            try {
+                const compressed = await this.compressAvatarImage(file, 320, 320, 0.85);
+                if (avatarUrlInput) avatarUrlInput.value = compressed;
+                this.pendingAvatarFile = file;
+                this.pendingAvatarBase64 = compressed;
+                const nameInput = document.getElementById('profile-name');
+                this.renderProfileModalAvatar(compressed, nameInput?.value || '');
+            } catch (err) {
+                console.error('Lỗi nén ảnh avatar:', err);
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    const result = re.target?.result;
+                    if (avatarUrlInput) avatarUrlInput.value = result;
+                    this.pendingAvatarFile = file;
+                    this.pendingAvatarBase64 = result;
+                    const nameInput = document.getElementById('profile-name');
+                    this.renderProfileModalAvatar(result, nameInput?.value || '');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         document.querySelectorAll('.preset-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const url = chip.getAttribute('data-avatar') || '';
                 const avatarInput = document.getElementById('profile-avatar-url');
                 const nameInput = document.getElementById('profile-name');
                 if (avatarInput) avatarInput.value = url;
+                this.pendingAvatarFile = null;
+                this.pendingAvatarBase64 = null;
+                if (avatarFileName) {
+                    avatarFileName.textContent = url ? 'Đã chọn mẫu ảnh nhanh' : 'Đang dùng chữ cái';
+                    avatarFileName.style.color = 'var(--color-text-muted)';
+                }
                 this.renderProfileModalAvatar(url, nameInput?.value || '');
             });
         });
@@ -1629,8 +1692,24 @@ class DreamHouseApp {
         if (emailInput) emailInput.value = this.currentUser.email || '';
         if (phoneInput) phoneInput.value = this.currentProfile?.phone || this.currentUser.user_metadata?.phone || '';
         
-        const avatarUrl = this.currentProfile?.avatar_url || this.currentUser.user_metadata?.avatar_url || '';
+        const avatarUrl = this.currentProfile?.avatar_url || 
+                          this.currentUser.user_metadata?.avatar_url || 
+                          this.currentUser.user_metadata?.picture || '';
         if (avatarInput) avatarInput.value = avatarUrl;
+
+        // Đặt lại trạng thái trường chọn tệp ảnh
+        const fileInput = document.getElementById('profile-avatar-file');
+        if (fileInput) fileInput.value = '';
+        const fileNameSpan = document.getElementById('profile-avatar-filename');
+        if (fileNameSpan) {
+            fileNameSpan.textContent = avatarUrl ? (avatarUrl.startsWith('data:') ? 'Ảnh tùy chỉnh đã lưu' : 'Đã có ảnh đại diện') : 'Chưa chọn tệp ảnh mới';
+            fileNameSpan.style.color = 'var(--color-text-muted)';
+        }
+        this.pendingAvatarFile = null;
+        this.pendingAvatarBase64 = null;
+
+        const urlContainer = document.getElementById('avatar-url-container');
+        if (urlContainer) urlContainer.classList.add('hidden');
 
         const isAdmin = this.currentProfile?.role === 'admin';
         if (roleText) {
@@ -1762,12 +1841,51 @@ class DreamHouseApp {
         const preview = document.getElementById('profile-avatar-preview');
         if (!preview) return;
         const initial = (name && name.trim()) ? name.trim().charAt(0).toUpperCase() : 'U';
+        const overlayHtml = `
+            <div class="profile-avatar-overlay" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>`;
 
         if (avatarUrl && avatarUrl.trim()) {
-            preview.innerHTML = `<img src="${avatarUrl.trim()}" alt="Avatar" onerror="this.parentElement.innerHTML='<span id=\\'profile-avatar-char\\'>${initial}</span>'" />`;
+            preview.innerHTML = `<img src="${avatarUrl.trim()}" alt="Avatar" onerror="this.parentElement.innerHTML='<span id=\\'profile-avatar-char\\'>${initial}</span>${overlayHtml}'" />${overlayHtml}`;
         } else {
-            preview.innerHTML = `<span id="profile-avatar-char">${initial}</span>`;
+            preview.innerHTML = `<span id="profile-avatar-char">${initial}</span>${overlayHtml}`;
         }
+    }
+
+    compressAvatarImage(file, maxWidth = 320, maxHeight = 320, quality = 0.85) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let { width, height } = img;
+                    const minSide = Math.min(width, height);
+                    const sx = (width - minSide) / 2;
+                    const sy = (height - minSide) / 2;
+
+                    canvas.width = Math.min(minSide, maxWidth);
+                    canvas.height = Math.min(minSide, maxHeight);
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, canvas.width, canvas.height);
+
+                    try {
+                        const dataUrl = canvas.toDataURL('image/webp', quality);
+                        resolve(dataUrl);
+                    } catch (_) {
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    }
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
 
     closeProfileModal() {
@@ -1880,10 +1998,34 @@ class DreamHouseApp {
 
             if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang lưu...' : 'Saving...';
 
-            // 2. Cập nhật bảng profiles
+            // 2. Upload ảnh nếu người dùng chọn ảnh từ máy tính
+            let finalAvatarUrl = avatarUrl;
+            if (this.pendingAvatarFile) {
+                if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang tải ảnh lên...' : 'Uploading avatar...';
+                try {
+                    const fileExt = this.pendingAvatarFile.name.split('.').pop() || 'jpg';
+                    const fileName = `user_${this.currentUser.id}_${Date.now()}.${fileExt}`;
+                    const filePath = `avatars/${fileName}`;
+
+                    const { data: uploadData, error: upErr } = await client.storage
+                        .from('template-images')
+                        .upload(filePath, this.pendingAvatarFile, { upsert: true });
+
+                    if (!upErr && uploadData) {
+                        const { data: { publicUrl } } = client.storage.from('template-images').getPublicUrl(filePath);
+                        if (publicUrl) finalAvatarUrl = publicUrl;
+                    }
+                } catch (stErr) {
+                    console.warn('Storage upload fallback to compressed base64:', stErr);
+                }
+            }
+
+            if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang lưu...' : 'Saving...';
+
+            // 3. Cập nhật bảng profiles
             const profilePayload = {
                 full_name: fullName,
-                avatar_url: avatarUrl,
+                avatar_url: finalAvatarUrl,
                 updated_at: new Date().toISOString()
             };
             const { error: profileError } = await client
@@ -1900,11 +2042,11 @@ class DreamHouseApp {
                 } catch (_) {}
             }
 
-            // 3. Cập nhật Auth user metadata & đổi mật khẩu nếu có
+            // 4. Cập nhật Auth user metadata & đổi mật khẩu nếu có
             const userUpdatePayload = {
                 data: {
                     full_name: fullName,
-                    avatar_url: avatarUrl,
+                    avatar_url: finalAvatarUrl,
                     phone: phone
                 }
             };
@@ -1915,23 +2057,26 @@ class DreamHouseApp {
             const { data: authData, error: authError } = await client.auth.updateUser(userUpdatePayload);
             if (authError) throw authError;
 
-            // 4. Cập nhật cache cục bộ
+            // 5. Cập nhật cache cục bộ
             if (this.currentProfile) {
                 this.currentProfile.full_name = fullName;
-                this.currentProfile.avatar_url = avatarUrl;
+                this.currentProfile.avatar_url = finalAvatarUrl;
                 this.currentProfile.phone = phone;
             }
             if (authData?.user) {
                 this.currentUser = authData.user;
             }
 
-            // 5. Cập nhật UI Header ngay lập tức
+            // 6. Cập nhật UI Header ngay lập tức
             this.updateAuthUI();
 
-            // 6. Reset form mật khẩu nếu đã đổi thành công
+            // 7. Reset form mật khẩu nếu đã đổi thành công
             if (newPassword) {
                 this.resetPasswordSection();
             }
+
+            this.pendingAvatarFile = null;
+            this.pendingAvatarBase64 = null;
 
             showAlert(isVi ? 'Cập nhật hồ sơ thành công!' : 'Profile updated successfully!');
 
@@ -1956,7 +2101,7 @@ class DreamHouseApp {
         const roleBadge = document.getElementById('dropdown-user-role');
         const emailBadge = document.getElementById('dropdown-user-email');
         const adminMenuLink = document.getElementById('menu-admin-link');
-        const avatarCircle = document.getElementById('user-avatar-initials');
+        const avatarCircle = document.getElementById('user-avatar-initials') || document.querySelector('.user-avatar-circle');
 
         if (this.currentUser) {
             if (loginBtn) loginBtn.classList.add('hidden');
@@ -1969,10 +2114,12 @@ class DreamHouseApp {
             if (userNameSpan) userNameSpan.textContent = displayName;
 
             // Hiển thị ảnh Avatar trên thanh điều hướng hoặc chữ cái đầu
-            const avatarUrl = this.currentProfile?.avatar_url || this.currentUser.user_metadata?.avatar_url;
+            const avatarUrl = this.currentProfile?.avatar_url || 
+                              this.currentUser.user_metadata?.avatar_url || 
+                              this.currentUser.user_metadata?.picture;
             if (avatarCircle) {
                 if (avatarUrl && avatarUrl.trim()) {
-                    avatarCircle.innerHTML = `<img src="${avatarUrl.trim()}" alt="${displayName}" class="nav-avatar-img" onerror="this.parentElement.textContent='${displayName.charAt(0).toUpperCase()}'" />`;
+                    avatarCircle.innerHTML = `<img src="${avatarUrl.trim()}" alt="${displayName}" class="nav-avatar-img" onerror="this.parentElement.textContent='${displayName.charAt(0).toUpperCase()}'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';" />`;
                 } else {
                     avatarCircle.textContent = displayName.charAt(0).toUpperCase();
                 }
@@ -1995,6 +2142,9 @@ class DreamHouseApp {
         } else {
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (userDropdown) userDropdown.classList.add('hidden');
+            if (avatarCircle) {
+                avatarCircle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+            }
         }
     }
 }

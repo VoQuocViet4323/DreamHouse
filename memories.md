@@ -350,6 +350,20 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=3.7`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 20** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L335).
 
+### Giai đoạn 25: Tối ưu UI/UX Avatar Navbar & Tích hợp Tải Ảnh Đại Diện từ Thiết bị
+- [x] **Tắt thông báo Toast kết nối Google:** Loại bỏ `window.toast.info('Đang kết nối tới Google...')` trong [`loginWithGoogle()`](file:///e:/Dream-house/js/app.js) để quy trình đăng nhập Google diễn ra êm ái, không gây phân tâm.
+- [x] **Khắc phục triệt để lỗi Avatar trên thanh điều hướng (Navbar) không hiển thị ảnh thật:**
+  - Phát hiện nguyên nhân: Thẻ avatar trên Navbar thiếu thuộc tính `id="user-avatar-initials"`, khiến hàm `updateAuthUI()` không tìm thấy phần tử để thay thế icon người mặc định bằng thẻ `<img>`.
+  - Bổ sung `id="user-avatar-initials"` vào `index.html`, đồng thời cập nhật [`updateAuthUI()`](file:///e:/Dream-house/js/app.js) lấy ảnh từ cả 3 nguồn fallback (`currentProfile.avatar_url`, `user_metadata.avatar_url`, `user_metadata.picture`) và thêm `overflow: hidden;` cho `.user-avatar-circle`.
+- [x] **Bổ sung tính năng chọn ảnh đại diện từ máy tính (Client-side Direct Image Upload):**
+  - Thêm nút *"Chọn ảnh từ máy tính"* kèm input file ẩn và trạng thái tên file trong modal hồ sơ.
+  - Cho phép nhấp trực tiếp vào khung ảnh đại diện trên đầu modal để mở hộp thoại chọn file với hiệu ứng hover camera.
+  - Xây dựng thuật toán nén ảnh tự động [`compressAvatarImage()`](file:///e:/Dream-house/js/app.js) cắt vuông và nén về 320x320px WebP qua HTML5 Canvas (~15-25 KB).
+  - Tự động xem trước ảnh ngay lập tức và hỗ trợ lưu đồng thời vào Supabase Storage & Profile Database một cách an toàn.
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.8`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 21** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L357).
+
+
 
 
 

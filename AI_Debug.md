@@ -355,6 +355,30 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 21: Avatar người dùng không hiển thị trên thanh điều hướng (Navbar) & Nhu cầu tải ảnh đại diện từ máy tính
+- **Hiện tượng:**
+  1. Người dùng đăng nhập (Google OAuth hoặc Email) thì trong modal Chỉnh sửa Hồ sơ hiển thị đúng ảnh đại diện, nhưng ngoài thanh điều hướng (Navbar) lại chỉ hiện icon người mặc định màu vàng.
+  2. Người dùng muốn tắt thông báo Toast *"Đang kết nối tới Google..."* khi nhấn đăng nhập Google.
+  3. Người dùng muốn có tính năng chọn tệp ảnh trực tiếp từ thiết bị/máy tính thay vì chỉ dán đường dẫn URL ảnh.
+- **Nguyên nhân cốt lõi:**
+  1. Thẻ avatar trên Navbar (`index.html` dòng 172) trước đó chỉ có `class="user-avatar-circle"` mà thiếu `id="user-avatar-initials"`. Hàm `updateAuthUI()` tìm kiếm qua `document.getElementById('user-avatar-initials')` nên luôn trả về `null`, dẫn đến việc không thể chèn thẻ `<img>` ảnh đại diện vào nút tài khoản ngoài thanh điều hướng.
+  2. Khi đăng nhập Google OAuth, Supabase thường lưu link ảnh đại diện trong trường `user_metadata.picture` thay vì chỉ có `avatar_url`.
+  3. Form chỉnh sửa hồ sơ trước đó chỉ có trường `<input type="url">` tĩnh, thiếu input file và cơ chế nén ảnh phía client.
+- **Cách khắc phục dứt điểm:**
+  1. **Tắt Toast kết nối Google:** Loại bỏ `window.toast.info('Đang kết nối tới Google...')` trong hàm `loginWithGoogle()`.
+  2. **Đồng bộ Avatar trên Navbar:**
+     - Bổ sung `id="user-avatar-initials"` vào thẻ `<span class="user-avatar-circle">` trong `index.html`.
+     - Trong `updateAuthUI()`: hỗ trợ tìm kiếm kép qua ID và class, đồng thời lấy fallback ảnh từ cả 3 nguồn: `currentProfile.avatar_url`, `currentUser.user_metadata.avatar_url` và `currentUser.user_metadata.picture`.
+     - Bổ sung `overflow: hidden;` cho `.user-avatar-circle` để ảnh bo tròn tuyệt đối.
+  3. **Tích hợp Bộ tải ảnh đại diện từ thiết bị (Direct File Upload):**
+     - Bổ sung nút *"Chọn ảnh từ máy tính"* và thẻ input ẩn `<input type="file" id="profile-avatar-file" accept="image/*">` trong modal hồ sơ.
+     - Cho phép nhấp trực tiếp vào ảnh đại diện hình tròn trên đầu modal để kích hoạt chọn ảnh (có hiệu ứng hover máy ảnh mượt mà).
+     - Xây dựng hàm [`compressAvatarImage()`](file:///e:/Dream-house/js/app.js) tự động nén & crop vuông ảnh đại diện qua HTML5 Canvas (320x320px WebP, dung lượng chỉ ~15-25 KB), cập nhật xem trước trực tiếp ngay khi chọn tệp.
+     - Khi nhấn Lưu: Tự động upload tệp vào Supabase Storage nếu khả dụng, hoặc lưu trữ Data URL nén vào `profiles.avatar_url` mà không bao giờ gặp lỗi phân quyền storage.
+  4. Nâng tham số cache-busting lên `?v=3.8` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

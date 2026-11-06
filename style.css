@@ -2376,6 +2376,7 @@ body.dark-theme .lang-switch-btn:hover {
   justify-content: center;
   box-shadow: 0 2px 6px rgba(196, 154, 69, 0.3);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .user-name {
@@ -2625,6 +2626,25 @@ body.dark-theme .lang-switch-btn:hover {
   box-shadow: 0 4px 16px rgba(196, 154, 69, 0.35);
   overflow: hidden;
   border: 3px solid #ffffff;
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.profile-avatar-box:hover .profile-avatar-overlay {
+  opacity: 1;
 }
 
 .profile-avatar-box img {
@@ -2770,6 +2790,74 @@ body.dark-theme .lang-switch-btn:hover {
   padding: 3px 8px;
   border-radius: 999px;
   pointer-events: none;
+}
+
+.avatar-file-uploader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-avatar-file-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(196, 154, 69, 0.14), rgba(196, 154, 69, 0.06));
+  border: 1px solid rgba(196, 154, 69, 0.35);
+  color: var(--color-accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-avatar-file-trigger:hover {
+  background: var(--color-accent);
+  color: #ffffff;
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 14px rgba(196, 154, 69, 0.25);
+  transform: translateY(-1px);
+}
+
+.avatar-file-status {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.avatar-url-toggle-wrap {
+  margin-top: 8px;
+}
+
+.btn-link-subtle {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s ease;
+}
+
+.btn-link-subtle:hover {
+  color: var(--color-accent);
+}
+
+.avatar-url-container {
+  margin-top: 8px;
 }
 
 .avatar-presets {
