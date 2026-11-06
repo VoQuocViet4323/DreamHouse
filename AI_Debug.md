@@ -512,6 +512,21 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 30: Màn hình tải trang bị giật/nháy trắng hoặc không đồng bộ màu sắc giữa Light/Dark mode khi tích hợp CSS Loader 3D Flipping
+- **Hiện tượng:** Khi tích hợp hiệu ứng loading CSS 3D Flipping vào website, nếu đặt màu cố định `color: #474bff` thì loader sẽ bị lệch tông màu vàng kim sang trọng của thương hiệu Dream House và gây chói khi chuyển sang Dark Mode. Ngoài ra nếu không có overlay che phủ toàn trang hoặc preloader biến mất quá nhanh (<100ms) khi dữ liệu đã lưu cache, người dùng sẽ thấy nháy màn hình (layout shift / white flash) trước khi Three.js canvas và ảnh mẫu nhà kịp render.
+- **Nguyên nhân cốt lõi:**
+  1. Thiếu tính kế thừa CSS Custom Property: Thuộc tính `color: #474bff` cố định không linh hoạt với biến màu thương hiệu `--color-accent` của hệ thống Design Tokens.
+  2. Thời gian sống (lifespan) của preloader không có ngưỡng hiển thị tối thiểu (minimum display duration), dẫn đến việc biến mất tức thì làm gián đoạn chu kỳ xoay lật 3D của animation.
+  3. Lưới thư viện rỗng không có placeholder loader, khiến khoảng trống giữa lúc nạp DOM và nạp Supabase bị đứt đoạn.
+- **Cách khắc phục dứt điểm:**
+  1. Cấu hình biến CSS linh hoạt: `color: var(--flipping-color, var(--color-accent, #474bff));` cho phép vừa sử dụng màu tùy chọn qua `--flipping-color`, vừa tự động đồng bộ màu vàng kim thượng lưu chuẩn thương hiệu trong cả Light Mode (`#c49a45`) và Dark Mode (`#e5b95d`).
+  2. Tạo màn hình `#site-preloader` che phủ toàn trang (`z-index: 999999`) với hiệu ứng fade-out mượt mà (`transition: opacity 0.5s, visibility 0.5s`).
+  3. Đặt thời gian tối thiểu 450ms và cơ chế timeout an toàn 2.5s trong [`DreamHouseApp.init()`](file:///e:/Dream-house/js/app.js) để preloader luôn biến mất mượt mà, không bao giờ bị treo cứng.
+  4. Đặt placeholder `.flipping-container` trong `#gallery` để tạo trải nghiệm thị giác liền mạch.
+  5. Tăng tham số phiên bản cache-busting lên `?v=4.8` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

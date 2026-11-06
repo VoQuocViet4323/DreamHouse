@@ -460,18 +460,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.7`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 29** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L525).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Giai đoạn 35: Tích Hợp Hiệu Ứng Signature Flipping 3D Preloader & Loading Animation
+- [x] **Tích hợp bộ hiệu ứng Loading 3D Flipping độc quyền của Dream House:**
+  - Nhúng trọn vẹn bộ Animation CSS `.flipping` (với 3 keyframes `flipping-i616avmd`, `flipping-25dc7zmd`, `flipping-6h64qpmd`) tạo hiệu ứng khối lập phương 3D xoay lật đa chiều sống động.
+  - Tối ưu màu sắc thích ứng đa chủ đề (Light/Dark theme): Sử dụng `var(--flipping-color, var(--color-accent, #474bff))` giúp khối flipping vừa có thể dùng màu tím gốc `#474bff`, vừa tự động hòa quyện với tone vàng kim sang trọng (`#c49a45` / `#e5b95d`) của thương hiệu Dream House.
+  - Xây dựng màn hình tải trang thương hiệu toàn diện (`#site-preloader`):
+    - Đặt ở vị trí cao nhất trên DOM với `z-index: 999999` che phủ khi trang bắt đầu nạp.
+    - Kết hợp cùng logo thương hiệu "DREAM HOUSE" và dòng thông điệp song ngữ đa quốc gia *"Đang tải không gian kiến trúc..."* (`data-i18n="preloader_text"`).
+    - Tự động ẩn mượt mà với hiệu ứng opacity/visibility sau khi cơ sở dữ liệu Supabase và Three.js khởi tạo hoàn tất, đồng thời có timeout dự phòng 2.5s để bảo đảm trang luôn mở ra mượt mà trong mọi tình huống mạng.
+  - Bổ sung khối loading placeholder ngay trong lưới thư viện (`#gallery .house-grid`), mang lại trải nghiệm kiến trúc cao cấp, không bị giật trang hay nháy trắng.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.8`** trên toàn bộ `index.html` và `admin.html`.
 
 

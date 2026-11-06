@@ -3919,3 +3919,148 @@ body.dark-theme .confirm-modal-card {
   color: #60a5fa;
 }
 
+/* ==========================================================================
+   HIỆU ỨNG LOADING FLIPPING RIÊNG CHO WEBSITE (SIGNATURE 3D FLIPPING LOADER)
+   ========================================================================== */
+
+.flipping {
+   width: 67.2px;
+   height: 67.2px;
+   color: var(--flipping-color, var(--color-accent, #474bff));
+   background: linear-gradient(currentColor 0 0),
+          linear-gradient(currentColor 0 0),
+          linear-gradient(currentColor 0 0);
+   background-size: 50.1% 50.1%;
+   background-repeat: no-repeat;
+   animation: flipping-i616avmd   1.5s infinite linear alternate,
+          flipping-25dc7zmd 3s   infinite linear;
+}
+
+.flipping::before {
+   content: "";
+   display: block;
+   width: 50%;
+   height: 50%;
+   background: currentColor;
+   transform: perspective(168px) rotateY(0deg) rotateX(0deg);
+   transform-origin: bottom right;
+   animation: flipping-6h64qpmd 1.5s infinite linear alternate;
+}
+
+@keyframes flipping-i616avmd {
+   0%, 32.99% {
+      background-position: 0    100%,100% 100%,100% 0;
+   }
+
+   33%, 65.99% {
+      background-position: 100% 100%,100% 100%,100% 0;
+   }
+
+   66%, 100% {
+      background-position: 100% 0   ,100% 0   ,100% 0;
+   }
+}
+
+@keyframes flipping-25dc7zmd {
+   0%, 49.99% {
+      transform: scaleX(1)  rotate(0deg);
+   }
+
+   50%, 100% {
+      transform: scaleX(-1) rotate(-90deg);
+   }
+}
+
+@keyframes flipping-6h64qpmd {
+   16.5% {
+      transform: perspective(168px) rotateX(-90deg)  rotateY(0deg)    rotateX(0deg);
+      filter: grayscale(0.6);
+   }
+
+   33% {
+      transform: perspective(168px) rotateX(-180deg) rotateY(0deg)    rotateX(0deg);
+   }
+
+   66% {
+      transform: perspective(168px) rotateX(-180deg) rotateY(-180deg) rotateX(0deg);
+   }
+
+   100% {
+      transform: perspective(168px) rotateX(-180deg) rotateY(-180deg) rotateX(-180deg);
+      filter: grayscale(0.6);
+   }
+}
+
+/* Site Preloader Overlay */
+.site-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s ease;
+}
+
+.site-preloader.preloader-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  text-align: center;
+}
+
+.preloader-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.preloader-logo-text {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
+
+.preloader-tagline {
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* 3D Canvas & Gallery Loading Containers */
+.flipping-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 48px 24px;
+  width: 100%;
+}
+
+.flipping-container p {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.flipping-sm {
+  transform: scale(0.68);
+}
+
+

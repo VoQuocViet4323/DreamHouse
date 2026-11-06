@@ -21,6 +21,12 @@ class DreamHouseApp {
     }
 
     async init() {
+        const startTime = Date.now();
+        // Fallback tối đa 2.5s đảm bảo người dùng luôn vào được web ngay cả khi mạng lag
+        const fallbackTimer = setTimeout(() => {
+            this.hideSitePreloader();
+        }, 2500);
+
         this.loadLocalFavorites();
         this.setupAuth();
         this.setupUIEvents();
@@ -42,6 +48,26 @@ class DreamHouseApp {
             }
             this.updateAuthUI();
         });
+
+        // Đảm bảo hiệu ứng flipping hiển thị mượt mà tối thiểu 450ms để người dùng cảm nhận được visual luxury
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 450 - elapsed);
+        setTimeout(() => {
+            clearTimeout(fallbackTimer);
+            this.hideSitePreloader();
+        }, delay);
+    }
+
+    hideSitePreloader() {
+        const preloader = document.getElementById('site-preloader');
+        if (preloader && !preloader.classList.contains('preloader-hidden')) {
+            preloader.classList.add('preloader-hidden');
+            setTimeout(() => {
+                if (preloader && preloader.parentNode) {
+                    preloader.parentNode.removeChild(preloader);
+                }
+            }, 600);
+        }
     }
 
     // 1. SUPABASE CLIENT
