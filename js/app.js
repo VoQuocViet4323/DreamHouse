@@ -1146,6 +1146,7 @@ class DreamHouseApp {
                 });
             }
         };
+        setupEyeToggle('toggle-current-pass-visibility', 'profile-current-pass');
         setupEyeToggle('toggle-new-pass-visibility', 'profile-new-pass');
         setupEyeToggle('toggle-confirm-pass-visibility', 'profile-confirm-pass');
 
@@ -1584,12 +1585,17 @@ class DreamHouseApp {
     }
 
     resetPasswordSection() {
+        const currentPassInput = document.getElementById('profile-current-pass');
         const newPassInput = document.getElementById('profile-new-pass');
         const confirmPassInput = document.getElementById('profile-confirm-pass');
         const passSection = document.getElementById('password-section-body');
         const passToggle = document.getElementById('toggle-password-section');
         const pillText = document.getElementById('pass-toggle-pill-text');
 
+        if (currentPassInput) {
+            currentPassInput.value = '';
+            currentPassInput.type = 'password';
+        }
         if (newPassInput) {
             newPassInput.value = '';
             newPassInput.type = 'password';
@@ -1598,6 +1604,13 @@ class DreamHouseApp {
             confirmPassInput.value = '';
             confirmPassInput.type = 'password';
         }
+
+        const defaultEyeSvg = `<svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        ['toggle-current-pass-visibility', 'toggle-new-pass-visibility', 'toggle-confirm-pass-visibility'].forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) btn.innerHTML = defaultEyeSvg;
+        });
+
         if (passSection) passSection.classList.add('hidden');
         if (passToggle) passToggle.setAttribute('aria-expanded', 'false');
         if (pillText) {
@@ -1695,6 +1708,7 @@ class DreamHouseApp {
         const nameInput = document.getElementById('profile-name');
         const phoneInput = document.getElementById('profile-phone');
         const avatarInput = document.getElementById('profile-avatar-url');
+        const currentPassInput = document.getElementById('profile-current-pass');
         const newPassInput = document.getElementById('profile-new-pass');
         const confirmPassInput = document.getElementById('profile-confirm-pass');
         const alertBox = document.getElementById('profile-alert');
@@ -1704,6 +1718,7 @@ class DreamHouseApp {
         const fullName = nameInput ? nameInput.value.trim() : '';
         const phone = phoneInput ? phoneInput.value.trim() : '';
         const avatarUrl = avatarInput ? avatarInput.value.trim() : '';
+        const currentPassword = currentPassInput ? currentPassInput.value : '';
         const newPassword = newPassInput ? newPassInput.value : '';
         const confirmPassword = confirmPassInput ? confirmPassInput.value : '';
 
@@ -1719,21 +1734,38 @@ class DreamHouseApp {
             }
         };
 
+        const isVi = window.i18n ? window.i18n.getLang() === 'vi' : true;
+
         if (!fullName) {
-            showAlert('Vui lòng nhập họ và tên hiển thị.', true);
+            showAlert(isVi ? 'Vui lòng nhập họ và tên hiển thị.' : 'Please enter your display name.', true);
             nameInput?.focus();
             return;
         }
 
-        if (newPassword) {
+        if (newPassword || currentPassword) {
+            if (!currentPassword) {
+                showAlert(isVi ? 'Vui lòng nhập mật khẩu hiện tại để xác minh đổi mật khẩu.' : 'Please enter your current password to verify.', true);
+                currentPassInput?.focus();
+                return;
+            }
+            if (!newPassword) {
+                showAlert(isVi ? 'Vui lòng nhập mật khẩu mới.' : 'Please enter a new password.', true);
+                newPassInput?.focus();
+                return;
+            }
             if (newPassword.length < 6) {
-                showAlert('Mật khẩu mới phải có tối thiểu 6 ký tự.', true);
+                showAlert(isVi ? 'Mật khẩu mới phải có tối thiểu 6 ký tự.' : 'New password must be at least 6 characters.', true);
                 newPassInput?.focus();
                 return;
             }
             if (newPassword !== confirmPassword) {
-                showAlert('Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.', true);
+                showAlert(isVi ? 'Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.' : 'Passwords do not match. Please verify.', true);
                 confirmPassInput?.focus();
+                return;
+            }
+            if (currentPassword === newPassword) {
+                showAlert(isVi ? 'Mật khẩu mới phải khác mật khẩu hiện tại.' : 'New password must be different from current password.', true);
+                newPassInput?.focus();
                 return;
             }
         }
@@ -1744,12 +1776,37 @@ class DreamHouseApp {
             return;
         }
 
-        const isVi = window.i18n.getLang() === 'vi';
         if (submitBtn) submitBtn.disabled = true;
         if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang lưu...' : 'Saving...';
 
         try {
-            // 1. Cập nhật bảng profiles
+            // 1. Nếu có đổi mật khẩu: Xác thực mật khẩu hiện tại trước với Supabase Auth
+            if (newPassword) {
+                if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang xác thực...' : 'Verifying...';
+
+                const email = this.currentUser.email;
+                if (!email) {
+                    throw new Error(isVi ? 'Không tìm thấy thông tin email tài khoản.' : 'Account email not found.');
+                }
+
+                const { error: verifyErr } = await client.auth.signInWithPassword({
+                    email,
+                    password: currentPassword
+                });
+
+                if (verifyErr) {
+                    console.error('Verify current password failed:', verifyErr);
+                    showAlert(isVi ? 'Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại.' : 'Current password is incorrect. Please check again.', true);
+                    currentPassInput?.focus();
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (submitBtnText) submitBtnText.textContent = isVi ? 'Lưu thay đổi' : 'Save Changes';
+                    return;
+                }
+            }
+
+            if (submitBtnText) submitBtnText.textContent = isVi ? 'Đang lưu...' : 'Saving...';
+
+            // 2. Cập nhật bảng profiles
             const profilePayload = {
                 full_name: fullName,
                 avatar_url: avatarUrl,
@@ -1769,7 +1826,7 @@ class DreamHouseApp {
                 } catch (_) {}
             }
 
-            // 2. Cập nhật Auth user metadata & đổi mật khẩu nếu có
+            // 3. Cập nhật Auth user metadata & đổi mật khẩu nếu có
             const userUpdatePayload = {
                 data: {
                     full_name: fullName,
@@ -1784,7 +1841,7 @@ class DreamHouseApp {
             const { data: authData, error: authError } = await client.auth.updateUser(userUpdatePayload);
             if (authError) throw authError;
 
-            // 3. Cập nhật cache cục bộ
+            // 4. Cập nhật cache cục bộ
             if (this.currentProfile) {
                 this.currentProfile.full_name = fullName;
                 this.currentProfile.avatar_url = avatarUrl;
@@ -1794,8 +1851,13 @@ class DreamHouseApp {
                 this.currentUser = authData.user;
             }
 
-            // 4. Cập nhật UI Header ngay lập tức
+            // 5. Cập nhật UI Header ngay lập tức
             this.updateAuthUI();
+
+            // 6. Reset form mật khẩu nếu đã đổi thành công
+            if (newPassword) {
+                this.resetPasswordSection();
+            }
 
             showAlert(isVi ? 'Cập nhật hồ sơ thành công!' : 'Profile updated successfully!');
 

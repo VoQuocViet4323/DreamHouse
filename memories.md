@@ -285,6 +285,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tích hợp **chốt chặn kép (Double Guard Clause)** trong sự kiện submit form: Chỉ kích hoạt luồng Đăng ký khi `this.isAuthRegisterMode === true` ĐỒNG THỜI ô xác nhận mật khẩu đang thực sự hiển thị trên màn hình (`#auth-confirm-pass-group.style.display !== 'none'`). Nếu ô xác nhận mật khẩu đang ẩn, hệ thống đảm bảo 100% luôn chạy luồng Đăng nhập (`loginWithEmail`).
   - Nâng tham số cache-busting lên **`?v=3.1`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 19: Bổ sung Xác thực Mật khẩu Hiện tại khi Đổi Mật khẩu Hồ sơ (Current Password Verification)
+- [x] **Thêm ô nhập "Mật khẩu hiện tại" trong mục Đổi mật khẩu của Modal Hồ sơ (`#profile-modal`):**
+  - Bổ sung ô nhập `#profile-current-pass` với icon ổ khóa bảo mật và nút bật/tắt hiển thị mật khẩu (`#toggle-current-pass-visibility`).
+  - Thiết kế CSS đồng bộ giao diện (`.current-pass-group`) với khoảng cách và typography chuẩn theo phong cách luxury tối giản.
+- [x] **Cơ chế xác thực an toàn tuyệt đối qua Supabase Auth:**
+  - Khi người dùng nhập đổi mật khẩu, hệ thống tự động xác thực danh tính bằng lệnh `client.auth.signInWithPassword({ email, password: currentPassword })` trước khi thực thi cập nhật.
+  - Nếu mật khẩu hiện tại không chính xác: Hệ thống lập tức ngắt tiến trình, giữ nguyên trạng thái tài khoản và thông báo cảnh báo rõ ràng *"Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại."*.
+  - Kiểm tra đầy đủ các điều kiện ràng buộc: bắt buộc nhập mật khẩu hiện tại khi có mật khẩu mới, mật khẩu mới tối thiểu 6 ký tự, mật khẩu xác nhận phải trùng khớp 100%, mật khẩu mới phải khác mật khẩu cũ.
+  - Tự động dọn dẹp và reset trạng thái của ô mật khẩu hiện tại trong hàm `resetPasswordSection()` khi đóng modal hoặc sau khi lưu thành công.
+- [x] **Đa ngôn ngữ & Cache-Busting:**
+  - Bổ sung bản dịch tiếng Việt và tiếng Anh (`profile_current_pass`, `profile_current_pass_placeholder`, ...) trong [`js/i18n.js`](file:///d:/DreamHouse/js/i18n.js).
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.2`** trên toàn bộ `index.html` và `admin.html`.
+
 
 
 
