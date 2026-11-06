@@ -637,7 +637,7 @@ body::before {
   padding: 24px 16px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  animation: fadeIn 0.25s ease-out;
+  animation: modalOverlayIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   cursor: pointer;
 }
 
@@ -647,9 +647,17 @@ body::before {
   cursor: default;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes modalOverlayIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }
 
 .modal-window {
@@ -661,34 +669,54 @@ body::before {
   position: relative;
   overflow-y: auto;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
-  animation: scaleUp 0.3s var(--ease-spring);
+  animation: modalWindowIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-@keyframes scaleUp {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+@keyframes modalWindowIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Exit / Close Animation đối xứng mượt mà cho Modal */
 .modal-overlay.is-closing {
-  animation: modalFadeOut 0.24s ease-out forwards !important;
+  animation: modalOverlayOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   pointer-events: none;
 }
 
-@keyframes modalFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+@keyframes modalOverlayOut {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
 }
 
 .modal-overlay.is-closing .modal-window,
 .modal-overlay.is-closing .profile-dialog {
-  animation: modalScaleDown 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  animation: modalWindowOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
-@keyframes modalScaleDown {
-  from { transform: scale(1); opacity: 1; }
-  to { transform: scale(0.95); opacity: 0; }
+@keyframes modalWindowOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
 }
 
 /* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website */
@@ -2651,7 +2679,7 @@ body.dark-theme .lang-switch-btn:hover {
   overflow-x: hidden;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
-  animation: scaleUp 0.3s var(--ease-spring);
+  animation: modalWindowIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .profile-dialog::-webkit-scrollbar {

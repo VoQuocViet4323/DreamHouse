@@ -497,6 +497,22 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=5.0`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 32** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 38: Tối Ưu Quỹ Đạo Chuyển Động Trượt Rõ Nét & Loại Bỏ Xung Đột Thanh Cuộn (Slide & Blur Modal Exit)
+- [x] **Khắc phục triệt để hiện tượng người dùng không cảm nhận được animation khi đóng:**
+  - Phát hiện nguyên nhân cốt lõi:
+    1. Việc giải phóng thanh cuộn `document.body.style.overflow = ''` ngay khi bắt đầu đóng khiến trình duyệt Windows chèn lại thanh cuộn 17px đồng thời, gây ra cú giật layout (layout shift) làm rách khung hình và nuốt trọn animation.
+    2. Độ lệch chuyển động trước đó quá nhỏ (`scale(0.95)`, thiếu trục Y) khiến mắt người nhìn thấy như biến mất lập tức.
+    3. Bộ lọc `backdrop-filter: blur(12px)` không thể mờ dần nếu chỉ giảm `opacity` trên Chromium.
+  - Giải pháp dứt điểm:
+    1. Thiết kế lại chuyển động trục Y kết hợp Scale vật lý:
+       - Mở vào (`@keyframes modalWindowIn`): Trượt từ dưới lên $28\text{px}$ (`translateY(28px) scale(0.96)`) lên vị trí chuẩn trong $0.34\text{s}$.
+       - Đóng lại (`@keyframes modalWindowOut`): Trượt xuống dưới $28\text{px}$ (`translateY(28px) scale(0.96)`) và mờ dần trong $0.3\text{s}$, tạo hiệu ứng thị giác rõ ràng, sống động tương đương form đăng nhập.
+    2. Hoạt họa trực tiếp độ mờ nền `backdrop-filter: blur(12px)` về `blur(0px)` (`@keyframes modalOverlayOut`).
+    3. Trì hoãn lệnh `document.body.style.overflow = ''` vào bên trong `setTimeout(..., 280)` để giữ nguyên khung hình ổn định 100% trong suốt quá trình chạy animation.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.1`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 33** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
+
+
 
 
 

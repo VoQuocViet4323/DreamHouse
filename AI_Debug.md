@@ -559,6 +559,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 33: Hiệu ứng đóng panel chi tiết mẫu nhà (`#detail-modal`) không thấy rõ hoặc bị giật lag
+- **Hiện tượng:** Người dùng phản hồi "vẫn chưa được, ko có animation" khi bấm nút đóng `(X)` hoặc click nền của modal chi tiết mẫu nhà.
+- **Nguyên nhân cốt lõi:**
+  1. *Biên độ chuyển động quá nhỏ:* Phiên bản trước chỉ co tỉ lệ nhẹ 5% (`scale(0.95)`) trên một khung modal kích thước lớn tới $1200\text{px}$ mà không có độ dịch chuyển tọa độ trục dọc (`translateY`), khiến mắt người dùng cảm giác như modal chỉ mờ đi tức thì chứ không có chuyển động cơ học vật lý.
+  2. *Xung đột giật layout thanh cuộn (Scrollbar Reflow Jitter):* Trong hàm `closeDetailPanel()` và `closeProfileModal()`, lệnh giải phóng thanh cuộn `document.body.style.overflow = ''` được kích hoạt ngay ở frame 0 cùng lúc thêm class `.is-closing`. Trên Windows Chrome, việc đột ngột hoàn trả thanh cuộn dọc (rộng ~17px) làm layout toàn bộ trang chủ bị reflow và giật đột ngột, làm gián đoạn (dropped frame) chu kỳ vẽ animation của trình duyệt.
+  3. *Hiệu ứng làm mờ nền (backdrop blur):* Thuộc tính `backdrop-filter: blur(12px)` không nội suy mượt nếu chỉ thay đổi `opacity` trên overlay.
+- **Cách khắc phục dứt điểm:**
+  1. Nâng cấp CSS Animation trong [`style.css`](file:///d:/DreamHouse/style.css):
+     - `@keyframes modalWindowIn`: Trượt lên từ `translateY(28px) scale(0.96)` lên `translateY(0) scale(1)` kết hợp `cubic-bezier(0.16, 1, 0.3, 1)` thời gian $0.34\text{s}$.
+     - `@keyframes modalWindowOut`: Trượt xuống rõ rệt từ `translateY(0) scale(1)` xuống `translateY(28px) scale(0.96)` và `opacity: 0` trong $0.3\text{s}$, tạo cảm giác cơ học vật lý chân thực tương đồng với modal login.
+     - `@keyframes modalOverlayOut`: Hạ từ từ `backdrop-filter: blur(12px)` về `blur(0px)` và mờ dần trong $0.3\text{s}$.
+  2. Tinh chỉnh JS trong [`js/app.js`](file:///d:/DreamHouse/js/app.js): Di dời lệnh `document.body.style.overflow = ''` vào bên trong `setTimeout(..., 280)` – chỉ khôi phục thanh cuộn sau khi animation đóng đã chạy trọn vẹn và modal đã bị ẩn hoàn toàn, triệt tiêu 100% hiện tượng giật màn hình.
+  3. Tăng tham số cache-busting lên `?v=5.1` trên toàn bộ dự án ([`index.html`](file:///d:/DreamHouse/index.html) và [`admin.html`](file:///d:/DreamHouse/admin.html)).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

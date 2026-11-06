@@ -898,13 +898,13 @@ class DreamHouseApp {
         if (closeBtn) closeBtn.classList.add('is-active');
 
         panel.classList.add('is-closing');
-        document.body.style.overflow = '';
 
         setTimeout(() => {
             panel.classList.add('hidden');
             panel.classList.remove('is-closing');
+            document.body.style.overflow = '';
             if (closeBtn) closeBtn.classList.remove('is-active');
-        }, 240);
+        }, 280);
     }
 
     navigateTemplate(direction) {
@@ -2098,8 +2098,9 @@ class DreamHouseApp {
         setTimeout(() => {
             modal.classList.add('hidden');
             modal.classList.remove('is-closing');
+            document.body.style.overflow = '';
             if (closeBtn) closeBtn.classList.remove('is-active');
-        }, 240);
+        }, 280);
     }
 
     async handleSaveProfile(e) {
