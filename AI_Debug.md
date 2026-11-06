@@ -258,6 +258,38 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      Nhờ chốt chặn này, nếu ô xác nhận mật khẩu không hiển thị trên màn hình, hệ thống đảm bảo 100% sẽ chạy luồng Đăng nhập (`loginWithEmail`), triệt tiêu hoàn toàn lỗi chạy sai luồng.
   4. Nâng tham số cache-busting lên `?v=3.1` trên toàn bộ dự án.
 
+### 🔴 Lỗi 17: Sau khi đăng xuất, ô nhập mật khẩu ở Modal Đăng nhập vẫn còn hiển thị sẵn mật khẩu cũ (••••••)
+- **Hiện tượng:** Người dùng đăng nhập thành công vào hệ thống, sau đó thực hiện bấm "Đăng xuất" từ Header. Modal đăng nhập tự động xuất hiện với thông báo "Đăng xuất thành công", nhưng trong ô nhập "Mật khẩu (tối thiểu 6 ký tự)" vẫn còn nguyên các dấu chấm tròn `••••••` của mật khẩu vừa sử dụng trước đó (trong khi ô tên tài khoản/email lại trống).
+- **Nguyên nhân cốt lõi:**
+  1. Khi người dùng đăng nhập thành công, hàm `loginWithEmail(...)` gọi `this.closeAuthModal()` để ẩn modal (`modal.classList.add('hidden')`) nhưng **hoàn toàn không xóa giá trị trong DOM của trường `#auth-password`**.
+  2. Khi người dùng bấm Đăng xuất (`logout()`), hàm này gọi `this.setAuthMode('login')` rồi mở lại modal (`modal.classList.remove('hidden')`). Do phương thức `setAuthMode('login')` và `logout()` không thực thi xóa `passInput.value = ''`, chuỗi mật khẩu cũ vẫn nằm nguyên trong bộ nhớ phần tử DOM của trình duyệt.
+  3. Thẻ input mang thuộc tính `autocomplete="current-password"` khiến tính năng Autofill của trình duyệt (Chrome/Edge) tự động duy trì hoặc cố gắng điền lại thông tin đăng nhập đã lưu trước đó.
+- **Cách khắc phục dứt điểm:**
+  1. Khởi tạo phương thức chuyên biệt [`clearAuthPasswordFields()`](file:///e:/Dream-house/js/app.js):
+     ```javascript
+     clearAuthPasswordFields() {
+         const passInput = document.getElementById('auth-password');
+         const confirmInput = document.getElementById('auth-confirm-password');
+         if (passInput) {
+             passInput.value = '';
+             passInput.type = 'password';
+         }
+         if (confirmInput) {
+             confirmInput.value = '';
+             confirmInput.type = 'password';
+         }
+         // Reset icon mắt hiển thị mật khẩu về trạng thái ẩn mặc định
+         const defaultEye = `<svg class="eye-icon" ...`;
+         document.getElementById('toggle-auth-pass-visibility')?.innerHTML = defaultEye;
+         document.getElementById('toggle-auth-confirm-pass-visibility')?.innerHTML = defaultEye;
+     }
+     ```
+  2. Triển khai cơ chế dọn sạch đa tầng (Multi-layer Wipe):
+     - Gọi `this.clearAuthPasswordFields()` ngay khi đóng modal (`closeAuthModal()`), khi đăng nhập thành công (`loginWithEmail`), và khi chuyển chế độ auth (`setAuthMode`).
+     - Trong hàm `logout()`, gọi `clearAuthPasswordFields()` ngay lập tức, kết hợp thêm 3 nhịp trễ (`setTimeout` 50ms, 150ms, 300ms) để xóa đè triệt để hành vi can thiệp tự động điền của trình duyệt.
+  3. Cập nhật thuộc tính trên [index.html](file:///e:/Dream-house/index.html): đổi `autocomplete="current-password"` thành `autocomplete="new-password"` để ngăn chặn trình duyệt tự động điền giá trị cũ vào ô mật khẩu khi hiển thị form.
+  4. Tăng tham số cache-busting lên `?v=3.3` trên toàn bộ dự án.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

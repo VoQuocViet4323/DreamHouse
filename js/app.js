@@ -252,6 +252,7 @@ class DreamHouseApp {
             if (window.toast) {
                 window.toast.success('Đăng nhập thành công! Chào mừng bạn quay trở lại.', 3500);
             }
+            this.clearAuthPasswordFields();
             this.closeAuthModal();
         }
     }
@@ -481,8 +482,14 @@ class DreamHouseApp {
         const modal = document.getElementById('auth-modal');
         if (modal) {
             this.setAuthMode('login');
+            this.clearAuthPasswordFields();
             modal.classList.remove('hidden');
             window.location.hash = 'login';
+
+            // Bảo vệ đa tầng: dọn sạch mật khẩu ở các nhịp trễ để chặn trình duyệt tự động điền trễ
+            setTimeout(() => this.clearAuthPasswordFields(), 50);
+            setTimeout(() => this.clearAuthPasswordFields(), 150);
+            setTimeout(() => this.clearAuthPasswordFields(), 300);
 
             const rememberedEmail = localStorage.getItem('dream_house_remember_email');
             setTimeout(() => {
@@ -491,7 +498,7 @@ class DreamHouseApp {
                 } else {
                     document.getElementById('auth-email')?.focus();
                 }
-            }, 300);
+            }, 350);
         }
     }
 
@@ -1197,10 +1204,7 @@ class DreamHouseApp {
 
         loginBtn?.addEventListener('click', () => {
             this.setAuthMode('login');
-            const passInput = document.getElementById('auth-password');
-            if (passInput) passInput.value = '';
-            const confirmInput = document.getElementById('auth-confirm-password');
-            if (confirmInput) confirmInput.value = '';
+            this.clearAuthPasswordFields();
 
             modal?.classList.remove('hidden');
             window.location.hash = 'login';
@@ -1372,9 +1376,28 @@ class DreamHouseApp {
         // Theme toggle được quản lý với hiệu ứng Circular Reveal (219) ngay trong index.html
     }
 
+    clearAuthPasswordFields() {
+        const passInput = document.getElementById('auth-password');
+        const confirmInput = document.getElementById('auth-confirm-password');
+        if (passInput) {
+            passInput.value = '';
+            passInput.type = 'password';
+        }
+        if (confirmInput) {
+            confirmInput.value = '';
+            confirmInput.type = 'password';
+        }
+        const defaultEye = `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        const togglePassBtn = document.getElementById('toggle-auth-pass-visibility');
+        if (togglePassBtn) togglePassBtn.innerHTML = defaultEye;
+        const toggleConfirmBtn = document.getElementById('toggle-auth-confirm-pass-visibility');
+        if (toggleConfirmBtn) toggleConfirmBtn.innerHTML = defaultEye;
+    }
+
     closeAuthModal() {
         const modal = document.getElementById('auth-modal');
         if (modal) modal.classList.add('hidden');
+        this.clearAuthPasswordFields();
         const alertBox = document.getElementById('auth-alert');
         if (alertBox) {
             alertBox.className = 'auth-alert hidden';
@@ -1461,14 +1484,9 @@ class DreamHouseApp {
                 identifierInput.value = '';
                 identifierInput.setAttribute('autocomplete', 'off');
             }
-            if (passInput) {
-                passInput.value = '';
-                passInput.setAttribute('autocomplete', 'new-password');
-            }
-            if (confirmPassInput) {
-                confirmPassInput.value = '';
-                confirmPassInput.setAttribute('autocomplete', 'new-password');
-            }
+            this.clearAuthPasswordFields();
+            if (passInput) passInput.setAttribute('autocomplete', 'new-password');
+            if (confirmPassInput) confirmPassInput.setAttribute('autocomplete', 'new-password');
             if (rememberCheckbox) rememberCheckbox.checked = false;
 
             // Cơ chế chống trình duyệt tự động điền trễ
@@ -1476,22 +1494,25 @@ class DreamHouseApp {
                 if (this.isAuthRegisterMode) {
                     if (nameInput) nameInput.value = '';
                     if (identifierInput) identifierInput.value = '';
-                    if (passInput) passInput.value = '';
-                    if (confirmPassInput) confirmPassInput.value = '';
+                    this.clearAuthPasswordFields();
                 }
             }, 50);
             setTimeout(() => {
                 if (this.isAuthRegisterMode) {
                     if (nameInput) nameInput.value = '';
                     if (identifierInput) identifierInput.value = '';
-                    if (passInput) passInput.value = '';
-                    if (confirmPassInput) confirmPassInput.value = '';
+                    this.clearAuthPasswordFields();
                 }
             }, 200);
         } else {
             if (identifierInput) identifierInput.setAttribute('autocomplete', 'username');
-            if (passInput) passInput.setAttribute('autocomplete', 'current-password');
+            if (passInput) passInput.setAttribute('autocomplete', 'new-password');
+            this.clearAuthPasswordFields();
             this.loadRememberedAccount();
+
+            // Cơ chế bảo vệ form đăng nhập: tuyệt đối không cho phép điền sẵn mật khẩu
+            setTimeout(() => this.clearAuthPasswordFields(), 50);
+            setTimeout(() => this.clearAuthPasswordFields(), 200);
         }
     }
 

@@ -298,6 +298,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Bổ sung bản dịch tiếng Việt và tiếng Anh (`profile_current_pass`, `profile_current_pass_placeholder`, ...) trong [`js/i18n.js`](file:///d:/DreamHouse/js/i18n.js).
   - Tăng tham số phiên bản cache-busting lên **`?v=3.2`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 20: Triệt tiêu Hoàn toàn Hiện tượng Lưu sẵn Mật khẩu sau khi Đăng xuất (Zero Residual Password Policy)
+- [x] **Khắc phục lỗi ô mật khẩu vẫn hiển thị các dấu chấm tròn `••••••` sau khi đăng xuất:**
+  - Nguyên nhân: Trước đó `closeAuthModal()` và `logout()` chỉ ẩn modal hoặc chuyển chế độ mà không dọn sạch giá trị DOM của `#auth-password`, dẫn đến chuỗi mật khẩu từ phiên đăng nhập trước vẫn tồn tại nguyên vẹn.
+  - Xây dựng phương thức tập trung [`clearAuthPasswordFields()`](file:///e:/Dream-house/js/app.js): Xóa trắng toàn bộ `#auth-password.value = ''`, `#auth-confirm-password.value = ''`, khôi phục `type = 'password'` và reset icon con mắt hiển thị về mặc định.
+  - Cơ chế dọn sạch đa tầng (Multi-layer Wipe): Tự động kích hoạt `clearAuthPasswordFields()` ngay khi đóng modal (`closeAuthModal`), khi đăng nhập thành công (`loginWithEmail`), khi chuyển sang chế độ đăng nhập (`setAuthMode('login')`), và kết hợp 3 nhịp trễ (`setTimeout` 50ms, 150ms, 300ms) trong hàm `logout()` để triệt tiêu triệt để mọi hành vi autofill của trình duyệt.
+  - Đổi `autocomplete="current-password"` thành `autocomplete="new-password"` cho thẻ `#auth-password` trong [index.html](file:///e:/Dream-house/index.html) nhằm chặn trình duyệt tự động gán dữ liệu cũ vào input.
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.3`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán lỗi vào Mục 3 của [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L261).
+
 
 
 
