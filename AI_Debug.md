@@ -312,6 +312,27 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 19: Đăng nhập bằng Google bị chuyển hướng sang trang JSON lỗi `{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}`
+- **Hiện tượng:** Khi người dùng bấm nút *"Tiếp tục với Google"* trong modal Đăng nhập, trình duyệt bị chuyển hướng rời khỏi website và chuyển tới URL `https://qdkhqvsbtmbgkmoldazt.supabase.co/auth/v1/authorize?provider=google&...` hiển thị chuỗi JSON thô:
+  `{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}`.
+- **Nguyên nhân cốt lõi:**
+  1. Trong Supabase Dashboard của dự án `qdkhqvsbtmbgkmoldazt`, mục **Authentication > Providers > Google** hiện đang ở trạng thái **TẮT (Disabled)**, chưa cấu hình Client ID và Client Secret từ Google Cloud Console.
+  2. Hàm `loginWithGoogle()` trước đó tự động chuyển hướng trình duyệt (`signInWithOAuth`) mà không tiền kiểm tra trạng thái hoạt động của Provider, khiến người dùng bị văng ra khỏi ứng dụng và mắc kẹt tại trang lỗi JSON thô của Supabase.
+- **Cách khắc phục dứt điểm:**
+  1. **Cơ chế Tiền kiểm tra (OAuth Pre-flight Check):**
+     - Gọi `client.auth.signInWithOAuth({ provider: 'google', options: { skipBrowserRedirect: true } })` để lấy URL chuyển hướng mà không văng khỏi trang.
+     - Dùng `fetch` thăm dò `data.url` thông qua cơ chế CORS. Nếu Supabase phản hồi mã lỗi 400 và thông báo `Unsupported provider`, hệ thống lập tức chặn đứng việc chuyển hướng, giữ nguyên người dùng tại trang web và hiển thị thông báo Alert/Toast cảnh báo rõ ràng:
+       *"Đăng nhập Google chưa được kích hoạt trên Supabase Dashboard. Vui lòng đăng nhập bằng Tên tài khoản / Email hoặc cấu hình Google Provider trong Supabase."*
+     - Chỉ khi Provider đã được kích hoạt thành công (không trả về lỗi 400), code mới thực thi `window.location.href = data.url` để chuyển sang trang đăng nhập Google thật.
+  2. **Các bước cấu hình kích hoạt Google Provider trên Supabase:**
+     - Truy cập Supabase Dashboard: `https://supabase.com/dashboard/project/qdkhqvsbtmbgkmoldazt/auth/providers`.
+     - Mở rộng mục **Google**, sao chép **Callback URL (for OAuth)**: `https://qdkhqvsbtmbgkmoldazt.supabase.co/auth/v1/callback`.
+     - Vào [Google Cloud Console](https://console.cloud.google.com/) > **APIs & Services > Credentials** > tạo **OAuth Client ID** (Web application), dán Callback URL vào mục **Authorized redirect URIs**.
+     - Quay lại Supabase Dashboard > dán **Client ID** và **Client Secret** > gạt công tắc **Enable Sign in with Google** sang **ON** > nhấn **Save**.
+  3. Nâng tham số cache-busting lên `?v=3.6` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

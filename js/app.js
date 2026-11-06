@@ -189,14 +189,62 @@ class DreamHouseApp {
             if (window.toast) window.toast.warning('Supabase chưa được cấu hình. Vui lòng kiểm tra file .env');
             return;
         }
-        const { error } = await client.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin + window.location.pathname
+
+        const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
+            ? window.i18n.getLang() === 'vi' 
+            : true;
+
+        if (window.toast) {
+            window.toast.info(isVi ? 'Đang kết nối tới Google...' : 'Connecting to Google...');
+        }
+
+        try {
+            const { data, error } = await client.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname,
+                    skipBrowserRedirect: true
+                }
+            });
+
+            if (error) throw error;
+
+            if (data?.url) {
+                // Tiền kiểm tra URL để tránh chuyển hướng người dùng sang trang JSON lỗi nếu Google Provider chưa được kích hoạt trên Supabase
+                try {
+                    const testRes = await fetch(data.url, {
+                        method: 'GET',
+                        redirect: 'manual'
+                    });
+
+                    if (testRes.status === 400) {
+                        const errData = await testRes.json().catch(() => null);
+                        if (errData?.msg && errData.msg.includes('Unsupported provider')) {
+                            const alertBox = document.getElementById('auth-alert');
+                            const guideMsg = isVi 
+                                ? 'Đăng nhập Google chưa được kích hoạt trên Supabase Dashboard. Vui lòng đăng nhập bằng Tên tài khoản / Email hoặc cấu hình Google Provider trong Supabase.'
+                                : 'Google sign-in is not enabled in Supabase Dashboard. Please use Username / Email login or enable Google Provider in Supabase.';
+                            if (alertBox) {
+                                alertBox.className = 'auth-alert error';
+                                alertBox.innerHTML = `<span>⚠️</span> <span>${guideMsg}</span>`;
+                                alertBox.classList.remove('hidden');
+                            }
+                            if (window.toast) {
+                                window.toast.warning(guideMsg, 6000, isVi ? 'Chưa bật Google Provider' : 'Google Provider Disabled');
+                            }
+                            return;
+                        }
+                    }
+                } catch (probeErr) {
+                    console.warn('Probe Google OAuth endpoint warning:', probeErr);
+                }
+
+                // Chuyển hướng trình duyệt tới màn hình đăng nhập Google thật
+                window.location.href = data.url;
             }
-        });
-        if (error) {
-            const msg = window.translateAuthError ? window.translateAuthError(error.message) : error.message;
+        } catch (err) {
+            console.error('Google OAuth error:', err);
+            const msg = window.translateAuthError ? window.translateAuthError(err.message) : err.message;
             if (window.toast) window.toast.error(msg);
         }
     }
