@@ -1009,7 +1009,7 @@ class DreamHouseApp {
             this.closeDetailPanel();
             const contactSection = document.getElementById('contact-section');
             if (contactSection) {
-                contactSection.scrollIntoView({ behavior: 'smooth' });
+                this.smoothScrollTo(contactSection, 84);
             }
             if (template) {
                 const lang = window.i18n.getLang();
@@ -1388,7 +1388,7 @@ class DreamHouseApp {
         });
         document.getElementById('auth-explore-cta')?.addEventListener('click', () => {
             this.closeAuthModal();
-            document.getElementById('gallery-section')?.scrollIntoView({ behavior: 'smooth' });
+            this.smoothScrollTo('#gallery-section', 84);
         });
 
         // Nhấn phím Escape để đóng nhanh màn hình Auth
@@ -1477,6 +1477,116 @@ class DreamHouseApp {
                 window.toast.success(msg, 4000, title);
             }
         }
+
+        // Khởi tạo bộ điều hướng cuộn mượt cao cấp
+        this.setupSmoothScroll();
+    }
+
+    /**
+     * Khởi tạo bộ điều khiển cuộn mượt cao cấp (Animate-UI Fluid Scroll Controller)
+     */
+    setupSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (!href || href === '#' || href.length <= 1) return;
+
+                // Bỏ qua các hash điều hướng modal
+                if (href === '#login' || href === '#register') return;
+
+                const targetEl = document.querySelector(href);
+                if (targetEl) {
+                    e.preventDefault();
+
+                    // Đóng dropdown menu tài khoản nếu đang mở
+                    const userMenu = document.getElementById('user-dropdown-menu');
+                    if (userMenu && !userMenu.classList.contains('hidden')) {
+                        userMenu.classList.add('hidden');
+                        document.getElementById('user-profile-trigger')?.setAttribute('aria-expanded', 'false');
+                    }
+
+                    // Nếu nhấp "Mẫu nhà đã lưu yêu thích", tự động kích hoạt bộ lọc yêu thích
+                    if (link.id === 'menu-favorites-link') {
+                        const favCheckbox = document.getElementById('filter-favorites-only');
+                        if (favCheckbox && !favCheckbox.checked) {
+                            favCheckbox.checked = true;
+                            this.filterFavoritesOnly = true;
+                            this.renderTemplates();
+                        }
+                    }
+
+                    this.smoothScrollTo(targetEl, 84);
+
+                    // Cập nhật URL hash nhẹ nhàng
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState(null, null, href);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * Cuộn trang siêu mượt với gia tốc easing đa nhịp (Luxury Ease-in-out Smooth Scroll)
+     * @param {string|HTMLElement} target - Bộ chọn CSS hoặc phần tử DOM cần cuộn tới
+     * @param {number} offset - Khoảng cách bù trừ cho Header cố định (px)
+     */
+    smoothScrollTo(target, offset = 84) {
+        const element = typeof target === 'string' ? document.querySelector(target) : target;
+        if (!element) return;
+
+        const startY = window.pageYOffset || document.documentElement.scrollTop;
+        const rect = element.getBoundingClientRect();
+        const targetY = rect.top + startY - offset;
+        const distance = targetY - startY;
+
+        // Nếu khoảng cách rất nhỏ, dùng scrollTo ngay
+        if (Math.abs(distance) < 8) return;
+
+        // Tính thời gian cuộn linh hoạt theo cự ly (từ 500ms đến 850ms)
+        const duration = Math.min(850, Math.max(500, Math.abs(distance) * 0.42));
+        let startTime = null;
+        let isCancelled = false;
+
+        // Hàm gia tốc mượt mà phong cách luxury: easeInOutCubic
+        const easeInOutCubic = (t) => {
+            return t < 0.5 
+                ? 4 * t * t * t 
+                : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        // Nếu người dùng chủ động cuộn chuột hoặc vuốt màn hình, ngắt animation tự nhiên
+        const cancelEvents = ['wheel', 'touchstart', 'pointerdown'];
+        const onUserCancel = () => {
+            isCancelled = true;
+            cleanup();
+        };
+        const cleanup = () => {
+            cancelEvents.forEach(evt => window.removeEventListener(evt, onUserCancel, { passive: true }));
+        };
+        cancelEvents.forEach(evt => window.addEventListener(evt, onUserCancel, { passive: true }));
+
+        const step = (currentTime) => {
+            if (isCancelled) return;
+            if (!startTime) startTime = currentTime;
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = easeInOutCubic(progress);
+
+            window.scrollTo(0, startY + (distance * ease));
+
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                cleanup();
+                // Hiệu ứng ánh sáng nhẹ nhàng khi hạ cánh
+                const header = element.querySelector('.section-header') || element;
+                header.classList.add('scroll-landed-pulse');
+                setTimeout(() => header.classList.remove('scroll-landed-pulse'), 1200);
+            }
+        };
+
+        window.requestAnimationFrame(step);
     }
 
     setupThemeToggle() {

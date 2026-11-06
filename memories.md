@@ -374,6 +374,22 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=3.9`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 22** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L378).
 
+### Giai đoạn 27: Tích hợp Bộ điều khiển Cuộn trang Siêu Mượt Đa Nhịp (Animate-UI Fluid Easing Smooth Scroll)
+- [x] **Xây dựng chuyển động cuộn trang animation siêu mượt khi nhấp các nút điều hướng:**
+  - Áp dụng trên:
+    1. Các nút trên Navbar: *"Thư viện mẫu"* (`#gallery-section`) và *"Liên hệ"* (`#contact-section`).
+    2. Các nút CTA trong Hero Section: *"Khám phá mẫu nhà"* và *"Nhận tư vấn ngay / Liên hệ"*.
+    3. Nút *"Mẫu nhà đã lưu yêu thích"* trong menu tài khoản (tự động bật lọc yêu thích và cuộn mượt).
+    4. Nút *"Nhận báo giá mẫu này"* trong Panel chi tiết 3D và nút *"Khám phá mẫu nhà"* từ modal đăng nhập.
+  - Thuật toán chuyển động cao cấp [`smoothScrollTo()`](file:///e:/Dream-house/js/app.js):
+    - Sử dụng đường cong gia tốc `easeInOutCubic` (bắt đầu êm, lướt nhanh và hãm phanh mượt mà như xe sang).
+    - Thời lượng cuộn động theo cự ly $(500\text{ms} - 850\text{ms})$ kết hợp `requestAnimationFrame`.
+    - Tính toán bù trừ khoảng hở 84px cho Header cố định (`scroll-margin-top: 86px;` & `scroll-padding-top: 86px;`) giúp tiêu đề hạ cánh chuẩn xác, thoáng đãng bên dưới Navbar.
+    - Cơ chế ngắt thông minh (User Cancel Protection): Tự động giải phóng animation nếu người dùng chủ động lăn chuột hoặc vuốt màn hình.
+    - Hiệu ứng phát sáng nhẹ nhàng khi hạ cánh (`.scroll-landed-pulse`).
+  - Nâng tham số cache-busting lên **`?v=4.0`** trên toàn bộ `index.html` và `admin.html`.
+
+
 
 
 

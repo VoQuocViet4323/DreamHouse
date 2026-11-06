@@ -56,8 +56,20 @@
   --btn-subtle-color: #1e293b;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 86px;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+#gallery-section,
+#contact-section,
+.gallery-section,
+.contact-section {
+  scroll-margin-top: 86px;
 }
 
 body {
@@ -70,6 +82,25 @@ body {
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow-x: hidden;
+}
+
+/* Hiệu ứng xung ánh sáng sang trọng khi hạ cánh cuộn (Scroll Landing Pulse) */
+.scroll-landed-pulse {
+  animation: scrollLandedGlow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scrollLandedGlow {
+  0% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 4px 16px rgba(196, 154, 69, 0.3));
+  }
+  100% {
+    transform: translateY(0);
+    filter: none;
+  }
 }
 
 /* 1. ANIMATE-UI BACKGROUND: SUBTLE GRID & GLOWING MESH */
