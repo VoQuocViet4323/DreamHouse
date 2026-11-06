@@ -43,6 +43,10 @@ DreamHouse/
 ├── generate-config.js       # Script Node.js tự động đọc .env và sinh js/config.js an toàn
 ├── start.bat                # Khởi động máy chủ Node.js cục bộ (Port 3000) với 1-click
 ├── .env.example             # File mẫu biến môi trường dự phòng
+├── components\
+│   ├── heart-burst-like.html        # Nút yêu thích Heart Burst Like (022, Toggles & Pickers)
+│   ├── circular-reveal-switch.html  # Chuyển đổi giao diện Circular Reveal (219, Navigation)
+│   └── day-night-switch.html        # Chuyển đổi ngày đêm Day-Night Sky Switch (021)
 ├── js\
 │   ├── config.js            # Cấu hình Supabase (URL, anon key) & Thông tin liên hệ (auto-generated)
 │   ├── i18n.js              # Bộ từ điển song ngữ Việt - Anh & Hàm định dạng tiền tệ

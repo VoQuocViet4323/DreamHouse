@@ -512,6 +512,21 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=5.1`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 33** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 39: Tích Hợp Micro-Interaction Nút Yêu Thích Heart Burst Like (022, Toggles & Pickers)
+- [x] **Thay thế nút yêu thích icon sao cũ thành Heart Burst Like (022):**
+  - Chuyển đổi phần tử nút ngôi sao cũ trong thẻ mẫu nhà (`.card-thumb .card-fav-btn`) thành component cao cấp [components/heart-burst-like.html](file:///d:/DreamHouse/components/heart-burst-like.html) (MIT License (c) 2026 Seokwoooo).
+  - Tích hợp chuỗi chuyển động vật lý chuẩn xác:
+    1. Trái tim co nhún tỉ lệ `scale(0.72)` ở $18\%$, lấp đầy gradient đỏ rực `#FF7A93` $\to$ `#F0264D` và bật nhảy `scale(1.24)` ở $48\%$, rồi hạ nhẹ về `scale(1)`.
+    2. Vòng tròn sáng (`.u022-ring`) bung nở từ tâm với độ dày đường viền $22\text{px} \to 0\text{px}$ trong $0.6\text{s}$.
+    3. $7$ cặp hạt pháo hoa đa sắc ($14$ particles) bay bung tỏa theo các góc hướng tâm với độ trễ $0.18\text{s}$.
+    4. Bấm lần hai: Trái tim thu gọn êm ái về `scale(0)` và đường viền mảnh `currentColor` tái hiện nhẹ nhàng.
+  - Ánh xạ đầy đủ bảng mã màu `--ux-*` đồng bộ với biến hệ thống của Dream House cả Light Mode (`#c49a45`) và Dark Mode (`#e5b95d`).
+  - Tối ưu DOM: Bổ sung phương thức `updateCardFavoriteUI(templateId, isFav)` trong [js/app.js](file:///d:/DreamHouse/js/app.js) để cập nhật trạng thái trực tiếp mà không re-render lại toàn bộ lưới nhà, giúp chu kỳ animation chạy mượt mà $60\text{fps}$ không bị drop frame.
+  - Hỗ trợ khả năng tiếp cận chuẩn mực: Thuộc tính `aria-pressed`, `aria-label`, phím bấm bàn phím và tuân thủ `prefers-reduced-motion: reduce`.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.2`** trên toàn bộ `index.html` và `admin.html`.
+
+
+
 
 
 

@@ -92,39 +92,82 @@ class DreamHouseApp {
         localStorage.setItem('dream_house_favs', JSON.stringify(Array.from(this.favorites)));
     }
 
+    updateCardFavoriteUI(templateId, isFav) {
+        const root = document.querySelector(`.card-fav-u022[data-fav-id="${templateId}"]`);
+        if (!root) return;
+        const btn = root.querySelector('.u022-btn');
+        const rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        root.classList.toggle('is-on', isFav);
+        if (btn) {
+            btn.setAttribute('aria-pressed', String(isFav));
+            const tip = window.i18n ? window.i18n.t(isFav ? 'btn_favorite_remove' : 'btn_favorite_add') : (isFav ? 'Bỏ lưu' : 'Lưu');
+            btn.setAttribute('aria-label', tip);
+            btn.setAttribute('title', tip);
+        }
+
+        root.classList.remove('is-pop');
+        if (root._popTimer) {
+            clearTimeout(root._popTimer);
+            root._popTimer = null;
+        }
+
+        if (isFav && !rm) {
+            void root.offsetWidth; // Force reflow để trigger animation
+            root.classList.add('is-pop');
+            root._popTimer = setTimeout(() => {
+                root.classList.remove('is-pop');
+                root._popTimer = null;
+            }, 900);
+        }
+    }
+
     async toggleFavorite(templateId) {
         const isFav = this.favorites.has(templateId);
-        if (isFav) {
-            this.favorites.delete(templateId);
-        } else {
+        const nextFav = !isFav;
+        if (nextFav) {
             this.favorites.add(templateId);
+        } else {
+            this.favorites.delete(templateId);
         }
         this.saveLocalFavorites();
+
+        // Cập nhật ngay UI thẻ card không làm hủy DOM / ngắt quãng animation
+        this.updateCardFavoriteUI(templateId, nextFav);
+        this.updateDetailFavButton();
+
+        // Nếu đang lọc chỉ xem yêu thích và người dùng bỏ tim thì trì hoãn cập nhật lại gallery
+        if (this.activeFilter && this.activeFilter.onlyFavorites && !nextFav) {
+            setTimeout(() => {
+                this.renderGallery();
+            }, 350);
+        }
 
         // Nếu đã đăng nhập, đồng bộ ngay với Supabase
         const client = this.getSupabase();
         if (client && this.currentUser) {
-            if (isFav) {
-                await client.from('favorites').delete()
-                    .eq('user_id', this.currentUser.id)
-                    .eq('template_id', templateId);
-            } else {
-                await client.from('favorites').insert({
-                    user_id: this.currentUser.id,
-                    template_id: templateId
-                });
+            try {
+                if (!nextFav) {
+                    await client.from('favorites').delete()
+                        .eq('user_id', this.currentUser.id)
+                        .eq('template_id', templateId);
+                } else {
+                    await client.from('favorites').insert({
+                        user_id: this.currentUser.id,
+                        template_id: templateId
+                    });
+                }
+            } catch (err) {
+                console.error('Lỗi khi đồng bộ yêu thích với Supabase:', err);
             }
         }
-
-        this.renderGallery();
-        this.updateDetailFavButton();
 
         // Thông báo Toast phong cách Animate-UI đồng bộ
         if (window.toast) {
             const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
                 ? window.i18n.getLang() === 'vi' 
                 : true;
-            if (!isFav) {
+            if (nextFav) {
                 window.toast.success(isVi ? 'Đã lưu mẫu nhà vào danh sách yêu thích!' : 'Added to your favorites!', 3000);
             } else {
                 window.toast.info(isVi ? 'Đã gỡ mẫu nhà khỏi danh sách yêu thích.' : 'Removed from your favorites.', 3000);
@@ -812,12 +855,37 @@ class DreamHouseApp {
                         <img src="${item.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80'}" 
                              alt="${name}" loading="lazy" />
                         <span class="card-badge">${style || item.type}</span>
-                        <button class="card-fav-btn ${isFav ? 'active' : ''}" 
-                                data-fav-id="${item.id}" 
-                                aria-label="Favorite" 
-                                title="${window.i18n.t(isFav ? 'btn_favorite_remove' : 'btn_favorite_add')}">
-                            ${isFav ? '★' : '☆'}
-                        </button>
+                        <div class="u022 card-fav-u022 ${isFav ? 'is-on' : ''}" data-fav-id="${item.id}">
+                            <div class="u022-scaler">
+                                <button class="u022-btn card-fav-btn" 
+                                        type="button" 
+                                        data-fav-id="${item.id}" 
+                                        aria-pressed="${isFav ? 'true' : 'false'}" 
+                                        aria-label="${window.i18n.t(isFav ? 'btn_favorite_remove' : 'btn_favorite_add')}" 
+                                        title="${window.i18n.t(isFav ? 'btn_favorite_remove' : 'btn_favorite_add')}">
+                                    <span class="u022-ring" aria-hidden="true"></span>
+                                    <span class="u022-dot" style="--a:0deg;--c:#FF4D6D;--c2:#FFB26B" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-dot" style="--a:51deg;--c:#8B6CFF;--c2:#FF7A93" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-dot" style="--a:103deg;--c:#FFB547;--c2:#22C3A6" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-dot" style="--a:154deg;--c:#FF4D6D;--c2:#8B6CFF" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-dot" style="--a:206deg;--c:#22C3A6;--c2:#FFB547" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-dot" style="--a:257deg;--c:#FF7A93;--c2:#3D8BFF" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-dot" style="--a:309deg;--c:#3D8BFF;--c2:#FF4D6D" aria-hidden="true"><i></i><i></i></span>
+                                    <span class="u022-heart" aria-hidden="true">
+                                        <svg viewBox="0 0 52 52">
+                                            <defs>
+                                                <linearGradient id="u022-g-${item.id}" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0" stop-color="#FF7A93"/>
+                                                    <stop offset="1" stop-color="#F0264D"/>
+                                                </linearGradient>
+                                            </defs>
+                                            <path class="u022-f" style="fill:url(#u022-g-${item.id})" d="M26 45S5 33 5 18.5C5 11.6 10.4 7 16.4 7c4.3 0 7.6 2.3 9.6 5.6C28 9.3 31.3 7 35.6 7 41.6 7 47 11.6 47 18.5 47 33 26 45 26 45z"/>
+                                            <path class="u022-o" d="M26 45S5 33 5 18.5C5 11.6 10.4 7 16.4 7c4.3 0 7.6 2.3 9.6 5.6C28 9.3 31.3 7 35.6 7 41.6 7 47 11.6 47 18.5 47 33 26 45 26 45z"/>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <h3 class="card-title">${name}</h3>
@@ -851,7 +919,7 @@ class DreamHouseApp {
 
         gallery.querySelectorAll('.house-card').forEach(card => {
             card.addEventListener('click', (e) => {
-                if (e.target.closest('.card-fav-btn')) return;
+                if (e.target.closest('.card-fav-btn') || e.target.closest('.card-fav-u022')) return;
                 const id = card.getAttribute('data-id');
                 this.openDetailPanel(id);
             });
