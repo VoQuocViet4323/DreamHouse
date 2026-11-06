@@ -432,6 +432,13 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.4`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 26** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L465).
 
+### Giai đoạn 32: Sửa Lỗi Cú Pháp SVG Path Icon Con Mắt Mật Khẩu (Expected Number Error)
+- [x] **Khắc phục lỗi Console `Error: <path> attribute d: Expected number, "... 8-4 8-11 8-11-8z"`:**
+  - Phát hiện nguyên nhân: Trong hàm [`clearAuthPasswordFields()`](file:///e:/Dream-house/js/app.js) tại dòng 1567, chuỗi SVG path `d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"` bị thiếu một cặp toạ độ cuối cùng (`-11-8`), khiến lệnh `s` (smooth curveto) chỉ có 14 số thay vì 16 số hợp lệ. Trình duyệt gặp ký tự `z` khi đang đợi số tiếp theo nên báo lỗi cú pháp SVG.
+  - Đồng bộ chuẩn hóa toàn bộ chuỗi path con mắt thành `d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"`.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.5`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 27** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L485).
+
 
 
 

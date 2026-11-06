@@ -1564,7 +1564,7 @@ class DreamHouseApp {
             confirmInput.type = 'password';
             confirmInput.removeAttribute('readonly');
         }
-        const defaultEye = `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        const defaultEye = `<svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         const togglePassBtn = document.getElementById('toggle-auth-pass-visibility');
         if (togglePassBtn) {
             togglePassBtn.innerHTML = defaultEye;

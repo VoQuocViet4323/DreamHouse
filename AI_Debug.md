@@ -469,6 +469,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 27: Lỗi Console "Error: <path> attribute d: Expected number, ... 8-4 8-11 8-11-8z"
+- **Hiện tượng:** Khi mở hoặc đóng modal đăng nhập/đăng ký hoặc reset form mật khẩu, Console báo 2 lỗi đỏ:
+  `Error: <path> attribute d: Expected number, "_ 8-4 8-11 8-11-8z". app.js:1570`
+  `Error: <path> attribute d: Expected number, "_ 8-4 8-11 8-11-8z". app.js:1575`
+- **Nguyên nhân cốt lõi:**
+  1. Trong hàm `clearAuthPasswordFields()` của [`js/app.js`](file:///e:/Dream-house/js/app.js), biến `defaultEye` chứa chuỗi path SVG:
+     `d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"`
+  2. Lệnh `s` (smooth curveto) trong cú pháp SVG yêu cầu mỗi phân đoạn cong phải nhận đúng 4 tham số toạ độ `(x2 y2 x y)`.
+  3. Chuỗi path trên bị cắt ngắn mất phân đoạn cuối (`-11-8`), chỉ có 14 số thay vì 16 số hợp lệ. Khi bộ phân tích cú pháp SVG của trình duyệt quét đến cuối gặp ký tự `z` (close path) trong khi vẫn đang chờ tham số số học tiếp theo của lệnh `s`, trình duyệt quăng ngoại lệ `Expected number`.
+- **Cách khắc phục dứt điểm:**
+  1. Sửa chuỗi SVG path tại dòng 1567 trong [`js/app.js`](file:///e:/Dream-house/js/app.js) thành đầy đủ chuẩn xác:
+     `d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"`
+  2. Nâng tham số cache-busting lên `?v=4.5` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
