@@ -1047,6 +1047,44 @@ body::before {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* Hiệu ứng Animation khi nhấn nút Quay lại (Back / Exit Animation) đối xứng với khi bấm Login */
+.auth-page-takeover.is-closing {
+  animation: authPageFadeOut 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  pointer-events: none;
+}
+
+@keyframes authPageFadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.025); }
+}
+
+.auth-page-takeover.is-closing .auth-floating-card {
+  animation: cardSlideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes cardSlideOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(24px) scale(0.96); }
+}
+
+.auth-page-takeover.is-closing .auth-showcase-column {
+  animation: showcaseSlideOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes showcaseSlideOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-16px) scale(0.98); }
+}
+
+.auth-page-takeover.is-closing .auth-top-bar {
+  animation: topBarFadeOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes topBarFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-12px); }
+}
+
 .auth-top-bar {
   display: flex;
   justify-content: space-between;
@@ -1117,6 +1155,12 @@ body::before {
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2) !important;
 }
 
+.auth-back-nav-btn:active,
+.auth-back-nav-btn.is-active-back {
+  transform: scale(0.93) translateY(0) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
 .auth-back-arrow {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
@@ -1125,6 +1169,11 @@ body::before {
 
 .auth-back-nav-btn:hover .auth-back-arrow {
   transform: translateX(-3px);
+}
+
+.auth-back-nav-btn:active .auth-back-arrow,
+.auth-back-nav-btn.is-active-back .auth-back-arrow {
+  transform: translateX(-6px);
 }
 
 .auth-page-container {
@@ -1643,6 +1692,16 @@ body.dark-theme .auth-back-nav-btn:hover {
   color: #0f172a !important;
   border-color: #e5b95d !important;
   box-shadow: 0 8px 24px rgba(229, 185, 93, 0.35) !important;
+}
+
+:root[data-theme="dark"] .auth-back-nav-btn:active,
+:root[data-theme="dark"] .auth-back-nav-btn.is-active-back,
+body.dark-theme .auth-back-nav-btn:active,
+body.dark-theme .auth-back-nav-btn.is-active-back {
+  background: #e5b95d !important;
+  color: #0f172a !important;
+  transform: scale(0.93) translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(229, 185, 93, 0.3) !important;
 }
 
 :root[data-theme="dark"] .auth-remember-label,

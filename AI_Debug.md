@@ -527,6 +527,23 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 31: Nút "Quay lại trang chủ" trong trang Auth đóng modal đột ngột, thiếu hiệu ứng chuyển cảnh mượt mà
+- **Hiện tượng:** Khi bấm nút *"← Quay lại trang chủ"* (`#auth-back-btn`), toàn bộ màn hình Auth biến mất ngay tức khắc (cắt cảnh đột ngột), không có hiệu ứng chuyển động ngược lại tương xứng với hiệu ứng phóng to mượt mà khi bấm mở Login (`authPageFadeIn` & `cardSlideIn`).
+- **Nguyên nhân cốt lõi:**
+  1. Trong hàm `closeAuthModal()`, lệnh `modal.classList.add('hidden')` được thực thi đồng bộ ngay lập tức mà không có khoảng đệm thời gian chạy CSS Exit Animation.
+  2. CSS của `.auth-page-takeover` và `.auth-floating-card` chỉ mới cấu hình animation mở vào (`@keyframes authPageFadeIn`, `@keyframes cardSlideIn`) mà chưa có cấu hình animation đóng ngược chiều.
+  3. Nút `#auth-back-btn` thiếu phản hồi cơ học (active/pressed state), khiến người dùng không cảm nhận được độ nảy khi click.
+- **Cách khắc phục dứt điểm:**
+  1. Xây dựng bộ animation thoát đối xứng trong [`style.css`](file:///d:/DreamHouse/style.css):
+     - `.auth-page-takeover.is-closing`: Kích hoạt `@keyframes authPageFadeOut` với thời gian $0.32\text{s}$, đưa `opacity` về 0 và phóng nhẹ `scale(1.025)`.
+     - `.auth-floating-card`: Kích hoạt `@keyframes cardSlideOut` trượt xuống $24\text{px}$ và co nhẹ về `scale(0.96)`.
+     - Cột nội dung và topbar trượt nhẹ lên trên và mờ dần.
+  2. Bổ sung trạng thái phản hồi cơ học cho nút `#auth-back-btn` (`scale(0.93)`, mũi tên trượt sang trái $-6\text{px}$).
+  3. Cập nhật hàm [`closeAuthModal()`](file:///d:/DreamHouse/js/app.js) để kích hoạt class `.is-closing`, giữ lại DOM trong $300\text{ms}$ cho animation diễn ra trọn vẹn rồi mới thêm class `.hidden`.
+  4. Tăng tham số cache-busting lên `?v=4.9` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

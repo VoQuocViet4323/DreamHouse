@@ -471,4 +471,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Bổ sung khối loading placeholder ngay trong lưới thư viện (`#gallery .house-grid`), mang lại trải nghiệm kiến trúc cao cấp, không bị giật trang hay nháy trắng.
   - Tăng tham số phiên bản cache-busting lên **`?v=4.8`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 36: Tích Hợp Hiệu Ứng Animation Thoát Mượt Mà Cho Nút Quay Lại Trang Chủ (Symmetric Auth Exit Animation)
+- [x] **Xây dựng hiệu ứng animation đóng (back) đối xứng hoàn hảo với animation khi mở Login:**
+  - Phát hiện nguyên nhân: Trước đây khi người dùng bấm nút *"← Quay lại trang chủ"* (`#auth-back-btn`), hàm [`closeAuthModal()`](file:///d:/DreamHouse/js/app.js) thêm ngay lập tức class `.hidden` khiến toàn bộ màn hình Auth đột ngột biến mất (abrupt jump cut), trong khi lúc mở vào thì có hiệu ứng zoom mượt `authPageFadeIn` và `cardSlideIn`.
+  - Giải pháp kiến trúc Animation đối xứng (Symmetric Exit Motion):
+    1. Định nghĩa keyframes ngược chiều trong [`style.css`](file:///d:/DreamHouse/style.css):
+       - `.auth-page-takeover.is-closing`: Chạy `authPageFadeOut` trong $0.32\text{s}$ với đường cong `cubic-bezier(0.16, 1, 0.3, 1)`, mờ dần và phóng to nhẹ từ `scale(1)` lên `scale(1.025)`.
+       - `.auth-floating-card`: Chạy `cardSlideOut` trượt xuống $24\text{px}$ và thu nhỏ về `scale(0.96)`.
+       - `.auth-showcase-column`: Chạy `showcaseSlideOut` lướt nhẹ lên trên $16\text{px}$ và mờ dần.
+       - `.auth-top-bar`: Chạy `topBarFadeOut` trượt lên $12\text{px}$ và biến mất êm ái.
+    2. Nâng cấp hiệu ứng xúc giác (Haptic Feedback) trên nút `#auth-back-btn`: Thêm trạng thái `:active` và `.is-active-back` co nhẹ (`scale(0.93)`), mũi tên lướt sang trái $-6\text{px}$ tạo cảm giác phản hồi cơ học chân thực (cả Light Mode lẫn Dark Mode).
+    3. Tái cấu trúc hàm [`closeAuthModal()`](file:///d:/DreamHouse/js/app.js): Khi bấm nút Back, thêm class `.is-closing`, khóa tương tác chuột (`pointer-events: none;`), đợi $300\text{ms}$ cho chu kỳ animation kết thúc hoàn hảo rồi mới gắn `.hidden` và dọn dẹp state.
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.9`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 31** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
+
+
 

@@ -556,6 +556,7 @@ class DreamHouseApp {
 
             this.setAuthMode('login');
             this.clearAuthPasswordFields();
+            modal.classList.remove('is-closing');
             modal.classList.remove('hidden');
             window.location.hash = 'login';
         }
@@ -1371,15 +1372,16 @@ class DreamHouseApp {
             this.setAuthMode('login');
             this.clearAuthPasswordFields();
 
+            modal?.classList.remove('is-closing');
             modal?.classList.remove('hidden');
             window.location.hash = 'login';
         });
 
-        closeBtn?.addEventListener('click', (e) => {
+        document.getElementById('auth-back-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
             this.closeAuthModal();
         });
-        document.getElementById('auth-back-btn')?.addEventListener('click', (e) => {
+        document.getElementById('close-auth-modal')?.addEventListener('click', (e) => {
             e.preventDefault();
             this.closeAuthModal();
         });
@@ -1460,6 +1462,7 @@ class DreamHouseApp {
         // Kiểm tra mở Auth tự động nếu URL có hash #login hoặc #register
         if (window.location.hash === '#login' || window.location.hash === '#register') {
             this.setAuthMode(window.location.hash === '#register' ? 'register' : 'login');
+            modal?.classList.remove('is-closing');
             modal?.classList.remove('hidden');
         }
 
@@ -1638,8 +1641,17 @@ class DreamHouseApp {
 
     closeAuthModal() {
         const modal = document.getElementById('auth-modal');
-        if (modal) modal.classList.add('hidden');
+        if (!modal || modal.classList.contains('hidden')) return;
+
+        // Tránh kích hoạt lặp nếu đang trong hiệu ứng animation đóng
+        if (modal.classList.contains('is-closing')) return;
+
+        const backBtn = document.getElementById('auth-back-btn');
+        if (backBtn) backBtn.classList.add('is-active-back');
+
+        modal.classList.add('is-closing');
         this.clearAuthPasswordFields();
+
         const alertBox = document.getElementById('auth-alert');
         if (alertBox) {
             alertBox.className = 'auth-alert hidden';
@@ -1648,11 +1660,21 @@ class DreamHouseApp {
         if (window.location.hash === '#login' || window.location.hash === '#register') {
             history.pushState("", document.title, window.location.pathname + window.location.search);
         }
+
+        // Chờ animation mượt mà kết thúc (300ms) rồi mới ẩn modal hoàn toàn
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('is-closing');
+            if (backBtn) backBtn.classList.remove('is-active-back');
+        }, 300);
     }
 
     setAuthMode(mode) {
         const isRegister = (mode === 'register');
         this.isAuthRegisterMode = isRegister;
+
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.classList.remove('is-closing');
 
         const alertBox = document.getElementById('auth-alert');
         if (alertBox) {
