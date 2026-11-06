@@ -670,6 +670,27 @@ body::before {
   to { transform: scale(1); opacity: 1; }
 }
 
+/* Exit / Close Animation đối xứng mượt mà cho Modal */
+.modal-overlay.is-closing {
+  animation: modalFadeOut 0.24s ease-out forwards !important;
+  pointer-events: none;
+}
+
+@keyframes modalFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.modal-overlay.is-closing .modal-window,
+.modal-overlay.is-closing .profile-dialog {
+  animation: modalScaleDown 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes modalScaleDown {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0.95); opacity: 0; }
+}
+
 /* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website */
 .modal-close,
 .profile-close-btn,
@@ -712,6 +733,15 @@ body::before {
   border-color: var(--btn-close-hover-border) !important;
   color: var(--btn-close-hover-color) !important;
   transform: rotate(90deg) scale(1.05);
+}
+
+.modal-close:active,
+.modal-close.is-active,
+.profile-close-btn:active,
+.profile-close-btn.is-active,
+[id^="close-"][id$="-modal"]:active,
+[id^="close-"][id$="-modal"].is-active {
+  transform: rotate(90deg) scale(0.92) !important;
 }
 
 .detail-grid {

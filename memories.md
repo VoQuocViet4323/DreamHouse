@@ -485,5 +485,18 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=4.9`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 31** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 37: Tích Hợp Hiệu Ứng Animation Đóng Mượt Mà Cho Panel Chi Tiết Mẫu Nhà (Symmetric Detail Modal Exit Animation)
+- [x] **Xây dựng hiệu ứng animation đóng panel chi tiết mẫu nhà (`#detail-modal`) và hồ sơ (`#profile-modal`):**
+  - Phát hiện nguyên nhân: Khi mở modal, hệ thống áp dụng `fadeIn 0.25s` cho backdrop `.modal-overlay` và `scaleUp 0.3s` cho khung nội dung `.modal-window`. Tuy nhiên khi đóng (bấm nút X, click ra ngoài backdrop, bấm phím Escape hoặc bấm "Nhận báo giá mẫu này"), hàm [`closeDetailPanel()`](file:///d:/DreamHouse/js/app.js) lập tức gán class `.hidden` khiến modal biến mất đột ngột.
+  - Giải pháp kiến trúc Animation đóng đối xứng (Symmetric Modal Exit Motion):
+    1. Định nghĩa keyframes ngược chiều trong [`style.css`](file:///d:/DreamHouse/style.css):
+       - `.modal-overlay.is-closing`: Chạy `@keyframes modalFadeOut` trong $0.24\text{s}$ mờ dần từ `opacity: 1` về `0`, khóa tương tác chuột (`pointer-events: none`).
+       - `.modal-overlay.is-closing .modal-window` & `.profile-dialog`: Chạy `@keyframes modalScaleDown` trong $0.24\text{s}$ thu nhỏ nhẹ nhàng từ `scale(1)` về `scale(0.95)` và mờ dần.
+    2. Thêm hiệu ứng nhấn (active feedback) cho nút đóng `[id^="close-"][id$="-modal"]:active` co lại xoay 90 độ (`scale(0.92)`).
+    3. Tái cấu trúc hàm [`closeDetailPanel()`](file:///d:/DreamHouse/js/app.js) và [`closeProfileModal()`](file:///d:/DreamHouse/js/app.js): Kích hoạt class `.is-closing`, chờ chu kỳ $240\text{ms}$ cho animation hoàn tất mượt mà rồi mới gán `.hidden` và khôi phục thanh cuộn trang.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.0`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 32** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
+
+
 
 

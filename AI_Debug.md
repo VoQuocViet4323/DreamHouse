@@ -544,6 +544,21 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 32: Panel chi tiết mẫu nhà (`#detail-modal`) biến mất đột ngột khi đóng (thiếu hiệu ứng Exit Animation)
+- **Hiện tượng:** Khi người dùng mở xem chi tiết mẫu nhà, modal xuất hiện mượt mà với hiệu ứng phóng to `scaleUp` và làm mờ nền `fadeIn`. Nhưng khi bấm nút đóng `(X)`, click ra ngoài nền đen hoặc bấm phím `Escape`, modal lập tức biến mất (cắt cảnh giật cục), không có hiệu ứng thu nhỏ ngược lại.
+- **Nguyên nhân cốt lõi:**
+  1. Trong hàm `closeDetailPanel()`, lệnh `panel.classList.add('hidden')` được thực thi đồng bộ ngay lập tức, không cho trình duyệt cơ hội chạy animation đóng.
+  2. Lớp `.modal-overlay` và `.modal-window` chỉ có `@keyframes fadeIn` và `@keyframes scaleUp` cho chiều mở, chưa có `@keyframes modalFadeOut` và `@keyframes modalScaleDown` cho chiều đóng.
+- **Cách khắc phục dứt điểm:**
+  1. Xây dựng animation đóng đối xứng trong [`style.css`](file:///d:/DreamHouse/style.css):
+     - `.modal-overlay.is-closing`: Kích hoạt `@keyframes modalFadeOut` trong $0.24\text{s}$ mờ dần và khóa tương tác chuột (`pointer-events: none`).
+     - `.modal-overlay.is-closing .modal-window` & `.profile-dialog`: Kích hoạt `@keyframes modalScaleDown` trong $0.24\text{s}$ thu nhỏ từ `scale(1)` về `scale(0.95)` và mờ dần.
+  2. Bổ sung hiệu ứng phản hồi co xoay cho nút đóng: `[id^="close-"][id$="-modal"]:active` co lại `scale(0.92)`.
+  3. Cập nhật hàm [`closeDetailPanel()`](file:///d:/DreamHouse/js/app.js) và [`closeProfileModal()`](file:///d:/DreamHouse/js/app.js) để gắn class `.is-closing`, trì hoãn $240\text{ms}$ đợi animation kết thúc rồi mới gán `.hidden` và giải phóng khóa cuộn trang (`document.body.style.overflow = ''`).
+  4. Nâng tham số cache-busting lên `?v=5.0` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

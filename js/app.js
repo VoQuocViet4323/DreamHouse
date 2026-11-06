@@ -876,6 +876,7 @@ class DreamHouseApp {
         if (!panel) return;
 
         this.updateDetailPanelContent(item);
+        panel.classList.remove('is-closing');
         panel.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
 
@@ -890,8 +891,20 @@ class DreamHouseApp {
 
     closeDetailPanel() {
         const panel = document.getElementById('detail-modal');
-        if (panel) panel.classList.add('hidden');
+        if (!panel || panel.classList.contains('hidden')) return;
+        if (panel.classList.contains('is-closing')) return;
+
+        const closeBtn = document.getElementById('close-detail-modal');
+        if (closeBtn) closeBtn.classList.add('is-active');
+
+        panel.classList.add('is-closing');
         document.body.style.overflow = '';
+
+        setTimeout(() => {
+            panel.classList.add('hidden');
+            panel.classList.remove('is-closing');
+            if (closeBtn) closeBtn.classList.remove('is-active');
+        }, 240);
     }
 
     navigateTemplate(direction) {
@@ -1890,6 +1903,7 @@ class DreamHouseApp {
         }
 
         this.renderProfileModalAvatar(avatarUrl, displayName);
+        modal.classList.remove('is-closing');
         modal.classList.remove('hidden');
     }
 
@@ -2073,7 +2087,19 @@ class DreamHouseApp {
 
     closeProfileModal() {
         const modal = document.getElementById('profile-modal');
-        if (modal) modal.classList.add('hidden');
+        if (!modal || modal.classList.contains('hidden')) return;
+        if (modal.classList.contains('is-closing')) return;
+
+        const closeBtn = document.getElementById('close-profile-modal');
+        if (closeBtn) closeBtn.classList.add('is-active');
+
+        modal.classList.add('is-closing');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('is-closing');
+            if (closeBtn) closeBtn.classList.remove('is-active');
+        }, 240);
     }
 
     async handleSaveProfile(e) {
