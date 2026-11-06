@@ -1841,15 +1841,39 @@ class DreamHouseApp {
         const preview = document.getElementById('profile-avatar-preview');
         if (!preview) return;
         const initial = (name && name.trim()) ? name.trim().charAt(0).toUpperCase() : 'U';
-        const overlayHtml = `
-            <div class="profile-avatar-overlay" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </div>`;
+
+        let charSpan = document.getElementById('profile-avatar-char');
+        let img = document.getElementById('profile-avatar-img');
+
+        if (!charSpan) {
+            charSpan = document.createElement('span');
+            charSpan.id = 'profile-avatar-char';
+            charSpan.className = 'profile-avatar-char';
+            preview.insertBefore(charSpan, preview.firstChild);
+        }
+        charSpan.textContent = initial;
+
+        if (!img) {
+            img = document.createElement('img');
+            img.id = 'profile-avatar-img';
+            img.className = 'profile-avatar-img';
+            img.alt = 'Avatar';
+            preview.insertBefore(img, preview.querySelector('.profile-avatar-overlay'));
+        }
+
+        img.onerror = () => {
+            img.style.display = 'none';
+            img.classList.add('hidden');
+        };
 
         if (avatarUrl && avatarUrl.trim()) {
-            preview.innerHTML = `<img src="${avatarUrl.trim()}" alt="Avatar" onerror="this.parentElement.innerHTML='<span id=\\'profile-avatar-char\\'>${initial}</span>${overlayHtml}'" />${overlayHtml}`;
+            img.src = avatarUrl.trim();
+            img.style.display = 'block';
+            img.classList.remove('hidden');
         } else {
-            preview.innerHTML = `<span id="profile-avatar-char">${initial}</span>${overlayHtml}`;
+            img.style.display = 'none';
+            img.classList.add('hidden');
+            img.removeAttribute('src');
         }
     }
 

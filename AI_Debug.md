@@ -379,6 +379,26 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 22: Avatar trong modal chỉnh sửa hồ sơ bị cắt đôi UI (nửa trái là ảnh, nửa phải là nền vàng và chữ cái)
+- **Hiện tượng:** Khi mở modal chỉnh sửa hồ sơ, khung ảnh đại diện tròn ở đầu modal bị chia làm 2 phần: khoảng 70% bên trái hiển thị ảnh người dùng bị co ngang, khoảng 30% bên phải để lộ nền vàng và nét chữ cái/icon camera.
+- **Nguyên nhân cốt lõi:**
+  1. Thẻ `.profile-avatar-box` được định dạng là Flex Container (`display: flex; align-items: center; justify-content: center;`). Cả ảnh `<img>` lẫn thẻ chữ cái `<span>` và overlay đều tồn tại bên trong mà `<img>` không có `position: absolute`. Cơ chế Flexbox tự động dàn các phần tử này nằm ngang song song (side-by-side) thay vì chồng lớp (layering).
+  2. Hàm `renderProfileModalAvatar()` trước đó chèn trực tiếp chuỗi HTML nối vào `preview.innerHTML` chứa thuộc tính inline `onerror="this.parentElement.innerHTML='...'"` có dấu ngoặc kép không tương thích, gây lỗi phân tích cú pháp DOM của trình duyệt.
+- **Cách khắc phục dứt điểm:**
+  1. **Khóa vị trí lớp tuyệt đối (Absolute Layering) trong CSS ([`style.css`](file:///e:/Dream-house/style.css)):**
+     - Đặt `position: relative; overflow: hidden;` cho `.profile-avatar-box`.
+     - Đặt `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; z-index: 2;` cho `.profile-avatar-box img` và `.profile-avatar-img`.
+     - Thiết lập `.profile-avatar-char` làm lớp nền dự phòng với `z-index: 1`.
+     - Thiết lập `.profile-avatar-overlay` với `position: absolute; inset: 0; border-radius: 50%; z-index: 3;`.
+  2. **Tái cấu trúc DOM ổn định & Miễn dịch lỗi ([`index.html`](file:///e:/Dream-house/index.html) & [`js/app.js`](file:///e:/Dream-house/js/app.js)):**
+     - Đặt sẵn cả 3 phần tử (`#profile-avatar-char`, `#profile-avatar-img`, `.profile-avatar-overlay`) tĩnh trong HTML.
+     - Hàm `renderProfileModalAvatar()` thao tác trực tiếp trên các phần tử DOM cố định thay vì viết lại `innerHTML`.
+     - Khi có link ảnh hợp lệ: gán `img.src = avatarUrl` và bật `display: block` để phủ kín 100% hình tròn ở layer trên.
+     - Khi không có ảnh hoặc ảnh tải lỗi: `img.onerror` ẩn `img` (`display: none`), tự động lộ ra chữ cái đại diện ở layer dưới mà không bị co kéo hay chia đôi khung hình.
+  3. Nâng tham số cache-busting lên `?v=3.9` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

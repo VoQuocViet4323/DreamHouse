@@ -363,6 +363,18 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=3.8`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 21** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L357).
 
+### Giai đoạn 26: Xử lý Dứt điểm Lỗi UI Tách đôi Khung Avatar trong Modal Hồ Sơ (Absolute Layering Architecture)
+- [x] **Khắc phục hiện tượng Avatar bị chia làm 2 nửa (nửa ảnh, nửa nền vàng/chữ cái):**
+  - Nguyên nhân: `.profile-avatar-box` là một Flexbox Container nhưng thẻ `<img>` thiếu `position: absolute`, khiến trình duyệt sắp xếp ảnh và thẻ chữ cái nằm ngang cạnh nhau thay vì chồng đè lên nhau. Đồng thời, việc chèn HTML qua `preview.innerHTML` có chứa thuộc tính inline `onerror` làm phát sinh lỗi phân tích cú pháp.
+  - Áp dụng Kiến trúc Xếp lớp Tuyệt đối (Absolute Layering Architecture):
+    - Khóa thẻ `<img>` ở `position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; z-index: 2;` để luôn phủ kín 100% hình tròn $68\times68\text{px}$.
+    - Thẻ chữ cái `#profile-avatar-char` nằm ở lớp nền tĩnh `z-index: 1`.
+    - Lớp phủ máy ảnh `.profile-avatar-overlay` nằm ở lớp trên cùng `z-index: 3`.
+    - Tái cấu trúc hàm [`renderProfileModalAvatar()`](file:///e:/Dream-house/js/app.js) để thao tác trực tiếp trên các phần tử DOM có sẵn, chỉ bật/tắt `display: block` / `display: none` và đổi `src`, loại bỏ hoàn toàn việc ghi đè chuỗi `innerHTML`.
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.9`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 22** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L378).
+
+
 
 
 
