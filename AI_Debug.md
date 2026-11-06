@@ -439,6 +439,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 25: Mô hình 3D tương tác trên Web không khớp với file SketchUp (.skp) tải lên
+- **Hiện tượng:** Người dùng tải file mô hình `3d a.skp` và ảnh chụp phối cảnh biệt thự mái Nhật/mái Thái sang trọng, nhưng khung tương tác 3D chỉ hiển thị một khối hộp trắng mái bằng 2 tầng đơn giản.
+- **Nguyên nhân cốt lõi:**
+  1. Trình duyệt Web (WebGL / Three.js) **không hỗ trợ đọc trực tiếp định dạng `.skp`**. File `.skp` là định dạng nhị phân độc quyền (proprietary binary CAD format) của phần mềm máy tính Trimble SketchUp, chỉ mở được trên phần mềm desktop SketchUp.
+  2. Chuẩn 3D mở duy nhất được mọi trình duyệt web trên toàn cầu hỗ trợ hiển thị thời gian thực (Real-time WebGL) là **`.glb` / `.gltf` (glTF 2.0)**.
+  3. Khi phát hiện đuôi `.skp`, Three.js lưu file lên máy chủ (cho phép tải về) và chuyển sang cơ chế dự phòng: dựng khối tham số tự động (`buildProceduralHouse`). Do khi thêm mẫu trong Admin, các thông số đang để mặc định là `Rộng: 5.0m, Sâu: 16.0m, Số tầng: 2, Kiểu mái: Mái bằng (flat)`, khối 3D dựng ra là một khối hộp chữ nhật mái bằng, không khớp với ảnh biệt thự thực tế.
+- **Cách khắc phục dứt điểm:**
+  1. **Quy trình xuất file `.glb` chuẩn từ SketchUp (30 giây):**
+     - Mở bản vẽ trong SketchUp -> Chọn **File > Export > 3D Model...** -> Tại ô định dạng chọn **glTF File (`*.glb`)** hoặc cài plugin chính thức **Khronos glTF Exporter** từ SketchUp Extension Warehouse.
+     - Sau khi có file `.glb`, tải lên Dream House. Three.js sẽ nạp và hiển thị **chính xác 100% từng chi tiết kiến trúc, mái ngói, cột, ban công và màu sắc vật liệu**.
+  2. **Tối ưu giao diện hướng dẫn Admin ([`admin.html`](file:///e:/Dream-house/admin.html)):**
+     - Bổ sung ghi chú hướng dẫn nổi bật ngay tại ô tải mô hình 3D để người quản trị biết xuất sang `.glb` khi muốn hiển thị 3D thực tế trên web.
+  3. Nâng tham số cache-busting lên `?v=4.3` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

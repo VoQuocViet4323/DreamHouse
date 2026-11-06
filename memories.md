@@ -414,6 +414,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Nâng phiên bản cache-busting lên **`?v=4.2`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 24** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L419).
 
+### Giai đoạn 30: Chuẩn Hoá Định Dạng 3D Web (.glb vs .skp) & Hướng Dẫn Tương Tác Trực Quan
+- [x] **Giải quyết thắc mắc về sự khác biệt giữa mô hình hiển thị trên web và file `.skp`:**
+  - Làm rõ nguyên lý kỹ thuật: Trình duyệt web (WebGL / Three.js) chỉ đọc được định dạng chuẩn web mở **`.glb` / `.gltf`**, không hỗ trợ file nhị phân độc quyền máy tính `.skp` của Trimble SketchUp.
+  - Khi tải file `.skp`, hệ thống kích hoạt cơ chế dự phòng dựng khối tham số thực tế (Procedural Block) dựa trên thông số nhập trong Admin. Nếu Admin chọn "Mái bằng 5x16m" thì sẽ sinh ra khối nhà hộp thay vì mái Nhật/mái Thái như trong ảnh.
+  - Hướng dẫn quy trình 30 giây xuất file `.glb` từ SketchUp (*File > Export > 3D Model > .glb*) hoặc dùng plugin Khronos glTF Exporter để đưa bản vẽ thực tế 100% lên web.
+  - Bổ sung ghi chú trợ giúp chi tiết ngay trong giao diện upload của [`admin.html`](file:///e:/Dream-house/admin.html) và thanh trạng thái [`js/viewer3d.js`](file:///e:/Dream-house/js/viewer3d.js).
+  - Tăng tham số phiên bản cache-busting lên **`?v=4.3`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 25** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L445).
+
 
 
 

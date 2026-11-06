@@ -222,7 +222,7 @@ class House3DViewer {
             } else {
                 // File SketchUp (.skp) hoặc CAD khác: Hiển thị mô phỏng 3D tham số thực tế và cung cấp link tải
                 if (statusEl) {
-                    statusEl.innerHTML = `📦 <em>Mô hình SketchUp (.skp) đã sẵn sàng.</em> <a href="${modelUrl}" target="_blank" download style="color:#d97706; text-decoration:underline; margin-left:6px; font-weight:600;">Tải file .skp</a>`;
+                    statusEl.innerHTML = `📦 <em>Mô phỏng 3D kích thước thực (File SketchUp .skp đã lưu trữ).</em> <a href="${modelUrl}" target="_blank" download style="color:#d97706; text-decoration:underline; margin-left:6px; font-weight:600;">Tải file .skp gốc</a>`;
                 }
                 this.buildProceduralHouse(template);
             }
