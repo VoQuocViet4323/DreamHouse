@@ -1135,6 +1135,12 @@ class DreamHouseApp {
                 if (pillText) {
                     pillText.textContent = isHidden ? (isVi ? 'Mở' : 'Expand') : (isVi ? 'Thu gọn' : 'Collapse');
                 }
+                if (!isHidden) {
+                    setTimeout(() => {
+                        const secCard = document.getElementById('security-card');
+                        secCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 120);
+                }
             }
         });
 

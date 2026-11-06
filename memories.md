@@ -310,6 +310,20 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=3.4`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán lỗi vào Mục 3 của [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L261).
 
+### Giai đoạn 21: Tối ưu Toàn diện Cơ chế Cuộn và Sticky Header cho Modal Hồ sơ cá nhân (Fluid Profile Modal Scroll)
+- [x] **Khắc phục triệt để lỗi không cuộn được khi mở rộng khối Đổi mật khẩu trong Modal Hồ sơ (`#profile-modal`):**
+  - Nguyên nhân: Trước đó `.profile-dialog` có thuộc tính `overflow: hidden;` và `.modal-overlay` thiếu `overflow-y: auto;`. Khi khối mật khẩu mở ra, chiều cao modal vượt quá màn hình khiến các nút "Hủy bỏ" và "Lưu thay đổi" bị đẩy ra ngoài mép màn hình mà người dùng không thể cuộn xuống để nhấn.
+  - Cập nhật kiến trúc cuộn đa lớp (Multi-layer Fluid Scroll):
+    - `.modal-overlay`: Bổ sung `overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 24px 16px;`.
+    - `.profile-dialog`: Chuyển sang `max-height: min(90vh, 880px); margin: auto; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scroll-behavior: smooth;`.
+    - Tích hợp thanh cuộn siêu mỏng 6px cao cấp với màu nhấn Amber Gold đồng bộ nhận diện.
+  - Ghim cố định Header (Sticky Header) & Nút Đóng:
+    - Chuyển `.profile-header-card` sang `position: sticky; top: 0; z-index: 20;` kết hợp hiệu ứng `backdrop-filter: blur(16px);`.
+    - Di chuyển nút đóng `#close-profile-modal` vào bên trong header để luôn luôn ghim ở góc trên bên phải khi cuộn.
+  - Trải nghiệm mở rộng tự động mượt mà (Smooth Auto-scroll): Tự động gọi `secCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })` khi bấm mở rộng khối mật khẩu để lập tức đưa form vào tầm mắt người dùng.
+  - Tăng tham số phiên bản cache-busting lên **`?v=3.5`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật chi tiết vào **Lỗi 18** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md#L295).
+
 
 
 

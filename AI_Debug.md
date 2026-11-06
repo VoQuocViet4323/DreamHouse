@@ -292,6 +292,26 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 18: Khi mở rộng mục Đổi mật khẩu trong Modal Hồ sơ cá nhân thì nội dung bị tràn ra ngoài màn hình và bị fix cứng scroll không cuộn xuống được
+- **Hiện tượng:** Khi người dùng mở Modal chỉnh sửa hồ sơ cá nhân (`#profile-modal`) và bấm mở rộng khối "Đổi mật khẩu tài khoản", chiều cao của modal tăng lên vượt quá chiều cao màn hình trình duyệt. Phần chân modal chứa các nút "Hủy bỏ" và "Lưu thay đổi" bị chìm xuống dưới mép màn hình, và người dùng lăn chuột/vuốt màn hình không có bất kỳ phản hồi nào (scroll bị khóa cứng).
+- **Nguyên nhân cốt lõi:**
+  1. Class `.profile-dialog` trong `style.css` được khai báo `overflow: hidden;`, ghi đè lên thuộc tính `overflow-y: auto;` của `.modal-window`.
+  2. Lớp bọc `.modal-overlay` sử dụng `display: flex; align-items: center; justify-content: center;` nhưng thiếu thuộc tính `overflow-y: auto;`. Khi modal cao hơn khung nhìn, trình duyệt không kích hoạt thanh cuộn của overlay.
+  3. Thiếu giới hạn chiều cao `max-height` kết hợp cuộn nội bộ cho `.profile-dialog`, khiến toàn bộ dialog bị neo cố định ở giữa màn hình và cắt xén nội dung vượt quá.
+- **Cách khắc phục dứt điểm:**
+  1. Cập nhật `.modal-overlay`: Bổ sung `overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 24px 16px;` để khung nhìn tổng thể luôn cho phép cuộn khi nội dung modal vượt quá màn hình.
+  2. Cập nhật `.profile-dialog`:
+     - Thiết lập `max-height: min(90vh, 880px); margin: auto; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scroll-behavior: smooth;`.
+     - Tích hợp thanh cuộn tùy biến thanh mảnh (Slim Luxury Scrollbar - 6px) với màu sắc chuyển đổi linh hoạt theo Light/Dark Mode.
+  3. Sticky Header cho phần đầu hồ sơ:
+     - Đặt `position: sticky; top: 0; z-index: 20;` cho `.profile-header-card` cùng hiệu ứng `backdrop-filter: blur(16px);`.
+     - Đưa nút đóng modal (`#close-profile-modal`) vào trong `.profile-header-card` để luôn luôn ghim ở góc trên bên phải khi người dùng cuộn xem form.
+  4. Trải nghiệm mở rộng mượt mà (Smooth Auto-scroll):
+     - Trong sự kiện click `#toggle-password-section`, bổ sung lệnh `secCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })` sau 120ms để tự động cuộn nhẹ đưa các ô mật khẩu mới và nút Lưu vào vị trí dễ nhìn nhất.
+  5. Nâng tham số cache-busting lên `?v=3.5` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
