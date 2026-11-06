@@ -42,16 +42,25 @@
         }
     };
 
-    // 3. Hàm hiển thị Toast chính
-    function showToast(message, type = 'info', duration = 4000, customTitle = '') {
+    // 3. Hàm hiển thị Toast chính (chuẩn hóa toàn bộ hệ thống hiển thị đúng 1s = 1000ms)
+    function showToast(message, type = 'info', duration = 1000, customTitle = '') {
         const container = getOrCreateContainer();
         const validTypes = ['success', 'error', 'warning', 'info'];
         const toastType = validTypes.includes(type) ? type : 'info';
 
+        // Xử lý linh hoạt nếu duration được truyền là chuỗi tiêu đề customTitle
+        let actualTitle = customTitle;
+        if (typeof duration === 'string' && !customTitle) {
+            actualTitle = duration;
+        }
+
+        // Toàn bộ thông báo hệ thống được cấu hình hiển thị chuẩn xác 1s (1000ms)
+        const actualDuration = 1000;
+
         const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
             ? window.i18n.getLang() === 'vi' 
             : true;
-        const title = customTitle || DEFAULT_TITLES[isVi ? 'vi' : 'en'][toastType];
+        const title = actualTitle || DEFAULT_TITLES[isVi ? 'vi' : 'en'][toastType];
 
         const toast = document.createElement('div');
         toast.className = `toast-card toast-${toastType}`;
@@ -68,7 +77,7 @@
             <button type="button" class="toast-close-btn" aria-label="Đóng thông báo">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <div class="toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
+            <div class="toast-progress-bar" style="animation-duration: ${actualDuration}ms;"></div>
         `;
 
         container.appendChild(toast);
@@ -92,10 +101,8 @@
             }, 350);
         }
 
-        // Tự động đóng sau duration ms
-        if (duration > 0) {
-            removeTimeout = setTimeout(dismissToast, duration);
-        }
+        // Tự động đóng sau đúng 1s (1000ms)
+        removeTimeout = setTimeout(dismissToast, actualDuration);
 
         // Nút đóng
         const closeBtn = toast.querySelector('.toast-close-btn');
@@ -253,10 +260,10 @@
     window.confirmModal = confirmModal;
     window.translateAuthError = translateAuthError;
     window.toast = {
-        success: (msg, dur, title) => showToast(msg, 'success', dur, title),
-        error: (msg, dur, title) => showToast(msg, 'error', dur, title),
-        warning: (msg, dur, title) => showToast(msg, 'warning', dur, title),
-        info: (msg, dur, title) => showToast(msg, 'info', dur, title),
+        success: (msg, dur, title) => showToast(msg, 'success', 1000, typeof dur === 'string' ? dur : title),
+        error: (msg, dur, title) => showToast(msg, 'error', 1000, typeof dur === 'string' ? dur : title),
+        warning: (msg, dur, title) => showToast(msg, 'warning', 1000, typeof dur === 'string' ? dur : title),
+        info: (msg, dur, title) => showToast(msg, 'info', 1000, typeof dur === 'string' ? dur : title),
         confirm: confirmModal
     };
 

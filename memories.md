@@ -525,6 +525,14 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Hỗ trợ khả năng tiếp cận chuẩn mực: Thuộc tính `aria-pressed`, `aria-label`, phím bấm bàn phím và tuân thủ `prefers-reduced-motion: reduce`.
   - Tăng tham số phiên bản cache-busting lên **`?v=5.2`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 40: Chuẩn Hóa Thời Gian Hiển Thị Toàn Bộ Thông Báo Toast Thành 1 Giây (1000ms)
+- [x] **Cấu hình thời gian hiển thị thông báo Toast siêu nhanh 1s:**
+  - Chuẩn hóa thời gian tồn tại của tất cả các thông báo nổi trong hệ thống (`window.toast.success`, `window.toast.error`, `window.toast.warning`, `window.toast.info`, `showToast`, `window.alert`) về đúng **$1.0\text{s}$ ($1000\text{ms}$)** tại module hạt nhân [js/toast.js](file:///d:/DreamHouse/js/toast.js).
+  - Tự động đồng bộ thanh tiến trình chạy (`.toast-progress-bar` với `animation-duration: 1000ms`), tự động biến mất và trượt ẩn êm ái sau $1\text{s}$, không gây phiền toái hoặc cản trở tầm nhìn của người dùng khi duyệt mẫu nhà.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.3`** trên toàn bộ `index.html` và `admin.html`.
+
+
+
 
 
 
