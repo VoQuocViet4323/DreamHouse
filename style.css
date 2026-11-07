@@ -58,7 +58,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 86px;
+  scroll-padding-top: 104px;
 }
 
 *, *::before, *::after {
@@ -69,7 +69,7 @@ html {
 #contact-section,
 .gallery-section,
 .contact-section {
-  scroll-margin-top: 86px;
+  scroll-margin-top: 104px;
 }
 
 body {
@@ -365,11 +365,11 @@ body::before {
 
 /* 5. ANIMATE-UI FILTER BAR (ACTIVE PILLS & SEARCH) */
 .gallery-section {
-  padding: 60px 0 100px;
+  padding: 40px 0 80px;
 }
 
 .section-header {
-  margin-bottom: 48px;
+  margin-bottom: 36px;
 }
 
 .section-title {
@@ -1372,7 +1372,7 @@ body.dark-theme {
 
 /* 8. CONTACT & FORM */
 .contact-section {
-  padding: 100px 0;
+  padding: 40px 0 80px;
   background: rgba(248, 250, 252, 0.7);
   border-top: 1px solid var(--color-border);
   position: relative;
@@ -1381,8 +1381,8 @@ body.dark-theme {
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1.35fr;
-  gap: 40px;
-  margin-top: 48px;
+  gap: 36px;
+  margin-top: 36px;
 }
 
 .contact-card {

@@ -575,6 +575,23 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 34: Cuộn trang đến Thư viện mẫu hoặc Liên hệ bị lệch điểm nhìn (thừa khoảng trống hoặc bị che khuất)
+- **Hiện tượng:** Khi bấm vào liên kết điều hướng "Thư viện mẫu" hoặc "Liên hệ", trình duyệt tự động cuộn xuống nhưng để lại một khoảng trống đen mênh mông phía trên tiêu đề (ở mục Liên hệ) hoặc khoảng cách giữa đáy Header và nội dung không đều nhau giữa các mục.
+- **Nguyên nhân cốt lõi:**
+  1. *Chênh lệch padding giữa các section:* `.contact-section` có `padding: 100px 0;`, trong khi `.gallery-section` có `padding: 60px 0 100px;`.
+  2. *Thuật toán cuộn cũ tính theo container bao ngoài:* Hàm `smoothScrollTo` cũ tính vị trí cuộn theo đỉnh của thẻ `<section>` hoặc `<main>`. Khi cộng dồn padding-top 100px với offset 84px của Header, khoảng cách từ đáy Header đến tiêu đề thực tế bị đội lên tới hơn 110px, làm lãng phí không gian hiển thị và đẩy form liên hệ tràn ra khỏi màn hình.
+  3. *Thiếu tính thích ứng động của Header:* Header có thể thay đổi chiều cao nhẹ trên các kích thước màn hình khác nhau hoặc khi zoom.
+- **Cách khắc phục dứt điểm:**
+  1. Cân đối lại padding các section trong [`style.css`](file:///d:/DreamHouse/style.css): Cả `.gallery-section` và `.contact-section` đều sử dụng padding đồng bộ `40px 0 80px`, giảm `margin-top` của lưới liên hệ xuống `36px` để toàn bộ khối liên hệ nằm gọn gàng trong tầm mắt.
+  2. Nâng cấp thuật toán `scrollToSection(target)` trong [`js/app.js`](file:///d:/DreamHouse/js/app.js):
+     - Tự động lấy chiều cao thực tế của Header: `const headerHeight = header ? header.offsetHeight : 76;`.
+     - Tìm đỉnh của phần tử tiêu đề nội dung: `const sectionTitle = element.querySelector('.section-title') || element;`.
+     - Thiết lập khoảng cách đệm chuẩn mắt nhìn: Cố định đúng $26\text{px}$ từ đáy Header đến đỉnh tiêu đề (`rect.top + scrollTop - headerHeight - 26`).
+  3. Cập nhật `scroll-margin-top: 104px;` và `scroll-padding-top: 104px;` trong CSS để bảo đảm điều hướng anchor link trực tiếp cũng đồng bộ hoàn hảo.
+  4. Nâng tham số cache-busting lên `?v=5.5` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

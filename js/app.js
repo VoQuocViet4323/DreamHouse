@@ -1121,7 +1121,7 @@ class DreamHouseApp {
             this.closeDetailPanel();
             const contactSection = document.getElementById('contact-section');
             if (contactSection) {
-                this.smoothScrollTo(contactSection, 84);
+                this.scrollToSection(contactSection);
             }
             if (template) {
                 const lang = window.i18n.getLang();
@@ -1654,16 +1654,16 @@ class DreamHouseApp {
 
                     // Nếu nhấp "Mẫu nhà đã lưu yêu thích", tự động kích hoạt bộ lọc yêu thích
                     if (link.id === 'menu-favorites-link') {
-                        const favCheckbox = document.getElementById('filter-favorites-only');
+                        const favCheckbox = document.getElementById('filter-fav-only');
                         if (favCheckbox && !favCheckbox.checked) {
                             favCheckbox.checked = true;
-                            this.filterFavoritesOnly = true;
-                            this.renderTemplates();
+                            this.activeFilter.onlyFavorites = true;
+                            this.renderGallery();
                         }
                     }
 
-                    // Cuộn lập tức 0ms, bàn giao trực tiếp cho GPU Compositor của trình duyệt
-                    this.smoothScrollTo(targetEl, 84);
+                    // Cuộn chuẩn xác đến mục với tỉ lệ căn lề mắt nhìn hoàn hảo (không thừa không thiếu)
+                    this.scrollToSection(targetEl);
 
                     // Cập nhật URL hash nhẹ nhàng
                     if (window.history && window.history.pushState) {
@@ -1675,23 +1675,36 @@ class DreamHouseApp {
     }
 
     /**
-     * Cuộn trang mượt mà không độ trễ (0ms latency, native GPU acceleration)
+     * Cuộn trang mượt mà chuẩn xác từng pixel theo tỉ lệ vàng điểm nhìn (GPU Accelerated)
      * @param {string|HTMLElement} target - Bộ chọn CSS hoặc phần tử DOM cần cuộn tới
-     * @param {number} offset - Khoảng cách bù trừ cho Header cố định (px)
+     * @param {number} [customGap] - Khoảng đệm từ đáy header cố định đến đỉnh tiêu đề (px)
      */
-    smoothScrollTo(target, offset = 84) {
+    scrollToSection(target, customGap) {
         const element = typeof target === 'string' ? document.querySelector(target) : target;
         if (!element) return;
 
-        const startY = window.pageYOffset || document.documentElement.scrollTop;
-        const rect = element.getBoundingClientRect();
-        const targetY = rect.top + startY - offset;
+        const header = document.querySelector('.site-header');
+        const headerHeight = header ? header.offsetHeight : 76;
+
+        // Căn chuẩn vào đỉnh phần tử tiêu đề mục để mắt nhìn vào tự nhiên và cân đối nhất
+        const sectionTitle = element.querySelector('.section-title') || element;
+        const rect = sectionTitle.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Khoảng cách vàng thanh lịch: cách đáy header cố định đúng 26px
+        const topGap = (typeof customGap === 'number') ? customGap : 26;
+        const targetY = rect.top + scrollTop - headerHeight - topGap;
 
         // Gọi trực tiếp native smooth scroll của browser engine
         window.scrollTo({
-            top: Math.max(0, targetY),
+            top: Math.max(0, Math.round(targetY)),
             behavior: 'smooth'
         });
+    }
+
+    // Giữ hàm alias smoothScrollTo để tương thích ngược tuyệt đối
+    smoothScrollTo(target, offset) {
+        this.scrollToSection(target);
     }
 
     setupThemeToggle() {

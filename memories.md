@@ -549,6 +549,16 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Đồng bộ tương thích hoàn hảo cả Light Mode (`#c49a45`) và Dark Mode (`#e5b95d`).
   - Tăng tham số phiên bản cache-busting lên **`?v=5.4`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 43: Chuẩn Hóa Điểm Dừng Cuộn Trang (Pixel-Perfect Scroll Alignment & Golden Ratio Spacing)
+- [x] **Căn chỉnh tuyệt đối điểm dừng cuộn trang khi bấm Thư viện mẫu hoặc Liên hệ:**
+  - Khắc phục hiện tượng bấm thanh điều hướng bị thừa khoảng trống tối mênh mông (ở mục Liên hệ) hoặc bị lệch khoảng cách giữa các phần.
+  - Tối ưu lại padding: `.gallery-section` và `.contact-section` có padding đồng bộ `40px 0 80px`, giảm khoảng cách `margin-top` của lưới liên hệ xuống `36px` giúp toàn bộ khối form và thông tin liên hệ nằm trọn vẹn trong tầm mắt của người dùng.
+  - Nâng cấp thuật toán `scrollToSection(target)`: Tự động đo đạc chiều cao thực tế của Header (`header.offsetHeight`) và tọa độ đỉnh của `.section-title`, định vị tiêu đề mục cách đáy Header cố định đúng $26\text{px}$ chuẩn tỉ lệ vàng thị giác.
+  - Cập nhật `scroll-margin-top: 104px;` và `scroll-padding-top: 104px;` trong CSS để đồng bộ cho cả điều hướng anchor link trực tiếp.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.5`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 34** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
+
+
 
 
 
