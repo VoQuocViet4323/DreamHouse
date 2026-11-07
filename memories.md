@@ -537,6 +537,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Gia cố [`.gitignore`](file:///d:/DreamHouse/.gitignore) với các quy tắc chặn toàn diện (`.env`, `.env.*`, `*.env`, `*.env.*`) ngăn ngừa triệt để mọi khả năng rò rỉ bất kỳ file môi trường nào lên mạng.
   - Cập nhật [generate-config.js](file:///d:/DreamHouse/generate-config.js), [README.md](file:///d:/DreamHouse/README.md), [AI_Config.md](file:///d:/DreamHouse/AI_Config.md) loại bỏ toàn bộ liên kết phụ thuộc vào `.env.example`.
 
+### Giai đoạn 42: Tích Hợp Dropdown Bộ Lọc Tùy Chỉnh Hiện Đại (Custom Animated Dropdowns)
+- [x] **Thay thế menu xổ xuống mặc định của OS bằng Custom Dropdown Animate-UI:**
+  - Loại bỏ hoàn toàn hộp select mặc định vuông vức, nền xanh thô kệch của hệ điều hành trên 2 bộ lọc Loại nhà (`#filter-type`) và Sắp xếp (`#filter-sort`).
+  - Thiết kế chuyển động trượt mượt mà (Spring Motion & Glassmorphism):
+    1. Menu thả nổi (`.custom-dropdown-menu`) xuất hiện êm dịu từ trên xuống (`translateY(-10px) scale(0.96) \to translateY(0) scale(1)`), nền kính mờ `backdrop-filter: blur(20px)` và viền bo tròn $16\text{px}$ sang trọng.
+    2. Mũi tên chevron (`.custom-dropdown-arrow`) xoay ngược 180 độ mượt mà khi mở/đóng.
+    3. Hiệu ứng xúc giác hover: Từng mục tùy chọn trượt nhẹ sang phải $3\text{px}$, chuyển màu vàng kim `--color-accent` và hiển thị icon dấu tích checkmark cho mục đang chọn.
+  - Cơ chế đồng bộ hai chiều vững chắc: Giữ thẻ `<select>` ngầm (`.visually-hidden`) để đảm bảo logic `this.activeFilter` và `this.renderGallery()` hoạt động chính xác 100%, đồng thời hỗ trợ chuyển đổi song ngữ VI/EN tức thì với `data-i18n`.
+  - Đóng thông minh: Tự động đóng menu khi click ra ngoài khoảng trống (click outside) hoặc nhấn phím `Escape`.
+  - Đồng bộ tương thích hoàn hảo cả Light Mode (`#c49a45`) và Dark Mode (`#e5b95d`).
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.4`** trên toàn bộ `index.html` và `admin.html`.
+
+
 
 
 

@@ -1032,8 +1032,12 @@ class DreamHouseApp {
         if (langToggle) {
             langToggle.addEventListener('click', () => {
                 window.i18n.toggle();
+                this.renderGallery();
             });
         }
+
+        // Dropdown bộ lọc tùy chỉnh với hiệu ứng animation mượt mà (Animate-UI)
+        this.setupCustomDropdowns();
 
         // Bộ lọc Loại nhà
         const typeSelect = document.getElementById('filter-type');
@@ -1692,6 +1696,121 @@ class DreamHouseApp {
 
     setupThemeToggle() {
         // Theme toggle được quản lý với hiệu ứng Circular Reveal (219) ngay trong index.html
+    }
+
+    /**
+     * Khởi tạo hệ thống Dropdown tuỳ chỉnh hiện đại có hiệu ứng Animation trượt & xoay chevron (Animate-UI)
+     */
+    setupCustomDropdowns() {
+        const dropdowns = document.querySelectorAll('.custom-dropdown');
+        if (!dropdowns.length) return;
+
+        dropdowns.forEach(dropdown => {
+            const trigger = dropdown.querySelector('.custom-dropdown-trigger');
+            const menu = dropdown.querySelector('.custom-dropdown-menu');
+            const label = dropdown.querySelector('.custom-dropdown-label');
+            const options = dropdown.querySelectorAll('.custom-dropdown-option');
+            const nativeSelect = dropdown.querySelector('select');
+            if (!trigger || !menu) return;
+
+            // Bấm mở / đóng dropdown với animation mượt mà
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = dropdown.classList.contains('is-open');
+
+                // Đóng tất cả các custom dropdown khác đang mở
+                document.querySelectorAll('.custom-dropdown.is-open').forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('is-open');
+                        d.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                dropdown.classList.toggle('is-open', !isOpen);
+                trigger.setAttribute('aria-expanded', String(!isOpen));
+            });
+
+            // Chọn một mục trong danh sách menu
+            options.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = option.getAttribute('data-value');
+                    const textSpan = option.querySelector('.option-text');
+                    const text = textSpan ? textSpan.textContent.trim() : option.textContent.trim();
+                    const i18nKey = textSpan?.getAttribute('data-i18n');
+
+                    // Cập nhật class selected và aria-selected
+                    options.forEach(o => {
+                        o.classList.remove('selected');
+                        o.setAttribute('aria-selected', 'false');
+                    });
+                    option.classList.add('selected');
+                    option.setAttribute('aria-selected', 'true');
+
+                    // Cập nhật nhãn hiển thị trên trigger button
+                    if (label) {
+                        label.textContent = text;
+                        if (i18nKey) {
+                            label.setAttribute('data-i18n', i18nKey);
+                        } else {
+                            label.removeAttribute('data-i18n');
+                        }
+                    }
+
+                    // Đóng dropdown êm ái
+                    dropdown.classList.remove('is-open');
+                    trigger.setAttribute('aria-expanded', 'false');
+
+                    // Đồng bộ giá trị vào thẻ select ngầm và kích hoạt event 'change'
+                    if (nativeSelect && nativeSelect.value !== val) {
+                        nativeSelect.value = val;
+                        nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            });
+
+            // Lắng nghe thay đổi từ native select nếu có script bên ngoài cập nhật
+            if (nativeSelect) {
+                nativeSelect.addEventListener('change', () => {
+                    const currentVal = nativeSelect.value;
+                    const matchingOption = dropdown.querySelector(`.custom-dropdown-option[data-value="${currentVal}"]`);
+                    if (matchingOption) {
+                        options.forEach(o => {
+                            o.classList.remove('selected');
+                            o.setAttribute('aria-selected', 'false');
+                        });
+                        matchingOption.classList.add('selected');
+                        matchingOption.setAttribute('aria-selected', 'true');
+                        if (label) {
+                            const optText = matchingOption.querySelector('.option-text');
+                            label.textContent = optText ? optText.textContent.trim() : matchingOption.textContent.trim();
+                            const optI18n = optText?.getAttribute('data-i18n');
+                            if (optI18n) label.setAttribute('data-i18n', optI18n);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Bấm ra ngoài khoảng trống để đóng mọi dropdown đang mở
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown.is-open').forEach(d => {
+                    d.classList.remove('is-open');
+                    d.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+        // Nhấn phím Escape để đóng nhanh dropdown
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.custom-dropdown.is-open').forEach(d => {
+                    d.classList.remove('is-open');
+                    d.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
     }
 
     clearAuthPasswordFields() {
