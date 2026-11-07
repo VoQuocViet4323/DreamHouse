@@ -549,14 +549,30 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Đồng bộ tương thích hoàn hảo cả Light Mode (`#c49a45`) và Dark Mode (`#e5b95d`).
   - Tăng tham số phiên bản cache-busting lên **`?v=5.4`** trên toàn bộ `index.html` và `admin.html`.
 
-### Giai đoạn 43: Chuẩn Hóa Điểm Dừng Cuộn Trang (Pixel-Perfect Scroll Alignment & Golden Ratio Spacing)
-- [x] **Căn chỉnh tuyệt đối điểm dừng cuộn trang khi bấm Thư viện mẫu hoặc Liên hệ:**
-  - Khắc phục hiện tượng bấm thanh điều hướng bị thừa khoảng trống tối mênh mông (ở mục Liên hệ) hoặc bị lệch khoảng cách giữa các phần.
-  - Tối ưu lại padding: `.gallery-section` và `.contact-section` có padding đồng bộ `40px 0 80px`, giảm khoảng cách `margin-top` của lưới liên hệ xuống `36px` giúp toàn bộ khối form và thông tin liên hệ nằm trọn vẹn trong tầm mắt của người dùng.
-  - Nâng cấp thuật toán `scrollToSection(target)`: Tự động đo đạc chiều cao thực tế của Header (`header.offsetHeight`) và tọa độ đỉnh của `.section-title`, định vị tiêu đề mục cách đáy Header cố định đúng $26\text{px}$ chuẩn tỉ lệ vàng thị giác.
-  - Cập nhật `scroll-margin-top: 104px;` và `scroll-padding-top: 104px;` trong CSS để đồng bộ cho cả điều hướng anchor link trực tiếp.
-  - Tăng tham số phiên bản cache-busting lên **`?v=5.5`** trên toàn bộ `index.html` và `admin.html`.
-  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 34** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
+### Giai đoạn 44: Tự Động Căn Giữa Mô Hình 3D Lên Tâm Lưới & Mở Khóa Zoom / Pan Khám Phá Nội Thất
+- [x] **Khắc phục lỗi mô hình 3D nằm lệch ở rìa ngoài sân lưới và bị chặn zoom không xem được nội thất:**
+  - Phát hiện nguyên nhân cốt lõi:
+    1. **Mô hình bị lệch rìa:** Các file 3D (.glb/.obj) khi xuất từ phần mềm kiến trúc (SketchUp/Revit/Blender) thường có gốc tọa độ cục bộ $(0,0,0)$ đặt lệch sang một bên của khu đất. Khi tải vào Three.js, code cũ chỉ đặt `target` vào tâm bounding box nhưng giữ nguyên tọa độ gốc của mô hình, dẫn đến toàn bộ công trình nằm chơ vơ ở góc của sân lưới (`GridHelper`).
+    2. **Zoom bị chặn ngoài tường:** Hàm cuộn chuột trong [js/viewer3d.js](file:///d:/DreamHouse/js/viewer3d.js) bị giới hạn cứng khoảng cách tối thiểu `Math.max(8, ...)` (8 mét). Với kích thước nhà phố thông thường, bán kính 8m luôn nằm ở bên ngoài tường bao, khiến người dùng không thể phóng to để khám phá các phòng bên trong.
+    3. **Tường trong bị tàng hình:** Khi camera lọt vào trong nhà, các mặt phẳng tường, trần, vách ngăn bị culling mặt sau (backface-culling) do vật liệu chỉ hiển thị `FrontSide`.
+  - Giải pháp xử lý dứt điểm:
+    1. **Căn chính giữa tuyệt đối:** Sau khi tải file GLB/OBJ, tính toán bounding box nguyên bản và tịnh tiến tọa độ của `currentMeshGroup`:
+       - `position.x -= initialCenter.x;`
+       - `position.z -= initialCenter.z;`
+       - `position.y -= initialBox.min.y;` (đảm bảo đáy móng nhà tiếp xúc hoàn hảo trên mặt đất $y = 0$).
+       - Ngôi nhà luôn nằm ngay ngắn tại chính giữa tâm lưới và tâm khung hình.
+    2. **Mở khóa Zoom siêu cận nội thất:**
+       - Giảm bán kính tối thiểu từ $8\text{m}$ xuống **$0.1\text{m}$** (`Math.max(0.1, ...)`).
+       - Tốc độ cuộn chuột thích ứng (Adaptive Zoom Step): khi ở gần thì bước zoom nhỏ, khi ở xa thì bước zoom lớn giúp người dùng lướt nhẹ xuyên qua cửa sổ, cửa chính và tiến vào ngắm từng góc phòng khách, bếp, phòng ngủ mượt mà.
+       - Giảm mặt phẳng cắt gần của camera (`camera.near`) từ $0.1$ xuống **$0.05$** ($5\text{cm}$) để các vật thể nội thất cận cảnh không bị xé hình.
+    3. **Hiển thị hai mặt nội thất (`THREE.DoubleSide`):** Tự động duyệt qua toàn bộ các Mesh của mô hình và gán `side = THREE.DoubleSide`, bảo đảm mọi bức tường, trần nhà và vách ngăn bên trong đều hiển thị rõ ràng, sắc nét.
+    4. **Bổ sung tính năng Pan (Di chuyển tâm nhìn):**
+       - Chuột phải (hoặc Shift + Chuột trái): Pan đa chiều tự do để người dùng có thể lướt camera qua lại giữa các phòng khác nhau.
+       - Cảm ứng 2 ngón tay trên điện thoại / máy tính bảng: Hỗ trợ đồng thời Pinch-to-Zoom và Two-finger Pan.
+       - Cập nhật chỉ dẫn tương tác `detail_3d_hint`: *"Chuột trái xoay • Chuột phải/2 ngón di chuyển • Cuộn để vào trong nhà"*.
+       - Thêm đèn điểm nội thất dịu nhẹ (`interiorLight`) để bên trong không gian phòng luôn đủ ánh sáng ấm cúng.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.6`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 35** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
 
 

@@ -592,6 +592,33 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 35: Mô hình 3D nằm lệch ở rìa ngoài sân lưới và bị chặn góc nhìn không vào được nội thất
+- **Hiện tượng:**
+  1. Khi mở modal xem 3D, ngôi nhà bị nằm lệch hẳn về một góc/rìa ngoài của sân lưới (GridHelper) thay vì nằm ở chính giữa trung tâm.
+  2. Khi cuộn chuột để phóng to xem chi tiết nội thất các phòng bên trong thì camera bị chặn đứng lại ở bên ngoài tường, không thể lọt vào trong nhà.
+- **Nguyên nhân cốt lõi:**
+  1. *Gốc tọa độ mô hình bị lệch (Offset Pivot/Origin):* Khi xuất file GLTF/OBJ từ phần mềm kiến trúc (SketchUp/Revit/Blender), gốc tọa độ $(0,0,0)$ của file thường đặt ở một mốc ngẫu nhiên (ví dụ góc tường hoặc ranh đất). Code cũ trong [`js/viewer3d.js`](file:///d:/DreamHouse/js/viewer3d.js) chèn trực tiếp `currentMeshGroup` vào scene mà không tịnh tiến tọa độ của mesh về tâm sàn, làm nhà bị đẩy ra góc rìa sân.
+  2. *Giới hạn bán kính cuộn quá lớn:* Lệnh `this.spherical.radius = Math.max(8, ...)` áp đặt khoảng cách camera tối thiểu là 8 mét. Đối với hầu hết các mẫu nhà phố (rộng 5m, sâu 10-16m), cự ly 8m nằm hoàn toàn ở bên ngoài tường ngoại thất, ngăn cản camera tiếp cận không gian bên trong.
+  3. *Tường trần trong nhà bị tàng hình (Backface Culling):* Vật liệu mặc định của Three.js chỉ kết xuất `FrontSide`. Khi camera di chuyển vào phòng, các mặt trái của tường, vách ngăn và trần nhà bị culling biến mất.
+  4. *Thiếu tính năng Pan:* Người dùng chỉ có thể xoay quanh một tâm cố định, không thể dịch chuyển camera qua lại giữa các phòng ngủ, phòng khách hoặc tầng trên.
+- **Cách khắc phục dứt điểm:**
+  1. **Tự động căn giữa tâm tuyệt đối:**
+     - Sau khi nạp model, tính toán `initialBox` và `initialCenter`.
+     - Dịch chuyển: `position.x -= initialCenter.x; position.z -= initialCenter.z; position.y -= initialBox.min.y;` (đáy nhà tiếp xúc chính xác với mặt sàn $y = 0$).
+     - Tính toán lại bounding box chuẩn và cập nhật `target` vào tâm đối tượng. Ngôi nhà luôn nằm cân đối ở chính giữa sân lưới.
+  2. **Mở khóa Zoom siêu cận ($0.1\text{m}$):**
+     - Đổi giới hạn bán kính thành `Math.max(0.1, Math.min(100, this.spherical.radius))`.
+     - Tốc độ zoom thích ứng theo cự ly (`zoomFactor = Math.max(0.1, radius * 0.08)`) giúp bước chuyển mượt mà, không bị nhảy giật khi di chuyển xuyên qua cửa sổ hoặc cửa chính vào trong phòng.
+     - Giảm `camera.near` từ `0.1` xuống `0.05` ($5\text{cm}$) để hiển thị sắc nét các vật thể nội thất ở cự ly siêu gần mà không bị cắt phẳng.
+  3. **Kích hoạt kết xuất hai mặt (`THREE.DoubleSide`):** Tự động duyệt qua toàn bộ mesh con và thiết lập `child.material.side = THREE.DoubleSide` để mọi bức tường và trần nhà bên trong luôn hiển thị nguyên vẹn.
+  4. **Tích hợp tính năng Pan (Di chuyển tâm nhìn tự do):**
+     - Chuột phải (hoặc Shift + Chuột trái): Di chuyển tâm nhìn sang trái, phải, lên, xuống tự do.
+     - Cảm ứng 2 ngón tay trên điện thoại: Hỗ trợ cử chỉ chạm 2 ngón vừa Pan vừa Pinch-Zoom mượt mà.
+     - Thêm nguồn sáng nội thất nhẹ (`interiorLight`) soi sáng ấm cúng bên trong không gian các phòng.
+  5. Nâng tham số cache-busting lên `?v=5.6` trên toàn bộ dự án ([`index.html`](file:///d:/DreamHouse/index.html) và [`admin.html`](file:///d:/DreamHouse/admin.html)).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

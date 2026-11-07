@@ -1,6 +1,7 @@
 // js/viewer3d.js
 // Khởi tạo và điều khiển mô hình 3D với Three.js & GLTFLoader
 // Hỗ trợ cả file .glb thật từ Supabase Storage lẫn khối 3D parametric dựng bằng code
+// Tích hợp: Căn giữa tâm sàn tự động, DoubleSide vật liệu nội thất, Mở khóa Zoom cận cảnh nội thất và Di chuyển (Pan) đa chiều.
 
 class House3DViewer {
     constructor(containerId) {
@@ -12,10 +13,17 @@ class House3DViewer {
         this.currentMeshGroup = null;
         this.animFrameId = null;
         this.isSupported = this.checkWebGLSupport();
-        this.isDragging = false;
+        
+        // Trạng thái thao tác chuột / cảm ứng
+        this.dragMode = 'none'; // 'rotate' | 'pan'
         this.prevMousePos = { x: 0, y: 0 };
+        this.touchStartDist = 0;
+        this.prevTouchCenter = { x: 0, y: 0 };
+
         this.spherical = { radius: 24, phi: Math.PI / 3, theta: Math.PI / 4 };
         this.target = new THREE.Vector3(0, 3, 0);
+        this.initialTarget = new THREE.Vector3(0, 3, 0);
+        this.initialRadius = 24;
 
         if (this.isSupported && this.container) {
             this.init();
@@ -38,11 +46,11 @@ class House3DViewer {
         const width = this.container.clientWidth || 450;
         const height = this.container.clientHeight || 350;
 
-        // 1. Khung cảnh & Camera
+        // 1. Khung cảnh & Camera (near = 0.05 để xem rõ cận cảnh chi tiết nội thất phòng)
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xf4f5f7);
 
-        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.05, 1000);
         this.updateCameraPosition();
 
         // 2. Renderer
@@ -56,23 +64,28 @@ class House3DViewer {
         this.container.appendChild(this.renderer.domElement);
 
         // 3. Ánh sáng tự nhiên và đổ bóng
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
         this.scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xfffaed, 1.1);
-        dirLight.position.set(20, 40, 20);
+        const dirLight = new THREE.DirectionalLight(0xfffaed, 1.15);
+        dirLight.position.set(25, 45, 25);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = 1024;
         dirLight.shadow.mapSize.height = 1024;
         dirLight.shadow.bias = -0.0005;
         this.scene.add(dirLight);
 
-        const fillLight = new THREE.DirectionalLight(0xbad2e8, 0.4);
-        fillLight.position.set(-20, 15, -20);
+        const fillLight = new THREE.DirectionalLight(0xbad2e8, 0.45);
+        fillLight.position.set(-25, 20, -25);
         this.scene.add(fillLight);
 
-        // 4. Lưới nền sân đất tinh tế
-        const groundGeo = new THREE.PlaneGeometry(60, 60);
+        // Đèn bổ sung dịu nhẹ soi sáng nội thất bên trong khi zoom vào phòng
+        const interiorLight = new THREE.PointLight(0xffeedd, 0.5, 30);
+        interiorLight.position.set(0, 3.5, 0);
+        this.scene.add(interiorLight);
+
+        // 4. Lưới nền sân đất tinh tế, rộng rãi bao quát
+        const groundGeo = new THREE.PlaneGeometry(80, 80);
         const groundMat = new THREE.MeshStandardMaterial({ 
             color: 0xe8ecf0, 
             roughness: 0.9, 
@@ -84,11 +97,11 @@ class House3DViewer {
         ground.receiveShadow = true;
         this.scene.add(ground);
 
-        const grid = new THREE.GridHelper(50, 25, 0xd0d7de, 0xe1e4e8);
+        const grid = new THREE.GridHelper(70, 35, 0xd0d7de, 0xe1e4e8);
         grid.position.y = 0.01;
         this.scene.add(grid);
 
-        // 5. Điều khiển xoay chuột / cảm ứng (Orbiting tự viết nhẹ gọn, mượt mà)
+        // 5. Điều khiển xoay chuột / Pan di chuyển / Zoom không giới hạn
         this.setupInteractions();
 
         // 6. Vòng lặp render
@@ -112,62 +125,132 @@ class House3DViewer {
         this.camera.lookAt(this.target);
     }
 
+    panCamera(deltaX, deltaY) {
+        if (!this.camera) return;
+        const vRight = new THREE.Vector3();
+        const vUp = new THREE.Vector3();
+        this.camera.matrixWorld.extractBasis(vRight, vUp, new THREE.Vector3());
+
+        // Độ nhạy pan thích ứng theo cự ly zoom (ở gần di chuyển tinh tế, ở xa di chuyển nhanh)
+        const factor = Math.max(0.002, this.spherical.radius * 0.0016);
+        this.target.addScaledVector(vRight, -deltaX * factor);
+        this.target.addScaledVector(vUp, deltaY * factor);
+        this.updateCameraPosition();
+    }
+
+    rotateCamera(deltaX, deltaY) {
+        this.spherical.theta -= deltaX * 0.008;
+        this.spherical.phi -= deltaY * 0.008;
+        // Giới hạn phi từ sát mặt đất (0.05 rad) đến góc ngước (1.52 rad) để không bị lật nhào
+        this.spherical.phi = Math.max(0.05, Math.min(Math.PI / 2 - 0.02, this.spherical.phi));
+        this.updateCameraPosition();
+    }
+
     setupInteractions() {
         const dom = this.renderer.domElement;
 
-        const onDown = (clientX, clientY) => {
-            this.isDragging = true;
-            this.prevMousePos = { x: clientX, y: clientY };
-        };
+        // Chặn menu chuột phải mặc định trên canvas để dùng làm phím Pan
+        dom.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        const onMove = (clientX, clientY) => {
-            if (!this.isDragging) return;
-            const deltaX = clientX - this.prevMousePos.x;
-            const deltaY = clientY - this.prevMousePos.y;
+        // --- SỰ KIỆN CHUỘT ---
+        dom.addEventListener('mousedown', (e) => {
+            // Chuột phải (button 2) hoặc Giữ Shift + Chuột trái => PAN (Di chuyển tâm nhìn)
+            if (e.button === 2 || (e.button === 0 && e.shiftKey)) {
+                this.dragMode = 'pan';
+            } else if (e.button === 0) {
+                this.dragMode = 'rotate';
+            }
+            this.prevMousePos = { x: e.clientX, y: e.clientY };
+        });
 
-            this.spherical.theta -= deltaX * 0.008;
-            this.spherical.phi -= deltaY * 0.008;
-            // Giới hạn góc ngước lên/xuống (phi) không bị lật ngược
-            this.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, this.spherical.phi));
+        window.addEventListener('mousemove', (e) => {
+            if (this.dragMode === 'none') return;
+            const deltaX = e.clientX - this.prevMousePos.x;
+            const deltaY = e.clientY - this.prevMousePos.y;
 
-            this.prevMousePos = { x: clientX, y: clientY };
-            this.updateCameraPosition();
-        };
+            if (this.dragMode === 'rotate') {
+                this.rotateCamera(deltaX, deltaY);
+            } else if (this.dragMode === 'pan') {
+                this.panCamera(deltaX, deltaY);
+            }
 
-        const onUp = () => {
-            this.isDragging = false;
-        };
+            this.prevMousePos = { x: e.clientX, y: e.clientY };
+        });
 
-        // Chuột
-        dom.addEventListener('mousedown', (e) => onDown(e.clientX, e.clientY));
-        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
-        window.addEventListener('mouseup', onUp);
+        window.addEventListener('mouseup', () => {
+            this.dragMode = 'none';
+        });
 
-        // Cảm ứng (Điện thoại/Máy tính bảng)
+        // --- SỰ KIỆN CẢM ỨNG (MOBILE & TABLET) ---
         dom.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
-                onDown(e.touches[0].clientX, e.touches[0].clientY);
+                this.dragMode = 'rotate';
+                this.prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            } else if (e.touches.length === 2) {
+                this.dragMode = 'touch_multi';
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                this.touchStartDist = Math.hypot(dx, dy);
+                this.prevTouchCenter = {
+                    x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
             }
         }, { passive: true });
 
         window.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1 && this.isDragging) {
-                onMove(e.touches[0].clientX, e.touches[0].clientY);
+            if (this.dragMode === 'rotate' && e.touches.length === 1) {
+                const deltaX = e.touches[0].clientX - this.prevMousePos.x;
+                const deltaY = e.touches[0].clientY - this.prevMousePos.y;
+                this.rotateCamera(deltaX, deltaY);
+                this.prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            } else if (this.dragMode === 'touch_multi' && e.touches.length === 2) {
+                // Pinch zoom
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.hypot(dx, dy);
+                const distDelta = dist - this.touchStartDist;
+                
+                const zoomFactor = Math.max(0.04, this.spherical.radius * 0.015);
+                this.spherical.radius -= distDelta * zoomFactor;
+                this.spherical.radius = Math.max(0.1, Math.min(100, this.spherical.radius));
+                this.touchStartDist = dist;
+
+                // Two-finger pan
+                const curCenter = {
+                    x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
+                const pDeltaX = curCenter.x - this.prevTouchCenter.x;
+                const pDeltaY = curCenter.y - this.prevTouchCenter.y;
+                this.panCamera(pDeltaX, pDeltaY);
+                this.prevTouchCenter = curCenter;
             }
         }, { passive: true });
 
-        window.addEventListener('touchend', onUp);
+        window.addEventListener('touchend', () => {
+            this.dragMode = 'none';
+        });
 
-        // Cuộn chuột để thu phóng
+        // --- CUỘN CHUỘT THU PHÓNG (MỞ KHÓA ZOOM SÁT NỘI THẤT) ---
         dom.addEventListener('wheel', (e) => {
             e.preventDefault();
-            this.spherical.radius += e.deltaY * 0.02;
-            this.spherical.radius = Math.max(8, Math.min(60, this.spherical.radius));
+            // Hệ số cuộn thích ứng với khoảng cách hiện tại (vào trong phòng bước nhảy nhỏ, ra ngoài bước nhảy vừa)
+            const zoomFactor = Math.max(0.1, this.spherical.radius * 0.08);
+            const delta = Math.sign(e.deltaY) * zoomFactor;
+
+            this.spherical.radius += delta;
+            // Mở khoá bán kính tối thiểu xuống 0.1m thay vì bị chặn ở 8m -> người dùng có thể lọt vào bên trong nhà ngắm phòng
+            this.spherical.radius = Math.max(0.1, Math.min(100, this.spherical.radius));
             this.updateCameraPosition();
         }, { passive: false });
     }
 
     setCameraPreset(viewName) {
+        // Trả tâm nhìn về tâm chính của ngôi nhà
+        this.target.copy(this.initialTarget);
+        this.spherical.radius = this.initialRadius;
+
         switch (viewName) {
             case 'front': // Mặt tiền
                 this.spherical.theta = 0;
@@ -177,12 +260,12 @@ class House3DViewer {
                 this.spherical.theta = Math.PI / 3;
                 this.spherical.phi = Math.PI / 2.3;
                 break;
-            case 'top': // Nhìn từ trên cao
+            case 'top': // Nhìn từ trên cao xuống
                 this.spherical.theta = Math.PI / 4;
                 this.spherical.phi = 0.25;
                 break;
             case 'reset':
-            default:
+            default: // Góc phối cảnh tiêu chuẩn
                 this.spherical.theta = Math.PI / 4;
                 this.spherical.phi = Math.PI / 3;
                 break;
@@ -255,17 +338,42 @@ class House3DViewer {
                     if (child.isMesh) {
                         child.castShadow = true;
                         child.receiveShadow = true;
+                        // Bật DoubleSide cho vật liệu để khi zoom vào trong phòng, tường và trần không bị tàng hình
+                        if (child.material) {
+                            if (Array.isArray(child.material)) {
+                                child.material.forEach((mat) => {
+                                    mat.side = THREE.DoubleSide;
+                                });
+                            } else {
+                                child.material.side = THREE.DoubleSide;
+                            }
+                        }
                     }
                 });
+
+                // 1. Tính toán bounding box nguyên bản của mô hình
+                const initialBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
+                const initialCenter = initialBox.getCenter(new THREE.Vector3());
+
+                // 2. CĂN CHÍNH GIỮA: Dời toạ độ model sao cho tâm X-Z về chính xác (0,0), đáy tiếp đất y = 0
+                this.currentMeshGroup.position.x -= initialCenter.x;
+                this.currentMeshGroup.position.z -= initialCenter.z;
+                this.currentMeshGroup.position.y -= initialBox.min.y;
+
                 this.scene.add(this.currentMeshGroup);
                 if (statusEl) statusEl.textContent = '';
                 
-                // Căn chỉnh tâm camera theo bounding box
-                const box = new THREE.Box3().setFromObject(this.currentMeshGroup);
-                const size = box.getSize(new THREE.Vector3());
-                const center = box.getCenter(new THREE.Vector3());
-                this.target.copy(center);
-                this.spherical.radius = Math.max(size.x, size.y, size.z) * 2.2;
+                // 3. Tính lại bounding box sau khi đã căn giữa
+                const adjustedBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
+                const adjustedSize = adjustedBox.getSize(new THREE.Vector3());
+                const adjustedCenter = adjustedBox.getCenter(new THREE.Vector3());
+
+                this.initialTarget.copy(adjustedCenter);
+                this.target.copy(adjustedCenter);
+
+                const maxDim = Math.max(adjustedSize.x, adjustedSize.y, adjustedSize.z);
+                this.initialRadius = Math.max(10, maxDim * 1.8);
+                this.spherical.radius = this.initialRadius;
                 this.updateCameraPosition();
             },
             undefined,
@@ -297,20 +405,40 @@ class House3DViewer {
                             child.material = new THREE.MeshStandardMaterial({
                                 color: 0xe0e6ed,
                                 roughness: 0.5,
-                                metalness: 0.1
+                                metalness: 0.1,
+                                side: THREE.DoubleSide
                             });
+                        } else {
+                            if (Array.isArray(child.material)) {
+                                child.material.forEach((mat) => { mat.side = THREE.DoubleSide; });
+                            } else {
+                                child.material.side = THREE.DoubleSide;
+                            }
                         }
                     }
                 });
+
+                // Căn chính giữa sàn
+                const initialBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
+                const initialCenter = initialBox.getCenter(new THREE.Vector3());
+
+                this.currentMeshGroup.position.x -= initialCenter.x;
+                this.currentMeshGroup.position.z -= initialCenter.z;
+                this.currentMeshGroup.position.y -= initialBox.min.y;
+
                 this.scene.add(this.currentMeshGroup);
                 if (statusEl) statusEl.textContent = '';
 
-                // Căn chỉnh tâm camera theo bounding box
-                const box = new THREE.Box3().setFromObject(this.currentMeshGroup);
-                const size = box.getSize(new THREE.Vector3());
-                const center = box.getCenter(new THREE.Vector3());
-                this.target.copy(center);
-                this.spherical.radius = Math.max(size.x, size.y, size.z) * 2.2;
+                const adjustedBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
+                const adjustedSize = adjustedBox.getSize(new THREE.Vector3());
+                const adjustedCenter = adjustedBox.getCenter(new THREE.Vector3());
+
+                this.initialTarget.copy(adjustedCenter);
+                this.target.copy(adjustedCenter);
+
+                const maxDim = Math.max(adjustedSize.x, adjustedSize.y, adjustedSize.z);
+                this.initialRadius = Math.max(10, maxDim * 1.8);
+                this.spherical.radius = this.initialRadius;
                 this.updateCameraPosition();
             },
             undefined,
@@ -337,26 +465,26 @@ class House3DViewer {
         const wallMat = new THREE.MeshStandardMaterial({
             color: 0xfdfdfd,
             roughness: 0.6,
-            metalness: 0.05
+            metalness: 0.05,
+            side: THREE.DoubleSide
         });
-        const accentWoodMat = new THREE.MeshStandardMaterial({
-            color: 0x8b5a2b, // Nâu gỗ
-            roughness: 0.7
+        const darkTrimMat = new THREE.MeshStandardMaterial({
+            color: 0x24292e,
+            roughness: 0.4,
+            side: THREE.DoubleSide
         });
         const glassMat = new THREE.MeshStandardMaterial({
             color: 0x4f7c9e,
             roughness: 0.1,
             metalness: 0.8,
             transparent: true,
-            opacity: 0.7
-        });
-        const darkTrimMat = new THREE.MeshStandardMaterial({
-            color: 0x24292e,
-            roughness: 0.4
+            opacity: 0.7,
+            side: THREE.DoubleSide
         });
         const roofMat = new THREE.MeshStandardMaterial({
             color: 0x2b3137, // Xám than ngói
-            roughness: 0.8
+            roughness: 0.8,
+            side: THREE.DoubleSide
         });
 
         // 1. Thân các tầng
@@ -449,15 +577,16 @@ class House3DViewer {
             group.add(tum);
         }
 
-        // Căn chỉnh tâm toạ độ về giữa đáy nhà (theo yêu cầu SketchUp spec)
+        // Căn chỉnh tâm toạ độ về giữa đáy nhà
         this.currentMeshGroup = group;
         this.scene.add(this.currentMeshGroup);
 
+        this.initialTarget.set(0, totalHeight / 2, 0);
         this.target.set(0, totalHeight / 2, 0);
-        this.spherical.radius = Math.max(width, depth, totalHeight) * 2.1;
+        this.initialRadius = Math.max(width, depth, totalHeight) * 2.1;
+        this.spherical.radius = this.initialRadius;
         this.updateCameraPosition();
     }
 }
 
 window.House3DViewer = House3DViewer;
-

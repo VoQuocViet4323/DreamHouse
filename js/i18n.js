@@ -49,7 +49,7 @@ const I18N = {
         // Chi tiết mẫu
         detail_tab_photo: "Ảnh thiết kế & Phối cảnh",
         detail_tab_3d: "Mô hình 3D tương tác",
-        detail_3d_hint: "Kéo chuột/chạm để xoay • Cuộn để thu phóng",
+        detail_3d_hint: "Chuột trái xoay • Chuột phải/2 ngón di chuyển • Cuộn để vào trong nhà",
         detail_cam_front: "Mặt tiền",
         detail_cam_side: "Góc bên",
         detail_cam_top: "Trên cao",
@@ -193,7 +193,7 @@ const I18N = {
         // Modal
         detail_tab_photo: "Design Photos & Perspectives",
         detail_tab_3d: "Interactive 3D Walkthrough",
-        detail_3d_hint: "Drag to rotate • Scroll to zoom",
+        detail_3d_hint: "Left drag to orbit • Right drag to pan • Scroll to zoom inside",
         detail_cam_front: "Front",
         detail_cam_side: "Side",
         detail_cam_top: "Top",
