@@ -3,194 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="admin_title">Hệ Thống Quản Trị - DreamHouse</title>
+    <title data-i18n="admin_title">Hệ Thống Quản Trị - Dream House</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5b95d'><path d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z'/></svg>" />
-    <link rel="stylesheet" href="style.css?v=5.6">
+    <!-- Google Fonts chuẩn Tiếng Việt khắc phục hoàn toàn lỗi dấu -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5.7">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=5.6"></script>
-    <script src="js/i18n.js?v=5.6"></script>
-    <script src="js/toast.js?v=5.6"></script>
-    <style>
-        .admin-page { padding: 40px 0; }
-        .admin-nav-tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--color-border); }
-        .tab-btn { padding: 12px 24px; background: none; border: none; font-size: 1rem; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; }
-        .tab-btn.active { border-color: var(--color-primary); font-weight: 700; }
-        .admin-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
-        .admin-table th, .admin-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); text-align: left; font-size: 0.9rem; }
-        .admin-table th { background: #f7f6f2; font-weight: 600; }
-        .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
-        .badge-new { background: #e3f2fd; color: #1976d2; }
-        .badge-handled { background: #e8f5e9; color: #388e3c; }
-        .action-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .table-thumb { width: 60px; height: 40px; object-fit: cover; border-radius: 4px; }
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    </style>
+    <script src="js/config.js?v=5.7"></script>
+    <script src="js/i18n.js?v=5.7"></script>
+    <script src="js/toast.js?v=5.7"></script>
 </head>
 <body class="admin-body">
+    <!-- HEADER QUẢN TRỊ -->
     <header class="site-header">
         <div class="header-inner container">
-            <a href="index.html" class="brand">
-                <span class="brand-title" data-i18n="site_name">Dream House</span>
-                <span class="brand-sub">Admin Portal</span>
-            </a>
-            <div class="header-actions">
-                <a href="index.html" class="btn-secondary">← Về trang chủ</a>
-                <button id="admin-logout-btn" class="btn-auth-outline">Đăng xuất</button>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <a href="index.html" class="brand">
+                    <span class="brand-title" data-i18n="site_name">Dream House</span>
+                    <span class="brand-sub">Architectural Design</span>
+                </a>
+                <span class="admin-header-badge">
+                    <span class="pulse-dot"></span>
+                    Admin Portal
+                </span>
+            </div>
+
+            <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
+                <!-- Circular-reveal dark mode (219, Navigation) đồng bộ với trang chủ -->
+                <button type="button" class="u219-tg" id="circular-theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Chuyển chế độ giao diện Sáng / Tối">
+                    <svg class="u219-icon-sun" viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="8" cy="8" r="3" fill="currentColor"/>
+                        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <path d="M8 1.5v1.4M8 13.1v1.4M1.5 8h1.4M13.1 8h1.4M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/>
+                        </g>
+                    </svg>
+                    <svg class="u219-icon-moon" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M13.5 9.8A5.6 5.6 0 0 1 6.2 2.5a5.6 5.6 0 1 0 7.3 7.3z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <div id="u219-fallback-overlay" class="u219-fallback-overlay" aria-hidden="true"></div>
+
+                <script>
+                (function() {
+                    var btn = document.getElementById('circular-theme-toggle');
+                    var fallbackOverlay = document.getElementById('u219-fallback-overlay');
+                    if (!btn) return;
+                    var isRunning = false;
+
+                    function applyDomTheme(dark) {
+                        if (dark) {
+                            document.documentElement.setAttribute('data-theme', 'dark');
+                            document.body.classList.add('dark-theme');
+                            localStorage.setItem('dream_house_theme', 'dark');
+                            btn.setAttribute('aria-label', 'Switch to light mode');
+                            btn.setAttribute('aria-pressed', 'true');
+                        } else {
+                            document.documentElement.setAttribute('data-theme', 'light');
+                            document.body.classList.remove('dark-theme');
+                            localStorage.setItem('dream_house_theme', 'light');
+                            btn.setAttribute('aria-label', 'Switch to dark mode');
+                            btn.setAttribute('aria-pressed', 'false');
+                        }
+                    }
+
+                    var saved = localStorage.getItem('dream_house_theme');
+                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    var currentDark = saved === 'dark' || (!saved && prefersDark);
+                    applyDomTheme(currentDark);
+
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (isRunning) return;
+                        var nextDark = !(document.documentElement.getAttribute('data-theme') === 'dark');
+                        var rect = btn.getBoundingClientRect();
+                        var x = e.clientX || (rect.left + rect.width / 2);
+                        var y = e.clientY || (rect.top + rect.height / 2);
+
+                        if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                            isRunning = true;
+                            var endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+                            var transition = document.startViewTransition(function() { applyDomTheme(nextDark); });
+                            transition.ready.then(function() {
+                                document.documentElement.animate(
+                                    { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'] },
+                                    { duration: 650, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', pseudoElement: '::view-transition-new(root)' }
+                                ).onfinish = function() { isRunning = false; };
+                            }).catch(function() { isRunning = false; });
+                            return;
+                        }
+
+                        if (fallbackOverlay && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                            isRunning = true;
+                            document.documentElement.style.setProperty('--reveal-x', x + 'px');
+                            document.documentElement.style.setProperty('--reveal-y', y + 'px');
+                            fallbackOverlay.className = 'u219-fallback-overlay ' + (nextDark ? 'animating-dark' : 'animating-light');
+                            setTimeout(function() {
+                                applyDomTheme(nextDark);
+                                fallbackOverlay.className = 'u219-fallback-overlay';
+                                isRunning = false;
+                            }, 700);
+                            return;
+                        }
+                        applyDomTheme(nextDark);
+                    });
+                })();
+                </script>
+
+                <a href="index.html" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 999px; font-size: 0.88rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Về trang chủ
+                </a>
+                <button id="admin-logout-btn" class="btn-auth-outline" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 999px; font-size: 0.88rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Đăng xuất
+                </button>
             </div>
         </div>
     </header>
 
-    <div class="container admin-page">
-        <div class="action-row">
-            <h1 class="section-title">Bảng Quản Trị Hệ Thống</h1>
+    <!-- NỘI DUNG QUẢN TRỊ CHÍNH -->
+    <main class="container admin-page">
+        <!-- 1. HERO BANNER -->
+        <div class="admin-hero-banner">
+            <div class="admin-hero-info">
+                <span class="admin-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                    Trung tâm điều hành kiến trúc
+                </span>
+                <h1 class="admin-hero-title">Bảng Quản Trị Hệ Thống</h1>
+                <p class="admin-hero-sub">Quản lý thư viện đồ án mẫu nhà, mô hình 3D tương tác và yêu cầu tư vấn khách hàng theo thời gian thực.</p>
+            </div>
+            <div class="admin-hero-actions">
+                <button type="button" id="btn-refresh-data" class="btn-admin-refresh" title="Làm mới dữ liệu">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                </button>
+                <button type="button" id="btn-add-template" class="btn-admin-add">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Thêm mẫu nhà mới
+                </button>
+            </div>
         </div>
 
-        <div class="admin-nav-tabs">
-            <button id="tab-templates-btn" class="tab-btn active">Quản lý Mẫu Nhà</button>
-            <button id="tab-inquiries-btn" class="tab-btn">Yêu Cầu Tư Vấn & Báo Giá</button>
+        <!-- 2. BENTO KPI STAT CARDS -->
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <div class="admin-stat-content">
+                    <span class="admin-stat-label">Tổng mẫu thiết kế</span>
+                    <span class="admin-stat-value" id="stat-total-templates">0</span>
+                    <span class="admin-stat-meta" id="stat-published-meta">0 mẫu đang hiển thị</span>
+                </div>
+                <div class="admin-stat-icon gold">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+            </div>
+
+            <div class="admin-stat-card">
+                <div class="admin-stat-content">
+                    <span class="admin-stat-label">Mô hình 3D (.glb / .skp)</span>
+                    <span class="admin-stat-value" id="stat-3d-count">0</span>
+                    <span class="admin-stat-meta" id="stat-3d-meta">Đang kiểm tra tệp 3D...</span>
+                </div>
+                <div class="admin-stat-icon emerald">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+            </div>
+
+            <div class="admin-stat-card">
+                <div class="admin-stat-content">
+                    <span class="admin-stat-label">Yêu cầu tư vấn mới</span>
+                    <span class="admin-stat-value" id="stat-new-inquiries">0</span>
+                    <span class="admin-stat-meta" id="stat-total-inquiries">Tổng 0 yêu cầu khách hàng</span>
+                </div>
+                <div class="admin-stat-icon blue">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+            </div>
+
+            <div class="admin-stat-card">
+                <div class="admin-stat-content">
+                    <span class="admin-stat-label">Dự toán trung bình</span>
+                    <span class="admin-stat-value" id="stat-avg-cost">0 đ</span>
+                    <span class="admin-stat-meta">Giá trị tham khảo bộ sưu tập</span>
+                </div>
+                <div class="admin-stat-icon purple">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. THANH CÔNG CỤ TAB & BỘ LỌC TÌM KIẾM -->
+        <div class="admin-toolbar-bar">
+            <div class="admin-nav-tabs">
+                <button id="tab-templates-btn" class="tab-btn active" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Quản lý Mẫu Nhà
+                    <span class="tab-count-pill" id="badge-count-templates">0</span>
+                </button>
+                <button id="tab-inquiries-btn" class="tab-btn" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Yêu Cầu Tư Vấn & Báo Giá
+                    <span class="tab-count-pill" id="badge-count-inquiries">0</span>
+                </button>
+            </div>
+
+            <div class="admin-filter-controls">
+                <div class="admin-type-chips" id="admin-type-filter-bar">
+                    <button type="button" class="admin-filter-chip active" data-type="all">Tất cả</button>
+                    <button type="button" class="admin-filter-chip" data-type="nha-pho">Nhà phố</button>
+                    <button type="button" class="admin-filter-chip" data-type="biet-thu">Biệt thự</button>
+                    <button type="button" class="admin-filter-chip" data-type="nha-cap-4">Nhà cấp 4</button>
+                </div>
+
+                <div class="admin-search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="admin-search-input" placeholder="Tìm tên mẫu nhà, kích thước..." />
+                </div>
+            </div>
         </div>
 
         <!-- TAB 1: QUẢN LÝ MẪU NHÀ -->
-        <section id="panel-templates">
-            <div class="action-row">
-                <p>Danh sách các mẫu thiết kế kiến trúc đang có trên hệ thống.</p>
-                <button id="btn-add-template" class="btn-primary">+ Thêm mẫu nhà mới</button>
-            </div>
-            <div style="overflow-x: auto;">
+        <section id="panel-templates" class="admin-panel-card">
+            <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Ảnh</th>
-                            <th>Tên mẫu nhà (VI / EN)</th>
-                            <th>Loại</th>
-                            <th>Kích thước</th>
+                            <th>Ảnh phối cảnh</th>
+                            <th>Tên mẫu thiết kế</th>
+                            <th>Phân loại</th>
+                            <th>Quy mô & Diện tích</th>
                             <th>Số tầng</th>
                             <th>Dự toán (VNĐ)</th>
-                            <th>File 3D (.glb)</th>
-                            <th>Hiện</th>
-                            <th>Thao tác</th>
+                            <th>Mô hình 3D</th>
+                            <th>Trạng thái</th>
+                            <th style="text-align: right;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="admin-templates-tbody">
-                        <tr><td colspan="9" style="text-align: center;">Đang nạp dữ liệu từ Supabase...</td></tr>
+                        <tr>
+                            <td colspan="9" class="admin-empty-state">Đang đồng bộ dữ liệu mẫu nhà từ Supabase...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
         <!-- TAB 2: QUẢN LÝ YÊU CẦU TƯ VẤN (INQUIRIES) -->
-        <section id="panel-inquiries" class="hidden">
-            <p>Danh sách khách hàng đã để lại thông tin xin tư vấn và dự toán.</p>
-            <div style="overflow-x: auto;">
+        <section id="panel-inquiries" class="admin-panel-card hidden">
+            <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Thời gian</th>
+                            <th>Thời gian gửi</th>
                             <th>Khách hàng</th>
-                            <th>SĐT / Email</th>
+                            <th>Liên hệ (SĐT / Email)</th>
                             <th>Mẫu quan tâm</th>
-                            <th>Nội dung yêu cầu</th>
+                            <th>Nội dung tư vấn</th>
                             <th>Ngôn ngữ</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th style="text-align: right;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="admin-inquiries-tbody">
-                        <tr><td colspan="8" style="text-align: center;">Đang nạp danh sách yêu cầu...</td></tr>
+                        <tr>
+                            <td colspan="8" class="admin-empty-state">Đang tải danh sách yêu cầu tư vấn...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </section>
-    </div>
+    </main>
 
     <!-- MODAL THÊM / SỬA MẪU NHÀ -->
     <div id="template-modal" class="modal-overlay hidden">
-        <div class="modal-window" style="max-width: 800px; padding: 32px;">
+        <div class="modal-window admin-modal-window">
             <button type="button" id="close-template-modal" class="modal-close" aria-label="Đóng">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <h3 id="modal-template-title" class="auth-title">Thêm Mẫu Thiết Kế Mới</h3>
+
+            <div class="admin-modal-header">
+                <div class="admin-modal-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <div>
+                    <h3 id="modal-template-title" class="auth-title" style="margin: 0; text-align: left; font-size: 1.45rem;">Thêm Mẫu Thiết Kế Mới</h3>
+                    <p style="margin: 2px 0 0; font-size: 0.85rem; color: var(--color-text-muted);">Cập nhật thông số kiến trúc, ảnh phối cảnh và tệp 3D tương tác</p>
+                </div>
+            </div>
 
             <form id="template-form" class="inquiry-form">
                 <input type="hidden" id="edit-id" />
                 <input type="hidden" id="tpl-slug" />
+
+                <div class="admin-form-section-title">1. Thông tin định danh</div>
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Tên mẫu nhà:</label>
-                        <input type="text" id="tpl-name" required placeholder="Nhập tên mẫu nhà (ví dụ: Biệt thự vườn, test...)" />
+                        <label>Tên mẫu nhà</label>
+                        <input type="text" id="tpl-name" required placeholder="Ví dụ: Biệt thự vườn Mái Nhật, Nhà phố 2 tầng..." />
                     </div>
                     <div class="form-group">
-                        <label>Loại nhà:</label>
+                        <label>Phân loại kiến trúc</label>
                         <select id="tpl-type">
-                            <option value="nha-pho">Nhà phố</option>
-                            <option value="biet-thu">Biệt thự</option>
-                            <option value="nha-cap-4">Nhà cấp 4</option>
+                            <option value="nha-pho">Nhà phố (Modern Townhouse)</option>
+                            <option value="biet-thu">Biệt thự (Luxury Villa)</option>
+                            <option value="nha-cap-4">Nhà cấp 4 (Cozy Bungalow)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-grid-2">
+                <div class="admin-form-section-title">2. Thông số kỹ thuật & Dự toán</div>
+                <div class="form-grid-3">
                     <div class="form-group">
-                        <label>Rộng mặt tiền (m):</label>
+                        <label>Rộng mặt tiền (m)</label>
                         <input type="number" id="tpl-width" step="0.1" value="5.0" required />
                     </div>
                     <div class="form-group">
-                        <label>Chiều sâu (m):</label>
+                        <label>Chiều sâu (m)</label>
                         <input type="number" id="tpl-depth" step="0.1" value="16.0" required />
                     </div>
-                </div>
-
-                <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Số tầng:</label>
+                        <label>Số tầng</label>
                         <input type="number" id="tpl-floors" min="1" value="2" required />
                     </div>
-                    <div class="form-group">
-                        <label>Kiểu mái:</label>
-                        <select id="tpl-roof">
-                            <option value="flat">Mái bằng (flat)</option>
-                            <option value="hip">Mái Nhật (hip)</option>
-                            <option value="gable">Mái Thái chữ A (gable)</option>
-                        </select>
-                    </div>
                 </div>
 
-                <div class="form-grid-2">
+                <div class="form-grid-3">
                     <div class="form-group">
-                        <label>Diện tích sàn GFA (m²):</label>
+                        <label>Kiểu mái kiến trúc</label>
+                        <select id="tpl-roof">
+                            <option value="flat">Mái bằng hiện đại (Flat)</option>
+                            <option value="hip">Mái Nhật (Hip)</option>
+                            <option value="gable">Mái Thái chữ A (Gable)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Diện tích sàn GFA (m²)</label>
                         <input type="number" id="tpl-gfa" step="1" value="150" required />
                     </div>
                     <div class="form-group">
-                        <label>Dự toán tham khảo (VNĐ):</label>
+                        <label>Dự toán tham khảo (VNĐ)</label>
                         <input type="number" id="tpl-cost" step="1000000" value="1500000000" required />
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Tải ảnh phối cảnh (hoặc dán URL):</label>
-                    <input type="file" id="tpl-photo-file" accept="image/*" />
-                    <input type="text" id="tpl-photo-path" placeholder="Hoặc dán URL ảnh trực tiếp" style="margin-top: 6px;" />
-                </div>
+                <div class="admin-form-section-title">3. Hình ảnh phối cảnh & Mô hình 3D</div>
+                <div class="form-grid-2">
+                    <div class="form-group admin-upload-zone">
+                        <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            Ảnh phối cảnh (Tối đa 25MB)
+                        </label>
+                        <input type="file" id="tpl-photo-file" accept="image/*" style="font-size: 0.82rem;" />
+                        <input type="text" id="tpl-photo-path" placeholder="Hoặc dán URL ảnh trực tiếp..." style="margin-top: 8px;" />
+                    </div>
 
-                <div class="form-group">
-                    <label>Tải mô hình 3D (.glb hoặc .obj để tương tác thực tế, hoặc .skp để lưu trữ):</label>
-                    <input type="file" id="tpl-model-file" accept=".glb,.gltf,.obj,.skp,.zip,application/octet-stream,model/gltf-binary" />
-                    <input type="text" id="tpl-model-path" placeholder="Đường dẫn file .glb, .obj hoặc .skp" style="margin-top: 6px;" />
-                    <p style="font-size: 12px; color: #888; margin-top: 5px; line-height: 1.45;">
-                        💡 <strong>Cách làm nhanh nhất:</strong> Trong SketchUp, bạn chỉ cần chọn <em>File &gt; Export &gt; 3D Model &gt; chọn đuôi .OBJ hoặc .GLB</em> (tính năng có sẵn trong mọi bản SketchUp). Tải file .obj hoặc .glb lên là web sẽ hiển thị 3D ngay lập tức.
-                    </p>
+                    <div class="form-group admin-upload-zone">
+                        <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                            Tệp 3D (.glb, .obj hoặc .skp)
+                        </label>
+                        <input type="file" id="tpl-model-file" accept=".glb,.gltf,.obj,.skp,.zip,application/octet-stream,model/gltf-binary" style="font-size: 0.82rem;" />
+                        <input type="text" id="tpl-model-path" placeholder="Đường dẫn file .glb, .obj hoặc .skp..." style="margin-top: 8px;" />
+                    </div>
                 </div>
+                <p style="font-size: 0.78rem; color: var(--color-text-muted); margin: -4px 0 12px; line-height: 1.5;">
+                    💡 <strong>Mẹo SketchUp:</strong> Chọn <em>File &gt; Export &gt; 3D Model &gt; chọn đuôi .GLB hoặc .OBJ</em> rồi tải lên để xoay 3D &amp; khám phá nội thất trực tiếp trên trình duyệt.
+                </p>
 
-                <div class="form-group">
-                    <label>
+                <div class="admin-publish-switch">
+                    <label for="tpl-published">
                         <input type="checkbox" id="tpl-published" checked />
-                        Xuất bản công khai mẫu nhà này
+                        <span>Xuất bản công khai mẫu thiết kế này lên Thư viện trang chủ</span>
                     </label>
+                    <span class="admin-vis-badge published"><span class="dot"></span>Public</span>
                 </div>
 
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="submit" id="btn-save-tpl" class="btn-primary">Lưu thông tin</button>
-                    <button type="button" id="btn-cancel-tpl" class="btn-secondary">Huỷ bỏ</button>
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+                    <button type="button" id="btn-cancel-tpl" class="btn-secondary" style="padding: 11px 24px; border-radius: 999px;">Huỷ bỏ</button>
+                    <button type="submit" id="btn-save-tpl" class="btn-primary" style="padding: 11px 28px; border-radius: 999px;">Lưu thông tin mẫu nhà</button>
                 </div>
             </form>
         </div>
@@ -214,7 +405,6 @@
                 return;
             }
 
-            // Gọi kiểm tra role trong bảng profiles
             const { data: profile, error: profErr } = await client
                 .from('profiles')
                 .select('role')
@@ -227,26 +417,83 @@
                 return;
             }
 
+            // Biến lưu trữ cục bộ để tìm kiếm / lọc mượt mà
+            let allTemplatesData = [];
+            let allInquiriesData = [];
+            let activeTab = 'templates';
+            let activeTypeFilter = 'all';
+            let searchQuery = '';
+
+            const typeLabelsVi = {
+                'nha-pho': 'Nhà phố',
+                'biet-thu': 'Biệt thự',
+                'nha-cap-4': 'Nhà cấp 4'
+            };
+            const typeLabelsEn = {
+                'nha-pho': 'Modern Townhouse',
+                'biet-thu': 'Luxury Villa',
+                'nha-cap-4': 'Cozy Bungalow'
+            };
+            const roofLabelsVi = {
+                'flat': 'Mái bằng',
+                'hip': 'Mái Nhật',
+                'gable': 'Mái Thái'
+            };
+
             // 2. Chuyển đổi tab
             const tabTplBtn = document.getElementById('tab-templates-btn');
             const tabInqBtn = document.getElementById('tab-inquiries-btn');
             const panelTpl = document.getElementById('panel-templates');
             const panelInq = document.getElementById('panel-inquiries');
+            const typeFilterBar = document.getElementById('admin-type-filter-bar');
+            const searchInput = document.getElementById('admin-search-input');
 
             tabTplBtn.addEventListener('click', () => {
+                activeTab = 'templates';
                 tabTplBtn.classList.add('active');
                 tabInqBtn.classList.remove('active');
                 panelTpl.classList.remove('hidden');
                 panelInq.classList.add('hidden');
-                loadTemplates();
+                typeFilterBar.style.display = 'inline-flex';
+                searchInput.placeholder = 'Tìm tên mẫu nhà, kích thước...';
+                renderTemplatesTable();
             });
 
             tabInqBtn.addEventListener('click', () => {
+                activeTab = 'inquiries';
                 tabInqBtn.classList.add('active');
                 tabTplBtn.classList.remove('active');
                 panelInq.classList.remove('hidden');
                 panelTpl.classList.add('hidden');
-                loadInquiries();
+                typeFilterBar.style.display = 'none';
+                searchInput.placeholder = 'Tìm tên khách hàng, SĐT, nội dung...';
+                renderInquiriesTable();
+            });
+
+            // Sự kiện lọc theo loại nhà
+            document.querySelectorAll('.admin-filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.admin-filter-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    activeTypeFilter = chip.getAttribute('data-type') || 'all';
+                    renderTemplatesTable();
+                });
+            });
+
+            // Sự kiện tìm kiếm tức thì
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim().toLowerCase();
+                if (activeTab === 'templates') {
+                    renderTemplatesTable();
+                } else {
+                    renderInquiriesTable();
+                }
+            });
+
+            // Nút làm mới dữ liệu
+            document.getElementById('btn-refresh-data').addEventListener('click', async () => {
+                await Promise.all([loadTemplates(), loadInquiries()]);
+                if (window.toast) window.toast.info('Đã đồng bộ dữ liệu mới nhất!');
             });
 
             // Đăng xuất
@@ -255,6 +502,39 @@
                 sessionStorage.setItem('just_logged_out', '1');
                 window.location.href = 'index.html#login';
             });
+
+            // Cập nhật các thẻ thống kê KPI
+            function updateStatsKPI() {
+                const totalTpl = allTemplatesData.length;
+                const pubTpl = allTemplatesData.filter(t => t.published).length;
+                const has3D = allTemplatesData.filter(t => t.model_path && t.model_path.trim() !== '').length;
+
+                document.getElementById('stat-total-templates').textContent = totalTpl;
+                document.getElementById('stat-published-meta').textContent = `${pubTpl} công khai • ${totalTpl - pubTpl} đang ẩn`;
+                document.getElementById('badge-count-templates').textContent = totalTpl;
+
+                document.getElementById('stat-3d-count').textContent = `${has3D} / ${totalTpl}`;
+                document.getElementById('stat-3d-meta').textContent = `${totalTpl - has3D} mẫu dùng khối tự động`;
+
+                const avgCost = totalTpl > 0
+                    ? allTemplatesData.reduce((acc, item) => acc + (Number(item.cost_estimate_vnd) || 0), 0) / totalTpl
+                    : 0;
+                const avgBil = (avgCost / 1e9).toFixed(2).replace('.', ',');
+                document.getElementById('stat-avg-cost').textContent = avgCost > 0 ? `${avgBil} tỷ` : '0 đ';
+
+                const totalInq = allInquiriesData.length;
+                const newInq = allInquiriesData.filter(i => i.status === 'new').length;
+                document.getElementById('stat-new-inquiries').textContent = newInq;
+                document.getElementById('stat-total-inquiries').textContent = `Tổng ${totalInq} yêu cầu từ khách hàng`;
+
+                const inqBadge = document.getElementById('badge-count-inquiries');
+                inqBadge.textContent = newInq > 0 ? `${newInq} mới` : totalInq;
+                if (newInq > 0) {
+                    inqBadge.classList.add('alert');
+                } else {
+                    inqBadge.classList.remove('alert');
+                }
+            }
 
             // 3. Tải danh sách Mẫu Nhà
             async function loadTemplates() {
@@ -266,34 +546,92 @@
                     .order('created_at', { ascending: false });
 
                 if (error) {
-                    tbody.innerHTML = `<tr><td colspan="9" style="color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="9" class="admin-empty-state" style="color:#ef4444;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
                     return;
                 }
 
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">Chưa có mẫu nhà nào. Hãy thêm mẫu mới!</td></tr>`;
+                allTemplatesData = data || [];
+                updateStatsKPI();
+                renderTemplatesTable();
+            }
+
+            function renderTemplatesTable() {
+                const tbody = document.getElementById('admin-templates-tbody');
+                const filtered = allTemplatesData.filter(item => {
+                    const matchType = activeTypeFilter === 'all' || item.type === activeTypeFilter;
+                    const matchSearch = !searchQuery ||
+                        (item.name_vi && item.name_vi.toLowerCase().includes(searchQuery)) ||
+                        (item.name_en && item.name_en.toLowerCase().includes(searchQuery)) ||
+                        `${item.width_m}x${item.depth_m}`.includes(searchQuery);
+                    return matchType && matchSearch;
+                });
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" class="admin-empty-state">Không tìm thấy mẫu nhà nào phù hợp với bộ lọc hiện tại.</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = data.map(item => `
-                    <tr>
-                        <td><img class="table-thumb" src="${item.photo_path || ''}" alt="thumb" /></td>
-                        <td>
-                            <strong>${item.name_vi}</strong>
-                            ${item.name_en && item.name_en !== item.name_vi ? `<br><small style="color:#666;">${item.name_en}</small>` : ''}
-                        </td>
-                        <td>${item.type}</td>
-                        <td>${item.width_m}m × ${item.depth_m}m</td>
-                        <td>${item.floors}</td>
-                        <td>${Number(item.cost_estimate_vnd).toLocaleString('vi-VN')} đ</td>
-                        <td>${item.model_path ? (item.model_path.toLowerCase().endsWith('.skp') ? '📦 File .skp' : '✅ File .glb') : '⚡ Khối tự động'}</td>
-                        <td>${item.published ? '✅ Hiện' : '🔒 Ẩn'}</td>
-                        <td>
-                            <button onclick="editTemplate('${item.id}')" class="btn-text">Sửa</button> |
-                            <button onclick="deleteTemplate('${item.id}')" class="btn-text" style="color:red;">Xoá</button>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = filtered.map(item => {
+                    const typeName = typeLabelsVi[item.type] || item.type;
+                    const roofName = roofLabelsVi[item.roof] || 'Mái bằng';
+                    let modelBadge = `<span class="admin-3d-badge procedural"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Khối tự động</span>`;
+                    if (item.model_path && item.model_path.trim() !== '') {
+                        const lower = item.model_path.toLowerCase();
+                        if (lower.endsWith('.skp')) {
+                            modelBadge = `<span class="admin-3d-badge has-skp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>File .skp</span>`;
+                        } else {
+                            modelBadge = `<span class="admin-3d-badge has-glb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="20 6 9 17 4 12"/></svg>3D Thực tế (.glb)</span>`;
+                        }
+                    }
+
+                    const visBadge = item.published
+                        ? `<span class="admin-vis-badge published"><span class="dot"></span>Đang hiện</span>`
+                        : `<span class="admin-vis-badge draft"><span class="dot"></span>Đang ẩn</span>`;
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="admin-thumb-box">
+                                    <img src="${item.photo_path || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80'}" alt="${item.name_vi}" loading="lazy" />
+                                </div>
+                            </td>
+                            <td>
+                                <span class="admin-tpl-title">${item.name_vi}</span>
+                                <span class="admin-tpl-sub">
+                                    ${item.name_en && item.name_en !== item.name_vi ? `<span>${item.name_en}</span> • ` : ''}
+                                    <span>${roofName}</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="admin-type-badge type-${item.type}">${typeName}</span>
+                            </td>
+                            <td>
+                                <span class="admin-spec-pill">${item.width_m}m × ${item.depth_m}m</span>
+                                <span style="font-size: 0.78rem; color: var(--color-text-muted); margin-left: 6px;">(${item.gfa_m2 || 150} m²)</span>
+                            </td>
+                            <td>
+                                <strong>${item.floors}</strong> tầng
+                            </td>
+                            <td>
+                                <span class="admin-price-text">${Number(item.cost_estimate_vnd).toLocaleString('vi-VN')} đ</span>
+                            </td>
+                            <td>${modelBadge}</td>
+                            <td>${visBadge}</td>
+                            <td style="text-align: right;">
+                                <div class="admin-row-actions">
+                                    <button type="button" onclick="editTemplate('${item.id}')" class="btn-admin-action edit">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        Sửa
+                                    </button>
+                                    <button type="button" onclick="deleteTemplate('${item.id}')" class="btn-admin-action delete">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        Xoá
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
             // 4. Tải danh sách Yêu cầu tư vấn
@@ -305,27 +643,67 @@
                     .order('created_at', { ascending: false });
 
                 if (error) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="color:red;">Lỗi: ${error.message}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" class="admin-empty-state" style="color:#ef4444;">Lỗi: ${error.message}</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = data.map(row => `
-                    <tr>
-                        <td>${new Date(row.created_at).toLocaleString('vi-VN')}</td>
-                        <td><strong>${row.name}</strong></td>
-                        <td>${row.contact}</td>
-                        <td>${row.template_id || 'Chung'}</td>
-                        <td style="max-width:240px; word-break: break-word;">${row.message}</td>
-                        <td>${row.lang.toUpperCase()}</td>
-                        <td><span class="badge-status ${row.status === 'handled' ? 'badge-handled' : 'badge-new'}">${row.status}</span></td>
-                        <td>
-                            ${row.status === 'new' 
-                                ? `<button onclick="markHandled('${row.id}')" class="btn-text" style="color:green;">Đánh dấu đã xử lý</button>`
-                                : '<span>Đã xong</span>'
-                            }
-                        </td>
-                    </tr>
-                `).join('');
+                allInquiriesData = data || [];
+                updateStatsKPI();
+                renderInquiriesTable();
+            }
+
+            function renderInquiriesTable() {
+                const tbody = document.getElementById('admin-inquiries-tbody');
+                const filtered = allInquiriesData.filter(row => {
+                    if (!searchQuery) return true;
+                    return (row.name && row.name.toLowerCase().includes(searchQuery)) ||
+                           (row.contact && row.contact.toLowerCase().includes(searchQuery)) ||
+                           (row.message && row.message.toLowerCase().includes(searchQuery));
+                });
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="admin-empty-state">Chưa có yêu cầu tư vấn nào.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(row => {
+                    const initial = (row.name || 'K').trim().charAt(0).toUpperCase();
+                    const isHandled = row.status === 'handled';
+                    return `
+                        <tr>
+                            <td style="white-space: nowrap; font-size: 0.82rem; color: var(--color-text-muted);">
+                                ${new Date(row.created_at).toLocaleString('vi-VN')}
+                            </td>
+                            <td>
+                                <div class="admin-client-cell">
+                                    <div class="admin-client-avatar">${initial}</div>
+                                    <strong>${row.name}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="admin-spec-pill">${row.contact}</span>
+                            </td>
+                            <td>${row.template_id || '<span style="color:var(--color-text-muted);">Tư vấn chung</span>'}</td>
+                            <td style="max-width: 260px; word-break: break-word; line-height: 1.45;">${row.message || '-'}</td>
+                            <td><span class="admin-spec-pill">${(row.lang || 'vi').toUpperCase()}</span></td>
+                            <td>
+                                ${isHandled
+                                    ? `<span class="admin-vis-badge published"><span class="dot"></span>Đã xử lý</span>`
+                                    : `<span class="admin-3d-badge procedural"><span class="dot"></span>Mới</span>`
+                                }
+                            </td>
+                            <td style="text-align: right;">
+                                ${!isHandled
+                                    ? `<button type="button" onclick="markHandled('${row.id}')" class="btn-admin-action resolve">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Đánh dấu đã xử lý
+                                       </button>`
+                                    : `<span style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 600;">✓ Hoàn tất</span>`
+                                }
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
             // Đánh dấu đã xử lý Inquiry
@@ -357,17 +735,23 @@
                 }
             };
 
-            // Từ điển nhãn loại nhà tự động
-            const typeLabelsVi = {
-                'nha-pho': 'Nhà phố',
-                'biet-thu': 'Biệt thự',
-                'nha-cap-4': 'Nhà cấp 4'
-            };
-            const typeLabelsEn = {
-                'nha-pho': 'Modern Townhouse',
-                'biet-thu': 'Luxury Villa',
-                'nha-cap-4': 'Cozy Bungalow'
-            };
+            // Hàm mở / đóng Modal Thêm-Sửa với hiệu ứng trượt mượt mà (Symmetric Exit Motion)
+            const modal = document.getElementById('template-modal');
+            function openTemplateModal() {
+                modal.classList.remove('is-closing');
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeTemplateModal() {
+                if (!modal || modal.classList.contains('hidden') || modal.classList.contains('is-closing')) return;
+                modal.classList.add('is-closing');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('is-closing');
+                    document.body.style.overflow = '';
+                }, 280);
+            }
 
             let currentEditingTemplate = null;
 
@@ -392,15 +776,14 @@
                     document.getElementById('tpl-model-path').value = data.model_path || '';
                     document.getElementById('tpl-published').checked = !!data.published;
 
-                    document.getElementById('modal-template-title').textContent = 'Chỉnh Sửa Mẫu Nhà';
-                    modal.classList.remove('hidden');
+                    document.getElementById('modal-template-title').textContent = 'Chỉnh Sửa Mẫu Thiết Kế';
+                    openTemplateModal();
                 } catch (err) {
                     if (window.toast) window.toast.error('Lỗi: ' + err.message);
                 }
             };
 
             // Mở modal thêm mẫu
-            const modal = document.getElementById('template-modal');
             document.getElementById('btn-add-template').addEventListener('click', () => {
                 currentEditingTemplate = null;
                 document.getElementById('template-form').reset();
@@ -410,11 +793,11 @@
                 document.getElementById('tpl-photo-path').value = '';
                 document.getElementById('tpl-model-path').value = '';
                 document.getElementById('modal-template-title').textContent = 'Thêm Mẫu Thiết Kế Mới';
-                modal.classList.remove('hidden');
+                openTemplateModal();
             });
 
-            document.getElementById('close-template-modal').addEventListener('click', () => modal.classList.add('hidden'));
-            document.getElementById('btn-cancel-tpl').addEventListener('click', () => modal.classList.add('hidden'));
+            document.getElementById('close-template-modal').addEventListener('click', closeTemplateModal);
+            document.getElementById('btn-cancel-tpl').addEventListener('click', closeTemplateModal);
 
             // Đóng modal thêm/sửa mẫu khi click ra ngoài khoảng trống backdrop
             let isMouseDownOnTplBackdrop = false;
@@ -423,13 +806,13 @@
             });
             modal?.addEventListener('click', (e) => {
                 if (e.target === modal && isMouseDownOnTplBackdrop) {
-                    modal.classList.add('hidden');
+                    closeTemplateModal();
                 }
                 isMouseDownOnTplBackdrop = false;
             });
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    modal.classList.add('hidden');
+                    closeTemplateModal();
                 }
             });
 
@@ -452,7 +835,7 @@
                         }
                         const fileExt = photoFile.name.split('.').pop();
                         const fileName = `img_${Date.now()}.${fileExt}`;
-                        const { data: uploadData, error: upErr } = await client.storage
+                        const { error: upErr } = await client.storage
                             .from('template-images')
                             .upload(fileName, photoFile);
                         if (upErr) {
@@ -473,7 +856,7 @@
                         }
                         const fileExt = modelFile.name.split('.').pop();
                         const fileName = `model_${Date.now()}.${fileExt}`;
-                        const { data: upModData, error: modErr } = await client.storage
+                        const { error: modErr } = await client.storage
                             .from('template-models')
                             .upload(fileName, modelFile);
                         if (modErr) {
@@ -491,7 +874,6 @@
                     const depthVal = parseFloat(document.getElementById('tpl-depth').value) || 16.0;
                     const floorsVal = parseInt(document.getElementById('tpl-floors').value, 10) || 1;
 
-                    // Lấy Tên mẫu nhà người dùng tự nhập (hoặc tự sinh nếu để trống)
                     const editId = document.getElementById('edit-id').value;
                     const nameInput = document.getElementById('tpl-name').value.trim();
                     const autoFallbackVi = `${typeLabelsVi[typeVal] || 'Mẫu nhà'} ${floorsVal} tầng ${widthVal}x${depthVal}m`;
@@ -500,7 +882,6 @@
                     const nameVi = nameInput || autoFallbackVi;
                     const nameEn = nameInput || autoFallbackEn;
 
-                    // Tạo slug tự động từ tên mẫu
                     const slugify = (text) => {
                         return text.toString().toLowerCase()
                             .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -539,18 +920,18 @@
                     }
 
                     if (window.toast) window.toast.success('Lưu mẫu nhà thành công!');
-                    modal.classList.add('hidden');
+                    closeTemplateModal();
                     loadTemplates();
                 } catch (err) {
                     if (window.toast) window.toast.error('Lỗi: ' + err.message);
                 } finally {
                     saveBtn.disabled = false;
-                    saveBtn.textContent = 'Lưu thông tin';
+                    saveBtn.textContent = 'Lưu thông tin mẫu nhà';
                 }
             });
 
-            // Nạp dữ liệu ban đầu
-            loadTemplates();
+            // Đồng bộ song song cả Mẫu nhà và Yêu cầu tư vấn ngay khi vào trang để hiển thị đủ 4 KPI Cards
+            await Promise.all([loadTemplates(), loadInquiries()]);
         });
     </script>
 </body>

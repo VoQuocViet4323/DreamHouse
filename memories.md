@@ -574,6 +574,28 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=5.6`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 35** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 45: Tái Thiết Kế Toàn Diện Trang Quản Trị Admin Portal (Luxury Architectural Admin Dashboard)
+- [x] **Nâng cấp giao diện [`admin.html`](file:///d:/DreamHouse/admin.html) và hệ thống CSS Admin trong [`style.css`](file:///d:/DreamHouse/style.css) hiện đại, sang trọng:**
+  - **Sửa triệt để lỗi vỡ font tiếng Việt:** Nhúng đầy đủ bộ font Google `Inter` & `Playfair Display` vào `<head>` của `admin.html`, khắc phục hoàn toàn hiện tượng chữ *"Bảng Quản Trị Hệ Thống"* bị lỗi dấu.
+  - **Đồng bộ Chế độ Sáng / Tối (Circular Reveal #219):** Tích hợp nút chuyển đổi Light/Dark Mode ngay trên Header của Admin Portal, đồng bộ tức thì với `localStorage.getItem('dream_house_theme')` của trang chủ và áp dụng đầy đủ hệ thống Design Tokens (`--btn-close-...`, `--btn-subtle-...`).
+  - **Hero Banner & 4 Thẻ Thống Kê Bento KPI Thời Gian Thực:**
+    1. *Tổng mẫu thiết kế:* Hiển thị tổng số đồ án + phân tách số mẫu công khai và đang ẩn.
+    2. *Mô hình 3D (.glb / .skp):* Thống kê tỷ lệ mẫu đã tích hợp tệp 3D tương tác so với khối tự động.
+    3. *Yêu cầu tư vấn mới:* Đếm số lượng yêu cầu trạng thái `new` cần xử lý ngay (kèm badge cảnh báo đỏ) và tổng số yêu cầu.
+    4. *Dự toán trung bình:* Tự động tính toán giá trị dự toán trung bình (tỷ VNĐ) của toàn bộ bộ sưu tập.
+  - **Thanh Công Cụ Đa Năng (Segmented Pill Tabs + Tìm Kiếm & Lọc Nhanh):**
+    - Chuyển đổi mượt mà giữa Tab *Quản lý Mẫu Nhà* và *Yêu Cầu Tư Vấn & Báo Giá* kèm pill đếm số lượng.
+    - Bổ sung thanh tìm kiếm thời gian thực (`#admin-search-input`) lọc theo tên mẫu, kích thước hoặc tên/SĐT khách hàng.
+    - Bổ sung bộ lọc nhanh theo phân loại kiến trúc (`Tất cả`, `Nhà phố`, `Biệt thự`, `Nhà cấp 4`).
+  - **Bảng Dữ Liệu Kiến Trúc Cao Cấp (Modern Data Table):**
+    - Ảnh phối cảnh bo góc lớn (`84x56px`) với hiệu ứng phóng nhẹ khi di chuột.
+    - Huy hiệu phân loại nhà màu sắc riêng biệt (`.type-nha-pho`, `.type-biet-thu`, `.type-nha-cap-4`), huy hiệu trạng thái 3D (`.has-glb`, `.has-skp`, `.procedural`), huy hiệu xuất bản có chấm tròn phát sáng (`.published`, `.draft`).
+    - Các nút thao tác **Sửa**, **Xoá**, **Đánh dấu đã xử lý** được thiết kế dạng pill button có icon SVG trực quan.
+  - **Modal Thêm / Chỉnh Sửa Mẫu Nhà Thiết Kế Mới:**
+    - Chia 3 phân khu khoa học (*1. Thông tin định danh*, *2. Thông số kỹ thuật & Dự toán*, *3. Hình ảnh phối cảnh & Mô hình 3D*) với khung Upload Dropzone viền nét đứt hiện đại và hiệu ứng đóng/mở đối xứng mượt mà (`is-closing`).
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.7`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 36** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

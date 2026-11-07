@@ -619,6 +619,23 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 36: Trang Quản Trị (`admin.html`) bị vỡ font dấu tiếng Việt ở tiêu đề và thiếu đồng bộ giao diện Dark/Light Mode
+- **Hiện tượng:**
+  1. Tiêu đề *"Bảng Quản Trị Hệ Thống"* trên trang Admin bị nhảy khoảng cách chữ *"Thố ng"* do lỗi fallback font có chân khi có dấu sắc + mũ.
+  2. Bảng quản trị sử dụng CSS inline cố định màu trắng (`#fff`, `#f7f6f2`), đơn điệu, không đồng bộ với hệ thống Design Tokens và không có nút chuyển đổi Sáng/Tối (Light/Dark Mode).
+- **Nguyên nhân cốt lõi:**
+  1. Trong `<head>` của [`admin.html`](file:///d:/DreamHouse/admin.html) chưa nhúng liên kết Google Fonts (`Inter` và `Playfair Display` hỗ trợ subset tiếng Việt), khiến trình duyệt tự lấy font Georgia mặc định của Windows khi hiển thị biến `--font-serif`, gây lỗi kerning ở ký tự `ố`.
+  2. Các bảng và nút trong `admin.html` được viết từ giai đoạn đầu bằng inline `<style>` cơ bản, chưa kế thừa kiến trúc Glassmorphism và Design Tokens của [`style.css`](file:///d:/DreamHouse/style.css).
+- **Cách khắc phục dứt điểm:**
+  1. Nhúng đầy đủ bộ font Google `Inter` & `Playfair Display` vào `<head>` của [`admin.html`](file:///d:/DreamHouse/admin.html) giống hệt [`index.html`](file:///d:/DreamHouse/index.html).
+  2. Thiết kế lại toàn diện Admin Portal trong [`admin.html`](file:///d:/DreamHouse/admin.html) và [`style.css`](file:///d:/DreamHouse/style.css) (Mục 15):
+     - Tích hợp nút chuyển chế độ Sáng/Tối (Circular Reveal #219) đồng bộ `localStorage.getItem('dream_house_theme')`.
+     - Xây dựng Hero Banner, 4 thẻ thống kê Bento KPI thời gian thực, thanh Segmented Pill Tabs, bộ lọc nhanh loại nhà và ô tìm kiếm tức thì.
+     - Chuẩn hóa toàn bộ bảng dữ liệu, huy hiệu phân loại, huy hiệu 3D, nút thao tác Sửa/Xoá và Modal Thêm/Sửa mẫu nhà bằng hệ biến `--btn-close-...` và `--btn-subtle-...` tương thích hoàn hảo cả Light Mode và Dark Mode.
+  3. Nâng tham số cache-busting lên `?v=5.7` trên toàn bộ dự án.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
