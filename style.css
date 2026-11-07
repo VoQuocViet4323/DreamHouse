@@ -4576,6 +4576,11 @@ body.dark-theme .confirm-modal-card {
   color: var(--color-text);
 }
 
+.admin-body .container {
+  max-width: 1420px;
+  padding: 0 24px;
+}
+
 .admin-header-badge {
   display: inline-flex;
   align-items: center;
@@ -4966,34 +4971,49 @@ body.dark-theme .confirm-modal-card {
 .admin-table-wrap {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   background: transparent;
+  table-layout: auto;
 }
 
 .admin-table th {
-  padding: 15px 18px;
+  padding: 14px 11px;
   background: rgba(15, 23, 42, 0.03);
   border-bottom: 1px solid var(--color-border);
   text-align: left;
-  font-size: 0.76rem;
+  font-size: 0.73rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: var(--color-text-muted);
   white-space: nowrap;
 }
 
 .admin-table td {
-  padding: 16px 18px;
+  padding: 14px 11px;
   border-bottom: 1px solid var(--color-border);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--color-text);
   vertical-align: middle;
   transition: background-color 0.18s ease;
+}
+
+.admin-table th:first-child,
+.admin-table td:first-child {
+  padding-left: 20px;
+  width: 96px;
+}
+
+.admin-table th:last-child,
+.admin-table td:last-child {
+  padding-right: 20px;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .admin-table tbody tr {
@@ -5010,8 +5030,8 @@ body.dark-theme .confirm-modal-card {
 
 /* Thumbnail trong bảng */
 .admin-thumb-box {
-  width: 84px;
-  height: 56px;
+  width: 78px;
+  height: 52px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--color-border);
@@ -5035,18 +5055,18 @@ body.dark-theme .confirm-modal-card {
 /* Cell Tên mẫu nhà */
 .admin-tpl-title {
   font-weight: 600;
-  font-size: 0.96rem;
+  font-size: 0.93rem;
   color: var(--color-text);
   margin-bottom: 3px;
   display: block;
+  line-height: 1.35;
 }
 
 .admin-tpl-sub {
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   color: var(--color-text-muted);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
+  line-height: 1.4;
 }
 
 /* Badge Loại nhà */
@@ -5054,9 +5074,9 @@ body.dark-theme .confirm-modal-card {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 11px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  font-size: 0.76rem;
+  font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -5080,35 +5100,53 @@ body.dark-theme .confirm-modal-card {
 }
 
 /* Thông số kích thước & tầng */
+.admin-spec-cell {
+  white-space: nowrap;
+}
+
 .admin-spec-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
+  gap: 4px;
+  padding: 4px 9px;
   border-radius: 8px;
   background: var(--btn-subtle-bg);
   border: 1px solid var(--btn-subtle-border);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--btn-subtle-color);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin-gfa-text {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  margin-left: 5px;
+  white-space: nowrap;
+}
+
+.admin-floors-cell {
+  white-space: nowrap;
 }
 
 .admin-price-text {
   font-weight: 700;
   color: var(--color-accent);
   font-variant-numeric: tabular-nums;
-  font-size: 0.94rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 /* Badge 3D Status */
 .admin-3d-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
+  gap: 5px;
+  padding: 4px 10px;
   border-radius: 8px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
   white-space: nowrap;
 }

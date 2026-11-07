@@ -593,7 +593,11 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     - Các nút thao tác **Sửa**, **Xoá**, **Đánh dấu đã xử lý** được thiết kế dạng pill button có icon SVG trực quan.
   - **Modal Thêm / Chỉnh Sửa Mẫu Nhà Thiết Kế Mới:**
     - Chia 3 phân khu khoa học (*1. Thông tin định danh*, *2. Thông số kỹ thuật & Dự toán*, *3. Hình ảnh phối cảnh & Mô hình 3D*) với khung Upload Dropzone viền nét đứt hiện đại và hiệu ứng đóng/mở đối xứng mượt mà (`is-closing`).
-  - Tăng tham số phiên bản cache-busting lên **`?v=5.7`** trên toàn bộ `index.html` và `admin.html`.
+  - **Tối ưu hiển thị trọn vẹn cột Thao tác trên màn hình PC (`v5.8`):**
+    - Mở rộng `.admin-body .container` lên `max-width: 1420px`, tinh chỉnh padding ngang của các cột bảng từ `18px` xuống `11px` và giữ `white-space: nowrap` cho các cột thông số/dự toán/thao tác.
+    - Chuyển `.admin-tpl-sub` từ `display: flex` sang `display: block` để phụ đề không bị ép gãy dòng nhiều hàng.
+    - Đảm bảo trên màn hình PC hiển thị đầy đủ 100% 9 cột (kể cả nút *Sửa* và *Xoá* ở rìa phải), chỉ kích hoạt thanh cuộn ngang khi màn hình thu hẹp.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.8`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 36** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
 

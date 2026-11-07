@@ -632,7 +632,8 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Tích hợp nút chuyển chế độ Sáng/Tối (Circular Reveal #219) đồng bộ `localStorage.getItem('dream_house_theme')`.
      - Xây dựng Hero Banner, 4 thẻ thống kê Bento KPI thời gian thực, thanh Segmented Pill Tabs, bộ lọc nhanh loại nhà và ô tìm kiếm tức thì.
      - Chuẩn hóa toàn bộ bảng dữ liệu, huy hiệu phân loại, huy hiệu 3D, nút thao tác Sửa/Xoá và Modal Thêm/Sửa mẫu nhà bằng hệ biến `--btn-close-...` và `--btn-subtle-...` tương thích hoàn hảo cả Light Mode và Dark Mode.
-  3. Nâng tham số cache-busting lên `?v=5.7` trên toàn bộ dự án.
+     - Mở rộng `.admin-body .container` lên `max-width: 1420px`, giảm padding ngang các cột xuống `11px`, gán `white-space: nowrap` cho cột Quy mô, Số tầng, Dự toán và Thao tác để toàn bộ 9 cột hiển thị trọn vẹn trên màn hình PC mà không bị cắt nút *Xoá* ở rìa phải (chỉ cuộn ngang khi màn hình hẹp).
+  3. Nâng tham số cache-busting lên `?v=5.8` trên toàn bộ dự án.
 
 ---
 
