@@ -772,4 +772,37 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.register_user_by_username(TEXT, TEXT, TEXT) TO anon, authenticated;
 
+-- ==============================================================================
+-- 8. THEO DÕI LƯỢT XEM MẪU NHÀ THỜI GIAN THỰC & PHÂN TÍCH TỶ LỆ QUAN TÂM / YÊU THÍCH
+-- ==============================================================================
+
+ALTER TABLE public.templates 
+ADD COLUMN IF NOT EXISTS view_count INTEGER NOT NULL DEFAULT 0;
+
+CREATE INDEX IF NOT EXISTS idx_templates_view_count ON public.templates(view_count DESC);
+
+CREATE OR REPLACE FUNCTION public.increment_template_view(t_id UUID)
+RETURNS void 
+LANGUAGE plpgsql 
+SECURITY DEFINER 
+SET search_path = public
+AS $$
+BEGIN
+    UPDATE public.templates 
+    SET view_count = COALESCE(view_count, 0) + 1,
+        updated_at = timezone('utc'::text, now())
+    WHERE id = t_id;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.increment_template_view(UUID) TO anon, authenticated;
+
+DROP POLICY IF EXISTS "Admins can view all favorites for analytics" ON public.favorites;
+CREATE POLICY "Admins can view all favorites for analytics"
+ON public.favorites
+FOR SELECT
+TO authenticated
+USING (public.is_admin());
+
+
 

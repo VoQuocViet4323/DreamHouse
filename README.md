@@ -57,7 +57,10 @@ DreamHouse/
 │   ├── 02_security.sql      # Cấu hình Row Level Security (RLS) & hàm is_admin()
 │   ├── 03_storage.sql       # Khởi tạo Storage buckets (template-images, template-models) & Policies
 │   ├── 04_sample_data.sql   # Dữ liệu ban đầu (6 mẫu nhà thực tế)
-│   └── 05_username_auth.sql # Hỗ trợ Đăng ký/Đăng nhập bằng Username & hàm RPC tạo user trực tiếp
+│   ├── 05_username_auth.sql # Hỗ trợ Đăng ký/Đăng nhập bằng Username & hàm RPC tạo user trực tiếp
+│   ├── 08_fix_favorites_rls.sql # Khắc phục triệt để lỗi 403 Forbidden khi đồng bộ favorites
+│   ├── 09_template_views_analytics.sql # Theo dõi lượt xem thời gian thực & RPC phân tích tương tác
+│   └── all_in_one_setup.sql # Script tổng hợp thiết lập toàn bộ cơ sở dữ liệu trong 1 lần chạy
 ├── memories.md              # Bối cảnh, quyết định thiết kế cốt lõi và nhật ký tiến trình phát triển
 ├── README.md                # Tài liệu tổng quan và hướng dẫn sử dụng
 ├── AI_Config.md             # Hướng dẫn cấu hình chi tiết từng bước cho người mới và AI

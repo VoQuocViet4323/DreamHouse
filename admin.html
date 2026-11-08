@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6.3">
+    <link rel="stylesheet" href="style.css?v=6.4">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=6.3"></script>
-    <script src="js/i18n.js?v=6.3"></script>
-    <script src="js/toast.js?v=6.3"></script>
+    <script src="js/config.js?v=6.4"></script>
+    <script src="js/i18n.js?v=6.4"></script>
+    <script src="js/toast.js?v=6.4"></script>
 </head>
 <body class="admin-body">
     <!-- HEADER QUẢN TRỊ -->
@@ -146,7 +146,7 @@
             </div>
         </div>
 
-        <!-- 2. BENTO KPI STAT CARDS -->
+        <!-- 2. BENTO KPI STAT CARDS (5 CỘT THỐNG KÊ THỜI GIAN THỰC) -->
         <div class="admin-stats-grid">
             <div class="admin-stat-card">
                 <div class="admin-stat-content">
@@ -156,6 +156,21 @@
                 </div>
                 <div class="admin-stat-icon gold">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+            </div>
+
+            <!-- Ô THỐNG KÊ LƯỢT XEM MẪU NHÀ THỜI GIAN THỰC -->
+            <div class="admin-stat-card">
+                <div class="admin-stat-content">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span class="admin-stat-label">Lượt xem mẫu (Realtime)</span>
+                        <span class="live-pulse-badge"><span class="pulse-dot"></span>Trực tiếp</span>
+                    </div>
+                    <span class="admin-stat-value" id="stat-total-views">0</span>
+                    <span class="admin-stat-meta" id="stat-top-viewed-meta">Đang phân tích lượt xem...</span>
+                </div>
+                <div class="admin-stat-icon cyan">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
             </div>
 
@@ -206,6 +221,11 @@
                     Yêu Cầu Tư Vấn & Báo Giá
                     <span class="tab-count-pill" id="badge-count-inquiries">0</span>
                 </button>
+                <button id="tab-analytics-btn" class="tab-btn" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    Thống Kê & Phân Tích
+                    <span class="tab-count-pill" id="badge-count-views">0</span>
+                </button>
             </div>
 
             <div class="admin-filter-controls">
@@ -235,6 +255,7 @@
                             <th>Quy mô & Diện tích</th>
                             <th>Số tầng</th>
                             <th>Dự toán (VNĐ)</th>
+                            <th>Lượt xem & Thích</th>
                             <th>Mô hình 3D</th>
                             <th>Trạng thái</th>
                             <th style="text-align: right;">Thao tác</th>
@@ -242,7 +263,7 @@
                     </thead>
                     <tbody id="admin-templates-tbody">
                         <tr>
-                            <td colspan="9" class="admin-empty-state">Đang đồng bộ dữ liệu mẫu nhà từ Supabase...</td>
+                            <td colspan="10" class="admin-empty-state">Đang đồng bộ dữ liệu mẫu nhà từ Supabase...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -271,6 +292,98 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: THỐNG KÊ & PHÂN TÍCH TƯƠNG TÁC THỜI GIAN THỰC -->
+        <section id="panel-analytics" class="admin-panel-card hidden">
+            <div class="analytics-header-banner">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--color-text);">Bảng Phân Tích Thị Hiếu Mẫu Nhà Thời Gian Thực</h3>
+                        <span class="live-pulse-badge"><span class="pulse-dot"></span>Trực tiếp</span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--color-text-muted);">
+                        Tự động theo dõi số lượt xem, tỷ lệ xem nhiều nhất và mức độ quan tâm yêu thích của khách hàng.
+                    </p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="analytics-last-updated" style="font-size: 0.8rem; color: var(--color-text-muted);">Cập nhật vừa xong</span>
+                    <button type="button" id="btn-refresh-analytics" class="btn-admin-action" style="padding: 7px 14px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        Làm mới ngay
+                    </button>
+                </div>
+            </div>
+
+            <div class="analytics-grid-2x2">
+                <!-- MODULE 1: XẾP HẠNG & TỶ LỆ LƯỢT XEM -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h4 class="analytics-card-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                Tỷ Lệ Mẫu Được Xem Nhiều Nhất
+                            </h4>
+                            <span class="analytics-card-desc">Thống kê tỷ lệ phần trăm lượt xem trên tổng lưu lượng tương tác</span>
+                        </div>
+                        <span class="analytics-badge cyan" id="analytics-total-views-badge">0 lượt xem</span>
+                    </div>
+                    <div class="analytics-rankings-list" id="analytics-views-list">
+                        <div class="admin-empty-state">Đang tính toán tỷ lệ xem...</div>
+                    </div>
+                </div>
+
+                <!-- MODULE 2: XẾP HẠNG YÊU THÍCH & THẢ TIM -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h4 class="analytics-card-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#f43f5e" stroke="#f43f5e" stroke-width="1.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                Mẫu Được Quan Tâm & Yêu Thích Nhất
+                            </h4>
+                            <span class="analytics-card-desc">Xếp hạng các mẫu được người dùng thả tim lưu vào danh sách yêu thích</span>
+                        </div>
+                        <span class="analytics-badge pink" id="analytics-total-favs-badge">0 yêu thích</span>
+                    </div>
+                    <div class="analytics-rankings-list" id="analytics-favs-list">
+                        <div class="admin-empty-state">Đang tải danh sách yêu thích...</div>
+                    </div>
+                </div>
+
+                <!-- MODULE 3: TOP MẪU ĐƯỢC GỬI YÊU CẦU TƯ VẤN -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h4 class="analytics-card-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Top Mẫu Nhận Nhiều Yêu Cầu Tư Vấn Nhất
+                            </h4>
+                            <span class="analytics-card-desc">Mẫu thiết kế tạo ra nhiều liên hệ báo giá & thi công thực tế</span>
+                        </div>
+                        <span class="analytics-badge blue" id="analytics-total-inq-badge">0 yêu cầu</span>
+                    </div>
+                    <div class="analytics-rankings-list" id="analytics-inquiries-list">
+                        <div class="admin-empty-state">Đang phân tích yêu cầu tư vấn...</div>
+                    </div>
+                </div>
+
+                <!-- MODULE 4: PHÂN BỐ THEO PHÂN LOẠI KIẾN TRÚC -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h4 class="analytics-card-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a45" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                Thị Hiếu Theo Phân Loại Kiến Trúc
+                            </h4>
+                            <span class="analytics-card-desc">So sánh tỷ trọng quan tâm giữa Nhà phố, Biệt thự và Nhà cấp 4</span>
+                        </div>
+                        <span class="analytics-badge gold">Phân loại</span>
+                    </div>
+                    <div class="analytics-category-grid" id="analytics-category-breakdown">
+                        <div class="admin-empty-state">Đang phân bổ dữ liệu...</div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -424,6 +537,7 @@
             // Biến lưu trữ cục bộ để tìm kiếm / lọc mượt mà
             let allTemplatesData = [];
             let allInquiriesData = [];
+            let allFavoritesData = [];
             let activeTab = 'templates';
             let activeTypeFilter = 'all';
             let searchQuery = '';
@@ -447,32 +561,43 @@
             // 2. Chuyển đổi tab
             const tabTplBtn = document.getElementById('tab-templates-btn');
             const tabInqBtn = document.getElementById('tab-inquiries-btn');
+            const tabAnalyticsBtn = document.getElementById('tab-analytics-btn');
             const panelTpl = document.getElementById('panel-templates');
             const panelInq = document.getElementById('panel-inquiries');
+            const panelAnalytics = document.getElementById('panel-analytics');
             const typeFilterBar = document.getElementById('admin-type-filter-bar');
             const searchInput = document.getElementById('admin-search-input');
 
-            tabTplBtn.addEventListener('click', () => {
-                activeTab = 'templates';
-                tabTplBtn.classList.add('active');
-                tabInqBtn.classList.remove('active');
-                panelTpl.classList.remove('hidden');
-                panelInq.classList.add('hidden');
-                typeFilterBar.style.display = 'inline-flex';
-                searchInput.placeholder = 'Tìm tên mẫu nhà, kích thước...';
-                renderTemplatesTable();
-            });
+            function switchAdminTab(targetTab) {
+                activeTab = targetTab;
+                tabTplBtn.classList.toggle('active', targetTab === 'templates');
+                tabInqBtn.classList.toggle('active', targetTab === 'inquiries');
+                tabAnalyticsBtn.classList.toggle('active', targetTab === 'analytics');
 
-            tabInqBtn.addEventListener('click', () => {
-                activeTab = 'inquiries';
-                tabInqBtn.classList.add('active');
-                tabTplBtn.classList.remove('active');
-                panelInq.classList.remove('hidden');
-                panelTpl.classList.add('hidden');
-                typeFilterBar.style.display = 'none';
-                searchInput.placeholder = 'Tìm tên khách hàng, SĐT, nội dung...';
-                renderInquiriesTable();
-            });
+                panelTpl.classList.toggle('hidden', targetTab !== 'templates');
+                panelInq.classList.toggle('hidden', targetTab !== 'inquiries');
+                panelAnalytics.classList.toggle('hidden', targetTab !== 'analytics');
+
+                if (targetTab === 'templates') {
+                    typeFilterBar.style.display = 'inline-flex';
+                    if (searchInput.parentElement) searchInput.parentElement.style.display = 'flex';
+                    searchInput.placeholder = 'Tìm tên mẫu nhà, kích thước...';
+                    renderTemplatesTable();
+                } else if (targetTab === 'inquiries') {
+                    typeFilterBar.style.display = 'none';
+                    if (searchInput.parentElement) searchInput.parentElement.style.display = 'flex';
+                    searchInput.placeholder = 'Tìm tên khách hàng, SĐT, nội dung...';
+                    renderInquiriesTable();
+                } else if (targetTab === 'analytics') {
+                    typeFilterBar.style.display = 'none';
+                    if (searchInput.parentElement) searchInput.parentElement.style.display = 'none';
+                    renderAnalyticsDashboard();
+                }
+            }
+
+            tabTplBtn.addEventListener('click', () => switchAdminTab('templates'));
+            tabInqBtn.addEventListener('click', () => switchAdminTab('inquiries'));
+            tabAnalyticsBtn.addEventListener('click', () => switchAdminTab('analytics'));
 
             // Sự kiện lọc theo loại nhà
             document.querySelectorAll('.admin-filter-chip').forEach(chip => {
@@ -496,9 +621,19 @@
 
             // Nút làm mới dữ liệu
             document.getElementById('btn-refresh-data').addEventListener('click', async () => {
-                await Promise.all([loadTemplates(), loadInquiries()]);
-                if (window.toast) window.toast.info('Đã đồng bộ dữ liệu mới nhất!');
+                await Promise.all([loadTemplates(), loadFavorites(), loadInquiries()]);
+                renderAnalyticsDashboard();
+                if (window.toast) window.toast.info('Đã đồng bộ dữ liệu thời gian thực mới nhất!');
             });
+
+            const btnRefreshAnalytics = document.getElementById('btn-refresh-analytics');
+            if (btnRefreshAnalytics) {
+                btnRefreshAnalytics.addEventListener('click', async () => {
+                    await Promise.all([loadTemplates(), loadFavorites(), loadInquiries()]);
+                    renderAnalyticsDashboard();
+                    if (window.toast) window.toast.success('Đã cập nhật thống kê lượt xem!');
+                });
+            }
 
             // Đăng xuất
             document.getElementById('admin-logout-btn').addEventListener('click', async () => {
@@ -538,6 +673,25 @@
                 } else {
                     inqBadge.classList.remove('alert');
                 }
+
+                // Cập nhật thẻ lượt xem mẫu thời gian thực
+                const totalViews = allTemplatesData.reduce((acc, t) => acc + (Number(t.view_count) || 0), 0);
+                const viewsStatEl = document.getElementById('stat-total-views');
+                if (viewsStatEl) viewsStatEl.textContent = totalViews.toLocaleString('vi-VN');
+
+                const sortedByViews = [...allTemplatesData].sort((a, b) => (Number(b.view_count) || 0) - (Number(a.view_count) || 0));
+                const topViewed = sortedByViews[0];
+                const topMetaEl = document.getElementById('stat-top-viewed-meta');
+                if (topMetaEl) {
+                    if (topViewed && (Number(topViewed.view_count) || 0) > 0) {
+                        topMetaEl.innerHTML = `Mẫu xem nhiều nhất: <strong>${topViewed.name_vi}</strong> (${topViewed.view_count} xem)`;
+                    } else {
+                        topMetaEl.textContent = 'Chưa có lượt xem nào ghi nhận';
+                    }
+                }
+
+                const badgeViews = document.getElementById('badge-count-views');
+                if (badgeViews) badgeViews.textContent = `${totalViews} xem`;
             }
 
             // 3. Tải danh sách Mẫu Nhà
@@ -550,13 +704,27 @@
                     .order('created_at', { ascending: false });
 
                 if (error) {
-                    tbody.innerHTML = `<tr><td colspan="9" class="admin-empty-state" style="color:#ef4444;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="10" class="admin-empty-state" style="color:#ef4444;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
                     return;
                 }
 
                 allTemplatesData = data || [];
                 updateStatsKPI();
                 renderTemplatesTable();
+            }
+
+            // Tải danh sách Yêu thích để thống kê tương tác
+            async function loadFavorites() {
+                try {
+                    const { data, error } = await client
+                        .from('favorites')
+                        .select('template_id, user_id, created_at');
+                    if (!error && data) {
+                        allFavoritesData = data;
+                    }
+                } catch (e) {
+                    console.warn('Lỗi tải danh sách yêu thích:', e);
+                }
             }
 
             function renderTemplatesTable() {
@@ -571,9 +739,15 @@
                 });
 
                 if (filtered.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="9" class="admin-empty-state">Không tìm thấy mẫu nhà nào phù hợp với bộ lọc hiện tại.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="10" class="admin-empty-state">Không tìm thấy mẫu nhà nào phù hợp với bộ lọc hiện tại.</td></tr>`;
                     return;
                 }
+
+                // Đếm số lượt yêu thích cho từng mẫu nhà
+                const favCountMap = {};
+                allFavoritesData.forEach(f => {
+                    if (f.template_id) favCountMap[f.template_id] = (favCountMap[f.template_id] || 0) + 1;
+                });
 
                 tbody.innerHTML = filtered.map(item => {
                     const typeName = typeLabelsVi[item.type] || item.type;
@@ -591,6 +765,9 @@
                     const visBadge = item.published
                         ? `<span class="admin-vis-badge published"><span class="dot"></span>Đang hiện</span>`
                         : `<span class="admin-vis-badge draft"><span class="dot"></span>Đang ẩn</span>`;
+
+                    const viewsCount = Number(item.view_count) || 0;
+                    const favsCount = favCountMap[item.id] || 0;
 
                     return `
                         <tr>
@@ -617,6 +794,18 @@
                             </td>
                             <td>
                                 <span class="admin-price-text">${Number(item.cost_estimate_vnd).toLocaleString('vi-VN')} đ</span>
+                            </td>
+                            <td>
+                                <div class="admin-stat-badge-group">
+                                    <span class="admin-stat-pill views" title="Lượt xem mẫu chi tiết">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        ${viewsCount}
+                                    </span>
+                                    <span class="admin-stat-pill favs" title="Lượt lưu yêu thích">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                        ${favsCount}
+                                    </span>
+                                </div>
                             </td>
                             <td>${modelBadge}</td>
                             <td>${visBadge}</td>
@@ -707,6 +896,194 @@
                         </tr>
                     `;
                 }).join('');
+            }
+
+            // 5. Thống kê & Phân tích thị hiếu tương tác thời gian thực
+            function renderAnalyticsDashboard() {
+                const totalViews = allTemplatesData.reduce((acc, t) => acc + (Number(t.view_count) || 0), 0);
+                const totalFavs = allFavoritesData.length;
+                const totalInq = allInquiriesData.length;
+
+                // Cập nhật các badge số lượng trên header của từng module
+                const badgeViews = document.getElementById('analytics-total-views-badge');
+                if (badgeViews) badgeViews.textContent = `Tổng ${totalViews.toLocaleString('vi-VN')} lượt xem`;
+
+                const badgeFavs = document.getElementById('analytics-total-favs-badge');
+                if (badgeFavs) badgeFavs.textContent = `Tổng ${totalFavs.toLocaleString('vi-VN')} thả tim`;
+
+                const badgeInq = document.getElementById('analytics-total-inq-badge');
+                if (badgeInq) badgeInq.textContent = `Tổng ${totalInq.toLocaleString('vi-VN')} yêu cầu`;
+
+                const timeEl = document.getElementById('analytics-last-updated');
+                if (timeEl) timeEl.textContent = `Cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`;
+
+                // Bản đồ đếm Yêu thích & Tư vấn
+                const favCountMap = {};
+                allFavoritesData.forEach(f => {
+                    if (f.template_id) favCountMap[f.template_id] = (favCountMap[f.template_id] || 0) + 1;
+                });
+
+                const inqCountMap = {};
+                allInquiriesData.forEach(i => {
+                    if (i.template_id) inqCountMap[i.template_id] = (inqCountMap[i.template_id] || 0) + 1;
+                });
+
+                const fallbackImg = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
+
+                // MODULE 1: TOP MẪU ĐƯỢC XEM NHIỀU NHẤT (% VIEW SHARE)
+                const viewsList = document.getElementById('analytics-views-list');
+                const sortedByViews = [...allTemplatesData].sort((a, b) => (Number(b.view_count) || 0) - (Number(a.view_count) || 0));
+
+                if (sortedByViews.length === 0) {
+                    viewsList.innerHTML = `<div class="admin-empty-state">Chưa có dữ liệu mẫu nhà.</div>`;
+                } else {
+                    viewsList.innerHTML = sortedByViews.map((item, idx) => {
+                        const rank = idx + 1;
+                        const views = Number(item.view_count) || 0;
+                        const pct = totalViews > 0 ? Math.round((views / totalViews) * 100) : 0;
+                        const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                        const typeName = typeLabelsVi[item.type] || item.type;
+
+                        return `
+                            <div class="analytics-rank-item ${rank === 1 && views > 0 ? 'rank-top-1' : ''}">
+                                <span class="rank-pill rank-${rank}">${rankLabel}</span>
+                                <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
+                                <div class="analytics-info">
+                                    <div class="analytics-title-row">
+                                        <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
+                                        <span class="admin-type-badge type-${item.type}">${typeName}</span>
+                                        ${rank === 1 && views > 0 ? '<span class="analytics-hot-badge">👑 XEM NHIỀU NHẤT</span>' : ''}
+                                    </div>
+                                    <div class="analytics-progress-bar-wrap">
+                                        <div class="analytics-progress-fill" style="width: ${Math.max(pct, views > 0 ? 3 : 0)}%"></div>
+                                    </div>
+                                </div>
+                                <div class="analytics-stats-meta">
+                                    <span class="analytics-count-val">${views.toLocaleString('vi-VN')}</span>
+                                    <span class="analytics-pct-val">${pct}% lượt xem</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // MODULE 2: TOP MẪU ĐƯỢC QUAN TÂM & YÊU THÍCH NHẤT (FAVORITES)
+                const favsList = document.getElementById('analytics-favs-list');
+                const sortedByFavs = [...allTemplatesData].sort((a, b) => (favCountMap[b.id] || 0) - (favCountMap[a.id] || 0));
+
+                if (sortedByFavs.length === 0) {
+                    favsList.innerHTML = `<div class="admin-empty-state">Chưa có dữ liệu yêu thích.</div>`;
+                } else {
+                    favsList.innerHTML = sortedByFavs.map((item, idx) => {
+                        const rank = idx + 1;
+                        const favs = favCountMap[item.id] || 0;
+                        const pct = totalFavs > 0 ? Math.round((favs / totalFavs) * 100) : 0;
+                        const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                        const typeName = typeLabelsVi[item.type] || item.type;
+
+                        return `
+                            <div class="analytics-rank-item ${rank === 1 && favs > 0 ? 'rank-top-1' : ''}">
+                                <span class="rank-pill rank-${rank}">${rankLabel}</span>
+                                <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
+                                <div class="analytics-info">
+                                    <div class="analytics-title-row">
+                                        <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
+                                        <span class="admin-type-badge type-${item.type}">${typeName}</span>
+                                        ${rank === 1 && favs > 0 ? '<span class="analytics-hot-badge" style="background: linear-gradient(135deg, #f43f5e, #fb7185);">❤️ YÊU THÍCH NHẤT</span>' : ''}
+                                    </div>
+                                    <div class="analytics-progress-bar-wrap">
+                                        <div class="analytics-progress-fill pink" style="width: ${Math.max(pct, favs > 0 ? 3 : 0)}%"></div>
+                                    </div>
+                                </div>
+                                <div class="analytics-stats-meta">
+                                    <span class="analytics-count-val" style="color: #f43f5e;">${favs.toLocaleString('vi-VN')} ❤️</span>
+                                    <span class="analytics-pct-val">${pct}% thị phần</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // MODULE 3: TOP MẪU ĐƯỢC GỬI YÊU CẦU TƯ VẤN NHẤT
+                const inqList = document.getElementById('analytics-inquiries-list');
+                const sortedByInq = [...allTemplatesData].sort((a, b) => (inqCountMap[b.id] || 0) - (inqCountMap[a.id] || 0));
+
+                if (sortedByInq.length === 0) {
+                    inqList.innerHTML = `<div class="admin-empty-state">Chưa có yêu cầu tư vấn.</div>`;
+                } else {
+                    inqList.innerHTML = sortedByInq.map((item, idx) => {
+                        const rank = idx + 1;
+                        const inqs = inqCountMap[item.id] || 0;
+                        const pct = totalInq > 0 ? Math.round((inqs / totalInq) * 100) : 0;
+                        const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                        const typeName = typeLabelsVi[item.type] || item.type;
+
+                        return `
+                            <div class="analytics-rank-item ${rank === 1 && inqs > 0 ? 'rank-top-1' : ''}">
+                                <span class="rank-pill rank-${rank}">${rankLabel}</span>
+                                <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
+                                <div class="analytics-info">
+                                    <div class="analytics-title-row">
+                                        <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
+                                        <span class="admin-type-badge type-${item.type}">${typeName}</span>
+                                        ${rank === 1 && inqs > 0 ? '<span class="analytics-hot-badge" style="background: linear-gradient(135deg, #3b82f6, #60a5fa);">📩 NHIỀU YÊU CẦU NHẤT</span>' : ''}
+                                    </div>
+                                    <div class="analytics-progress-bar-wrap">
+                                        <div class="analytics-progress-fill blue" style="width: ${Math.max(pct, inqs > 0 ? 3 : 0)}%"></div>
+                                    </div>
+                                </div>
+                                <div class="analytics-stats-meta">
+                                    <span class="analytics-count-val" style="color: #3b82f6;">${inqs.toLocaleString('vi-VN')} 📩</span>
+                                    <span class="analytics-pct-val">${pct}% yêu cầu</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // MODULE 4: PHÂN BỐ THEO PHÂN LOẠI KIẾN TRÚC
+                const catContainer = document.getElementById('analytics-category-breakdown');
+                const categories = [
+                    { id: 'nha-pho', title: 'Nhà phố', color: '#06b6d4' },
+                    { id: 'biet-thu', title: 'Biệt thự', color: '#c49a45' },
+                    { id: 'nha-cap-4', title: 'Nhà cấp 4', color: '#10b981' }
+                ];
+
+                if (catContainer) {
+                    catContainer.innerHTML = categories.map(cat => {
+                        const items = allTemplatesData.filter(t => t.type === cat.id);
+                        const catViews = items.reduce((acc, t) => acc + (Number(t.view_count) || 0), 0);
+                        const catPct = totalViews > 0 ? Math.round((catViews / totalViews) * 100) : 0;
+                        const catFavs = items.reduce((acc, t) => acc + (favCountMap[t.id] || 0), 0);
+
+                        return `
+                            <div class="analytics-cat-card">
+                                <span class="analytics-cat-title">${cat.title}</span>
+                                <div class="analytics-cat-views">${catViews.toLocaleString('vi-VN')} <span style="font-size:0.8rem; font-weight:500; color:var(--color-text-muted);">xem</span></div>
+                                <div class="analytics-progress-bar-wrap">
+                                    <div class="analytics-progress-fill" style="background: ${cat.color}; width: ${Math.max(catPct, catViews > 0 ? 4 : 0)}%;"></div>
+                                </div>
+                                <div class="analytics-cat-meta">
+                                    <strong>${catPct}%</strong> tổng lượt xem • <strong>${items.length}</strong> mẫu • <strong>${catFavs}</strong> thả tim
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Tự động làm mới dữ liệu thống kê thời gian thực mỗi 15 giây
+            let analyticsRefreshInterval = null;
+            function startAnalyticsAutoRefresh() {
+                if (analyticsRefreshInterval) clearInterval(analyticsRefreshInterval);
+                analyticsRefreshInterval = setInterval(async () => {
+                    if (!document.hidden) {
+                        await Promise.all([loadTemplates(), loadFavorites(), loadInquiries()]);
+                        if (activeTab === 'analytics') {
+                            renderAnalyticsDashboard();
+                        }
+                    }
+                }, 15000);
             }
 
             // Đánh dấu đã xử lý Inquiry
@@ -941,7 +1318,9 @@
             });
 
             // Đồng bộ song song cả Mẫu nhà và Yêu cầu tư vấn ngay khi vào trang để hiển thị đủ 4 KPI Cards
-            await Promise.all([loadTemplates(), loadInquiries()]);
+            await Promise.all([loadTemplates(), loadFavorites(), loadInquiries()]);
+            renderAnalyticsDashboard();
+            startAnalyticsAutoRefresh();
         });
     </script>
 </body>

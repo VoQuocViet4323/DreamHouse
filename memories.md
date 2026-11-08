@@ -650,6 +650,40 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=6.3`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 41** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 51: Khắc Phục Triệt Để Hiện Tượng Nháy Nút Đăng Nhập & Xây Dựng Hệ Thống Thống Kê Lượt Xem / Thị Hiếu Thời Gian Thực (Realtime Analytics Dashboard)
+- [x] **Xử lý dứt điểm lỗi nháy trạng thái đăng nhập (Auth State Flash / Delay):**
+  - **Hiện tượng:** Sau khi lưu mẫu nhà ở Admin rồi quay lại trang chủ, góc phải navbar hiển thị nút "[Đăng nhập]" như chưa đăng nhập, sau 1 lúc mới tự động chuyển sang Avatar người dùng.
+  - **Nguyên nhân cốt lõi:**
+    1. Trong `js/app.js`, hàm `setupAuth()` lấy được `session.user` từ `getSession()` nhưng bỏ sót việc gọi `this.updateAuthUI()`.
+    2. Trong `onAuthStateChange`, để chặn reload animation thẻ nhà đã `return` ngay khi gặp `INITIAL_SESSION`, khiến giao diện không được cập nhật trạng thái đã đăng nhập.
+    3. Hàm `setupAuth()` không được `await` trong `init()`.
+  - **Giải pháp dứt điểm:**
+    1. **Cơ chế phục hồi 0ms delay từ `localStorage`:** Kiểm tra khóa lưu trữ `sb-*-auth-token` của Supabase ngay khi ứng dụng khởi chạy. Nếu phát hiện phiên đăng nhập, lập tức gán `this.currentUser = cachedUser` và kích hoạt `this.updateAuthUI()` đồng bộ tại Frame 0 (trước khi khung hình đầu tiên kịp vẽ ra), loại bỏ 100% hiện tượng chớp nút "Đăng nhập".
+    2. **Cập nhật UI tức thì trong `setupAuth()`:** Gọi `this.updateAuthUI()` ngay khi lấy được session từ máy chủ Supabase và gọi lại khi nạp xong hồ sơ cá nhân.
+    3. **Giữ nguyên trạng thái Auth trong `onAuthStateChange`:** Với sự kiện `INITIAL_SESSION` hoặc `TOKEN_REFRESHED`, vẫn cập nhật `this.currentUser = session.user` và gọi `this.updateAuthUI()`, chỉ không re-render lại gallery.
+    4. **Đặt `await this.setupAuth()` trong `init()`.**
+- [x] **Xây dựng Hệ thống Thống Kê & Phân Tích Thị Hiếu Mẫu Nhà Thời Gian Thực ([`admin.html`](file:///e:/Dream-house/admin.html)):**
+  - **Database Migration ([`supabase/09_template_views_analytics.sql`](file:///e:/Dream-house/supabase/09_template_views_analytics.sql)):**
+    - Bổ sung cột `view_count INTEGER NOT NULL DEFAULT 0` vào bảng `public.templates`.
+    - Tạo hàm RPC `public.increment_template_view(t_id UUID)` với đặc quyền `SECURITY DEFINER`, cho phép cả khách vãng lai và thành viên đăng nhập ghi nhận lượt xem mẫu an toàn.
+    - Tạo RLS Policy cho phép Admin đọc toàn bộ bảng `favorites` để phân tích lượt thả tim.
+  - **Theo dõi lượt xem thời gian thực trong [`js/app.js`](file:///e:/Dream-house/js/app.js):**
+    - Trong hàm `openDetailPanel(templateId)`, tự động kích hoạt `recordTemplateView(item.id)`, tăng cục bộ 1 lượt xem và gọi RPC `increment_template_view` lên Supabase.
+  - **Thẻ KPI Bento Lượt Xem Thời Gian Thực:**
+    - Bổ sung thẻ KPI thứ 5 trên Admin Bento Grid: *"Lượt xem mẫu (Realtime)"* với hiệu ứng chấm xanh lá đập xung nhịp phát sáng (`.live-pulse-badge`, `@keyframes liveDotPulse`), hiển thị tổng lượt xem và mẫu nhà đang dẫn đầu thị hiếu.
+  - **Tab 3: Thống Kê & Phân Tích Tương Tác (`#panel-analytics`):**
+    - *Module 1 (Tỷ Lệ Mẫu Được Xem Nhiều Nhất):* Xếp hạng #1, #2, #3 kèm vương miện 👑 vàng, thanh phần trăm tiến trình chuyển sắc cyan-blue và tỷ lệ view share (%).
+    - *Module 2 (Mẫu Được Quan Tâm & Yêu Thích Nhất):* Xếp hạng số lượt khách hàng thả tim lưu vào danh sách yêu thích kèm thanh tiến trình màu hồng ngọc.
+    - *Module 3 (Top Mẫu Nhận Nhiều Yêu Cầu Tư Vấn Nhất):* Xếp hạng mẫu tạo ra nhiều liên hệ báo giá & thi công nhất kèm tỷ lệ chuyển đổi.
+    - *Module 4 (Thị Hiếu Theo Phân Loại Kiến Trúc):* So sánh tỷ trọng quan tâm giữa Nhà phố, Biệt thự và Nhà cấp 4.
+  - **Cột Lượt Xem & Yêu Thích trong Bảng Mẫu Nhà (Tab 1):**
+    - Bổ sung cột mới hiển thị trực quan cả 2 chỉ số tương tác: `👁️ [Số lượt xem]` và `❤️ [Số lượt thả tim]`.
+  - **Cơ chế tự động làm mới thời gian thực:**
+    - Tự động đồng bộ số liệu mỗi 15 giây (`startAnalyticsAutoRefresh()`) khi tab đang hoạt động, có nút *"Làm mới ngay"* thủ công.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.4`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 42** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
+
 
 
 

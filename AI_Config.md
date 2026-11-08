@@ -160,4 +160,17 @@ Hệ thống hỗ trợ tính năng đăng ký tài khoản nhanh bằng **Tên 
    - Cập nhật trigger `handle_new_user()` để lưu username.
    - Tạo hàm RPC `public.register_user_by_username()` giúp chèn người dùng xác thực trực tiếp vào `auth.users` với cờ `email_confirmed_at = now()`. Người dùng có thể đăng ký và đăng nhập được ngay lập tức!
 
+---
+
+## 8. CẤU HÌNH THEO DÕI LƯỢT XEM MẪU NHÀ & THỐNG KÊ THỜI GIAN THỰC
+
+Để kích hoạt bộ đếm lượt xem chi tiết mẫu nhà thời gian thực và bảng phân tích thị hiếu Admin Dashboard:
+1. Mở **Supabase Dashboard** > chọn mục **SQL Editor**.
+2. Mở file [`supabase/09_template_views_analytics.sql`](supabase/09_template_views_analytics.sql) trong thư mục dự án, dán toàn bộ nội dung vào SQL Editor và nhấn **Run**.
+3. Script sẽ tự động:
+   - Thêm cột `view_count INTEGER NOT NULL DEFAULT 0` vào bảng `public.templates`.
+   - Tạo hàm RPC `public.increment_template_view(UUID)` với quyền `SECURITY DEFINER` để ghi nhận lượt xem nguyên tử cho cả khách vãng lai và thành viên.
+   - Tạo chính sách RLS cho phép tài khoản Quản trị viên (Admin) truy vấn bảng `public.favorites` nhằm phân tích mức độ yêu thích (thả tim) của từng đồ án.
+
+
 

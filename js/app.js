@@ -20,6 +20,26 @@ class DreamHouseApp {
         this.init();
     }
 
+    getCachedUserFromStorage() {
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+                    const raw = localStorage.getItem(key);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (parsed && parsed.user) {
+                            return parsed.user;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            // Bỏ qua lỗi parse
+        }
+        return null;
+    }
+
     async init() {
         const startTime = Date.now();
         // Fallback tối đa 2.5s đảm bảo người dùng luôn vào được web ngay cả khi mạng lag
@@ -27,8 +47,15 @@ class DreamHouseApp {
             this.hideSitePreloader();
         }, 2500);
 
+        // 1. Phục hồi phiên đăng nhập tức thì từ localStorage (0ms delay) để không bị nháy chữ "Đăng nhập"
+        const cachedUser = this.getCachedUserFromStorage();
+        if (cachedUser) {
+            this.currentUser = cachedUser;
+            this.updateAuthUI();
+        }
+
         this.loadLocalFavorites();
-        this.setupAuth();
+        await this.setupAuth();
         this.setupUIEvents();
         await this.loadTemplates();
         this.renderGallery();
@@ -274,20 +301,32 @@ class DreamHouseApp {
         }
 
         // Lấy session hiện tại
-        const { data: { session } } = await client.auth.getSession();
-        if (session && session.user) {
-            this.currentUser = session.user;
-            await this.loadUserProfile();
-            await this.syncFavoritesWithSupabase();
+        try {
+            const { data: { session } } = await client.auth.getSession();
+            if (session && session.user) {
+                this.currentUser = session.user;
+                this.updateAuthUI();
+                await this.loadUserProfile();
+                this.updateAuthUI();
+                await this.syncFavoritesWithSupabase();
+            } else {
+                this.currentUser = null;
+                this.currentProfile = null;
+                this.updateAuthUI();
+            }
+        } catch (e) {
+            console.warn('Lỗi kiểm tra session Supabase:', e);
+            this.updateAuthUI();
         }
 
         // Lắng nghe trạng thái Auth thay đổi (Đăng nhập, đăng xuất, OAuth callback)
         client.auth.onAuthStateChange(async (event, session) => {
-            // Khi người dùng chuyển tab và quay lại, Supabase tự động kiểm tra và làm mới token ngầm (TOKEN_REFRESHED).
-            // Bỏ qua TOKEN_REFRESHED và INITIAL_SESSION để ngăn chặn triệt để việc tự động reload lại animation các mẫu nhà.
+            // Khi người dùng chuyển tab và quay lại, Supabase tự động kiểm tra và làm mới token ngầm (TOKEN_REFRESHED / INITIAL_SESSION).
+            // Cập nhật ngay UI Auth nhưng không gọi lại renderGallery() để tránh reload animation.
             if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
                 if (session && session.user) {
                     this.currentUser = session.user;
+                    this.updateAuthUI();
                 }
                 return;
             }
@@ -295,15 +334,17 @@ class DreamHouseApp {
             if (session && session.user) {
                 const isSameUser = this.currentUser && this.currentUser.id === session.user.id;
                 this.currentUser = session.user;
+                this.updateAuthUI();
                 if (!isSameUser) {
                     await this.loadUserProfile();
+                    this.updateAuthUI();
                     await this.syncFavoritesWithSupabase();
                 }
             } else {
                 this.currentUser = null;
                 this.currentProfile = null;
+                this.updateAuthUI();
             }
-            this.updateAuthUI();
         });
     }
 
@@ -1057,11 +1098,39 @@ class DreamHouseApp {
     }
 
     // 7. PANEL CHI TIẾT MẪU NHÀ (PHOTO + 3D VIEWER + THÔNG SỐ)
+    recordTemplateView(templateId) {
+        if (!templateId) return;
+
+        // 1. Tăng bộ đếm lượt xem cục bộ ngay lập tức
+        const item = this.templates.find(t => t.id === templateId);
+        if (item) {
+            item.view_count = (item.view_count || 0) + 1;
+        }
+
+        // 2. Gửi RPC increment_template_view lên Supabase thời gian thực nếu id là UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(templateId)) return;
+
+        const client = this.getSupabase();
+        if (client && typeof client.rpc === 'function') {
+            client.rpc('increment_template_view', { t_id: templateId }).then(({ error }) => {
+                if (error) {
+                    console.warn('Lỗi ghi nhận lượt xem mẫu nhà:', error.message);
+                }
+            }).catch(err => {
+                console.warn('Lỗi kết nối RPC lượt xem:', err);
+            });
+        }
+    }
+
     openDetailPanel(templateId) {
         const item = this.templates.find(t => t.id === templateId);
         if (!item) return;
 
         this.currentTemplate = item;
+        // Ghi nhận lượt xem thời gian thực khi người dùng bấm vào xem mẫu
+        this.recordTemplateView(item.id);
+
         const panel = document.getElementById('detail-modal');
         if (!panel) return;
 
@@ -2651,7 +2720,7 @@ class DreamHouseApp {
             const displayName = this.currentProfile?.full_name || 
                                 this.currentUser.user_metadata?.full_name || 
                                 this.currentUser.user_metadata?.username ||
-                                this.currentUser.email.split('@')[0];
+                                (this.currentUser.email ? this.currentUser.email.split('@')[0] : 'Thành viên');
             if (userNameSpan) userNameSpan.textContent = displayName;
 
             // Hiển thị ảnh Avatar trên thanh điều hướng hoặc chữ cái đầu
@@ -2666,7 +2735,9 @@ class DreamHouseApp {
                 }
             }
 
-            const isAdmin = this.currentProfile?.role === 'admin';
+            const isAdmin = this.currentProfile?.role === 'admin' || 
+                            this.currentUser.user_metadata?.role === 'admin' ||
+                            this.currentUser.app_metadata?.role === 'admin';
             if (roleBadge) roleBadge.textContent = isAdmin ? 'Quản trị viên (Admin)' : 'Thành viên';
             
             const displayIdentifier = this.currentProfile?.username 

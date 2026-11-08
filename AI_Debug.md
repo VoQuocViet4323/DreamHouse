@@ -715,6 +715,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 42: Hiện tượng nháy nút Đăng nhập (Auth Flash / Delay) khi quay lại trang chủ hoặc vừa lưu mẫu nhà ở Admin
+- **Hiện tượng:** Người dùng đã đăng nhập (hoặc Admin vừa lưu đồ án ở trang quản trị), khi mở lại trang chủ `index.html` thì góc phải thanh điều hướng ban đầu hiển thị nút `[Đăng nhập]` như chưa có tài khoản, phải đợi một lúc sau mới tự động chuyển sang hiển thị Avatar và tên tài khoản đã đăng nhập.
+- **Nguyên nhân cốt lõi:**
+  1. Trong HTML tĩnh ban đầu của `index.html`, nút `#btn-open-login` được hiển thị sẵn, còn menu `#user-menu` bị ẩn bằng class `hidden`.
+  2. Trong hàm `setupAuth()` của [`js/app.js`](file:///e:/Dream-house/js/app.js), sau khi gọi `await client.auth.getSession()` và gán `this.currentUser = session.user`, hàm `this.updateAuthUI()` không được gọi ngay mà bị bỏ sót.
+  3. Trong bộ lắng nghe `client.auth.onAuthStateChange`, để ngăn chặn re-render animation thẻ nhà, code trước đó đã thêm lệnh `if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') return;`. Vì `return` ngay mà không gọi `this.updateAuthUI()`, sự kiện `INITIAL_SESSION` của Supabase bị bỏ qua, dẫn đến giao diện vẫn giữ nguyên nút "Đăng nhập".
+  4. Hàm `setupAuth()` không được `await` trong `init()`, dẫn đến giao diện phải chờ một sự kiện ngẫu nhiên sau đó (như đổi ngôn ngữ hoặc token refresh muộn) mới vô tình kích hoạt `updateAuthUI()`.
+- **Cách khắc phục dứt điểm:**
+  1. **Cơ chế phục hồi Frame 0 (0ms delay) từ `localStorage`:** Trước khi chạy các tác vụ bất đồng bộ, hàm `getCachedUserFromStorage()` quét khóa `sb-*-auth-token` của Supabase trong `localStorage`. Nếu tìm thấy `cachedUser`, gán ngay `this.currentUser = cachedUser` và gọi `this.updateAuthUI()` đồng bộ ngay lập tức. Nút "Đăng nhập" bị ẩn ngay từ mili-giây đầu tiên, hiển thị Avatar ngay lập tức.
+  2. **Bổ sung `this.updateAuthUI()` ngay lập tức trong `setupAuth()`:** Cập nhật ngay khi lấy session từ server và cập nhật lại sau khi nạp hồ sơ người dùng (`loadUserProfile`).
+  3. **Đồng bộ UI trong `onAuthStateChange`:** Khi gặp sự kiện `TOKEN_REFRESHED` hoặc `INITIAL_SESSION`, vẫn cập nhật `this.currentUser = session.user` và gọi `this.updateAuthUI()`, chỉ không re-render lại thẻ nhà.
+  4. **Thêm `await this.setupAuth()` trong `init()`.**
+  5. Nâng tham số cache-busting lên `?v=6.4` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
@@ -724,6 +740,10 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 | **Đăng ký Email & Mật khẩu** | Tạo bản ghi trong `auth.users`, trigger tự tạo bản ghi trong `public.profiles` với `role = 'user'`. | Đạt |
 | **Đăng nhập Google OAuth** | Đăng nhập thành công, lấy được `full_name` và `avatar_url` đưa vào profile. | Đạt |
 | **Đồng bộ yêu thích** | Các mục đã thả tim khi chưa đăng nhập tự động đẩy lên bảng `favorites` khi đăng nhập. | Đạt |
+| **Chuyển tab / Tải lại trang chủ** | Không nháy nút Đăng nhập (0ms delay), giữ nguyên trạng thái phiên đăng nhập. | Đạt |
+| **Theo dõi lượt xem thời gian thực** | Bấm xem mẫu tự động tăng `view_count`, Admin Dashboard cập nhật tỷ lệ xem trực tiếp. | Đạt |
 | **User thường cố truy cập admin** | Bị chuyển hướng về trang chủ `index.html`, RLS chặn toàn bộ thao tác thêm/sửa/xoá. | Đạt |
 | **Admin tải file .glb & ảnh** | Tải thành công vào Storage, tạo mẫu nhà mới thành công và hiển thị ngay ngoài trang chủ. | Đạt |
+| **Bảng phân tích thị hiếu Admin** | Hiển thị đầy đủ Top xem nhiều nhất (%), Top yêu thích (thả tim), Top yêu cầu tư vấn. | Đạt |
+
 
