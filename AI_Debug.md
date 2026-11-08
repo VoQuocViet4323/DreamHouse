@@ -702,6 +702,19 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 41: Huy hiệu góc ảnh thẻ nhà hiển thị slug kỹ thuật `biet-thu` thay vì tên có dấu `Biệt thự` hoặc phong cách người dùng nhập
+- **Hiện tượng:** Admin chọn phân loại kiến trúc là "Biệt thự (Luxury Villa)" hoặc "Nhà phố", nhưng ngoài trang chủ thì góc trên bên trái bức ảnh lại hiển thị nhãn slug tiếng Anh không dấu có gạch ngang (`biet-thu`, `nha-pho`, `nha-cap-4`).
+- **Nguyên nhân cốt lõi:**
+  1. Trong [`js/app.js`](file:///e:/Dream-house/js/app.js) tại dòng render thẻ card: `<span class="card-badge">${style || item.type}</span>`. Do mẫu nhà không có `style_vi` nên code tự động in ra giá trị trường `item.type` (vốn là slug hệ thống trong DB).
+  2. Trong [`admin.html`](file:///e:/Dream-house/admin.html), form tạo và chỉnh sửa mẫu nhà trước đây chưa có trường nhập `Phong cách / Nhãn hiển thị` (`style_vi`), người dùng không thể can thiệp chữ hiển thị trên huy hiệu này.
+- **Cách khắc phục dứt điểm:**
+  1. **Nâng cấp `js/app.js`:** Thêm bảng ánh xạ `typeDisplayNames` cho 3 loại nhà chuẩn (`nha-pho` -> "Nhà phố" / "Townhouse", `biet-thu` -> "Biệt thự" / "Villa", `nha-cap-4` -> "Nhà cấp 4" / "Bungalow"). Kiểm tra nếu `style` rỗng hoặc mang giá trị slug thì tự động chuyển sang tên tiếng Việt/Anh chuẩn đẹp mắt.
+  2. **Thêm trường nhập `Phong cách / Nhãn hiển thị` (`#tpl-style`) trong [`admin.html`](file:///e:/Dream-house/admin.html):** Cho phép người dùng gõ trực tiếp phong cách mong muốn (ví dụ: *"Biệt thự vườn"*, *"Hiện đại"*, *"Tân cổ điển"*...) hoặc để trống thì hệ thống sẽ tự động lấy theo phân loại đã chọn.
+  3. **Lưu trường `style_vi` và `style_en` vào database Supabase khi tạo hoặc cập nhật mẫu nhà.**
+  4. Nâng tham số cache-busting lên `?v=6.3` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

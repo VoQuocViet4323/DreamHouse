@@ -952,12 +952,31 @@ class DreamHouseApp {
             const costStr = window.i18n.formatCost(item.cost_estimate_vnd);
             const isFav = this.favorites.has(item.id);
 
+            const typeDisplayNames = {
+                'nha-pho': { vi: 'Nhà phố', en: 'Townhouse' },
+                'biet-thu': { vi: 'Biệt thự', en: 'Villa' },
+                'nha-cap-4': { vi: 'Nhà cấp 4', en: 'Bungalow' }
+            };
+
+            const getTypeLabel = (t, l) => {
+                if (typeDisplayNames[t]) {
+                    return l === 'vi' ? typeDisplayNames[t].vi : typeDisplayNames[t].en;
+                }
+                return t;
+            };
+
+            // Nếu style chưa có hoặc style bị lưu dạng slug ('biet-thu', 'nha-pho'...) thì tự động chuyển thành tên tiếng Việt/Anh chuẩn
+            let displayBadge = style;
+            if (!displayBadge || typeDisplayNames[displayBadge]) {
+                displayBadge = getTypeLabel(item.type, lang);
+            }
+
             return `
                 <article class="house-card" data-id="${item.id}" style="--card-index: ${index};">
                     <div class="card-thumb">
                         <img src="${item.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80'}" 
                              alt="${name}" loading="lazy" />
-                        <span class="card-badge">${style || item.type}</span>
+                        <span class="card-badge">${displayBadge}</span>
                         <div class="u022 card-fav-u022 ${isFav ? 'is-on' : ''}" data-fav-id="${item.id}">
                             <div class="u022-scaler">
                                 <button class="u022-btn card-fav-btn" 

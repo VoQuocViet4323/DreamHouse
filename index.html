@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="vi" id="html-root">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="page_title">DreamHouse - Kiến Trúc & Xây Dựng</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5b95d'><path d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z'/></svg>" />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5b95d'><path d='M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z'/></svg>" />
     <!-- Google Fonts: Inter & Playfair Display hỗ trợ tiếng Việt đầy đủ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6.2" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=6.3" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -18,12 +22,13 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=6.2"></script>
-    <script src="js/i18n.js?v=6.2"></script>
-    <script src="js/toast.js?v=6.2"></script>
-    <script src="js/viewer3d.js?v=6.2"></script>
-    <script src="js/app.js?v=6.2" defer></script>
+    <script src="js/config.js?v=6.3"></script>
+    <script src="js/i18n.js?v=6.3"></script>
+    <script src="js/toast.js?v=6.3"></script>
+    <script src="js/viewer3d.js?v=6.3"></script>
+    <script src="js/app.js?v=6.3" defer></script>
 </head>
+
 <body>
     <!-- 0. MÀN HÌNH TẢI TRANG ĐẲNG CẤP (SIGNATURE BRAND PRELOADER) -->
     <div id="site-preloader" class="site-preloader" aria-label="Đang tải trang">
@@ -51,122 +56,129 @@
 
             <div class="header-actions">
                 <!-- Circular-reveal dark mode (219, Navigation) -->
-                <button type="button" class="u219-tg" id="circular-theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Chuyển chế độ giao diện / Switch Theme">
+                <button type="button" class="u219-tg" id="circular-theme-toggle" aria-label="Switch to dark mode"
+                    aria-pressed="false" title="Chuyển chế độ giao diện / Switch Theme">
                     <svg class="u219-icon-sun" viewBox="0 0 16 16" aria-hidden="true">
-                        <circle cx="8" cy="8" r="3" fill="currentColor"/>
+                        <circle cx="8" cy="8" r="3" fill="currentColor" />
                         <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                            <path d="M8 1.5v1.4M8 13.1v1.4M1.5 8h1.4M13.1 8h1.4M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/>
+                            <path
+                                d="M8 1.5v1.4M8 13.1v1.4M1.5 8h1.4M13.1 8h1.4M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" />
                         </g>
                     </svg>
                     <svg class="u219-icon-moon" viewBox="0 0 16 16" aria-hidden="true">
-                        <path d="M13.5 9.8A5.6 5.6 0 0 1 6.2 2.5a5.6 5.6 0 1 0 7.3 7.3z" fill="currentColor"/>
+                        <path d="M13.5 9.8A5.6 5.6 0 0 1 6.2 2.5a5.6 5.6 0 1 0 7.3 7.3z" fill="currentColor" />
                     </svg>
                 </button>
                 <div id="u219-fallback-overlay" class="u219-fallback-overlay" aria-hidden="true"></div>
 
                 <script>
-                (function() {
-                    var btn = document.getElementById('circular-theme-toggle');
-                    var fallbackOverlay = document.getElementById('u219-fallback-overlay');
-                    if (!btn) return;
+                    (function () {
+                        var btn = document.getElementById('circular-theme-toggle');
+                        var fallbackOverlay = document.getElementById('u219-fallback-overlay');
+                        if (!btn) return;
 
-                    var isRunning = false;
+                        var isRunning = false;
 
-                    function applyDomTheme(dark) {
-                        if (dark) {
-                            document.documentElement.setAttribute('data-theme', 'dark');
-                            document.body.classList.add('dark-theme');
-                            localStorage.setItem('dream_house_theme', 'dark');
-                            btn.setAttribute('aria-label', 'Switch to light mode');
-                            btn.setAttribute('aria-pressed', 'true');
-                        } else {
-                            document.documentElement.setAttribute('data-theme', 'light');
-                            document.body.classList.remove('dark-theme');
-                            localStorage.setItem('dream_house_theme', 'light');
-                            btn.setAttribute('aria-label', 'Switch to dark mode');
-                            btn.setAttribute('aria-pressed', 'false');
+                        function applyDomTheme(dark) {
+                            if (dark) {
+                                document.documentElement.setAttribute('data-theme', 'dark');
+                                document.body.classList.add('dark-theme');
+                                localStorage.setItem('dream_house_theme', 'dark');
+                                btn.setAttribute('aria-label', 'Switch to light mode');
+                                btn.setAttribute('aria-pressed', 'true');
+                            } else {
+                                document.documentElement.setAttribute('data-theme', 'light');
+                                document.body.classList.remove('dark-theme');
+                                localStorage.setItem('dream_house_theme', 'light');
+                                btn.setAttribute('aria-label', 'Switch to dark mode');
+                                btn.setAttribute('aria-pressed', 'false');
+                            }
                         }
-                    }
 
-                    // Khởi tạo ban đầu
-                    var saved = localStorage.getItem('dream_house_theme');
-                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    var currentDark = saved === 'dark' || (!saved && prefersDark);
-                    applyDomTheme(currentDark);
+                        // Khởi tạo ban đầu
+                        var saved = localStorage.getItem('dream_house_theme');
+                        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        var currentDark = saved === 'dark' || (!saved && prefersDark);
+                        applyDomTheme(currentDark);
 
-                    // Xử lý chuyển đổi với hiệu ứng Circular Reveal (Chuẩn View Transition API & Fallback)
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        if (isRunning) return;
+                        // Xử lý chuyển đổi với hiệu ứng Circular Reveal (Chuẩn View Transition API & Fallback)
+                        btn.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            if (isRunning) return;
 
-                        var nextDark = !(document.documentElement.getAttribute('data-theme') === 'dark');
-                        var rect = btn.getBoundingClientRect();
-                        var x = e.clientX || (rect.left + rect.width / 2);
-                        var y = e.clientY || (rect.top + rect.height / 2);
+                            var nextDark = !(document.documentElement.getAttribute('data-theme') === 'dark');
+                            var rect = btn.getBoundingClientRect();
+                            var x = e.clientX || (rect.left + rect.width / 2);
+                            var y = e.clientY || (rect.top + rect.height / 2);
 
-                        // 1. Nếu trình duyệt hỗ trợ document.startViewTransition (Chrome, Edge, Opera, Safari mới)
-                        if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                            isRunning = true;
-                            var endRadius = Math.hypot(
-                                Math.max(x, window.innerWidth - x),
-                                Math.max(y, window.innerHeight - y)
-                            );
+                            // 1. Nếu trình duyệt hỗ trợ document.startViewTransition (Chrome, Edge, Opera, Safari mới)
+                            if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                                isRunning = true;
+                                var endRadius = Math.hypot(
+                                    Math.max(x, window.innerWidth - x),
+                                    Math.max(y, window.innerHeight - y)
+                                );
 
-                            var transition = document.startViewTransition(function() {
-                                applyDomTheme(nextDark);
-                            });
+                                var transition = document.startViewTransition(function () {
+                                    applyDomTheme(nextDark);
+                                });
 
-                            transition.ready.then(function() {
-                                // Vòng tròn luôn bắt đầu từ 0px và bung tỏa cực đại bao phủ toàn màn hình
-                                var clipPath = [
-                                    'circle(0px at ' + x + 'px ' + y + 'px)',
-                                    'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'
-                                ];
-                                document.documentElement.animate(
-                                    {
-                                        clipPath: clipPath
-                                    },
-                                    {
-                                        duration: 650,
-                                        easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
-                                        pseudoElement: '::view-transition-new(root)'
-                                    }
-                                ).onfinish = function() {
+                                transition.ready.then(function () {
+                                    // Vòng tròn luôn bắt đầu từ 0px và bung tỏa cực đại bao phủ toàn màn hình
+                                    var clipPath = [
+                                        'circle(0px at ' + x + 'px ' + y + 'px)',
+                                        'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'
+                                    ];
+                                    document.documentElement.animate(
+                                        {
+                                            clipPath: clipPath
+                                        },
+                                        {
+                                            duration: 650,
+                                            easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+                                            pseudoElement: '::view-transition-new(root)'
+                                        }
+                                    ).onfinish = function () {
+                                        isRunning = false;
+                                    };
+                                }).catch(function () {
                                     isRunning = false;
-                                };
-                            }).catch(function() {
-                                isRunning = false;
-                            });
-                            return;
-                        }
+                                });
+                                return;
+                            }
 
-                        // 2. Fallback cho các trình duyệt chưa hỗ trợ View Transitions
-                        if (fallbackOverlay && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                            isRunning = true;
-                            document.documentElement.style.setProperty('--reveal-x', x + 'px');
-                            document.documentElement.style.setProperty('--reveal-y', y + 'px');
-                            fallbackOverlay.className = 'u219-fallback-overlay ' + (nextDark ? 'animating-dark' : 'animating-light');
+                            // 2. Fallback cho các trình duyệt chưa hỗ trợ View Transitions
+                            if (fallbackOverlay && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                                isRunning = true;
+                                document.documentElement.style.setProperty('--reveal-x', x + 'px');
+                                document.documentElement.style.setProperty('--reveal-y', y + 'px');
+                                fallbackOverlay.className = 'u219-fallback-overlay ' + (nextDark ? 'animating-dark' : 'animating-light');
 
-                            setTimeout(function() {
-                                applyDomTheme(nextDark);
-                                fallbackOverlay.className = 'u219-fallback-overlay';
-                                isRunning = false;
-                            }, 700);
-                            return;
-                        }
+                                setTimeout(function () {
+                                    applyDomTheme(nextDark);
+                                    fallbackOverlay.className = 'u219-fallback-overlay';
+                                    isRunning = false;
+                                }, 700);
+                                return;
+                            }
 
-                        // Mặc định không animation
-                        applyDomTheme(nextDark);
-                    });
-                })();
+                            // Mặc định không animation
+                            applyDomTheme(nextDark);
+                        });
+                    })();
                 </script>
 
                 <!-- Nút chuyển ngôn ngữ VI / EN -->
-                <button id="lang-toggle" class="lang-switch-btn lang-vi" type="button" aria-label="Ngôn ngữ: Tiếng Việt" title="Đổi ngôn ngữ (VI / EN)">
-                    <svg class="lang-globe-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <button id="lang-toggle" class="lang-switch-btn lang-vi" type="button" aria-label="Ngôn ngữ: Tiếng Việt"
+                    title="Đổi ngôn ngữ (VI / EN)">
+                    <svg class="lang-globe-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
                     </svg>
                     <span class="lang-pill-track" aria-hidden="true">
                         <span class="lang-code lang-code-vi">VI</span>
@@ -176,16 +188,29 @@
 
                 <!-- Auth Buttons & Modern Dropdown -->
                 <button id="btn-open-login" class="btn-auth-outline" data-i18n="nav_login">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
                     <span>Đăng nhập</span>
                 </button>
                 <div id="user-menu" class="user-menu-container hidden">
-                    <button type="button" id="user-profile-trigger" class="user-profile-trigger" aria-haspopup="true" aria-expanded="false" title="Menu tài khoản">
+                    <button type="button" id="user-profile-trigger" class="user-profile-trigger" aria-haspopup="true"
+                        aria-expanded="false" title="Menu tài khoản">
                         <span class="user-avatar-circle" id="user-avatar-initials" aria-hidden="true">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
                         </span>
                         <span id="user-display-name" class="user-name">User</span>
-                        <svg class="chevron-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        <svg class="chevron-down" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
                     </button>
 
                     <!-- Dropdown Menu xổ xuống -->
@@ -196,24 +221,48 @@
                         </div>
                         <div class="dropdown-divider"></div>
                         <a href="admin.html" id="menu-admin-link" class="dropdown-item hidden" role="menuitem">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7" />
+                                <rect x="14" y="3" width="7" height="7" />
+                                <rect x="14" y="14" width="7" height="7" />
+                                <rect x="3" y="14" width="7" height="7" />
+                            </svg>
                             <span>Bảng quản trị Admin</span>
                         </a>
                         <a href="#gallery-section" id="menu-favorites-link" class="dropdown-item" role="menuitem">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
                             <span>Mẫu nhà đã lưu yêu thích</span>
                         </a>
                         <button type="button" id="menu-edit-profile-btn" class="dropdown-item" role="menuitem">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
                             <span>Chỉnh sửa hồ sơ</span>
                         </button>
                         <button type="button" id="menu-settings-btn" class="dropdown-item" role="menuitem">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
                             <span>Cài đặt hệ thống</span>
                         </button>
                         <div class="dropdown-divider"></div>
                         <button type="button" id="btn-logout" class="dropdown-item dropdown-logout-btn" role="menuitem">
-                            <svg class="logout-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            <svg class="logout-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
+                            </svg>
                             <span data-i18n="nav_logout">Đăng xuất</span>
                         </button>
                     </div>
@@ -242,39 +291,63 @@
         <div class="section-header">
             <div>
                 <h2 class="section-title" data-i18n="nav_gallery">Thư viện mẫu</h2>
-                <p class="section-sub">Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.</p>
+                <p class="section-sub">Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.
+                </p>
             </div>
 
             <!-- Bộ lọc và Tìm kiếm -->
             <div class="filter-controls">
                 <div class="filter-search-box">
-                    <input type="text" id="filter-search" data-i18n="filter_search_placeholder" placeholder="Tìm kiếm mẫu nhà, phong cách..." />
+                    <input type="text" id="filter-search" data-i18n="filter_search_placeholder"
+                        placeholder="Tìm kiếm mẫu nhà, phong cách..." />
                 </div>
                 <div class="filter-dropdowns">
                     <!-- Dropdown tuỳ chỉnh: Loại nhà -->
                     <div class="custom-dropdown" id="dropdown-filter-type">
-                        <button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Lọc theo loại nhà">
+                        <button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox"
+                            aria-expanded="false" aria-label="Lọc theo loại nhà">
                             <span class="custom-dropdown-label" data-i18n="filter_all_types">Tất cả loại nhà</span>
-                            <svg class="custom-dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg class="custom-dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
                         </button>
                         <div class="custom-dropdown-menu" role="listbox">
-                            <div class="custom-dropdown-option selected" data-value="all" role="option" aria-selected="true">
+                            <div class="custom-dropdown-option selected" data-value="all" role="option"
+                                aria-selected="true">
                                 <span class="option-text" data-i18n="filter_all_types">Tất cả loại nhà</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
-                            <div class="custom-dropdown-option" data-value="nha-pho" role="option" aria-selected="false">
+                            <div class="custom-dropdown-option" data-value="nha-pho" role="option"
+                                aria-selected="false">
                                 <span class="option-text" data-i18n="filter_townhouse">Nhà phố</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
-                            <div class="custom-dropdown-option" data-value="biet-thu" role="option" aria-selected="false">
+                            <div class="custom-dropdown-option" data-value="biet-thu" role="option"
+                                aria-selected="false">
                                 <span class="option-text" data-i18n="filter_villa">Biệt thự</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
-                            <div class="custom-dropdown-option" data-value="nha-cap-4" role="option" aria-selected="false">
+                            <div class="custom-dropdown-option" data-value="nha-cap-4" role="option"
+                                aria-selected="false">
                                 <span class="option-text" data-i18n="filter_level4">Nhà cấp 4</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
                         </div>
                         <select id="filter-type" class="visually-hidden" tabindex="-1" aria-hidden="true">
@@ -287,44 +360,72 @@
 
                     <!-- Dropdown tuỳ chỉnh: Sắp xếp -->
                     <div class="custom-dropdown" id="dropdown-filter-sort">
-                        <button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Sắp xếp danh sách mẫu nhà">
+                        <button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox"
+                            aria-expanded="false" aria-label="Sắp xếp danh sách mẫu nhà">
                             <span class="custom-dropdown-label" data-i18n="filter_sort_default">Mặc định sắp xếp</span>
-                            <svg class="custom-dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg class="custom-dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
                         </button>
                         <div class="custom-dropdown-menu" role="listbox">
-                            <div class="custom-dropdown-option selected" data-value="default" role="option" aria-selected="true">
+                            <div class="custom-dropdown-option selected" data-value="default" role="option"
+                                aria-selected="true">
                                 <span class="option-text" data-i18n="filter_sort_default">Mặc định sắp xếp</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
-                            <div class="custom-dropdown-option" data-value="price_asc" role="option" aria-selected="false">
-                                <span class="option-text" data-i18n="filter_sort_price_asc">Ngân sách: Thấp đến Cao</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <div class="custom-dropdown-option" data-value="price_asc" role="option"
+                                aria-selected="false">
+                                <span class="option-text" data-i18n="filter_sort_price_asc">Ngân sách: Thấp đến
+                                    Cao</span>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
-                            <div class="custom-dropdown-option" data-value="price_desc" role="option" aria-selected="false">
-                                <span class="option-text" data-i18n="filter_sort_price_desc">Ngân sách: Cao đến Thấp</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <div class="custom-dropdown-option" data-value="price_desc" role="option"
+                                aria-selected="false">
+                                <span class="option-text" data-i18n="filter_sort_price_desc">Ngân sách: Cao đến
+                                    Thấp</span>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
-                            <div class="custom-dropdown-option" data-value="area_desc" role="option" aria-selected="false">
+                            <div class="custom-dropdown-option" data-value="area_desc" role="option"
+                                aria-selected="false">
                                 <span class="option-text" data-i18n="filter_sort_area_desc">Diện tích lớn nhất</span>
-                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <svg class="option-check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
                             </div>
                         </div>
                         <select id="filter-sort" class="visually-hidden" tabindex="-1" aria-hidden="true">
                             <option value="default" data-i18n="filter_sort_default">Mặc định sắp xếp</option>
                             <option value="price_asc" data-i18n="filter_sort_price_asc">Ngân sách: Thấp đến Cao</option>
-                            <option value="price_desc" data-i18n="filter_sort_price_desc">Ngân sách: Cao đến Thấp</option>
+                            <option value="price_desc" data-i18n="filter_sort_price_desc">Ngân sách: Cao đến Thấp
+                            </option>
                             <option value="area_desc" data-i18n="filter_sort_area_desc">Diện tích lớn nhất</option>
                         </select>
                     </div>
                 </div>
-                <label class="filter-fav-toggle" for="filter-fav-only" id="filter-fav-toggle-label" title="Lọc các mẫu nhà đã thả tim">
+                <label class="filter-fav-toggle" for="filter-fav-only" id="filter-fav-toggle-label"
+                    title="Lọc các mẫu nhà đã thả tim">
                     <input type="checkbox" id="filter-fav-only" class="filter-fav-input visually-hidden" />
                     <span class="fav-toggle-switch" aria-hidden="true">
                         <span class="fav-toggle-slider">
-                            <svg class="fav-toggle-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                            <svg class="fav-toggle-icon" viewBox="0 0 24 24" width="11" height="11" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                             </svg>
                         </span>
                     </span>
@@ -347,7 +448,11 @@
     <div id="detail-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
         <div class="modal-window">
             <button type="button" id="close-detail-modal" class="modal-close" aria-label="Đóng panel">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
             </button>
 
             <div class="detail-grid">
@@ -371,7 +476,8 @@
                         </div>
                         <div id="threejs-canvas-wrapper" class="threejs-canvas"></div>
                         <div class="viewer-footer">
-                            <span class="hint" data-i18n="detail_3d_hint">Chuột trái xoay • Chuột phải/2 ngón di chuyển • Cuộn để vào trong nhà</span>
+                            <span class="hint" data-i18n="detail_3d_hint">Chuột trái xoay • Chuột phải/2 ngón di chuyển
+                                • Cuộn để vào trong nhà</span>
                             <span id="viewer-status-text" class="status"></span>
                         </div>
                     </div>
@@ -428,8 +534,10 @@
                     </div>
 
                     <div class="detail-nav-footer">
-                        <button id="detail-prev-btn" class="btn-text">← <span data-i18n="btn_prev">Mẫu trước</span></button>
-                        <button id="detail-next-btn" class="btn-text"><span data-i18n="btn_next">Mẫu tiếp theo</span> →</button>
+                        <button id="detail-prev-btn" class="btn-text">← <span data-i18n="btn_prev">Mẫu
+                                trước</span></button>
+                        <button id="detail-next-btn" class="btn-text"><span data-i18n="btn_next">Mẫu tiếp theo</span>
+                            →</button>
                     </div>
                 </div>
             </div>
@@ -441,7 +549,8 @@
         <div class="container">
             <div class="section-header text-center">
                 <h2 class="section-title" data-i18n="contact_section_title">Liên Hệ Tư Vấn & Nhận Dự Toán</h2>
-                <p class="section-sub" data-i18n="contact_section_sub">Đội ngũ kiến trúc sư và kỹ sư sẵn sàng hỗ trợ bạn 24/7.</p>
+                <p class="section-sub" data-i18n="contact_section_sub">Đội ngũ kiến trúc sư và kỹ sư sẵn sàng hỗ trợ bạn
+                    24/7.</p>
             </div>
 
             <div class="contact-grid">
@@ -451,7 +560,8 @@
                     <p class="note">Thông tin liên hệ trực tiếp của phụ trách dự án Võ Quốc Việt:</p>
 
                     <div class="channel-list">
-                        <a href="https://zalo.me/0367020403" target="_blank" rel="noopener" class="channel-btn btn-zalo">
+                        <a href="https://zalo.me/0367020403" target="_blank" rel="noopener"
+                            class="channel-btn btn-zalo">
                             <span class="icon">💬</span>
                             <div>
                                 <strong data-i18n="contact_btn_zalo">Nhắn Zalo (0367020403)</strong>
@@ -465,7 +575,8 @@
                                 <small>Tư vấn kỹ thuật xây dựng</small>
                             </div>
                         </a>
-                        <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener" class="channel-btn btn-fb">
+                        <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener"
+                            class="channel-btn btn-fb">
                             <span class="icon">🌐</span>
                             <div>
                                 <strong data-i18n="contact_btn_fb">Facebook Võ Quốc Việt</strong>
@@ -493,17 +604,22 @@
                     <form id="inquiry-form" class="inquiry-form">
                         <div class="form-group">
                             <label for="inquiry-name" data-i18n="form_name">Họ và tên của bạn</label>
-                            <input type="text" id="inquiry-name" required placeholder="Nguyễn Văn A" minlength="2" maxlength="100" />
+                            <input type="text" id="inquiry-name" required placeholder="Nguyễn Văn A" minlength="2"
+                                maxlength="100" />
                         </div>
                         <div class="form-group">
                             <label for="inquiry-contact" data-i18n="form_contact">Số điện thoại hoặc Email</label>
-                            <input type="text" id="inquiry-contact" required placeholder="0901234567 hoặc yourname@gmail.com" minlength="5" maxlength="150" />
+                            <input type="text" id="inquiry-contact" required
+                                placeholder="0901234567 hoặc yourname@gmail.com" minlength="5" maxlength="150" />
                         </div>
                         <div class="form-group">
                             <label for="inquiry-message" data-i18n="form_message">Nội dung cần tư vấn</label>
-                            <textarea id="inquiry-message" rows="4" required placeholder="Diện tích khu đất, ngân sách dự kiến, số thành viên gia đình..." minlength="5" maxlength="2000"></textarea>
+                            <textarea id="inquiry-message" rows="4" required
+                                placeholder="Diện tích khu đất, ngân sách dự kiến, số thành viên gia đình..."
+                                minlength="5" maxlength="2000"></textarea>
                         </div>
-                        <button type="submit" id="inquiry-submit-btn" class="btn-primary full-btn" data-i18n="form_submit">
+                        <button type="submit" id="inquiry-submit-btn" class="btn-primary full-btn"
+                            data-i18n="form_submit">
                             Gửi yêu cầu tư vấn
                         </button>
                     </form>
@@ -513,7 +629,8 @@
     </section>
 
     <!-- 6. TRANG ĐĂNG NHẬP / ĐĂNG KÝ CHUYÊN BIỆT (DEDICATED FULL-SCREEN AUTH PAGE) -->
-    <div id="auth-modal" class="auth-page-takeover hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div id="auth-modal" class="auth-page-takeover hidden" role="dialog" aria-modal="true"
+        aria-labelledby="auth-modal-title">
         <!-- Thanh điều hướng trên cùng của trang Auth -->
         <div class="auth-top-bar">
             <a href="index.html" class="auth-brand" id="auth-back-to-home" title="Quay lại trang chủ Dream House">
@@ -522,8 +639,10 @@
             </a>
 
             <div class="auth-top-actions">
-                <button type="button" id="auth-back-btn" class="auth-back-nav-btn" aria-label="Quay lại trang chủ" title="Quay lại trang chủ (Esc)">
-                    <svg class="auth-back-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" id="auth-back-btn" class="auth-back-nav-btn" aria-label="Quay lại trang chủ"
+                    title="Quay lại trang chủ (Esc)">
+                    <svg class="auth-back-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
@@ -541,7 +660,14 @@
                         <!-- Nhãn tính năng lơ lửng số 1 (3D Walkthrough) -->
                         <div class="auth-floating-badge badge-top-left">
                             <div class="badge-icon-wrap">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                    </path>
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                </svg>
                             </div>
                             <div class="badge-text">
                                 <span class="badge-title">3D Walkthrough</span>
@@ -553,7 +679,14 @@
                         <!-- Nhãn tính năng lơ lửng số 2 (Architectural Blueprint) -->
                         <div class="auth-floating-badge badge-center-right">
                             <div class="badge-icon-wrap badge-icon-cyan">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
                             </div>
                             <div class="badge-text">
                                 <span class="badge-title">BIM Standards</span>
@@ -562,23 +695,26 @@
                         </div>
 
                         <!-- Vector Bàn vẽ & Không gian làm việc kiến trúc sư -->
-                        <svg class="architect-studio-svg" viewBox="0 0 540 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="architect-studio-svg" viewBox="0 0 540 380" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
                             <defs>
-                                <radialGradient id="lampSpotlight" cx="370" cy="110" r="260" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#fef08a" stop-opacity="0.45"/>
-                                    <stop offset="45%" stop-color="#fef08a" stop-opacity="0.18"/>
-                                    <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
+                                <radialGradient id="lampSpotlight" cx="370" cy="110" r="260"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fef08a" stop-opacity="0.45" />
+                                    <stop offset="45%" stop-color="#fef08a" stop-opacity="0.18" />
+                                    <stop offset="100%" stop-color="#fef08a" stop-opacity="0" />
                                 </radialGradient>
                                 <linearGradient id="chairGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#fbbf24"/>
-                                    <stop offset="100%" stop-color="#d97706"/>
+                                    <stop offset="0%" stop-color="#fbbf24" />
+                                    <stop offset="100%" stop-color="#d97706" />
                                 </linearGradient>
                                 <linearGradient id="deskTopGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="#ffffff"/>
-                                    <stop offset="100%" stop-color="#f1f5f9"/>
+                                    <stop offset="0%" stop-color="#ffffff" />
+                                    <stop offset="100%" stop-color="#f1f5f9" />
                                 </linearGradient>
-                                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%" filterUnits="userSpaceOnUse">
-                                    <feDropShadow dx="0" dy="12" stdDeviation="15" flood-color="rgba(30,20,80,0.22)"/>
+                                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%"
+                                    filterUnits="userSpaceOnUse">
+                                    <feDropShadow dx="0" dy="12" stdDeviation="15" flood-color="rgba(30,20,80,0.22)" />
                                 </filter>
                             </defs>
 
@@ -586,76 +722,99 @@
                             <ellipse cx="260" cy="220" rx="190" ry="120" fill="rgba(255,255,255,0.2)" />
 
                             <!-- Ánh sáng từ đèn bàn tỏa xuống mặt bàn -->
-                            <polygon points="360,115 140,290 480,290" fill="url(#lampSpotlight)" class="lamp-beam-pulse"/>
+                            <polygon points="360,115 140,290 480,290" fill="url(#lampSpotlight)"
+                                class="lamp-beam-pulse" />
 
                             <!-- Bóng đổ bàn vẽ -->
                             <ellipse cx="280" cy="295" rx="170" ry="24" fill="rgba(30,20,80,0.18)" />
 
                             <!-- Chân bàn kiến trúc sư kim loại thanh mảnh -->
-                            <line x1="145" y1="180" x2="135" y2="290" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
-                            <line x1="175" y1="180" x2="165" y2="290" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
-                            <line x1="420" y1="180" x2="430" y2="290" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
-                            <line x1="390" y1="180" x2="400" y2="290" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="145" y1="180" x2="135" y2="290" stroke="#475569" stroke-width="6"
+                                stroke-linecap="round" />
+                            <line x1="175" y1="180" x2="165" y2="290" stroke="#64748b" stroke-width="5"
+                                stroke-linecap="round" />
+                            <line x1="420" y1="180" x2="430" y2="290" stroke="#475569" stroke-width="6"
+                                stroke-linecap="round" />
+                            <line x1="390" y1="180" x2="400" y2="290" stroke="#64748b" stroke-width="5"
+                                stroke-linecap="round" />
 
                             <!-- Ngăn kéo và thân bàn vẽ -->
-                            <rect x="120" y="160" width="320" height="30" rx="4" fill="url(#deskTopGradient)" stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)"/>
+                            <rect x="120" y="160" width="320" height="30" rx="4" fill="url(#deskTopGradient)"
+                                stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)" />
                             <!-- Rãnh chia 3 hộc kéo -->
-                            <line x1="220" y1="160" x2="220" y2="190" stroke="#cbd5e1" stroke-width="2"/>
-                            <line x1="340" y1="160" x2="340" y2="190" stroke="#cbd5e1" stroke-width="2"/>
+                            <line x1="220" y1="160" x2="220" y2="190" stroke="#cbd5e1" stroke-width="2" />
+                            <line x1="340" y1="160" x2="340" y2="190" stroke="#cbd5e1" stroke-width="2" />
                             <!-- Tay nắm kim loại ngăn kéo -->
-                            <rect x="155" y="172" width="30" height="5" rx="2" fill="#94a3b8"/>
-                            <rect x="265" y="172" width="30" height="5" rx="2" fill="#94a3b8"/>
-                            <rect x="375" y="172" width="30" height="5" rx="2" fill="#94a3b8"/>
+                            <rect x="155" y="172" width="30" height="5" rx="2" fill="#94a3b8" />
+                            <rect x="265" y="172" width="30" height="5" rx="2" fill="#94a3b8" />
+                            <rect x="375" y="172" width="30" height="5" rx="2" fill="#94a3b8" />
 
                             <!-- Mặt bàn nghiêng (Drafting Board) -->
-                            <polygon points="120,160 440,160 455,145 135,145" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+                            <polygon points="120,160 440,160 455,145 135,145" fill="#f8fafc" stroke="#94a3b8"
+                                stroke-width="1.5" />
 
                             <!-- Bản vẽ kiến trúc Blueprint trải phẳng trên bàn -->
-                            <polygon points="170,154 310,154 320,147 180,147" fill="#3b82f6" opacity="0.9"/>
-                            <line x1="185" y1="150" x2="240" y2="150" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="3 2"/>
-                            <line x1="255" y1="150" x2="305" y2="150" stroke="#ffffff" stroke-width="1.2"/>
+                            <polygon points="170,154 310,154 320,147 180,147" fill="#3b82f6" opacity="0.9" />
+                            <line x1="185" y1="150" x2="240" y2="150" stroke="#ffffff" stroke-width="1.2"
+                                stroke-dasharray="3 2" />
+                            <line x1="255" y1="150" x2="305" y2="150" stroke="#ffffff" stroke-width="1.2" />
 
                             <!-- Ống cắm bút & thước kẻ -->
-                            <rect x="145" y="132" width="16" height="22" rx="3" fill="#334155"/>
-                            <line x1="150" y1="132" x2="147" y2="118" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
-                            <line x1="154" y1="132" x2="154" y2="114" stroke="#e5b95d" stroke-width="2.5" stroke-linecap="round"/>
-                            <line x1="158" y1="132" x2="161" y2="120" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+                            <rect x="145" y="132" width="16" height="22" rx="3" fill="#334155" />
+                            <line x1="150" y1="132" x2="147" y2="118" stroke="#ef4444" stroke-width="2.5"
+                                stroke-linecap="round" />
+                            <line x1="154" y1="132" x2="154" y2="114" stroke="#e5b95d" stroke-width="2.5"
+                                stroke-linecap="round" />
+                            <line x1="158" y1="132" x2="161" y2="120" stroke="#06b6d4" stroke-width="2"
+                                stroke-linecap="round" />
 
                             <!-- Mô hình nhà phố 3D mini đặt trên góc bàn -->
                             <g class="mini-3d-house-model" transform="translate(325, 120)">
-                                <polygon points="10,25 35,12 60,25 35,38" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
-                                <polygon points="10,25 35,38 35,18 10,5" fill="#cbd5e1"/>
-                                <polygon points="35,38 60,25 60,5 35,18" fill="#94a3b8"/>
-                                <polygon points="35,-2 10,5 35,18 60,5" fill="#e5b95d" stroke="#b45309" stroke-width="1"/>
-                                <polygon points="35,-2 60,5 50,0 25,-7" fill="#d97706"/>
+                                <polygon points="10,25 35,12 60,25 35,38" fill="#e2e8f0" stroke="#64748b"
+                                    stroke-width="1" />
+                                <polygon points="10,25 35,38 35,18 10,5" fill="#cbd5e1" />
+                                <polygon points="35,38 60,25 60,5 35,18" fill="#94a3b8" />
+                                <polygon points="35,-2 10,5 35,18 60,5" fill="#e5b95d" stroke="#b45309"
+                                    stroke-width="1" />
+                                <polygon points="35,-2 60,5 50,0 25,-7" fill="#d97706" />
                             </g>
 
                             <!-- Đèn bàn kiến trúc sư (Architect Drafting Lamp) -->
                             <g class="architect-lamp" transform="translate(355, 60)">
-                                <ellipse cx="15" cy="85" rx="10" ry="4" fill="#1e293b"/>
-                                <line x1="15" y1="85" x2="5" y2="45" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
-                                <circle cx="5" cy="45" r="4" fill="#fbbf24"/>
-                                <line x1="5" y1="45" x2="25" y2="15" stroke="#334155" stroke-width="3.5" stroke-linecap="round"/>
-                                <circle cx="25" cy="15" r="4" fill="#fbbf24"/>
-                                <path d="M 12 18 Q 25 -2 38 18 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
-                                <ellipse cx="25" cy="18" rx="8" ry="3" fill="#fef08a" class="lamp-bulb-glow"/>
+                                <ellipse cx="15" cy="85" rx="10" ry="4" fill="#1e293b" />
+                                <line x1="15" y1="85" x2="5" y2="45" stroke="#334155" stroke-width="4"
+                                    stroke-linecap="round" />
+                                <circle cx="5" cy="45" r="4" fill="#fbbf24" />
+                                <line x1="5" y1="45" x2="25" y2="15" stroke="#334155" stroke-width="3.5"
+                                    stroke-linecap="round" />
+                                <circle cx="25" cy="15" r="4" fill="#fbbf24" />
+                                <path d="M 12 18 Q 25 -2 38 18 Z" fill="#f59e0b" stroke="#d97706" stroke-width="1.5" />
+                                <ellipse cx="25" cy="18" rx="8" ry="3" fill="#fef08a" class="lamp-bulb-glow" />
                             </g>
 
                             <!-- Ghế kiến trúc sư công thái học màu vàng hiện đại (Architect Chair) -->
                             <g class="architect-chair" transform="translate(190, 135)">
-                                <ellipse cx="85" cy="165" rx="50" ry="12" fill="rgba(30,20,80,0.18)"/>
-                                <line x1="85" y1="125" x2="85" y2="160" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
-                                <line x1="85" y1="160" x2="45" y2="168" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
-                                <line x1="85" y1="160" x2="125" y2="168" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
-                                <line x1="85" y1="160" x2="80" y2="175" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
-                                <line x1="85" y1="160" x2="60" y2="155" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
-                                <line x1="85" y1="160" x2="110" y2="155" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
-                                <circle cx="45" cy="170" r="3" fill="#1e293b"/>
-                                <circle cx="125" cy="170" r="3" fill="#1e293b"/>
-                                <circle cx="80" cy="177" r="3" fill="#1e293b"/>
+                                <ellipse cx="85" cy="165" rx="50" ry="12" fill="rgba(30,20,80,0.18)" />
+                                <line x1="85" y1="125" x2="85" y2="160" stroke="#334155" stroke-width="6"
+                                    stroke-linecap="round" />
+                                <line x1="85" y1="160" x2="45" y2="168" stroke="#475569" stroke-width="4"
+                                    stroke-linecap="round" />
+                                <line x1="85" y1="160" x2="125" y2="168" stroke="#475569" stroke-width="4"
+                                    stroke-linecap="round" />
+                                <line x1="85" y1="160" x2="80" y2="175" stroke="#475569" stroke-width="4"
+                                    stroke-linecap="round" />
+                                <line x1="85" y1="160" x2="60" y2="155" stroke="#475569" stroke-width="4"
+                                    stroke-linecap="round" />
+                                <line x1="85" y1="160" x2="110" y2="155" stroke="#475569" stroke-width="4"
+                                    stroke-linecap="round" />
+                                <circle cx="45" cy="170" r="3" fill="#1e293b" />
+                                <circle cx="125" cy="170" r="3" fill="#1e293b" />
+                                <circle cx="80" cy="177" r="3" fill="#1e293b" />
 
-                                <path d="M 35 85 Q 85 95 135 80 L 125 115 Q 85 125 45 115 Z" fill="url(#chairGradient)" stroke="#b45309" stroke-width="2" filter="url(#softShadow)"/>
-                                <path d="M 105 10 Q 145 35 130 85 Q 95 90 85 45 Q 95 15 105 10 Z" fill="url(#chairGradient)" stroke="#b45309" stroke-width="2"/>
+                                <path d="M 35 85 Q 85 95 135 80 L 125 115 Q 85 125 45 115 Z" fill="url(#chairGradient)"
+                                    stroke="#b45309" stroke-width="2" filter="url(#softShadow)" />
+                                <path d="M 105 10 Q 145 35 130 85 Q 95 90 85 45 Q 95 15 105 10 Z"
+                                    fill="url(#chairGradient)" stroke="#b45309" stroke-width="2" />
                             </g>
                         </svg>
                     </div>
@@ -667,12 +826,18 @@
                             <span class="auth-headline-highlight">tổ ấm trong mơ</span>
                         </h1>
                         <p class="auth-showcase-sub">
-                            Trải nghiệm trực quan mô hình 3D thực tế, lựa chọn phong cách kiến trúc độc bản và đồng hành cùng chuyên gia xây dựng tổ ấm hoàn mỹ.
+                            Trải nghiệm trực quan mô hình 3D thực tế, lựa chọn phong cách kiến trúc độc bản và đồng hành
+                            cùng chuyên gia xây dựng tổ ấm hoàn mỹ.
                         </p>
                         <div class="auth-showcase-actions">
                             <button type="button" class="auth-showcase-cta" id="auth-explore-cta">
                                 <span>Khám phá bộ sưu tập mẫu</span>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -686,7 +851,16 @@
 
                     <!-- Nút đăng nhập Google OAuth -->
                     <button type="button" id="auth-google-btn" class="auth-google-btn">
-                        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 48 48">
+                            <path fill="#FFC107"
+                                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                            <path fill="#FF3D00"
+                                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                            <path fill="#4CAF50"
+                                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                            <path fill="#1976D2"
+                                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+                        </svg>
                         <span data-i18n="auth_btn_google">Log In Using Google</span>
                     </button>
 
@@ -705,32 +879,53 @@
                     <form id="auth-form" class="auth-card-form" autocomplete="on">
 
                         <div class="auth-field-group" id="auth-name-group" style="display: none;">
-                            <label for="auth-name" class="auth-field-label" data-i18n="auth_name">Họ tên hiển thị</label>
-                            <input type="text" id="auth-name" name="name" class="auth-card-input" placeholder="Nguyễn Văn A" autocomplete="name" />
+                            <label for="auth-name" class="auth-field-label" data-i18n="auth_name">Họ tên hiển
+                                thị</label>
+                            <input type="text" id="auth-name" name="name" class="auth-card-input"
+                                placeholder="Nguyễn Văn A" autocomplete="name" />
                         </div>
 
                         <div class="auth-field-group" id="auth-identifier-group">
-                            <label for="auth-email" id="auth-identifier-label" class="auth-field-label" data-i18n="auth_email">Tên tài khoản hoặc Email</label>
-                            <input type="text" id="auth-email" name="username" class="auth-card-input" required placeholder="Nhập tên tài khoản hoặc email..." autocomplete="username" />
+                            <label for="auth-email" id="auth-identifier-label" class="auth-field-label"
+                                data-i18n="auth_email">Tên tài khoản hoặc Email</label>
+                            <input type="text" id="auth-email" name="username" class="auth-card-input" required
+                                placeholder="Nhập tên tài khoản hoặc email..." autocomplete="username" />
                         </div>
 
                         <div class="auth-field-group">
-                            <label for="auth-password" class="auth-field-label" data-i18n="auth_pass">Mật khẩu (tối thiểu 6 ký tự)</label>
+                            <label for="auth-password" class="auth-field-label" data-i18n="auth_pass">Mật khẩu (tối
+                                thiểu 6 ký tự)</label>
                             <div class="auth-password-wrapper">
-                                <input type="password" id="auth-password" name="password" class="auth-card-input" required minlength="6" placeholder="Nhập mật khẩu..." data-i18n="auth_pass_placeholder" autocomplete="current-password" />
-                                <button type="button" class="auth-eye-toggle-btn" id="toggle-auth-pass-visibility" title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
-                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <input type="password" id="auth-password" name="password" class="auth-card-input"
+                                    required minlength="6" placeholder="Nhập mật khẩu..."
+                                    data-i18n="auth_pass_placeholder" autocomplete="current-password" />
+                                <button type="button" class="auth-eye-toggle-btn" id="toggle-auth-pass-visibility"
+                                    title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
+                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Ô XÁC NHẬN MẬT KHẨU (HIỂN THỊ KHI ĐĂNG KÝ) -->
                         <div class="auth-field-group" id="auth-confirm-pass-group" style="display: none;">
-                            <label for="auth-confirm-password" class="auth-field-label" data-i18n="auth_confirm_pass">Xác nhận mật khẩu</label>
+                            <label for="auth-confirm-password" class="auth-field-label"
+                                data-i18n="auth_confirm_pass">Xác nhận mật khẩu</label>
                             <div class="auth-password-wrapper">
-                                <input type="password" id="auth-confirm-password" name="confirm_password" class="auth-card-input" minlength="6" placeholder="Nhập lại mật khẩu..." data-i18n="auth_confirm_pass_placeholder" autocomplete="new-password" />
-                                <button type="button" class="auth-eye-toggle-btn" id="toggle-auth-confirm-pass-visibility" title="Hiện/ẩn xác nhận mật khẩu" aria-label="Hiện/ẩn xác nhận mật khẩu">
-                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <input type="password" id="auth-confirm-password" name="confirm_password"
+                                    class="auth-card-input" minlength="6" placeholder="Nhập lại mật khẩu..."
+                                    data-i18n="auth_confirm_pass_placeholder" autocomplete="new-password" />
+                                <button type="button" class="auth-eye-toggle-btn"
+                                    id="toggle-auth-confirm-pass-visibility" title="Hiện/ẩn xác nhận mật khẩu"
+                                    aria-label="Hiện/ẩn xác nhận mật khẩu">
+                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
@@ -739,16 +934,20 @@
                             <label class="auth-remember-label" for="auth-remember-me">
                                 <input type="checkbox" id="auth-remember-me" class="auth-remember-input" />
                                 <span class="auth-checkbox-box" aria-hidden="true">
-                                    <svg class="auth-check-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg class="auth-check-icon" width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="3.5" stroke-linecap="round"
+                                        stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                 </span>
                                 <span class="auth-remember-text" data-i18n="auth_remember_me">Ghi nhớ tài khoản</span>
                             </label>
-                            <a href="#" id="auth-forgot-password" class="auth-forgot-link" data-i18n="auth_forgot">Forgot password?</a>
+                            <a href="#" id="auth-forgot-password" class="auth-forgot-link"
+                                data-i18n="auth_forgot">Forgot password?</a>
                         </div>
 
-                        <button type="submit" id="auth-submit-btn" class="auth-card-submit-btn" data-i18n="auth_login_action">
+                        <button type="submit" id="auth-submit-btn" class="auth-card-submit-btn"
+                            data-i18n="auth_login_action">
                             Log In
                         </button>
                     </form>
@@ -764,25 +963,40 @@
     </div>
 
     <!-- 6.2. MODAL CHỈNH SỬA HỒ SƠ (PROFILE PANEL) -->
-    <div id="profile-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+    <div id="profile-modal" class="modal-overlay hidden" role="dialog" aria-modal="true"
+        aria-labelledby="profile-modal-title">
         <div class="modal-window profile-dialog">
             <div class="profile-header-card">
                 <button type="button" id="close-profile-modal" class="modal-close profile-close-btn" aria-label="Đóng">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
                 </button>
                 <div class="profile-avatar-container">
-                    <div class="profile-avatar-box" id="profile-avatar-preview" title="Nhấp để tải ảnh đại diện từ máy tính">
+                    <div class="profile-avatar-box" id="profile-avatar-preview"
+                        title="Nhấp để tải ảnh đại diện từ máy tính">
                         <span id="profile-avatar-char" class="profile-avatar-char">A</span>
-                        <img id="profile-avatar-img" class="profile-avatar-img hidden" alt="Avatar" style="display: none;" />
+                        <img id="profile-avatar-img" class="profile-avatar-img hidden" alt="Avatar"
+                            style="display: none;" />
                         <div class="profile-avatar-overlay" aria-hidden="true">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                            </svg>
                         </div>
                     </div>
                 </div>
                 <div class="profile-header-details">
                     <div class="profile-badge-row">
                         <span class="profile-role-badge" id="profile-role-badge">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
                             <span id="profile-role-text">Quản trị viên (Admin)</span>
                         </span>
                     </div>
@@ -798,15 +1012,23 @@
                 <div class="form-row-2">
                     <div class="form-group profile-field-group">
                         <label for="profile-name" class="profile-label">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
                             <span>Họ và tên hiển thị</span>
                         </label>
                         <input type="text" id="profile-name" required placeholder="Nhập họ và tên..." />
                     </div>
-                    
+
                     <div class="form-group profile-field-group">
                         <label for="profile-phone" class="profile-label">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
                             <span>Số điện thoại liên hệ</span>
                         </label>
                         <input type="tel" id="profile-phone" placeholder="09xx xxx xxx" />
@@ -815,13 +1037,21 @@
 
                 <div class="form-group profile-field-group">
                     <label for="profile-email" class="profile-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
                         <span>Địa chỉ Email</span>
                     </label>
                     <div class="input-with-badge">
-                        <input type="email" id="profile-email" name="account_email_display" autocomplete="off" readonly disabled />
+                        <input type="email" id="profile-email" name="account_email_display" autocomplete="off" readonly
+                            disabled />
                         <span class="field-badge-verified">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
                             Đã xác thực
                         </span>
                     </div>
@@ -829,15 +1059,26 @@
 
                 <div class="form-group profile-field-group">
                     <label class="profile-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
                         <span>Ảnh đại diện (Avatar)</span>
                     </label>
-                    
+
                     <!-- Khung chọn ảnh từ máy tính -->
                     <div class="avatar-file-uploader">
-                        <input type="file" id="profile-avatar-file" accept="image/png,image/jpeg,image/webp,image/gif" style="display: none;" />
+                        <input type="file" id="profile-avatar-file" accept="image/png,image/jpeg,image/webp,image/gif"
+                            style="display: none;" />
                         <button type="button" id="btn-browse-avatar" class="btn-avatar-file-trigger">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
                             <span>Chọn ảnh từ máy tính</span>
                         </button>
                         <span id="profile-avatar-filename" class="avatar-file-status">Chưa chọn tệp ảnh mới</span>
@@ -846,30 +1087,46 @@
                     <!-- Tùy chọn dán link URL nếu muốn -->
                     <div class="avatar-url-toggle-wrap">
                         <button type="button" id="toggle-avatar-url-mode" class="btn-link-subtle">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                            </svg>
                             <span>Hoặc dán liên kết URL ảnh</span>
                         </button>
                     </div>
 
                     <div id="avatar-url-container" class="avatar-url-container hidden">
-                        <input type="url" id="profile-avatar-url" placeholder="Dán link ảnh https://... hoặc chọn mẫu bên dưới" />
+                        <input type="url" id="profile-avatar-url"
+                            placeholder="Dán link ảnh https://... hoặc chọn mẫu bên dưới" />
                     </div>
 
                     <div class="avatar-presets">
                         <span class="preset-label">Mẫu nhanh:</span>
-                        <button type="button" class="preset-chip" data-avatar="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80">Kiến trúc sư</button>
-                        <button type="button" class="preset-chip" data-avatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80">Kỹ sư</button>
-                        <button type="button" class="preset-chip" data-avatar="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80">Thiết kế</button>
+                        <button type="button" class="preset-chip"
+                            data-avatar="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80">Kiến
+                            trúc sư</button>
+                        <button type="button" class="preset-chip"
+                            data-avatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80">Kỹ
+                            sư</button>
+                        <button type="button" class="preset-chip"
+                            data-avatar="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80">Thiết
+                            kế</button>
                         <button type="button" class="preset-chip" data-avatar="">Dùng chữ cái</button>
                     </div>
                 </div>
 
                 <!-- Khối Bảo mật & Đổi Mật Khẩu Hiện Đại (Security & Password Card) -->
                 <div class="security-card" id="security-card">
-                    <button type="button" class="security-card-header" id="toggle-password-section" aria-expanded="false">
+                    <button type="button" class="security-card-header" id="toggle-password-section"
+                        aria-expanded="false">
                         <div class="security-header-left">
                             <div class="security-icon-badge">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
                             </div>
                             <div class="security-header-text">
                                 <h4 class="security-title">Đổi mật khẩu tài khoản</h4>
@@ -879,7 +1136,11 @@
                         <div class="security-header-right">
                             <span class="security-toggle-pill">
                                 <span class="pill-text" id="pass-toggle-pill-text">Mở</span>
-                                <svg class="pass-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                <svg class="pass-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
                             </span>
                         </div>
                     </button>
@@ -892,11 +1153,25 @@
                             </label>
                             <div class="password-input-box">
                                 <span class="pass-box-icon">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
                                 </span>
-                                <input type="password" id="profile-current-pass" name="verify_current_pwd_prevent_autofill" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" onpointerdown="this.removeAttribute('readonly')" placeholder="Nhập mật khẩu đang dùng để xác minh..." data-i18n="profile_current_pass_placeholder" />
-                                <button type="button" class="btn-toggle-eye" id="toggle-current-pass-visibility" title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
-                                    <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <input type="password" id="profile-current-pass"
+                                    name="verify_current_pwd_prevent_autofill" autocomplete="new-password" readonly
+                                    onfocus="this.removeAttribute('readonly')"
+                                    onpointerdown="this.removeAttribute('readonly')"
+                                    placeholder="Nhập mật khẩu đang dùng để xác minh..."
+                                    data-i18n="profile_current_pass_placeholder" />
+                                <button type="button" class="btn-toggle-eye" id="toggle-current-pass-visibility"
+                                    title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
+                                    <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
@@ -909,11 +1184,24 @@
                                 </label>
                                 <div class="password-input-box">
                                     <span class="pass-box-icon">
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
                                     </span>
-                                    <input type="password" id="profile-new-pass" name="new_pwd_prevent_autofill" minlength="6" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" onpointerdown="this.removeAttribute('readonly')" placeholder="Nhập mật khẩu mới..." />
-                                    <button type="button" class="btn-toggle-eye" id="toggle-new-pass-visibility" title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
-                                        <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <input type="password" id="profile-new-pass" name="new_pwd_prevent_autofill"
+                                        minlength="6" autocomplete="new-password" readonly
+                                        onfocus="this.removeAttribute('readonly')"
+                                        onpointerdown="this.removeAttribute('readonly')"
+                                        placeholder="Nhập mật khẩu mới..." />
+                                    <button type="button" class="btn-toggle-eye" id="toggle-new-pass-visibility"
+                                        title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
+                                        <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -925,11 +1213,25 @@
                                 </label>
                                 <div class="password-input-box">
                                     <span class="pass-box-icon">
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-6 6l7 7-3.5 3.5L13 18l-4 4-2-2 4-4-2.5-3.5L12 9l2-2z"/><circle cx="7.5" cy="7.5" r="4.5"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path
+                                                d="M21 2l-2 2m-6 6l7 7-3.5 3.5L13 18l-4 4-2-2 4-4-2.5-3.5L12 9l2-2z" />
+                                            <circle cx="7.5" cy="7.5" r="4.5" />
+                                        </svg>
                                     </span>
-                                    <input type="password" id="profile-confirm-pass" name="confirm_pwd_prevent_autofill" minlength="6" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')" onpointerdown="this.removeAttribute('readonly')" placeholder="Nhập lại mật khẩu..." />
-                                    <button type="button" class="btn-toggle-eye" id="toggle-confirm-pass-visibility" title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
-                                        <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <input type="password" id="profile-confirm-pass" name="confirm_pwd_prevent_autofill"
+                                        minlength="6" autocomplete="new-password" readonly
+                                        onfocus="this.removeAttribute('readonly')"
+                                        onpointerdown="this.removeAttribute('readonly')"
+                                        placeholder="Nhập lại mật khẩu..." />
+                                    <button type="button" class="btn-toggle-eye" id="toggle-confirm-pass-visibility"
+                                        title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
+                                        <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -944,7 +1246,8 @@
                                 <span class="meter-bar" id="meter-bar-4"></span>
                             </div>
                             <div class="strength-meta-text">
-                                <span class="strength-label-text" id="strength-label-text">Độ mạnh: <strong id="strength-val">Chưa nhập</strong></span>
+                                <span class="strength-label-text" id="strength-label-text">Độ mạnh: <strong
+                                        id="strength-val">Chưa nhập</strong></span>
                                 <span class="pass-match-chip hidden" id="pass-match-chip"></span>
                             </div>
                         </div>
@@ -952,11 +1255,17 @@
                         <!-- Tiêu chuẩn mật khẩu -->
                         <div class="pass-criteria-list">
                             <span class="criteria-tag" id="crit-length">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
                                 Tối thiểu 6 ký tự
                             </span>
                             <span class="criteria-tag" id="crit-alphanumeric">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
                                 Có cả chữ và số
                             </span>
                         </div>
@@ -971,7 +1280,12 @@
                 <div class="profile-modal-actions">
                     <button type="button" id="btn-cancel-profile" class="btn-cancel">Hủy bỏ</button>
                     <button type="submit" id="btn-save-profile" class="btn-primary btn-save-profile">
-                        <svg class="save-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        <svg class="save-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
                         <span id="save-btn-text">Lưu thay đổi</span>
                     </button>
                 </div>
@@ -990,9 +1304,11 @@
             <div class="footer-right">
                 <p><strong>Hotline/Zalo:</strong> 0367020403</p>
                 <p><strong>Email:</strong> voviet4323@gmail.com</p>
-                <p><strong>Facebook:</strong> <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener">quocviet43</a></p>
+                <p><strong>Facebook:</strong> <a href="https://www.facebook.com/quocviet43" target="_blank"
+                        rel="noopener">quocviet43</a></p>
             </div>
         </div>
     </footer>
 </body>
+
 </html>

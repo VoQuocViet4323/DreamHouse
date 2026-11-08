@@ -639,6 +639,18 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=6.2`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 40** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 50: Chuẩn Hóa Nhãn Phân Loại Kiến Trúc & Hỗ Trợ Tùy Biến Phong Cách Hiển Thị Trên Thẻ Nhà
+- [x] **Khắc phục lỗi nhãn thẻ nhà hiển thị slug thô `biet-thu` thay vì tên phân loại tiếng Việt có dấu `Biệt thự`:**
+  - Phát hiện nguyên nhân cốt lõi:
+    1. Khi mẫu nhà không có trường `style_vi` (hoặc mới tạo từ Admin), logic render trên thẻ nhà tại [js/app.js](file:///e:/Dream-house/js/app.js) dòng 960 dùng `${style || item.type}`, in ra trực tiếp giá trị slug kỹ thuật `biet-thu`, `nha-pho`, `nha-cap-4`.
+    2. Form thêm/sửa mẫu nhà trong [admin.html](file:///e:/Dream-house/admin.html) trước đó chưa có ô nhập cho trường `style_vi`, khiến người quản trị không thể tùy biến hoặc tự gõ nhãn phong cách theo ý muốn.
+  - Giải pháp xử lý dứt điểm:
+    1. **Bổ sung ô nhập `Phong cách / Nhãn hiển thị` (`#tpl-style`) trong Admin:** Đặt trong hàng `1. Thông tin định danh` (3 cột: Tên mẫu nhà, Phân loại kiến trúc, Phong cách hiển thị). Người dùng có thể tự gõ bất kỳ nội dung nào (ví dụ: *"Biệt thự vườn"*, *"Hiện đại"*, *"Tân cổ điển"*, *"Nhà cấp 4 mái Thái"...). Nếu để trống, hệ thống sẽ tự động gán nhãn chuẩn theo loại đã chọn (`Biệt thự`, `Nhà phố`, `Nhà cấp 4`).
+    2. **Tự động ánh xạ tên hiển thị đẹp mắt trong `js/app.js`:** Ánh xạ tự động từ điển song ngữ `typeDisplayNames` cho toàn bộ các mẫu nhà cũ và mới. Nếu `style` chưa có hoặc đang mang giá trị slug có dấu gạch ngang (`biet-thu`, `nha-pho`, `nha-cap-4`), hệ thống tự động đổi sang tiếng Việt chuẩn (`Biệt thự`, `Nhà phố`, `Nhà cấp 4`) hoặc tiếng Anh chuẩn (`Villa`, `Townhouse`, `Bungalow`).
+  - Tăng tham số phiên bản cache-busting lên **`?v=6.3`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 41** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
+
+
 
 
 
