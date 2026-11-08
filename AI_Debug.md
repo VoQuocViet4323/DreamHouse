@@ -686,6 +686,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 40: Thoát tab rồi quay lại tab web thì animation hiển thị các mẫu nhà bị tự động reload lại
+- **Hiện tượng:** Khi người dùng đang xem danh sách mẫu nhà, chuyển sang một tab khác trong trình duyệt (hoặc thu nhỏ cửa sổ) rồi click quay lại tab Dream House, toàn bộ các thẻ mẫu nhà tự động chạy lại hoạt ảnh trượt lên (cascade animation) giống như trang web vừa bị F5 tải lại.
+- **Nguyên nhân cốt lõi:**
+  1. Thư viện Supabase JS tự động lắng nghe sự kiện `visibilitychange` của trình duyệt. Mỗi khi tab được hiển thị trở lại (`visibilityState === 'visible'`), Supabase tiến hành kiểm tra làm mới token và kích hoạt sự kiện `onAuthStateChange` với `event = 'TOKEN_REFRESHED'`.
+  2. Trình lắng nghe `onAuthStateChange` trong [`js/app.js`](file:///e:/Dream-house/js/app.js) trước đó không kiểm tra loại `event`, lập tức gọi lại `syncFavoritesWithSupabase()`.
+  3. Hàm `syncFavoritesWithSupabase()` luôn gọi `this.renderGallery()` ở cuối, xóa toàn bộ thẻ cũ và tạo mới lại các phần tử `.house-card` vào DOM.
+  4. Vì các thẻ `.house-card` mới được sinh ra mang class animation `cardEntrance`, trình duyệt buộc phải kích hoạt lại toàn bộ chuỗi animation từ đầu.
+- **Cách khắc phục dứt điểm:**
+  1. Trong `client.auth.onAuthStateChange()`, bổ sung khối kiểm tra:
+     `if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') return;`
+     Chỉ làm mới đối tượng `this.currentUser = session.user` mà tuyệt đối không gọi lại hàm tải dữ liệu hay re-render.
+  2. Trong `syncFavoritesWithSupabase()`, loại bỏ lệnh `this.renderGallery()` vô điều kiện. Thay vào đó, chỉ khi có ID yêu thích mới từ DB đổ về mới cập nhật trạng thái nút tim tại chỗ thông qua `updateCardFavoriteUI(favId, true)` (thao tác DOM trực tiếp không làm hủy thẻ).
+  3. Nâng tham số cache-busting lên `?v=6.2` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

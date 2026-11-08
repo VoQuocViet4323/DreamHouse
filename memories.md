@@ -626,6 +626,20 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=6.1`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 39** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 49: Khắc Phục Lỗi Animation Thẻ Mẫu Nhà Tự Động Chạy Lại (Reload) Khi Chuyển Tab Trình Duyệt
+- [x] **Xử lý triệt để hiện tượng khi chuyển qua tab khác rồi quay lại tab Dream House thì animation lưới nhà bị reload:**
+  - Phát hiện nguyên nhân cốt lõi:
+    1. Khi người dùng chuyển tab và quay lại, cơ chế quản lý phiên của Supabase JS tự động kiểm tra tính hợp lệ của JWT token và kích hoạt sự kiện `onAuthStateChange('TOKEN_REFRESHED', session)`.
+    2. Hàm xử lý cũ không lọc loại sự kiện, tự động gọi lại `syncFavoritesWithSupabase()`.
+    3. Bên trong `syncFavoritesWithSupabase()`, câu lệnh `this.renderGallery()` được gọi vô điều kiện, xóa trắng và tạo mới lại toàn bộ các thẻ `.house-card` trong DOM.
+    4. Do `.house-card` có CSS animation `cardEntrance` thác đổ so le, việc DOM bị tái tạo khiến toàn bộ thẻ nhà kích hoạt lại animation trượt lên từ đầu, tạo cảm giác trang web bị tự động "reload" gây giật mắt.
+  - Giải pháp xử lý dứt điểm:
+    1. **Chặn sự kiện ngầm trong `onAuthStateChange`:** Bổ sung điều kiện bỏ qua `event === 'TOKEN_REFRESHED'` và `event === 'INITIAL_SESSION'`, chỉ cập nhật lại `currentUser` nếu cần mà không gọi bất kỳ hàm render hay fetch lại nào.
+    2. **Tối ưu hóa `syncFavoritesWithSupabase()`:** Kiểm tra cờ `hasChanges`. Chỉ khi thực sự có mẫu nhà yêu thích mới từ database đổ về mới tiến hành cập nhật giao diện nút tim bằng `updateCardFavoriteUI(favId, true)` (cập nhật thuộc tính tại chỗ, không hủy DOM), tuyệt đối không re-render lại toàn bộ lưới nhà.
+  - Tăng tham số phiên bản cache-busting lên **`?v=6.2`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 40** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
+
+
 
 
 

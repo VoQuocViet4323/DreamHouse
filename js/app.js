@@ -221,9 +221,13 @@ class DreamHouseApp {
                 .eq('user_id', this.currentUser.id);
 
             if (!error && data) {
-                // Thêm các mẫu từ DB vào local
+                let hasChanges = false;
+                // Thêm các mẫu từ DB vào local nếu chưa có
                 data.forEach(row => {
-                    if (row.template_id) this.favorites.add(row.template_id);
+                    if (row.template_id && !this.favorites.has(row.template_id)) {
+                        this.favorites.add(row.template_id);
+                        hasChanges = true;
+                    }
                 });
 
                 // Đẩy các mẫu lưu tạm trên máy (chưa có trong DB và hợp lệ UUID) lên DB
@@ -242,7 +246,17 @@ class DreamHouseApp {
                     }
                 }
                 this.saveLocalFavorites();
-                this.renderGallery();
+
+                // Chỉ cập nhật trạng thái các nút tim trên thẻ nếu có thay đổi thực sự
+                // Tuyệt đối KHÔNG gọi this.renderGallery() để tránh re-render giật lag/chạy lại animation thẻ
+                if (hasChanges) {
+                    this.favorites.forEach(favId => {
+                        this.updateCardFavoriteUI(favId, true);
+                    });
+                    if (this.activeFilter && this.activeFilter.onlyFavorites) {
+                        this.renderGallery();
+                    }
+                }
             }
         } catch (e) {
             console.error('Lỗi khi đồng bộ favorites:', e);
@@ -269,10 +283,22 @@ class DreamHouseApp {
 
         // Lắng nghe trạng thái Auth thay đổi (Đăng nhập, đăng xuất, OAuth callback)
         client.auth.onAuthStateChange(async (event, session) => {
+            // Khi người dùng chuyển tab và quay lại, Supabase tự động kiểm tra và làm mới token ngầm (TOKEN_REFRESHED).
+            // Bỏ qua TOKEN_REFRESHED và INITIAL_SESSION để ngăn chặn triệt để việc tự động reload lại animation các mẫu nhà.
+            if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                if (session && session.user) {
+                    this.currentUser = session.user;
+                }
+                return;
+            }
+
             if (session && session.user) {
+                const isSameUser = this.currentUser && this.currentUser.id === session.user.id;
                 this.currentUser = session.user;
-                await this.loadUserProfile();
-                await this.syncFavoritesWithSupabase();
+                if (!isSameUser) {
+                    await this.loadUserProfile();
+                    await this.syncFavoritesWithSupabase();
+                }
             } else {
                 this.currentUser = null;
                 this.currentProfile = null;
