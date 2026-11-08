@@ -600,13 +600,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=5.8`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 36** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
-### Giai đoạn 46: Tinh Gọn Trải Nghiệm Thả Tim - Loại Bỏ Thông Báo Toast Khi Bấm Lưu / Bỏ Yêu Thích
-- [x] **Xóa bỏ hộp thoại thông báo Toast khi click icon trái tim:**
-  - Phát hiện vấn đề trải nghiệm người dùng (UX friction): Nút trái tim vốn dĩ đã có hiệu ứng chuyển động pháo hoa bung nở `.u022-ring` và đổi màu trực quan mượt mà. Việc hiện thêm một hộp Toast pop-up "Đã lưu mẫu nhà vào danh sách yêu thích!" hay "Đã gỡ mẫu nhà khỏi danh sách yêu thích." làm gián đoạn tầm nhìn và gây khó chịu khi người dùng lướt thả tim nhiều mẫu nhà liên tục.
-  - Loại bỏ hoàn toàn lệnh gọi `window.toast` trong hàm `toggleFavorite(templateId)` tại [js/app.js](file:///e:/Dream-house/js/app.js).
-  - Giữ vững 100% logic đồng bộ ngầm: Trạng thái yêu thích được lưu tức thì vào biến `Set`, đồng bộ `localStorage` và tự động cập nhật bảng `favorites` trên Supabase nếu đã đăng nhập.
-  - Tăng tham số phiên bản cache-busting lên **`?v=5.9`** trên toàn bộ `index.html` và `admin.html`.
-  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 37** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
+### Giai đoạn 47: Nâng Cấp Hiệu Ứng Animation Ẩn Hiện Cho Nút Bộ Lọc Yêu Thích & Lưới Mẫu Nhà (Staggered Cascade & Luxury Switch)
+- [x] **Tái thiết kế nút "Chỉ hiện mục yêu thích" thành công tắc chuyển đổi sang trọng (Luxury Animated Pill Switch):**
+  - Thay thế checkbox vuông vức mặc định bằng một thanh chuyển đổi xúc giác (tactile switch) với con trượt hình tròn mềm mại, chứa icon trái tim mini tự động phóng to bung nở (`@keyframes favHeartPopMini`) khi bật.
+  - Bổ sung huy hiệu đếm số lượng thời gian thực (`.fav-count-badge`) hiển thị số mẫu nhà đã thả tim, tự động giật nảy hiệu ứng pop (`@keyframes favBadgePop`) mỗi khi thả/bỏ tim.
+  - Hiệu ứng viền phát sáng và nền chuyển sắc hồng ngọc (`rgba(244, 63, 94, 0.16)`) đồng bộ hoàn hảo cả Light Mode và Dark Mode.
+- [x] **Xây dựng hiệu ứng chuyển cảnh ẩn hiện mượt mà cho lưới thư viện mẫu nhà (Staggered Cascade Entrance & Exit):**
+  - Tích hợp hàm điều phối `animateGalleryTransition()` trong [js/app.js](file:///e:/Dream-house/js/app.js) để làm mờ nhẹ và co nhẹ các thẻ cũ trước khi hiển thị danh sách mới, loại bỏ hoàn toàn hiện tượng nhấp nháy giật mắt khi lọc.
+  - Mỗi thẻ nhà `.house-card` khi xuất hiện được gán biến độ trễ `--card-index: ${index};` chạy animation thác đổ (`@keyframes cardEntrance`) với gia tốc lò xo thực tế (`cubic-bezier(0.16, 1, 0.3, 1)`), tạo cảm giác các khối nhà lần lượt trượt lên đầy cuốn hút.
+  - Khi người dùng bỏ tim một mẫu nhà trong lúc đang ở chế độ lọc yêu thích, thẻ nhà đó sẽ kích hoạt hiệu ứng thu nhỏ và trôi mờ dần (`.card-exit`) trong $300\text{ms}$ trước khi lưới nhà tự động dồn vị trí lại.
+  - Thiết kế khối giao diện rỗng đẳng cấp (`.empty-state.fav-empty-state`) với icon trái tim đập nhịp nhàng (`@keyframes emptyHeartPulse`) và nút kêu gọi *"Khám phá tất cả mẫu nhà"* giúp quay lại nhanh chóng khi chưa có mục nào được lưu.
+  - Tăng tham số phiên bản cache-busting lên **`?v=6.0`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 38** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

@@ -86,10 +86,44 @@ class DreamHouseApp {
         } catch (e) {
             console.error('Lỗi khi đọc favorites từ localStorage:', e);
         }
+        this.updateFavoriteCountBadge();
     }
 
     saveLocalFavorites() {
         localStorage.setItem('dream_house_favs', JSON.stringify(Array.from(this.favorites)));
+        this.updateFavoriteCountBadge();
+    }
+
+    updateFavoriteCountBadge() {
+        const badge = document.getElementById('fav-count-badge');
+        if (badge) {
+            const count = this.favorites ? this.favorites.size : 0;
+            badge.textContent = count;
+            badge.classList.remove('badge-pop');
+            void badge.offsetWidth;
+            badge.classList.add('badge-pop');
+        }
+    }
+
+    animateGalleryTransition(renderFn) {
+        const gallery = document.getElementById('gallery');
+        if (!gallery) {
+            if (typeof renderFn === 'function') renderFn();
+            return;
+        }
+
+        const hasCards = gallery.querySelector('.house-card') || gallery.querySelector('.empty-state');
+        if (hasCards) {
+            gallery.classList.add('gallery-transitioning');
+            setTimeout(() => {
+                if (typeof renderFn === 'function') renderFn();
+                requestAnimationFrame(() => {
+                    gallery.classList.remove('gallery-transitioning');
+                });
+            }, 180);
+        } else {
+            if (typeof renderFn === 'function') renderFn();
+        }
     }
 
     updateCardFavoriteUI(templateId, isFav) {
@@ -135,12 +169,17 @@ class DreamHouseApp {
         // Cập nhật ngay UI thẻ card không làm hủy DOM / ngắt quãng animation
         this.updateCardFavoriteUI(templateId, nextFav);
         this.updateDetailFavButton();
+        this.updateFavoriteCountBadge();
 
-        // Nếu đang lọc chỉ xem yêu thích và người dùng bỏ tim thì trì hoãn cập nhật lại gallery
+        // Nếu đang lọc chỉ xem yêu thích và người dùng bỏ tim thì kích hoạt animation trượt ẩn thẻ đó trước
         if (this.activeFilter && this.activeFilter.onlyFavorites && !nextFav) {
+            const cardEl = document.querySelector(`.house-card[data-id="${templateId}"]`);
+            if (cardEl) {
+                cardEl.classList.add('card-exit');
+            }
             setTimeout(() => {
                 this.renderGallery();
-            }, 350);
+            }, 300);
         }
 
         // Nếu đã đăng nhập, đồng bộ ngay với Supabase
@@ -790,6 +829,12 @@ class DreamHouseApp {
         const gallery = document.getElementById('gallery');
         if (!gallery) return;
 
+        // Đồng bộ trạng thái giao diện nút Lọc yêu thích & Badge đếm
+        const favCheckbox = document.getElementById('filter-fav-only');
+        if (favCheckbox) favCheckbox.checked = !!this.activeFilter.onlyFavorites;
+        document.getElementById('filter-fav-toggle-label')?.classList.toggle('is-active', !!this.activeFilter.onlyFavorites);
+        this.updateFavoriteCountBadge();
+
         const lang = window.i18n.getLang();
         let list = [...this.templates];
 
@@ -823,22 +868,49 @@ class DreamHouseApp {
         }
 
         if (list.length === 0) {
-            gallery.innerHTML = `
-                <div class="empty-state">
-                    <p>${window.i18n.t('empty_gallery')}</p>
-                </div>
-            `;
+            const isFavFilter = this.activeFilter.onlyFavorites;
+            const isVi = lang === 'vi';
+            if (isFavFilter) {
+                gallery.innerHTML = `
+                    <div class="empty-state fav-empty-state">
+                        <div class="empty-fav-icon-wrapper">
+                            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-fav-title">${isVi ? 'Chưa có mẫu nhà yêu thích nào' : 'No saved favorite models'}</h3>
+                        <p class="empty-fav-desc">${isVi ? 'Hãy bấm vào biểu tượng trái tim trên các mẫu thiết kế để lưu lại và xem nhanh tại đây.' : 'Click the heart icon on any house model to save it to your favorites list.'}</p>
+                        <button type="button" class="btn-reset-fav" id="btn-reset-fav-filter">
+                            ${isVi ? 'Khám phá tất cả mẫu nhà' : 'Browse all house models'} →
+                        </button>
+                    </div>
+                `;
+                document.getElementById('btn-reset-fav-filter')?.addEventListener('click', () => {
+                    this.activeFilter.onlyFavorites = false;
+                    if (favCheckbox) favCheckbox.checked = false;
+                    document.getElementById('filter-fav-toggle-label')?.classList.remove('is-active');
+                    this.animateGalleryTransition(() => {
+                        this.renderGallery();
+                    });
+                });
+            } else {
+                gallery.innerHTML = `
+                    <div class="empty-state">
+                        <p>${window.i18n.t('empty_gallery')}</p>
+                    </div>
+                `;
+            }
             return;
         }
 
-        gallery.innerHTML = list.map(item => {
+        gallery.innerHTML = list.map((item, index) => {
             const name = lang === 'vi' ? item.name_vi : item.name_en;
             const style = lang === 'vi' ? item.style_vi : item.style_en;
             const costStr = window.i18n.formatCost(item.cost_estimate_vnd);
             const isFav = this.favorites.has(item.id);
 
             return `
-                <article class="house-card" data-id="${item.id}">
+                <article class="house-card" data-id="${item.id}" style="--card-index: ${index};">
                     <div class="card-thumb">
                         <img src="${item.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80'}" 
                              alt="${name}" loading="lazy" />
@@ -1054,12 +1126,15 @@ class DreamHouseApp {
             });
         }
 
-        // Checkbox chỉ xem yêu thích
+        // Checkbox chỉ xem yêu thích với animation chuyển cảnh mượt mà
         const favCheckbox = document.getElementById('filter-fav-only');
         if (favCheckbox) {
             favCheckbox.addEventListener('change', (e) => {
                 this.activeFilter.onlyFavorites = e.target.checked;
-                this.renderGallery();
+                document.getElementById('filter-fav-toggle-label')?.classList.toggle('is-active', e.target.checked);
+                this.animateGalleryTransition(() => {
+                    this.renderGallery();
+                });
             });
         }
 
@@ -1216,7 +1291,10 @@ class DreamHouseApp {
             if (favCheckbox) {
                 favCheckbox.checked = true;
                 this.activeFilter.onlyFavorites = true;
-                this.renderGallery();
+                document.getElementById('filter-fav-toggle-label')?.classList.add('is-active');
+                this.animateGalleryTransition(() => {
+                    this.renderGallery();
+                });
             }
         });
 
@@ -1646,7 +1724,10 @@ class DreamHouseApp {
                         if (favCheckbox && !favCheckbox.checked) {
                             favCheckbox.checked = true;
                             this.activeFilter.onlyFavorites = true;
-                            this.renderGallery();
+                            document.getElementById('filter-fav-toggle-label')?.classList.add('is-active');
+                            this.animateGalleryTransition(() => {
+                                this.renderGallery();
+                            });
                         }
                     }
 

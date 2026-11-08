@@ -650,6 +650,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 38: Lưới mẫu nhà bị giật hình đột ngột khi chuyển đổi bộ lọc Yêu thích và thiếu trạng thái rỗng trực quan
+- **Hiện tượng:** Khi click vào nút *"Chỉ hiện mục yêu thích"*, lưới mẫu nhà bị thay đổi đột ngột (cắt cụt hoặc biến mất tức thời) khiến người xem bị giật mắt. Nếu người dùng chưa lưu mẫu nhà nào, màn hình chỉ hiện một dòng chữ đơn điệu không có tính dẫn dắt hành vi. Ngoài ra nút lọc chỉ là checkbox OS cổ điển không có animation phản hồi tương xứng với đẳng cấp website kiến trúc.
+- **Nguyên nhân cốt lõi:**
+  1. Thao tác lọc trực tiếp gán đè `gallery.innerHTML` mà không thông qua giai đoạn chuyển tiếp hoạt ảnh (exit & enter transition phases).
+  2. Các phần tử `.house-card` mới render không có cấu hình độ trễ so le (staggered delay), khiến toàn bộ thẻ cùng hiện lên một lúc một cách thô ráp.
+  3. Nút lọc chưa được nâng cấp thành công tắc tương tác chuyên biệt (pill toggle switch).
+- **Cách khắc phục dứt điểm:**
+  1. Nâng cấp nút lọc thành công tắc xúc giác cao cấp với con trượt bo tròn, icon trái tim mini tự nhảy (`favHeartPopMini`) và huy hiệu đếm số lượng thời gian thực (`fav-count-badge`).
+  2. Bổ sung hàm `animateGalleryTransition()` tạo hiệu ứng mờ co nhẹ ($180\text{ms}$) cho các thẻ cũ trước khi hiển thị thẻ mới.
+  3. Cấp phát biến `--card-index: ${index}` cho từng thẻ nhà để chạy hoạt ảnh thác đổ (`@keyframes cardEntrance`) với đường cong chuyển động lò xo mượt mà.
+  4. Hỗ trợ animation `.card-exit` mượt mà khi bỏ tim một mẫu nhà ngay trong giao diện lọc yêu thích.
+  5. Xây dựng giao diện trạng thái rỗng (`.fav-empty-state`) với trái tim đập nhịp nhàng và nút hành động *"Khám phá tất cả mẫu nhà"*.
+  6. Nâng tham số cache-busting lên `?v=6.0` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
