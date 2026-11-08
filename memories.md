@@ -600,6 +600,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=5.8`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 36** trong [AI_Debug.md](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 46: Tinh Gọn Trải Nghiệm Thả Tim - Loại Bỏ Thông Báo Toast Khi Bấm Lưu / Bỏ Yêu Thích
+- [x] **Xóa bỏ hộp thoại thông báo Toast khi click icon trái tim:**
+  - Phát hiện vấn đề trải nghiệm người dùng (UX friction): Nút trái tim vốn dĩ đã có hiệu ứng chuyển động pháo hoa bung nở `.u022-ring` và đổi màu trực quan mượt mà. Việc hiện thêm một hộp Toast pop-up "Đã lưu mẫu nhà vào danh sách yêu thích!" hay "Đã gỡ mẫu nhà khỏi danh sách yêu thích." làm gián đoạn tầm nhìn và gây khó chịu khi người dùng lướt thả tim nhiều mẫu nhà liên tục.
+  - Loại bỏ hoàn toàn lệnh gọi `window.toast` trong hàm `toggleFavorite(templateId)` tại [js/app.js](file:///e:/Dream-house/js/app.js).
+  - Giữ vững 100% logic đồng bộ ngầm: Trạng thái yêu thích được lưu tức thì vào biến `Set`, đồng bộ `localStorage` và tự động cập nhật bảng `favorites` trên Supabase nếu đã đăng nhập.
+  - Tăng tham số phiên bản cache-busting lên **`?v=5.9`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 37** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
+
+
 
 
 

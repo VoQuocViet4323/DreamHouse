@@ -637,6 +637,19 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 37: Thông báo Toast hiện lên liên tục gây rối mắt và che khuất nội dung khi bấm icon trái tim (Yêu thích)
+- **Hiện tượng:** Mỗi lần người dùng click vào icon trái tim trên ảnh mẫu nhà (hoặc trong modal chi tiết) để thả tim hoặc bỏ tim, màn hình lại bật lên một thanh thông báo Toast lớn ("Đã lưu mẫu nhà vào danh sách yêu thích!" hoặc "Đã gỡ mẫu nhà khỏi danh sách yêu thích.") kèm hiệu ứng đè lên nội dung duyệt web.
+- **Nguyên nhân cốt lõi:**
+  1. Trong hàm [`toggleFavorite(templateId)`](file:///e:/Dream-house/js/app.js), đoạn mã gọi `window.toast.success(...)` và `window.toast.info(...)` bị kích hoạt sau mỗi cú click.
+  2. Nút trái tim vốn đã có hiệu ứng micro-interaction trực quan hoàn hảo (nở tim, hạt pháo hoa nổ bung `.u022-ring`, đổi màu đỏ/vàng kim tức thì) để xác nhận hành động cho người dùng. Việc bật thêm một hộp Toast pop-up toàn màn hình là dư thừa, làm giảm cảm giác sang trọng và gây ngắt quãng trải nghiệm duyệt nhà.
+- **Cách khắc phục dứt điểm:**
+  1. Loại bỏ hoàn toàn khối mã hiển thị `window.toast` trong hàm `toggleFavorite()` tại [`js/app.js`](file:///e:/Dream-house/js/app.js).
+  2. Giữ nguyên toàn bộ logic đồng bộ ngầm: lưu tức thời vào `Set` trong RAM, cập nhật `localStorage` (`dream_house_favs`), và gửi mutation nền lên bảng `favorites` của cơ sở dữ liệu Supabase nếu người dùng đã đăng nhập.
+  3. Cập nhật giao diện trái tim mượt mà ngay tại chỗ không có độ trễ, không còn bất kỳ toast pop-up nào che chắn tầm nhìn.
+  4. Nâng tham số cache-busting lên `?v=5.9` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

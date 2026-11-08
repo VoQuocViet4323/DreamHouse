@@ -161,18 +161,6 @@ class DreamHouseApp {
                 console.error('Lỗi khi đồng bộ yêu thích với Supabase:', err);
             }
         }
-
-        // Thông báo Toast phong cách Animate-UI đồng bộ
-        if (window.toast) {
-            const isVi = (window.i18n && typeof window.i18n.getLang === 'function') 
-                ? window.i18n.getLang() === 'vi' 
-                : true;
-            if (nextFav) {
-                window.toast.success(isVi ? 'Đã lưu mẫu nhà vào danh sách yêu thích!' : 'Added to your favorites!', 3000);
-            } else {
-                window.toast.info(isVi ? 'Đã gỡ mẫu nhà khỏi danh sách yêu thích.' : 'Removed from your favorites.', 3000);
-            }
-        }
     }
 
     async syncFavoritesWithSupabase() {
