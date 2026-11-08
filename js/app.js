@@ -185,19 +185,22 @@ class DreamHouseApp {
         // Nếu đã đăng nhập, đồng bộ ngay với Supabase
         const client = this.getSupabase();
         if (client && this.currentUser) {
-            try {
-                if (!nextFav) {
-                    await client.from('favorites').delete()
-                        .eq('user_id', this.currentUser.id)
-                        .eq('template_id', templateId);
-                } else {
-                    await client.from('favorites').insert({
-                        user_id: this.currentUser.id,
-                        template_id: templateId
-                    });
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (uuidRegex.test(templateId)) {
+                try {
+                    if (!nextFav) {
+                        await client.from('favorites').delete()
+                            .eq('user_id', this.currentUser.id)
+                            .eq('template_id', templateId);
+                    } else {
+                        await client.from('favorites').insert({
+                            user_id: this.currentUser.id,
+                            template_id: templateId
+                        });
+                    }
+                } catch (err) {
+                    console.error('Lỗi khi đồng bộ yêu thích với Supabase:', err);
                 }
-            } catch (err) {
-                console.error('Lỗi khi đồng bộ yêu thích với Supabase:', err);
             }
         }
     }
@@ -205,6 +208,10 @@ class DreamHouseApp {
     async syncFavoritesWithSupabase() {
         const client = this.getSupabase();
         if (!client || !this.currentUser) return;
+        if (this._isSyncingFavorites) return;
+        this._isSyncingFavorites = true;
+
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
         try {
             // Lấy danh sách favorites từ DB
@@ -215,22 +222,32 @@ class DreamHouseApp {
 
             if (!error && data) {
                 // Thêm các mẫu từ DB vào local
-                data.forEach(row => this.favorites.add(row.template_id));
+                data.forEach(row => {
+                    if (row.template_id) this.favorites.add(row.template_id);
+                });
 
-                // Đẩy các mẫu lưu tạm trên máy lên DB
-                const inserts = Array.from(this.favorites).map(tId => ({
-                    user_id: this.currentUser.id,
-                    template_id: tId
-                }));
+                // Đẩy các mẫu lưu tạm trên máy (chưa có trong DB và hợp lệ UUID) lên DB
+                const existingDbIds = new Set(data.map(row => row.template_id));
+                const newInserts = Array.from(this.favorites)
+                    .filter(tId => uuidRegex.test(tId) && !existingDbIds.has(tId))
+                    .map(tId => ({
+                        user_id: this.currentUser.id,
+                        template_id: tId
+                    }));
 
-                if (inserts.length > 0) {
-                    await client.from('favorites').upsert(inserts, { onConflict: 'user_id,template_id' });
+                if (newInserts.length > 0) {
+                    const { error: insertErr } = await client.from('favorites').insert(newInserts);
+                    if (insertErr) {
+                        console.warn('Lưu favorites mới lên Supabase:', insertErr.message);
+                    }
                 }
                 this.saveLocalFavorites();
                 this.renderGallery();
             }
         } catch (e) {
             console.error('Lỗi khi đồng bộ favorites:', e);
+        } finally {
+            this._isSyncingFavorites = false;
         }
     }
 

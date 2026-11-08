@@ -666,6 +666,26 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 39: Console báo lỗi `POST .../rest/v1/favorites?on_conflict=user_id%2Ctemplate_id 403 (Forbidden)`
+- **Hiện tượng:** Khi người dùng mở website (đã đăng nhập) hoặc đăng nhập tài khoản, Console báo đỏ 2 dòng lỗi liên tiếp:
+  `POST https://qdkhqvsbtmbgkmoldazt.supabase.co/rest/v1/favorites?on_conflict=user_id%2Ctemplate_id 403 (Forbidden)`.
+- **Nguyên nhân cốt lõi:**
+  1. **Thiếu quyền RLS UPDATE trên bảng `favorites`:** Lệnh `client.from('favorites').upsert(..., { onConflict: 'user_id,template_id' })` được PostgREST chuyển hóa thành truy vấn SQL `INSERT INTO ... ON CONFLICT (user_id, template_id) DO UPDATE SET ...`. Theo cơ chế Row Level Security của PostgreSQL, mệnh đề `ON CONFLICT DO UPDATE` bắt buộc user phải thỏa mãn cả 2 chính sách `INSERT` VÀ `UPDATE`. Do bảng `favorites` trong `02_security.sql` chỉ có chính sách cho `SELECT`, `INSERT`, `DELETE` mà thiếu `UPDATE`, PostgreSQL lập tức chặn và trả về HTTP 403 Forbidden.
+  2. **Trùng lặp gọi đồng bộ (Double Invocation Race Condition):** Khi khởi động ứng dụng, cả 2 tiến trình `getSession()` và `onAuthStateChange('INITIAL_SESSION')` đều kích hoạt hàm `syncFavoritesWithSupabase()` gần như cùng một tích tắc, khiến 2 request POST xung đột chạy song song.
+  3. **ID mẫu nhà offline không hợp lệ định dạng UUID:** Các mẫu thử nghiệm ban đầu dùng ID ngắn dạng chuỗi ký tự (`'np-01'`, `'bt-01'`) không tương thích với kiểu dữ liệu `UUID` của bảng `favorites`.
+- **Cách khắc phục dứt điểm:**
+  1. **Tối ưu logic Client trong [`js/app.js`](file:///e:/Dream-house/js/app.js):**
+     - Đặt cờ khóa luồng `_isSyncingFavorites` để triệt tiêu hoàn toàn race condition gọi trùng lặp 2 lần.
+     - Sau khi `select('template_id')` thành công, lấy tập hợp `existingDbIds` và chỉ lọc ra những ID hợp lệ UUID chưa có trong DB để gọi `insert()` thuần túy.
+     - Loại bỏ việc dùng `upsert` kèm `on_conflict` không cần thiết.
+     - Trong `toggleFavorite(templateId)`, kiểm tra regex UUID trước khi gọi lệnh ghi lên Supabase.
+  2. **Tạo migration RLS [`supabase/08_fix_favorites_rls.sql`](file:///e:/Dream-house/supabase/08_fix_favorites_rls.sql):**
+     - Bổ sung chính sách `CREATE POLICY "Users can update their own favorites" ON public.favorites FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);`
+     - Cập nhật đồng bộ vào [`supabase/all_in_one_setup.sql`](file:///e:/Dream-house/supabase/all_in_one_setup.sql) và [`supabase/02_security.sql`](file:///e:/Dream-house/supabase/02_security.sql).
+  3. **Nâng tham số cache-busting lên `?v=6.1` trên toàn bộ dự án (`index.html` và `admin.html`).**
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

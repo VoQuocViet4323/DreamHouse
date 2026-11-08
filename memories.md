@@ -613,6 +613,20 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=6.0`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 38** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 48: Khắc Phục Triệt Để Lỗi 403 Forbidden Khi Đồng Bộ Yêu Thích Với Supabase
+- [x] **Xử lý dứt điểm lỗi `POST /rest/v1/favorites?on_conflict=user_id,template_id 403 (Forbidden)`:**
+  - Phát hiện nguyên nhân kép:
+    1. **Thiếu RLS Policy UPDATE:** Lệnh `upsert(..., { onConflict: 'user_id,template_id' })` của Supabase PostgREST biên dịch thành `INSERT ... ON CONFLICT DO UPDATE`. Bảng `favorites` trong RLS chỉ có chính sách cho `SELECT`, `INSERT`, `DELETE` mà thiếu `UPDATE`, dẫn đến việc PostgreSQL từ chối truy cập và trả về mã lỗi 403 Forbidden.
+    2. **Đồng bộ song song trùng lặp (Race condition):** Sự kiện `getSession()` và `onAuthStateChange('INITIAL_SESSION')` chạy song song khi vừa mở web, khiến hàm `syncFavoritesWithSupabase()` bị kích hoạt 2 lần đồng thời gửi cùng lúc 2 request POST lỗi lên Supabase.
+    3. **Dữ liệu ID mẫu giả lập không phải UUID:** Các mẫu nhà offline fallback mang ID `'np-01'`, `'bt-01'` không tuân thủ định dạng UUID, nếu gửi lên cột `template_id UUID` sẽ gây lỗi vi phạm khóa ngoại.
+  - Giải pháp khắc phục toàn diện:
+    1. **Tối ưu logic Client-Side:** Kiểm tra `existingDbIds` từ kết quả truy vấn `select('template_id')` và chỉ thực hiện `insert()` đối với những mẫu nhà UUID mới thực sự chưa có trong cơ sở dữ liệu. Loại bỏ hoàn toàn sự phụ thuộc vào lệnh `upsert` xung đột quyền RLS.
+    2. **Thêm khóa luồng `_isSyncingFavorites`:** Khóa đồng bộ đơn luồng ngăn chặn triệt để tình trạng gọi trùng lặp song song khi khởi tạo phiên đăng nhập.
+    3. **Tạo migration bảo mật [`supabase/08_fix_favorites_rls.sql`](file:///e:/Dream-house/supabase/08_fix_favorites_rls.sql):** Bổ sung chính sách `FOR UPDATE TO authenticated USING (auth.uid() = user_id)` và cập nhật vào [`supabase/all_in_one_setup.sql`](file:///e:/Dream-house/supabase/all_in_one_setup.sql), [`supabase/02_security.sql`](file:///e:/Dream-house/supabase/02_security.sql).
+  - Tăng tham số phiên bản cache-busting lên **`?v=6.1`** trên toàn bộ `index.html` và `admin.html`.
+  - Cập nhật cẩm nang chẩn đoán vào **Lỗi 39** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
+
+
 
 
 
