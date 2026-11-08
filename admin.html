@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6.7">
+    <link rel="stylesheet" href="style.css?v=6.8">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=6.7"></script>
-    <script src="js/i18n.js?v=6.7"></script>
-    <script src="js/toast.js?v=6.7"></script>
+    <script src="js/config.js?v=6.8"></script>
+    <script src="js/i18n.js?v=6.8"></script>
+    <script src="js/toast.js?v=6.8"></script>
 </head>
 <body class="admin-body">
     <!-- HEADER QUẢN TRỊ -->
@@ -383,7 +383,7 @@
                 </div>
             </div>
 
-            <!-- TIER 2: DEEP-DIVE PERFORMANCE LEADERBOARDS -->
+            <!-- TIER 2: DEEP-DIVE PERFORMANCE LEADERBOARDS & COLUMN CHARTS -->
             <div class="analytics-details-grid">
                 <!-- MODULE 1: XẾP HẠNG & TỶ LỆ LƯỢT XEM -->
                 <div class="analytics-card">
@@ -391,13 +391,30 @@
                         <div>
                             <h4 class="analytics-card-title">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                Xếp Hạng Mẫu Được Xem Nhiều Nhất
+                                Xếp Hạng Lượt Xem Mẫu Thiết Kế
                             </h4>
-                            <span class="analytics-card-desc">Thống kê tỷ lệ phần trăm lượt xem trên tổng lưu lượng tương tác</span>
+                            <span class="analytics-card-desc">Biểu đồ cột so sánh trực quan lượt xem và thị phần giữa các mẫu nhà</span>
                         </div>
-                        <span class="analytics-badge cyan" id="analytics-total-views-badge">0 lượt xem</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="chart-view-toggle">
+                                <button type="button" class="view-toggle-btn active" id="toggle-view-chart-btn" onclick="switchViewsMode('chart')" title="Xem dạng biểu đồ cột">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                    Cột
+                                </button>
+                                <button type="button" class="view-toggle-btn" id="toggle-view-list-btn" onclick="switchViewsMode('list')" title="Xem dạng danh sách">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                    Bảng
+                                </button>
+                            </div>
+                            <span class="analytics-badge cyan" id="analytics-total-views-badge">0 lượt xem</span>
+                        </div>
                     </div>
-                    <div class="analytics-rankings-list" id="analytics-views-list">
+                    <!-- BIỂU ĐỒ CỘT LƯỢT XEM (HIỆN MẶC ĐỊNH) -->
+                    <div class="analytics-column-chart-wrap" id="analytics-views-column-chart">
+                        <div class="admin-empty-state">Đang khởi tạo biểu đồ cột...</div>
+                    </div>
+                    <!-- DANH SÁCH CHI TIẾT (ẨN MẶC ĐỊNH) -->
+                    <div class="analytics-rankings-list hidden" id="analytics-views-list">
                         <div class="admin-empty-state">Đang tính toán tỷ lệ xem...</div>
                     </div>
                 </div>
@@ -408,13 +425,30 @@
                         <div>
                             <h4 class="analytics-card-title">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#f43f5e" stroke="#f43f5e" stroke-width="1.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                Mẫu Được Quan Tâm & Yêu Thích Nhất
+                                Mẫu Được Quan Tâm & Thả Tim Nhất
                             </h4>
-                            <span class="analytics-card-desc">Xếp hạng các mẫu được người dùng thả tim lưu vào danh sách yêu thích</span>
+                            <span class="analytics-card-desc">Biểu đồ cột so sánh mức độ yêu thích được người dùng lưu lại</span>
                         </div>
-                        <span class="analytics-badge pink" id="analytics-total-favs-badge">0 yêu thích</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="chart-view-toggle">
+                                <button type="button" class="view-toggle-btn active" id="toggle-favs-chart-btn" onclick="switchFavsMode('chart')" title="Xem dạng biểu đồ cột">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                    Cột
+                                </button>
+                                <button type="button" class="view-toggle-btn" id="toggle-favs-list-btn" onclick="switchFavsMode('list')" title="Xem dạng danh sách">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                    Bảng
+                                </button>
+                            </div>
+                            <span class="analytics-badge pink" id="analytics-total-favs-badge">0 yêu thích</span>
+                        </div>
                     </div>
-                    <div class="analytics-rankings-list" id="analytics-favs-list">
+                    <!-- BIỂU ĐỒ CỘT YÊU THÍCH (HIỆN MẶC ĐỊNH) -->
+                    <div class="analytics-column-chart-wrap" id="analytics-favs-column-chart">
+                        <div class="admin-empty-state">Đang khởi tạo biểu đồ cột...</div>
+                    </div>
+                    <!-- DANH SÁCH CHI TIẾT (ẨN MẶC ĐỊNH) -->
+                    <div class="analytics-rankings-list hidden" id="analytics-favs-list">
                         <div class="admin-empty-state">Đang tải danh sách yêu thích...</div>
                     </div>
                 </div>
@@ -1292,81 +1326,221 @@
                 initPeriodControl047(totalViews);
                 initDonutChart097(allTemplatesData);
 
-                // TIER 2 - MODULE 1: TOP MẪU ĐƯỢC XEM NHIỀU NHẤT (% VIEW SHARE)
+                // TIER 2 - MODULE 1: BIỂU ĐỒ CỘT & XẾP HẠNG LƯỢT XEM
+                const viewsChartContainer = document.getElementById('analytics-views-column-chart');
                 const viewsList = document.getElementById('analytics-views-list');
                 const sortedByViews = [...allTemplatesData].sort((a, b) => (Number(b.view_count) || 0) - (Number(a.view_count) || 0));
 
                 if (sortedByViews.length === 0) {
-                    viewsList.innerHTML = `<div class="admin-empty-state">Chưa có dữ liệu mẫu nhà.</div>`;
+                    if (viewsChartContainer) viewsChartContainer.innerHTML = '<div class="admin-empty-state">Chưa có dữ liệu mẫu thiết kế.</div>';
+                    if (viewsList) viewsList.innerHTML = '<div class="admin-empty-state">Chưa có dữ liệu mẫu nhà.</div>';
                 } else {
-                    viewsList.innerHTML = sortedByViews.map((item, idx) => {
-                        const rank = idx + 1;
-                        const views = Number(item.view_count) || 0;
-                        const pct = totalViews > 0 ? Math.round((views / totalViews) * 100) : 0;
-                        const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
-                        const typeName = typeLabelsVi[item.type] || item.type;
+                    const maxViews = Math.max(...sortedByViews.map(t => Number(t.view_count) || 0), 1);
+                    const hasAnyViews = sortedByViews.some(t => (Number(t.view_count) || 0) > 0);
 
-                        return `
-                            <div class="analytics-rank-item ${rank === 1 && views > 0 ? 'rank-top-1' : ''}">
-                                <span class="rank-pill rank-${rank}">${rankLabel}</span>
-                                <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
-                                <div class="analytics-info">
-                                    <div class="analytics-title-row">
-                                        <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
-                                        <span class="admin-type-badge type-${item.type}">${typeName}</span>
-                                        ${rank === 1 && views > 0 ? '<span class="analytics-hot-badge">👑 XEM NHIỀU NHẤT</span>' : ''}
-                                    </div>
-                                    <div class="analytics-progress-bar-wrap">
-                                        <div class="analytics-progress-fill" style="width: ${Math.max(pct, views > 0 ? 3 : 0)}%"></div>
-                                    </div>
-                                </div>
-                                <div class="analytics-stats-meta">
-                                    <span class="analytics-count-val">${views.toLocaleString('vi-VN')}</span>
-                                    <span class="analytics-pct-val">${pct}% lượt xem</span>
-                                </div>
+                    // 1. Dựng Biểu Đồ Cột Lượt Xem (Column Bar Chart)
+                    if (viewsChartContainer) {
+                        viewsChartContainer.innerHTML = `
+                            <div class="chart-y-axis-lines">
+                                <div class="axis-line"><span class="axis-lbl">${hasAnyViews ? maxViews + ' lượt' : '10'}</span></div>
+                                <div class="axis-line"><span class="axis-lbl">${hasAnyViews ? Math.max(Math.round(maxViews / 2), 1) + ' lượt' : '5'}</span></div>
+                                <div class="axis-line"><span class="axis-lbl">0 lượt</span></div>
+                            </div>
+                            <div class="chart-columns-flex">
+                                ${sortedByViews.map((item, idx) => {
+                                    const rank = idx + 1;
+                                    const views = Number(item.view_count) || 0;
+                                    const pct = totalViews > 0 ? Math.round((views / totalViews) * 100) : 0;
+                                    const heightPct = hasAnyViews
+                                        ? (views > 0 ? Math.max(Math.round((views / maxViews) * 88), 10) : 5)
+                                        : 6;
+                                    const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                                    const typeName = typeLabelsVi[item.type] || item.type;
+                                    const shortName = item.name_vi.length > 13 ? item.name_vi.substring(0, 13) + '…' : item.name_vi;
+
+                                    return `
+                                        <div class="chart-col-item ${rank === 1 && views > 0 ? 'is-top-1' : ''}" title="${item.name_vi} • ${views.toLocaleString('vi-VN')} lượt xem (${pct}% thị phần)">
+                                            <div class="chart-col-bar-slot">
+                                                <div class="chart-col-value-badge">
+                                                    ${views > 0 ? `<strong>${views}</strong><small>xem</small>` : '<span style="color:var(--color-text-muted);">0</span>'}
+                                                </div>
+                                                <div class="chart-col-track">
+                                                    <div class="chart-col-fill" style="height: ${heightPct}%;"></div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-col-footer">
+                                                <span class="chart-col-rank">${rankLabel}</span>
+                                                <img src="${item.photo_path || fallbackImg}" class="chart-col-thumb" alt="${item.name_vi}" loading="lazy" />
+                                                <span class="chart-col-name">${shortName}</span>
+                                                <span class="chart-col-type">${typeName}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         `;
-                    }).join('');
+                    }
+
+                    // 2. Dựng Bảng Danh Sách Lượt Xem (List View)
+                    if (viewsList) {
+                        viewsList.innerHTML = sortedByViews.map((item, idx) => {
+                            const rank = idx + 1;
+                            const views = Number(item.view_count) || 0;
+                            const pct = totalViews > 0 ? Math.round((views / totalViews) * 100) : 0;
+                            const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                            const typeName = typeLabelsVi[item.type] || item.type;
+
+                            return `
+                                <div class="analytics-rank-item ${rank === 1 && views > 0 ? 'rank-top-1' : ''}">
+                                    <span class="rank-pill rank-${rank}">${rankLabel}</span>
+                                    <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
+                                    <div class="analytics-info">
+                                        <div class="analytics-title-row">
+                                            <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
+                                            <span class="admin-type-badge type-${item.type}">${typeName}</span>
+                                            ${rank === 1 && views > 0 ? '<span class="analytics-hot-badge">👑 XEM NHIỀU NHẤT</span>' : ''}
+                                        </div>
+                                        <div class="analytics-progress-bar-wrap">
+                                            <div class="analytics-progress-fill" style="width: ${Math.max(pct, views > 0 ? 3 : 0)}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="analytics-stats-meta">
+                                        <span class="analytics-count-val">${views.toLocaleString('vi-VN')}</span>
+                                        <span class="analytics-pct-val">${pct}% lượt xem</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
                 }
 
-                // TIER 2 - MODULE 2: TOP MẪU ĐƯỢC QUAN TÂM & YÊU THÍCH NHẤT (FAVORITES)
+                // TIER 2 - MODULE 2: BIỂU ĐỒ CỘT & XẾP HẠNG YÊU THÍCH (FAVORITES)
+                const favsChartContainer = document.getElementById('analytics-favs-column-chart');
                 const favsList = document.getElementById('analytics-favs-list');
                 const sortedByFavs = [...allTemplatesData].sort((a, b) => (favCountMap[b.id] || 0) - (favCountMap[a.id] || 0));
 
                 if (sortedByFavs.length === 0) {
-                    favsList.innerHTML = `<div class="admin-empty-state">Chưa có dữ liệu yêu thích.</div>`;
+                    if (favsChartContainer) favsChartContainer.innerHTML = '<div class="admin-empty-state">Chưa có dữ liệu yêu thích.</div>';
+                    if (favsList) favsList.innerHTML = '<div class="admin-empty-state">Chưa có dữ liệu yêu thích.</div>';
                 } else {
-                    favsList.innerHTML = sortedByFavs.map((item, idx) => {
-                        const rank = idx + 1;
-                        const favs = favCountMap[item.id] || 0;
-                        const inqs = inqCountMap[item.id] || 0;
-                        const pct = totalFavs > 0 ? Math.round((favs / totalFavs) * 100) : 0;
-                        const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
-                        const typeName = typeLabelsVi[item.type] || item.type;
+                    const maxFavs = Math.max(...sortedByFavs.map(t => favCountMap[t.id] || 0), 1);
+                    const hasAnyFavs = totalFavs > 0;
 
-                        return `
-                            <div class="analytics-rank-item ${rank === 1 && favs > 0 ? 'rank-top-1' : ''}">
-                                <span class="rank-pill rank-${rank}">${rankLabel}</span>
-                                <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
-                                <div class="analytics-info">
-                                    <div class="analytics-title-row">
-                                        <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
-                                        <span class="admin-type-badge type-${item.type}">${typeName}</span>
-                                        ${rank === 1 && favs > 0 ? '<span class="analytics-hot-badge" style="background: linear-gradient(135deg, #f43f5e, #fb7185);">❤️ YÊU THÍCH NHẤT</span>' : ''}
-                                    </div>
-                                    <div class="analytics-progress-bar-wrap">
-                                        <div class="analytics-progress-fill pink" style="width: ${Math.max(pct, favs > 0 ? 3 : 0)}%"></div>
-                                    </div>
-                                </div>
-                                <div class="analytics-stats-meta">
-                                    <span class="analytics-count-val" style="color: #f43f5e;">${favs.toLocaleString('vi-VN')} ❤️</span>
-                                    <span class="analytics-pct-val">${inqs > 0 ? inqs + ' tư vấn • ' : ''}${pct}% thị phần</span>
-                                </div>
+                    // 1. Dựng Biểu Đồ Cột Yêu Thích (Column Bar Chart)
+                    if (favsChartContainer) {
+                        favsChartContainer.innerHTML = `
+                            <div class="chart-y-axis-lines">
+                                <div class="axis-line"><span class="axis-lbl">${hasAnyFavs ? maxFavs + ' ❤️' : '5 ❤️'}</span></div>
+                                <div class="axis-line"><span class="axis-lbl">${hasAnyFavs ? Math.max(Math.round(maxFavs / 2), 1) + ' ❤️' : '2 ❤️'}</span></div>
+                                <div class="axis-line"><span class="axis-lbl">0 ❤️</span></div>
+                            </div>
+                            <div class="chart-columns-flex">
+                                ${sortedByFavs.map((item, idx) => {
+                                    const rank = idx + 1;
+                                    const favs = favCountMap[item.id] || 0;
+                                    const inqs = inqCountMap[item.id] || 0;
+                                    const pct = totalFavs > 0 ? Math.round((favs / totalFavs) * 100) : 0;
+                                    const heightPct = hasAnyFavs
+                                        ? (favs > 0 ? Math.max(Math.round((favs / maxFavs) * 88), 12) : 5)
+                                        : 6;
+                                    const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                                    const typeName = typeLabelsVi[item.type] || item.type;
+                                    const shortName = item.name_vi.length > 13 ? item.name_vi.substring(0, 13) + '…' : item.name_vi;
+
+                                    return `
+                                        <div class="chart-col-item ${rank === 1 && favs > 0 ? 'is-top-1' : ''}" title="${item.name_vi} • ${favs} lượt yêu thích (${pct}% thị phần) ${inqs > 0 ? '• ' + inqs + ' yêu cầu tư vấn' : ''}">
+                                            <div class="chart-col-bar-slot">
+                                                <div class="chart-col-value-badge" style="color: #f43f5e;">
+                                                    ${favs > 0 ? `<strong>${favs}</strong><small>❤️</small>` : '<span style="color:var(--color-text-muted);">0</span>'}
+                                                </div>
+                                                <div class="chart-col-track">
+                                                    <div class="chart-col-fill pink" style="height: ${heightPct}%;"></div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-col-footer">
+                                                <span class="chart-col-rank">${rankLabel}</span>
+                                                <img src="${item.photo_path || fallbackImg}" class="chart-col-thumb" alt="${item.name_vi}" loading="lazy" />
+                                                <span class="chart-col-name">${shortName}</span>
+                                                <span class="chart-col-type">${typeName}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         `;
-                    }).join('');
+                    }
+
+                    // 2. Dựng Bảng Danh Sách Yêu Thích (List View)
+                    if (favsList) {
+                        favsList.innerHTML = sortedByFavs.map((item, idx) => {
+                            const rank = idx + 1;
+                            const favs = favCountMap[item.id] || 0;
+                            const inqs = inqCountMap[item.id] || 0;
+                            const pct = totalFavs > 0 ? Math.round((favs / totalFavs) * 100) : 0;
+                            const rankLabel = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
+                            const typeName = typeLabelsVi[item.type] || item.type;
+
+                            return `
+                                <div class="analytics-rank-item ${rank === 1 && favs > 0 ? 'rank-top-1' : ''}">
+                                    <span class="rank-pill rank-${rank}">${rankLabel}</span>
+                                    <img src="${item.photo_path || fallbackImg}" class="analytics-thumb" alt="${item.name_vi}" loading="lazy" />
+                                    <div class="analytics-info">
+                                        <div class="analytics-title-row">
+                                            <span class="analytics-tpl-name" title="${item.name_vi}">${item.name_vi}</span>
+                                            <span class="admin-type-badge type-${item.type}">${typeName}</span>
+                                            ${rank === 1 && favs > 0 ? '<span class="analytics-hot-badge" style="background: linear-gradient(135deg, #f43f5e, #fb7185);">❤️ YÊU THÍCH NHẤT</span>' : ''}
+                                        </div>
+                                        <div class="analytics-progress-bar-wrap">
+                                            <div class="analytics-progress-fill pink" style="width: ${Math.max(pct, favs > 0 ? 3 : 0)}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="analytics-stats-meta">
+                                        <span class="analytics-count-val" style="color: #f43f5e;">${favs.toLocaleString('vi-VN')} ❤️</span>
+                                        <span class="analytics-pct-val">${inqs > 0 ? inqs + ' tư vấn • ' : ''}${pct}% thị phần</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
                 }
             }
+
+            // Chuyển đổi qua lại giữa Biểu Đồ Cột và Bảng Danh Sách
+            window.switchViewsMode = function(mode) {
+                const chartEl = document.getElementById('analytics-views-column-chart');
+                const listEl = document.getElementById('analytics-views-list');
+                const chartBtn = document.getElementById('toggle-view-chart-btn');
+                const listBtn = document.getElementById('toggle-view-list-btn');
+                if (mode === 'chart') {
+                    if (chartEl) chartEl.classList.remove('hidden');
+                    if (listEl) listEl.classList.add('hidden');
+                    if (chartBtn) chartBtn.classList.add('active');
+                    if (listBtn) listBtn.classList.remove('active');
+                } else {
+                    if (chartEl) chartEl.classList.add('hidden');
+                    if (listEl) listEl.classList.remove('hidden');
+                    if (chartBtn) chartBtn.classList.remove('active');
+                    if (listBtn) listBtn.classList.add('active');
+                }
+            };
+
+            window.switchFavsMode = function(mode) {
+                const chartEl = document.getElementById('analytics-favs-column-chart');
+                const listEl = document.getElementById('analytics-favs-list');
+                const chartBtn = document.getElementById('toggle-favs-chart-btn');
+                const listBtn = document.getElementById('toggle-favs-list-btn');
+                if (mode === 'chart') {
+                    if (chartEl) chartEl.classList.remove('hidden');
+                    if (listEl) listEl.classList.add('hidden');
+                    if (chartBtn) chartBtn.classList.add('active');
+                    if (listBtn) listBtn.classList.remove('active');
+                } else {
+                    if (chartEl) chartEl.classList.add('hidden');
+                    if (listEl) listEl.classList.remove('hidden');
+                    if (chartBtn) chartBtn.classList.remove('active');
+                    if (listBtn) listBtn.classList.add('active');
+                }
+            };
 
             // Tự động làm mới dữ liệu thống kê thời gian thực mỗi 15 giây
             let analyticsRefreshInterval = null;

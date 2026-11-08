@@ -690,6 +690,24 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=6.7`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang chẩn đoán vào **Lỗi 44** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 54: Chuyển Đổi Bảng Xếp Hạng Thị Hiếu Thành Biểu Đồ Cột Hiện Đại (Modern Column Bar Charts)
+- [x] **Nâng cấp toàn diện giao diện 2 card Tầng 2 thành Biểu Đồ Cột Trực Quan (Modern Column Bar Charts):**
+  - **Hiện tượng:** Khách hàng quan sát thấy 2 bảng "Xếp Hạng Mẫu Được Xem Nhiều Nhất" và "Mẫu Được Quan Tâm & Thả Tim Nhất" vẫn hiển thị dạng danh sách hàng ngang lặp text đơn điệu, khó so sánh trực quan độ chênh lệch giữa các mẫu đồ án.
+  - **Giải pháp thiết kế trực quan:**
+    1. **Thiết kế Biểu đồ cột đứng (Column Bar Chart):**
+       - Lưới trục hoành và trục tung với đường nét đứt (`.chart-y-axis-lines`, `.axis-line`) hiển thị mốc tham chiếu linh hoạt (Max, 50%, 0).
+       - Cột hiển thị (`.chart-col-track`, `.chart-col-fill`) vươn cao theo tỷ lệ phần trăm thực tế (`height: X%`, `transition: height 0.75s var(--ease-spring)`):
+         - Biểu đồ lượt xem: Cột chuyển sắc Cyan-Blue (`#06b6d4` → `#3b82f6`).
+         - Biểu đồ thả tim yêu thích: Cột chuyển sắc Rose-Pink (`#fb7185` → `#f43f5e`).
+         - Mẫu Top 1 được tôn vinh với hiệu ứng phát sáng đặc biệt (`.is-top-1`).
+       - Thẻ hiển thị số lượng nổi phía trên mỗi cột (`.chart-col-value-badge`), ví dụ: `120 xem` hoặc `1 ❤️`.
+       - Chân cột hiển thị huy hiệu xếp hạng (🥇, 🥈, 🥉, #4...), ảnh thu nhỏ bo góc (32×32px), tên mẫu nhà ngắn gọn và nhãn phân loại kiến trúc (`.chart-col-type`).
+    2. **Bộ công tắc chuyển đổi góc nhìn linh hoạt (`.chart-view-toggle`):**
+       - Người dùng có thể bấm đổi giữa chế độ **Biểu đồ Cột** (Mặc định) và chế độ **Bảng Danh Sách** truyền thống tùy nhu cầu.
+    3. **Tương thích hoàn hảo Dark & Light Mode, cuộn ngang mượt mà trên Mobile.**
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.8`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang chẩn đoán vào **Lỗi 45** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 ### Giai đoạn 51: Khắc Phục Triệt Để Hiện Tượng Nháy Nút Đăng Nhập & Xây Dựng Hệ Thống Thống Kê Lượt Xem / Thị Hiếu Thời Gian Thực (Realtime Analytics Dashboard)
 - [x] **Xử lý dứt điểm lỗi nháy trạng thái đăng nhập (Auth State Flash / Delay):**
   - **Hiện tượng:** Sau khi lưu mẫu nhà ở Admin rồi quay lại trang chủ, góc phải navbar hiển thị nút "[Đăng nhập]" như chưa đăng nhập, sau 1 lúc mới tự động chuyển sang Avatar người dùng.

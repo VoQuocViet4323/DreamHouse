@@ -769,6 +769,23 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 45: Giao diện xếp hạng thị hiếu (Lượt xem & Thả tim) hiển thị dạng danh sách phẳng, khó so sánh trực quan
+- **Hiện tượng:** Tại Tầng 2 của tab Thống Kê (`#panel-analytics`), hai card xếp hạng mẫu nhà hiển thị các hàng chữ ngang lặp lại kèm thanh tiến trình nhỏ, thiếu độ cao trực quan của biểu đồ cột, khiến quản trị viên khó nhận diện ngay mẫu nhà nào đang tạo sức hút vượt trội.
+- **Nguyên nhân cốt lõi:**
+  1. Chưa xây dựng giao diện biểu đồ cột chuyên biệt cho hai tập dữ liệu (Lượt xem và Thả tim).
+  2. Thiếu trục tung (Y-axis gridlines) để đối chiếu trực quan các mốc giá trị thực tế (Max, 50%, 0).
+- **Cách khắc phục dứt điểm:**
+  1. **Tạo Biểu Đồ Cột Đứng Hiện Đại (`.analytics-column-chart-wrap`):**
+     - Trục tung nét đứt mảnh hiển thị các mốc giá trị thực tế.
+     - Cột đứng chuyển sắc mềm mại (Cyan-Blue cho lượt xem, Rose-Pink cho thả tim), tự động tính toán chiều cao cột theo tỷ lệ thực tế với animation lò xo (`transition: height 0.75s var(--ease-spring)`).
+     - Thẻ số liệu (`.chart-col-value-badge`) nổi phía trên đỉnh cột.
+     - Chân cột tích hợp huy hiệu thứ hạng (🥇, 🥈, 🥉, #4...), ảnh phối cảnh thu nhỏ (32×32px), tên mẫu nhà và nhãn phân loại kiến trúc.
+  2. **Tích hợp bộ chuyển đổi góc nhìn (`.chart-view-toggle`):** Cho phép người dùng chuyển nhanh giữa chế độ *Biểu đồ Cột* (Mặc định) và *Bảng Danh Sách* tùy nhu cầu.
+  3. Tự động hỗ trợ Dark Mode, Light Mode và Responsive trên thiết bị di động.
+  4. Nâng tham số cache-busting lên `?v=6.8` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
