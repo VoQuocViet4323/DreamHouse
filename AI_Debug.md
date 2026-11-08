@@ -751,6 +751,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 44: Thẻ KPI Bento "Lượt xem mẫu (Realtime)" trên trang Quản trị bị vỡ 3 dòng tiêu đề, méo huy hiệu `TRỰC TIẾP` và lệch trục ngang
+- **Hiện tượng:** Trên hàng thẻ KPI Bento (`.admin-stats-grid`) của `admin.html`, thẻ thứ 2 ("Lượt xem mẫu") bị ép chữ `LƯỢT XEM MẪU (REALTIME)` thành 3 dòng dọc, huy hiệu xanh `.live-pulse-badge` (`TRỰC TIẾP`) bị gãy làm 2 dòng (`TRỰC` / `TIẾP`) và dính sát vào ô icon mắt màu cyan; chấm tròn `.pulse-dot` bị bóp dẹt thành vạch dọc; số `0` bị đẩy tụt xuống thấp hơn hẳn các thẻ bên cạnh; dòng mô tả cuối `"Chưa có lượt xem nào ghi nhận"` bị rớt chữ `"nhận"` xuống dòng thứ 2.
+- **Nguyên nhân cốt lõi:**
+  1. Khi nâng `.admin-stats-grid` từ 4 cột lên 5 cột, chiều ngang mỗi thẻ giảm xuống còn ~235px (trừ padding và icon còn ~134px).
+  2. Đặt cả cụm chữ dài `LƯỢT XEM MẪU (REALTIME)` lẫn huy hiệu `.live-pulse-badge` chung một hàng flex ngang với `.admin-stat-icon` khiến không gian bị thiếu hụt nghiêm trọng.
+  3. `.live-pulse-badge` thiếu `white-space: nowrap; flex-shrink: 0;` và `.pulse-dot` thiếu `flex-shrink: 0; min-width: 6px;`, dẫn tới việc Flexbox tự động bóp méo chấm tròn và bẻ gãy dòng chữ `TRỰC TIẾP`.
+  4. `.admin-stat-card` dùng `display: flex; justify-content: space-between;` khiến cột icon bên phải (dù chỉ cao 42px ở góc trên) chiếm mất 54px chiều ngang dọc suốt từ đỉnh xuống đáy thẻ, làm dòng `.admin-stat-meta` ở dưới cùng bị hẹp và rớt chữ.
+- **Cách khắc phục dứt điểm:**
+  1. **Tái cấu trúc 3 tầng đồng nhất cho toàn bộ 5 thẻ KPI (`.admin-stat-card`):**
+     - **Tầng 1 (`.admin-stat-label`):** Rút gọn nhãn thành `LƯỢT XEM MẪU NHÀ` với `white-space: nowrap; padding-right: 50px;`, đảm bảo luôn nằm trên **1 dòng duy nhất** ngang bằng với 4 thẻ còn lại.
+     - **Tầng 2 (`.admin-stat-value-row`):** Đưa huy hiệu `<span class="live-pulse-badge"><span class="pulse-dot"></span>Trực tiếp</span>` xuống nằm cạnh con số lớn `#stat-total-views` (`gap: 10px`). Vị trí này có khoảng trống ngang rộng rãi nên huy hiệu hiển thị trọn vẹn và 5 con số lớn của cả 5 thẻ thẳng hàng tuyệt đối trên một trục ngang.
+     - **Tầng 3 (`.admin-stat-meta`):** Cho phép trải rộng 100% chiều ngang đáy thẻ kèm `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`.
+  2. **Định vị tuyệt đối cho `.admin-stat-icon` (`position: absolute; top: 18px; right: 18px; width: 42px; height: 42px;`):** Giữ icon cố định ở góc trên phải, giải phóng toàn bộ chiều rộng bên dưới cho dòng phụ đề.
+  3. **Khóa hình học cho `.live-pulse-badge` & `.pulse-dot`:** Thêm `white-space: nowrap; flex-shrink: 0; line-height: 1;` cho badge và `min-width: 6px; min-height: 6px; flex-shrink: 0;` cho chấm tròn.
+  4. Nâng tham số phiên bản cache-busting lên `?v=6.6` trên toàn bộ `index.html` và `admin.html`.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

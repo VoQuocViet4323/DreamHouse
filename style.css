@@ -5216,17 +5216,18 @@ body.dark-theme .confirm-modal-card {
 /* KPI Stat Cards (Bento Cards 5 cột thích ứng) */
 .admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
   margin-bottom: 28px;
+  align-items: stretch;
 }
 
 .admin-stat-card {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
-  padding: 22px 24px;
+  padding: 20px 20px 18px;
   border-radius: 18px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -5234,6 +5235,7 @@ body.dark-theme .confirm-modal-card {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: transform 0.28s var(--ease-spring), box-shadow 0.28s var(--ease-spring), border-color 0.28s ease;
+  min-width: 0;
 }
 
 .admin-stat-card:hover {
@@ -5242,18 +5244,42 @@ body.dark-theme .confirm-modal-card {
   border-color: rgba(196, 154, 69, 0.38);
 }
 
+.admin-stat-card.stat-card-interactive {
+  cursor: pointer;
+}
+
+.admin-stat-card.stat-card-interactive:hover {
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 12px 28px -10px rgba(6, 182, 212, 0.18);
+}
+
 .admin-stat-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .admin-stat-label {
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.74rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--color-text-muted);
+  padding-right: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.admin-stat-value-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 50px;
+  min-height: 34px;
 }
 
 .admin-stat-value {
@@ -5261,24 +5287,31 @@ body.dark-theme .confirm-modal-card {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-text);
-  line-height: 1.2;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .admin-stat-meta {
   font-size: 0.78rem;
   color: var(--color-text-muted);
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-top: 2px;
+  width: 100%;
+  line-height: 1.35;
 }
 
 .admin-stat-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5322,25 +5355,28 @@ body.dark-theme .confirm-modal-card {
 .admin-nav-tabs {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 5px;
   border-radius: var(--radius-full);
   background: var(--btn-subtle-bg);
   border: 1px solid var(--btn-subtle-border);
   margin-bottom: 0;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .admin-nav-tabs .tab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 20px;
+  gap: 7px;
+  padding: 8px 16px;
   border-radius: var(--radius-full);
   border: none;
   background: transparent;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.25s var(--ease-spring);
 }
@@ -5958,9 +5994,15 @@ body.dark-theme .confirm-modal-card {
   color: #f8fafc;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .admin-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -5995,24 +6037,30 @@ body.dark-theme .confirm-modal-card {
 .live-pulse-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.68rem;
+  gap: 6px;
+  font-size: 0.66rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 2px 7px;
+  letter-spacing: 0.04em;
+  padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.16);
+  background: rgba(16, 185, 129, 0.14);
   color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .live-pulse-badge .pulse-dot {
   width: 6px;
   height: 6px;
+  min-width: 6px;
+  min-height: 6px;
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 8px #10b981;
+  flex-shrink: 0;
   animation: liveDotPulse 1.8s infinite ease-in-out;
 }
 
@@ -6362,31 +6410,31 @@ body.dark-theme .confirm-modal-card {
 }
 
 .ux {
-  color-scheme: dark;
-  --ux-page: var(--color-bg, #07080d);
-  --ux-surface: var(--color-surface, #13141c);
-  --ux-surface-2: var(--color-surface-2, #1a1b25);
-  --ux-surface-3: var(--color-border, #252632);
-  --ux-ink: var(--color-text, #f4f0e8);
-  --ux-ink-2: var(--color-text-muted, rgba(244, 240, 232, 0.68));
-  --ux-ink-3: rgba(244, 240, 232, 0.42);
-  --ux-line: var(--color-border, rgba(255, 255, 255, 0.08));
-  --ux-line-2: rgba(255, 255, 255, 0.16);
-  --ux-accent: var(--color-primary, #c49a45);
-  --ux-accent-2: #3d8bff;
-  --ux-accent-soft: rgba(196, 154, 69, 0.15);
+  color-scheme: light;
+  --ux-page: #f4f2ee;
+  --ux-surface: #ffffff;
+  --ux-surface-2: #f5f3ef;
+  --ux-surface-3: #eae7e1;
+  --ux-ink: #0f172a;
+  --ux-ink-2: #475569;
+  --ux-ink-3: #64748b;
+  --ux-line: rgba(15, 23, 42, 0.09);
+  --ux-line-2: rgba(15, 23, 42, 0.16);
+  --ux-accent: var(--color-accent, #c49a45);
+  --ux-accent-2: #2f8fe0;
+  --ux-accent-soft: rgba(196, 154, 69, 0.14);
   --ux-accent-ink: #ffffff;
-  --ux-mint: #10b981;
-  --ux-warn: #f59e0b;
-  --ux-danger: #ef4444;
-  --ux-glass: rgba(255, 255, 255, 0.07);
-  --ux-glass-line: rgba(255, 255, 255, 0.18);
-  --ux-shadow: rgba(0, 0, 0, 0.45);
-  --ux-shadow-strong: rgba(0, 0, 0, 0.72);
-  --ux-grad: linear-gradient(120deg, #c49a45, #3d8bff 55%, #10b981);
+  --ux-mint: #119c72;
+  --ux-warn: #d6731e;
+  --ux-danger: #d93a55;
+  --ux-glass: rgba(255, 255, 255, 0.58);
+  --ux-glass-line: rgba(255, 255, 255, 0.85);
+  --ux-shadow: rgba(15, 23, 42, 0.08);
+  --ux-shadow-strong: rgba(15, 23, 42, 0.18);
+  --ux-grad: linear-gradient(120deg, #c49a45, #2f8fe0 55%, #119c72);
   --ux-ease: cubic-bezier(.2, .8, .2, 1);
   --ux-spring: cubic-bezier(.34, 1.45, .64, 1);
-  font-family: var(--font-sans, "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-family: var(--font-sans, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   color: var(--ux-ink);
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.01em;
@@ -6395,30 +6443,30 @@ body.dark-theme .confirm-modal-card {
   overflow-wrap: break-word;
 }
 
-:root[data-theme="light"] .ux,
-body.light-theme .ux {
-  color-scheme: light;
-  --ux-page: #f4f2ee;
-  --ux-surface: #ffffff;
-  --ux-surface-2: #f5f3ef;
-  --ux-surface-3: #eae7e1;
-  --ux-ink: #16151b;
-  --ux-ink-2: #57535f;
-  --ux-ink-3: #8e8a97;
-  --ux-line: rgba(22, 21, 27, 0.09);
-  --ux-line-2: rgba(22, 21, 27, 0.17);
-  --ux-accent: #c49a45;
-  --ux-accent-2: #2f8fe0;
-  --ux-accent-soft: rgba(196, 154, 69, 0.12);
-  --ux-accent-ink: #ffffff;
-  --ux-mint: #119c72;
-  --ux-warn: #d6731e;
-  --ux-danger: #d93a55;
-  --ux-glass: rgba(255, 255, 255, 0.58);
-  --ux-glass-line: rgba(255, 255, 255, 0.85);
-  --ux-shadow: rgba(40, 30, 80, 0.14);
-  --ux-shadow-strong: rgba(40, 30, 80, 0.3);
-  --ux-grad: linear-gradient(120deg, #c49a45, #2f8fe0 55%, #119c72);
+:root[data-theme="dark"] .ux,
+body.dark-theme .ux {
+  color-scheme: dark;
+  --ux-page: #07080d;
+  --ux-surface: #131620;
+  --ux-surface-2: #1b202e;
+  --ux-surface-3: #252c3f;
+  --ux-ink: #f8fafc;
+  --ux-ink-2: #cbd5e1;
+  --ux-ink-3: #94a3b8;
+  --ux-line: rgba(255, 255, 255, 0.08);
+  --ux-line-2: rgba(255, 255, 255, 0.16);
+  --ux-accent: var(--color-accent, #e5b95d);
+  --ux-accent-2: #3d8bff;
+  --ux-accent-soft: rgba(229, 185, 93, 0.15);
+  --ux-accent-ink: #0b0c12;
+  --ux-mint: #10b981;
+  --ux-warn: #f59e0b;
+  --ux-danger: #ef4444;
+  --ux-glass: rgba(255, 255, 255, 0.07);
+  --ux-glass-line: rgba(255, 255, 255, 0.18);
+  --ux-shadow: rgba(0, 0, 0, 0.45);
+  --ux-shadow-strong: rgba(0, 0, 0, 0.72);
+  --ux-grad: linear-gradient(120deg, #e5b95d, #3d8bff 55%, #10b981);
 }
 
 :where(.ux) :is(button, input, textarea, select) {

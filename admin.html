@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6.5">
+    <link rel="stylesheet" href="style.css?v=6.6">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=6.5"></script>
-    <script src="js/i18n.js?v=6.5"></script>
-    <script src="js/toast.js?v=6.5"></script>
+    <script src="js/config.js?v=6.6"></script>
+    <script src="js/i18n.js?v=6.6"></script>
+    <script src="js/toast.js?v=6.6"></script>
 </head>
 <body class="admin-body">
     <!-- HEADER QUẢN TRỊ -->
@@ -151,59 +151,67 @@
             <div class="admin-stat-card">
                 <div class="admin-stat-content">
                     <span class="admin-stat-label">Tổng mẫu thiết kế</span>
-                    <span class="admin-stat-value" id="stat-total-templates">0</span>
-                    <span class="admin-stat-meta" id="stat-published-meta">0 mẫu đang hiển thị</span>
+                    <div class="admin-stat-value-row">
+                        <span class="admin-stat-value" id="stat-total-templates">0</span>
+                    </div>
+                    <span class="admin-stat-meta" id="stat-published-meta">0 công khai • 0 đang ẩn</span>
                 </div>
                 <div class="admin-stat-icon gold">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </div>
             </div>
 
             <!-- Ô THỐNG KÊ LƯỢT XEM MẪU NHÀ THỜI GIAN THỰC -->
-            <div class="admin-stat-card">
+            <div class="admin-stat-card stat-card-interactive" id="kpi-card-analytics" title="Bấm để mở bảng phân tích thị hiếu chi tiết">
                 <div class="admin-stat-content">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span class="admin-stat-label">Lượt xem mẫu (Realtime)</span>
+                    <span class="admin-stat-label">Lượt xem mẫu nhà</span>
+                    <div class="admin-stat-value-row">
+                        <span class="admin-stat-value" id="stat-total-views">0</span>
                         <span class="live-pulse-badge"><span class="pulse-dot"></span>Trực tiếp</span>
                     </div>
-                    <span class="admin-stat-value" id="stat-total-views">0</span>
-                    <span class="admin-stat-meta" id="stat-top-viewed-meta">Đang phân tích lượt xem...</span>
+                    <span class="admin-stat-meta" id="stat-top-viewed-meta">Chưa phát sinh lượt xem</span>
                 </div>
                 <div class="admin-stat-icon cyan">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
             </div>
 
             <div class="admin-stat-card">
                 <div class="admin-stat-content">
-                    <span class="admin-stat-label">Mô hình 3D (.glb / .skp)</span>
-                    <span class="admin-stat-value" id="stat-3d-count">0</span>
+                    <span class="admin-stat-label">Mô hình 3D (.glb)</span>
+                    <div class="admin-stat-value-row">
+                        <span class="admin-stat-value" id="stat-3d-count">0</span>
+                    </div>
                     <span class="admin-stat-meta" id="stat-3d-meta">Đang kiểm tra tệp 3D...</span>
                 </div>
                 <div class="admin-stat-icon emerald">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                 </div>
             </div>
 
             <div class="admin-stat-card">
                 <div class="admin-stat-content">
                     <span class="admin-stat-label">Yêu cầu tư vấn mới</span>
-                    <span class="admin-stat-value" id="stat-new-inquiries">0</span>
+                    <div class="admin-stat-value-row">
+                        <span class="admin-stat-value" id="stat-new-inquiries">0</span>
+                    </div>
                     <span class="admin-stat-meta" id="stat-total-inquiries">Tổng 0 yêu cầu khách hàng</span>
                 </div>
                 <div class="admin-stat-icon blue">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
             </div>
 
             <div class="admin-stat-card">
                 <div class="admin-stat-content">
                     <span class="admin-stat-label">Dự toán trung bình</span>
-                    <span class="admin-stat-value" id="stat-avg-cost">0 đ</span>
+                    <div class="admin-stat-value-row">
+                        <span class="admin-stat-value" id="stat-avg-cost">0 đ</span>
+                    </div>
                     <span class="admin-stat-meta">Giá trị tham khảo bộ sưu tập</span>
                 </div>
                 <div class="admin-stat-icon purple">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
             </div>
         </div>
@@ -625,6 +633,11 @@
             tabInqBtn.addEventListener('click', () => switchAdminTab('inquiries'));
             tabAnalyticsBtn.addEventListener('click', () => switchAdminTab('analytics'));
 
+            const kpiAnalyticsCard = document.getElementById('kpi-card-analytics');
+            if (kpiAnalyticsCard) {
+                kpiAnalyticsCard.addEventListener('click', () => switchAdminTab('analytics'));
+            }
+
             // Sự kiện lọc theo loại nhà
             document.querySelectorAll('.admin-filter-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
@@ -710,14 +723,17 @@
                 const topMetaEl = document.getElementById('stat-top-viewed-meta');
                 if (topMetaEl) {
                     if (topViewed && (Number(topViewed.view_count) || 0) > 0) {
-                        topMetaEl.innerHTML = `Mẫu xem nhiều nhất: <strong>${topViewed.name_vi}</strong> (${topViewed.view_count} xem)`;
+                        topMetaEl.innerHTML = `🔥 Top 1: <strong>${topViewed.name_vi}</strong> (${topViewed.view_count} xem)`;
+                        topMetaEl.title = `Mẫu xem nhiều nhất: ${topViewed.name_vi} (${topViewed.view_count} lượt xem)`;
                     } else {
-                        topMetaEl.textContent = 'Chưa có lượt xem nào ghi nhận';
+                        const favTotal = allFavoritesData ? allFavoritesData.length : 0;
+                        topMetaEl.textContent = favTotal > 0 ? `0 lượt xem • ${favTotal} lượt yêu thích` : 'Chưa phát sinh lượt xem';
+                        topMetaEl.title = 'Bấm để mở bảng thống kê chi tiết';
                     }
                 }
 
                 const badgeViews = document.getElementById('badge-count-views');
-                if (badgeViews) badgeViews.textContent = `${totalViews} xem`;
+                if (badgeViews) badgeViews.textContent = totalViews.toLocaleString('vi-VN');
             }
 
             // 3. Tải danh sách Mẫu Nhà
@@ -747,6 +763,7 @@
                         .select('template_id, user_id, created_at');
                     if (!error && data) {
                         allFavoritesData = data;
+                        updateStatsKPI();
                     }
                 } catch (e) {
                     console.warn('Lỗi tải danh sách yêu thích:', e);
