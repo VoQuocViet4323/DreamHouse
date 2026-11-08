@@ -5244,15 +5244,6 @@ body.dark-theme .confirm-modal-card {
   border-color: rgba(196, 154, 69, 0.38);
 }
 
-.admin-stat-card.stat-card-interactive {
-  cursor: pointer;
-}
-
-.admin-stat-card.stat-card-interactive:hover {
-  border-color: rgba(6, 182, 212, 0.45);
-  box-shadow: 0 12px 28px -10px rgba(6, 182, 212, 0.18);
-}
-
 .admin-stat-content {
   display: flex;
   flex-direction: column;

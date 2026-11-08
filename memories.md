@@ -686,8 +686,8 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
        - *Tầng 2 (`.admin-stat-value-row`):* Đặt con số lớn `#stat-total-views` (`1.75rem`) nằm ngang hàng cùng huy hiệu `<span class="live-pulse-badge"><span class="pulse-dot"></span>Trực tiếp</span>` (`gap: 10px`). Nhờ khoảng trống rộng rãi bên cạnh con số, huy hiệu luôn nằm gọn trên 1 dòng và tất cả 5 con số lớn của 5 thẻ thẳng hàng tuyệt đối.
        - *Tầng 3 (`.admin-stat-meta`):* Dòng phụ đề chiếm trọn 100% chiều rộng đáy thẻ với `text-overflow: ellipsis`, hiển thị gọn gàng không bao giờ bị rớt chữ đơn lẻ xuống dòng 2.
     3. **Khóa tỷ lệ hình học cho `.live-pulse-badge` và `.pulse-dot`:** Bổ sung `white-space: nowrap; flex-shrink: 0; line-height: 1;` cho huy hiệu và `min-width: 6px; min-height: 6px; flex-shrink: 0;` cho chấm tròn phát sáng.
-    4. **Tương tác thông minh:** Biến thẻ KPI Lượt xem (`#kpi-card-analytics`) thành thẻ tương tác (`cursor: pointer`), bấm vào chuyển ngay sang tab *Thống Kê & Phân Tích*.
-- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.6`** trên toàn bộ `index.html` và `admin.html`.
+    4. **Đồng nhất hành vi hiển thị với 4 thẻ KPI còn lại:** Giữ thẻ KPI Lượt xem mẫu nhà ở chế độ hiển thị thuần túy (không gắn sự kiện click chuyển tab hay `cursor: pointer`), đồng bộ hoàn toàn hiệu ứng hover viền vàng với 4 panel KPI bên cạnh.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.7`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang chẩn đoán vào **Lỗi 44** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
 ### Giai đoạn 51: Khắc Phục Triệt Để Hiện Tượng Nháy Nút Đăng Nhập & Xây Dựng Hệ Thống Thống Kê Lượt Xem / Thị Hiếu Thời Gian Thực (Realtime Analytics Dashboard)

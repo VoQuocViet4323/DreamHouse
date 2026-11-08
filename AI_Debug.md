@@ -765,7 +765,7 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - **Tầng 3 (`.admin-stat-meta`):** Cho phép trải rộng 100% chiều ngang đáy thẻ kèm `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`.
   2. **Định vị tuyệt đối cho `.admin-stat-icon` (`position: absolute; top: 18px; right: 18px; width: 42px; height: 42px;`):** Giữ icon cố định ở góc trên phải, giải phóng toàn bộ chiều rộng bên dưới cho dòng phụ đề.
   3. **Khóa hình học cho `.live-pulse-badge` & `.pulse-dot`:** Thêm `white-space: nowrap; flex-shrink: 0; line-height: 1;` cho badge và `min-width: 6px; min-height: 6px; flex-shrink: 0;` cho chấm tròn.
-  4. Nâng tham số phiên bản cache-busting lên `?v=6.6` trên toàn bộ `index.html` và `admin.html`.
+  4. Giữ nguyên hành vi hiển thị thuần túy đồng nhất với 4 thẻ KPI còn lại (không gắn click chuyển tab), nâng tham số phiên bản cache-busting lên `?v=6.7` trên toàn bộ `index.html` và `admin.html`.
 
 ---
 
