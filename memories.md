@@ -650,6 +650,32 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tăng tham số phiên bản cache-busting lên **`?v=6.3`** trên toàn bộ `index.html` và `admin.html`.
   - Cập nhật cẩm nang chẩn đoán vào **Lỗi 41** trong [AI_Debug.md](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 52: Tái Thiết Kế Bảng Thống Kê Thị Hiếu Thời Gian Thực Cao Cấp (Lucian UX/UI Prompts #047 & #097)
+- [x] **Xóa bỏ bố cục danh sách 4 thẻ lặp đơn điệu, xây dựng Bố cục 2 Tầng (2-Tier Editorial Grid) hài hòa PC & Mobile:**
+  - **Tầng 1 (Hero Interactive Visual Charts - 2 cột):**
+    - **Widget 1 (Lucian Prompt #047 - Period Segmented Control):**
+      - Núm trượt chuyển đổi chu kỳ đàn hồi (Elastic rubber knob) co giãn mượt mà theo hướng di chuyển (`.go-r`, `.go-l` spring easing).
+      - 4 chu kỳ phân tích lưu lượng: *Hôm nay*, *7 ngày*, *30 ngày (mặc định)*, *Toàn bộ*.
+      - Bộ đếm số lớn tự động cuộn chữ số mượt mà (`.u047-num`) qua `requestAnimationFrame`.
+      - Huy hiệu phần trăm biến động kèm mũi tên xoay chuyển hướng tự động (`.u047-chg`).
+      - Biểu đồ sóng cong Bezier SVG (`.u047-line`, `.u047-area`) tự uốn lượn hình dạng theo dữ liệu chu kỳ mới, kết hợp điểm chốt phát sáng đập xung nhịp tuần hoàn (`.u047-halo`, `.u047-dot`).
+      - Hỗ trợ đầy đủ phím điều hướng mũi tên bàn phím (ArrowLeft, ArrowRight, ArrowUp, ArrowDown) và tự động căn chỉnh lại núm khi đổi kích thước màn hình.
+    - **Widget 2 (Lucian Prompt #097 - Donut that re-splits):**
+      - Biểu đồ hình tròn donut SVG phân bổ thị hiếu theo 3 phân loại kiến trúc cốt lõi: *Nhà phố* (`#3D8BFF`), *Biệt thự* (`#C49A45`), *Nhà cấp 4* (`#10B981`).
+      - Di chuột vào lát cắt hoặc nút phân loại: Lát cắt trượt chéo ra ngoài 7px (`transform: translate(...)`) và nở độ dày viền lên 34px, trung tâm xoay chuyển tức thì sang tên phân loại, số lượt xem thực tế và tỷ lệ thị phần (`.sw` animation).
+      - Bấm vào lát cắt hoặc nút chú giải: Ẩn phân loại đó, các phân loại còn lại tự động tính toán lại góc quay và bung rộng để lấp đầy vòng tròn khép kín (`morph()` cubic-bezier), đồng thời bộ đếm tổng số lượt xem cuộn theo (`rollTotal()`).
+      - Hiệu ứng phản hồi rung lắc (Tactile Shake) ngăn chặn người dùng tắt phân loại cuối cùng.
+  - **Tầng 2 (Deep-dive Performance Leaderboards - 2 cột):**
+    - Cột trái: *Xếp Hạng Mẫu Được Xem Nhiều Nhất* với huy hiệu Vàng 🥇 / Bạc 🥈 / Đồng 🥉, thanh phần trăm tiến trình chuyển sắc cyan-blue và nhãn `👑 XEM NHIỀU NHẤT`.
+    - Cột phải: *Mẫu Được Quan Tâm & Thả Tim Nhất* với chỉ số lượt thả tim ❤️, số yêu cầu tư vấn đã nhận và tỷ lệ thị phần yêu thích.
+- [x] **Ánh xạ Design Tokens CSS `--ux-*` hoàn hảo giữa Light Mode và Dark Mode:**
+  - Định nghĩa biến màu sắc tương thích với tông màu hoàng gia của Dream House (`--ux-accent: #c49a45;`, `--ux-mint: #10b981;`, `--ux-surface`, `--ux-ink`...).
+  - Đảm bảo độ tương phản tuyệt đối và hỗ trợ đầy đủ `prefers-reduced-motion: reduce`.
+- [x] **Cơ chế lưu giữ trạng thái bộ lọc (State Preservation):**
+  - Khi hệ thống tự động làm mới số liệu mỗi 15 giây (`startAnalyticsAutoRefresh()`), giữ nguyên chu kỳ đang chọn và các lát cắt đang bật/tắt, không gây chớp giật hay reset giao diện của quản trị viên.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.5`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang giải pháp vào **Lỗi 43** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 ### Giai đoạn 51: Khắc Phục Triệt Để Hiện Tượng Nháy Nút Đăng Nhập & Xây Dựng Hệ Thống Thống Kê Lượt Xem / Thị Hiếu Thời Gian Thực (Realtime Analytics Dashboard)
 - [x] **Xử lý dứt điểm lỗi nháy trạng thái đăng nhập (Auth State Flash / Delay):**
   - **Hiện tượng:** Sau khi lưu mẫu nhà ở Admin rồi quay lại trang chủ, góc phải navbar hiển thị nút "[Đăng nhập]" như chưa đăng nhập, sau 1 lúc mới tự động chuyển sang Avatar người dùng.

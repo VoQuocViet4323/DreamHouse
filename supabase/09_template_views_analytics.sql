@@ -41,3 +41,4 @@ USING (public.is_admin());
 -- 6. Ghi chú tài liệu hệ thống
 COMMENT ON COLUMN public.templates.view_count IS 'Tổng số lượt khách hàng mở xem chi tiết và mô hình 3D thời gian thực';
 COMMENT ON FUNCTION public.increment_template_view(UUID) IS 'Tăng bộ đếm lượt xem cho mẫu nhà tương ứng một cách nguyên tử (atomic)';
+

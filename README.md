@@ -31,6 +31,12 @@
    - Tích hợp Zalo, Hotline, Facebook Messenger và Email.
    - Nút "Nhận báo giá mẫu này" tự động đính kèm thông tin mẫu nhà đang xem vào nội dung liên hệ.
 
+6. **Trung tâm Điều hành & Thống kê Thị hiếu Thời gian thực (Admin Analytics):**
+   - Tích hợp 2 chuẩn thiết kế vi tương tác Lucian UX/UI Prompts (#047 & #097):
+     - **Bộ chuyển đổi chu kỳ (Period Segmented Control):** Núm trượt cao su đàn hồi, bộ đếm cuộn số và biểu đồ sóng Bezier SVG động theo chu kỳ (Hôm nay, 7 ngày, 30 ngày, Toàn bộ).
+     - **Biểu đồ tròn Donut tự chia lại thị phần (Donut that re-splits):** Di chuột trượt lát cắt ra ngoài, click bật/tắt phân loại để tự động tính toán lại góc quay và cuộn tổng số lượt tương tác.
+     - **Bảng xếp hạng hiệu suất chi tiết:** Xếp hạng mẫu thiết kế được xem nhiều nhất và thả tim yêu thích nhiều nhất.
+
 ---
 
 ## 📂 CẤU TRÚC THƯ MỤC DỰ ÁN

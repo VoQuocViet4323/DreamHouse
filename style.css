@@ -6350,3 +6350,443 @@ body.dark-theme .confirm-modal-card {
 :root[data-theme="light"] .analytics-cat-card {
   background: rgba(0, 0, 0, 0.02);
 }
+
+
+/* ==========================================================================
+   LUCIAN UX/UI PROMPTS: #047 (PERIOD CONTROL) & #097 (DONUT CHART)
+   ========================================================================== */
+
+/* Scoped UX Design Tokens mapping to DreamHouse theme */
+.ux, .ux *, .ux *::before, .ux *::after {
+  box-sizing: border-box;
+}
+
+.ux {
+  color-scheme: dark;
+  --ux-page: var(--color-bg, #07080d);
+  --ux-surface: var(--color-surface, #13141c);
+  --ux-surface-2: var(--color-surface-2, #1a1b25);
+  --ux-surface-3: var(--color-border, #252632);
+  --ux-ink: var(--color-text, #f4f0e8);
+  --ux-ink-2: var(--color-text-muted, rgba(244, 240, 232, 0.68));
+  --ux-ink-3: rgba(244, 240, 232, 0.42);
+  --ux-line: var(--color-border, rgba(255, 255, 255, 0.08));
+  --ux-line-2: rgba(255, 255, 255, 0.16);
+  --ux-accent: var(--color-primary, #c49a45);
+  --ux-accent-2: #3d8bff;
+  --ux-accent-soft: rgba(196, 154, 69, 0.15);
+  --ux-accent-ink: #ffffff;
+  --ux-mint: #10b981;
+  --ux-warn: #f59e0b;
+  --ux-danger: #ef4444;
+  --ux-glass: rgba(255, 255, 255, 0.07);
+  --ux-glass-line: rgba(255, 255, 255, 0.18);
+  --ux-shadow: rgba(0, 0, 0, 0.45);
+  --ux-shadow-strong: rgba(0, 0, 0, 0.72);
+  --ux-grad: linear-gradient(120deg, #c49a45, #3d8bff 55%, #10b981);
+  --ux-ease: cubic-bezier(.2, .8, .2, 1);
+  --ux-spring: cubic-bezier(.34, 1.45, .64, 1);
+  font-family: var(--font-sans, "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  color: var(--ux-ink);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+:root[data-theme="light"] .ux,
+body.light-theme .ux {
+  color-scheme: light;
+  --ux-page: #f4f2ee;
+  --ux-surface: #ffffff;
+  --ux-surface-2: #f5f3ef;
+  --ux-surface-3: #eae7e1;
+  --ux-ink: #16151b;
+  --ux-ink-2: #57535f;
+  --ux-ink-3: #8e8a97;
+  --ux-line: rgba(22, 21, 27, 0.09);
+  --ux-line-2: rgba(22, 21, 27, 0.17);
+  --ux-accent: #c49a45;
+  --ux-accent-2: #2f8fe0;
+  --ux-accent-soft: rgba(196, 154, 69, 0.12);
+  --ux-accent-ink: #ffffff;
+  --ux-mint: #119c72;
+  --ux-warn: #d6731e;
+  --ux-danger: #d93a55;
+  --ux-glass: rgba(255, 255, 255, 0.58);
+  --ux-glass-line: rgba(255, 255, 255, 0.85);
+  --ux-shadow: rgba(40, 30, 80, 0.14);
+  --ux-shadow-strong: rgba(40, 30, 80, 0.3);
+  --ux-grad: linear-gradient(120deg, #c49a45, #2f8fe0 55%, #119c72);
+}
+
+:where(.ux) :is(button, input, textarea, select) {
+  font: inherit;
+  color: inherit;
+}
+:where(.ux) button {
+  cursor: pointer;
+}
+.ux :focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: 3px;
+}
+.ux [hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux, .ux *, .ux *::before, .ux *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Layout Grids for Analytics --- */
+.analytics-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.analytics-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .analytics-hero-grid,
+  .analytics-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Lucian UX/UI Prompt #047 · MIT License (c) 2026 Seokwoooo --- */
+.u047 {
+  position: relative;
+  width: 100%;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 20px 0;
+  border-radius: 28px;
+  background: var(--ux-surface);
+  border: 1px solid var(--ux-line);
+  box-shadow: 0 0 0 1px var(--ux-line), 0 30px 60px -38px var(--ux-shadow-strong);
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.u047:hover {
+  border-color: rgba(196, 154, 69, 0.35);
+}
+.u047-seg {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--ux-surface-2);
+}
+.u047-knob {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: var(--l, 4px);
+  right: var(--r, 4px);
+  border-radius: 12px;
+  background: var(--ux-surface);
+  box-shadow: 0 4px 12px -6px var(--ux-shadow-strong), 0 0 0 1px var(--ux-line);
+}
+.u047-seg.go-r .u047-knob {
+  transition: right .3s var(--ux-ease), left .5s var(--ux-spring) .07s;
+}
+.u047-seg.go-l .u047-knob {
+  transition: left .3s var(--ux-ease), right .5s var(--ux-spring) .07s;
+}
+.u047-opt {
+  position: relative;
+  height: 38px;
+  border: 0;
+  padding: 0;
+  border-radius: 12px;
+  background: none;
+  font-size: 13.5px;
+  font-weight: 680;
+  color: var(--ux-ink-3);
+  transition: color .3s, transform .3s var(--ux-spring);
+}
+.u047-opt:hover {
+  color: var(--ux-ink-2);
+}
+.u047-opt:active {
+  transform: scale(.94);
+}
+.u047-opt[aria-checked="true"] {
+  color: var(--ux-ink);
+}
+.u047-opt:focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: 1px;
+}
+.u047-lab {
+  margin: 18px 4px 0;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--ux-ink-3);
+}
+.u047-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 4px 0;
+}
+.u047-num {
+  font-size: 38px;
+  font-weight: 850;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ux-ink);
+}
+.u047-chg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 750;
+  background: color-mix(in srgb, var(--ux-mint) 15%, transparent);
+  color: var(--ux-mint);
+  font-variant-numeric: tabular-nums;
+  transition: background-color .4s, color .4s;
+}
+.u047-chg.down {
+  background: color-mix(in srgb, var(--ux-danger) 13%, transparent);
+  color: var(--ux-danger);
+}
+.u047-chg svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .45s var(--ux-spring);
+}
+.u047-chg.down svg {
+  transform: rotate(180deg);
+}
+.u047-chart {
+  position: relative;
+  flex: 1;
+  min-height: 160px;
+  margin: 12px -20px 0;
+}
+.u047-chart svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.u047-line {
+  fill: none;
+  stroke: var(--ux-accent);
+  stroke-width: 2.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.u047-grid line {
+  stroke: var(--ux-line);
+  stroke-dasharray: 3 5;
+}
+.u047-dot {
+  fill: var(--ux-surface);
+  stroke: var(--ux-accent);
+  stroke-width: 3;
+}
+.u047-halo {
+  fill: var(--ux-accent);
+  opacity: .25;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: u047-p 2s ease-out infinite;
+}
+@keyframes u047-p {
+  0% { transform: scale(.6); opacity: .4; }
+  100% { transform: scale(2.3); opacity: 0; }
+}
+
+/* --- Lucian UX/UI Prompt #097 · MIT License (c) 2026 Seokwoooo --- */
+.u097 {
+  position: relative;
+  width: 100%;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 20px 18px;
+  border-radius: 28px;
+  background: var(--ux-surface);
+  border: 1px solid var(--ux-line);
+  box-shadow: 0 0 0 1px var(--ux-line), 0 30px 60px -36px var(--ux-shadow-strong);
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.u097:hover {
+  border-color: rgba(196, 154, 69, 0.35);
+}
+.u097-h small {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ux-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.u097-h b {
+  display: block;
+  margin-top: 3px;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  color: var(--ux-ink);
+}
+.u097-dn {
+  position: relative;
+  width: 216px;
+  height: 216px;
+  margin: 10px auto;
+}
+.u097-dn svg {
+  width: 216px;
+  height: 216px;
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+.u097-trk {
+  fill: none;
+  stroke: var(--ux-surface-2);
+  stroke-width: 26;
+}
+.u097-sg {
+  fill: none;
+  stroke-width: 26;
+  pointer-events: stroke;
+  cursor: pointer;
+  transition: transform .45s var(--ux-spring), stroke-width .45s var(--ux-spring), opacity .25s;
+}
+.u097.has .u097-sg:not(.on) {
+  opacity: .32;
+}
+.u097-sg.on {
+  stroke-width: 34;
+}
+.u097-c {
+  position: absolute;
+  inset: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.u097-c small {
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--ux-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.u097-c b {
+  margin-top: 2px;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ux-ink);
+}
+.u097-c span {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ux-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.u097-c.sw > * {
+  animation: u097-sw .32s var(--ux-ease);
+}
+@keyframes u097-sw {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.u097-lg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: auto;
+}
+.u097-it {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 13px;
+  background: var(--ux-surface-2);
+  font-size: 12.5px;
+  font-weight: 750;
+  color: var(--ux-ink);
+  text-align: left;
+  transition: background-color .2s, opacity .25s, transform .3s var(--ux-spring);
+}
+.u097-it:hover, .u097-it.on {
+  background: var(--ux-surface-3);
+}
+.u097-it:active {
+  transform: scale(.96);
+}
+.u097-it i {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--c);
+  box-shadow: inset 0 0 0 2px var(--c);
+  transition: background-color .25s;
+}
+.u097-it span {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.u097-it small {
+  font-size: 11.5px;
+  font-weight: 750;
+  color: var(--ux-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.u097-it[aria-pressed="false"] {
+  opacity: .45;
+}
+.u097-it[aria-pressed="false"] i {
+  background: transparent;
+}
+.u097-it[aria-pressed="false"] span {
+  text-decoration: line-through;
+}
+.u097-it:focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: 1px;
+}

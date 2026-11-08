@@ -731,6 +731,26 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 43: Giao diện thống kê phân tích thị hiếu cũ bị lặp danh sách 4 thẻ đơn điệu và thiếu tính tương tác trực quan
+- **Hiện tượng:** Ban đầu tab Thống Kê (`#panel-analytics`) trong `admin.html` bố trí 4 card với danh sách text thanh tiến trình lặp lại giống nhau, thiếu biểu đồ hình học trực quan, không hiển thị được xu hướng tăng trưởng lưu lượng theo chu kỳ thời gian (ngày, tuần, tháng, toàn bộ) và phân bổ thị phần giữa các loại kiến trúc (Nhà phố, Biệt thự, Nhà cấp 4).
+- **Nguyên nhân cốt lõi:**
+  1. Chưa áp dụng các chuẩn thiết kế vi tương tác (micro-interactions) chuyên sâu cho dữ liệu kiến trúc.
+  2. Bố cục 4 thẻ dạng text-list chiếm nhiều diện tích dọc nhưng mật độ thông tin và trải nghiệm thẩm mỹ thấp.
+  3. Khi hệ thống tự động làm mới số liệu (auto-refresh mỗi 15 giây), nếu vẽ lại DOM hoàn toàn sẽ làm gián đoạn chu kỳ đang xem hoặc phân loại mà admin đang click kiểm tra.
+- **Cách khắc phục dứt điểm:**
+  1. **Tích hợp Lucian UX/UI Prompt #047 (Period Segmented Control & Dynamic Bezier Wave):**
+     - Núm trượt cao su đàn hồi (`.u047-knob` spring easing), bộ đếm cuộn số mượt mà (`.u047-num`) qua `requestAnimationFrame`.
+     - Đường cong sóng Bezier SVG (`.u047-line`, `.u047-area`) tự uốn lượn khi đổi chu kỳ (Hôm nay, 7 ngày, 30 ngày, Toàn bộ) kèm điểm phát sáng beacon đập nhịp tuần hoàn.
+  2. **Tích hợp Lucian UX/UI Prompt #097 (Donut that re-splits & Center Stat Switcher):**
+     - Biểu đồ tròn Donut SVG tương tác: Di chuột trượt lát cắt ra ngoài 7px và dày lên 34px, nhãn trung tâm đảo hoạt ảnh hiển thị số lượt xem và % thị phần.
+     - Click lát cắt hoặc nút phân loại: Tự động tính toán lại góc quay lấp đầy 360 độ (`morph()`) và cuộn lại tổng số (`rollTotal()`).
+     - Rung phản hồi (Tactile Shake) ngăn chặn tắt phân loại cuối cùng.
+  3. **Tái cấu trúc 2 Tầng (2-Tier Grid):** Tầng 1 gồm 2 Hero Visual Interactive Widgets; Tầng 2 gồm 2 Leaderboards chi tiết xếp hạng lượt xem và lượt thả tim.
+  4. **Lưu giữ trạng thái tương tác (State Preservation):** Lưu `root._curPeriod` và `root._onState` để cơ chế làm mới định kỳ không gây reset giao diện của người dùng.
+  5. Đồng bộ biến CSS Design Tokens `--ux-*` cho cả Dark Mode và Light Mode, nâng phiên bản cache-busting lên `?v=6.5`.
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |
