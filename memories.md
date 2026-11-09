@@ -728,8 +728,25 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - **Tối ưu Trang Quản Trị Admin (`admin.html`) trên Mobile:**
     1. Bento KPI cards tự động chuyển thành 1 cột dọc (`grid-template-columns: 1fr;`).
     2. Thanh tab và bộ lọc loại nhà thích ứng cuộn ngang mượt mà (`-webkit-overflow-scrolling: touch`).
-- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.9`** trên toàn bộ `index.html` và `admin.html`.
-- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 46** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.0`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 46** và **Lỗi 47** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
+### Giai đoạn 53: Tối Ưu Toàn Diện Giao Diện Trang Quản Trị Admin Portal Trên Thiết Bị Di Động (Mobile Header & Action Buttons)
+- [x] **Xử lý triệt để hiện tượng Header Admin bị chèn ép, vỡ logo và tràn nút trên Mobile (< 640px & < 380px):**
+  - **Khắc phục lỗi Header:**
+    1. Logo `Dream House` bị ép cụt chữ thành `Dream Ho...` do thẻ cha thiếu `min-width: 0`, đồng thời huy hiệu `ADMIN PORTAL` bên cạnh bị nhảy đè chèn lấn lên logo.
+    2. Cụm nút bên phải chứa đồng thời Theme Toggle, nút *"Về trang chủ"* dạng chữ dài và nút *"Đăng xuất"* dạng chữ dài, tổng chiều rộng lên tới 314px (vượt quá 85% chiều rộng cả màn hình điện thoại 360-390px), dẫn tới việc nút *"Về trang chủ"* bị cắt cụt và nút *"Đăng xuất"* bị đẩy văng ra ngoài mép màn hình.
+  - **Giải pháp xử lý dứt điểm:**
+    1. **Tái cấu trúc khối thương hiệu (`.admin-header-brand-wrap`):** Đặt `min-width: 0; flex-shrink: 1;`. Khóa `brand-title` kích thước `1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`. Ẩn dòng phụ đề `.brand-sub` ("Architectural Design") trên mobile để chiều cao header không bị phình to.
+    2. **Thu gọn huy hiệu Admin:** Giảm padding `3px 8px; font-size: 0.65rem;` có chấm xanh nhấp nháy. Trên màn hình siêu nhỏ (< 380px), tự động ẩn chữ `Portal`, chỉ giữ lại chấm tròn xanh bảo vệ không gian cho logo.
+    3. **Chuyển đổi nút hành động sang Icon Pill thông minh:**
+       - Nút *"Về trang chủ"* (`.admin-btn-home`): Chuyển thành icon ngôi nhà 36×36px bo tròn, ẩn chữ trên mobile.
+       - Nút *"Đăng xuất"* (`.admin-btn-logout`): Chuyển thành icon đăng xuất 36×36px bo tròn, ẩn chữ trên mobile.
+       - Tổng chiều rộng cụm 3 nút bên phải giảm mạnh từ **314px xuống chỉ còn 124px**, giải phóng hơn **220px** cho Logo bên trái luôn hiển thị trọn vẹn, không bị đè hay cắt xén.
+  - **Tối ưu Khối Hero Actions của Admin Portal:**
+    1. Trước đây nút `+ Thêm mẫu nhà mới` có `width: 100%` nên bị rớt xuống hàng dưới, để nút Làm mới `(⟳)` đứng cô độc một mình ở hàng trên.
+    2. Giải pháp: Áp dụng `display: flex; gap: 8px; width: 100%; align-items: center;`. Nút Làm mới giữ kích thước `44×44px` bo góc 12px, nút Thêm mẫu nhà nhận `flex: 1` với padding `12px 16px`, hai nút nằm chung một hàng ngang liền mạch, cân xứng và thẩm mỹ cao.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.0`** trên toàn bộ `index.html` và `admin.html`.
 
 ### Giai đoạn 51: Khắc Phục Triệt Để Hiện Tượng Nháy Nút Đăng Nhập & Xây Dựng Hệ Thống Thống Kê Lượt Xem / Thị Hiếu Thời Gian Thực (Realtime Analytics Dashboard)
 - [x] **Xử lý dứt điểm lỗi nháy trạng thái đăng nhập (Auth State Flash / Delay):**

@@ -813,7 +813,30 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   4. **Tối ưu Modal Chi tiết mẫu nhà (`#detail-modal`) & Trang Admin:**
      - Chuyển layout modal sang 1 cột dọc thông suốt, điều chỉnh canvas 3D cao 250px và ảnh 190px.
      - Tối ưu 5 thẻ Bento KPI của Admin thành 1 cột dọc trên màn hình di động.
-  5. Nâng tham số cache-busting lên `?v=6.9` trên toàn bộ dự án (`index.html` và `admin.html`).
+  5. Nâng tham số cache-busting lên `?v=7.0` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
+### 🔴 Lỗi 47: Header trang Quản Trị (`admin.html`) bị đè chèn ép logo, vỡ chữ `Dream Ho...` và đẩy văng nút Đăng xuất trên Mobile
+- **Hiện tượng:**
+  1. Logo *"Dream House"* trên thanh điều hướng trang Admin bị bóp nghẹt thành `Dream Ho...`, đồng thời bị huy hiệu `ADMIN PORTAL` (màu vàng có chấm xanh) nhảy đè chèn lấn lên chữ.
+  2. Nút *"Về trang chủ"* bị tràn mép phải cắt cụt chữ, nút *"Đăng xuất"* bị đẩy văng hoàn toàn ra ngoài màn hình điện thoại.
+  3. Trong Hero Banner của Admin, nút làm mới `(⟳)` đứng cô độc một mình ở hàng trên, còn nút `+ Thêm mẫu nhà mới` bị rớt xuống hàng dưới chiếm 100% chiều ngang.
+- **Nguyên nhân cốt lõi:**
+  1. Thẻ bao bọc logo và badge `<div style="display: flex; align-items: center; gap: 16px;">` thiếu `min-width: 0; flex-shrink: 1;`.
+  2. Cụm nút bên phải chứa đồng thời nút Theme Toggle, nút *"Về trang chủ"* dạng chữ dài và nút *"Đăng xuất"* dạng chữ dài, tổng chiều rộng lên tới 314px (vượt quá 85% chiều rộng cả màn hình điện thoại 360-390px), dồn ép logo bên trái chỉ còn lại dưới 30px không gian khả dụng.
+  3. Nút `.btn-admin-add` trên mobile được gán `width: 100%`, làm đứt gãy liên kết ngang với nút làm mới `.btn-admin-refresh`.
+- **Cách khắc phục dứt điểm:**
+  1. **Tái cấu trúc khối thương hiệu (`.admin-header-brand-wrap`):** Gán `min-width: 0; flex-shrink: 1;`. Khóa `.brand-title` kích thước `1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`. Ẩn dòng phụ đề `.brand-sub` trên mobile.
+  2. **Thu gọn huy hiệu Admin:** Giảm padding `3px 8px; font-size: 0.65rem;`. Trên màn hình siêu nhỏ (< 380px), tự động ẩn chữ `Portal`, chỉ giữ lại chấm tròn xanh nhấp nháy phát sáng bảo vệ không gian cho logo.
+  3. **Chuyển đổi nút điều hướng sang Icon Pill tròn 36×36px:**
+     - Nút *"Về trang chủ"* (`.admin-btn-home`): Chuyển thành icon ngôi nhà 36×36px bo tròn, ẩn chữ trên mobile.
+     - Nút *"Đăng xuất"* (`.admin-btn-logout`): Chuyển thành icon đăng xuất 36×36px bo tròn, ẩn chữ trên mobile.
+     - Giảm tổng chiều rộng cụm nút bên phải từ **314px xuống còn 124px**, giải phóng hơn **220px** cho Logo bên trái luôn hiển thị thẳng thớm, nguyên vẹn 100%.
+  4. **Cân đối khối Hero Actions của Admin:**
+     - Áp dụng `display: flex; gap: 8px; width: 100%; align-items: center;`.
+     - Nút Làm mới giữ `44×44px` bo góc 12px, nút Thêm mẫu nhà nhận `flex: 1; width: auto;`, hai nút nằm chung một hàng ngang liền mạch, sang trọng.
+  5. Nâng tham số cache-busting lên `?v=7.0` trên toàn bộ dự án (`index.html` và `admin.html`).
 
 ---
 
