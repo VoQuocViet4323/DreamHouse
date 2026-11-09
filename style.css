@@ -6558,16 +6558,30 @@ body.dark-theme .confirm-modal-card {
 
   .admin-nav-tabs {
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px;
+    border-radius: var(--radius-full);
+    background: var(--btn-subtle-bg);
+    border: 1px solid var(--btn-subtle-border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .admin-nav-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .admin-nav-tabs .tab-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
     justify-content: center;
-    padding: 8px 10px;
-    font-size: 0.8rem;
-    gap: 5px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    gap: 6px;
   }
 
   .admin-filter-controls {

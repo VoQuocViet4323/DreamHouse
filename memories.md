@@ -779,7 +779,37 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - **Cơ chế tự động làm mới thời gian thực:**
     - Tự động đồng bộ số liệu mỗi 15 giây (`startAnalyticsAutoRefresh()`) khi tab đang hoạt động, có nút *"Làm mới ngay"* thủ công.
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=6.4`** trên toàn bộ `index.html` và `admin.html`.
-- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 42** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 42** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
+### Giai đoạn 52: Tối Ưu Hóa Toàn Diện UI/UX Giao Diện Trang Chủ Trên Màn Hình Điện Thoại (Mobile Responsive Polish v6.9)
+- [x] **Xử lý dứt điểm tình trạng chèn ép Header và xô lệch layout trang chủ:**
+  - **Header & Brand:** Khóa `.brand-title` về kích thước chuẩn di động `1.25rem`, `white-space: nowrap`, `overflow: hidden`, `text-overflow: ellipsis;` giữ cho tên thương hiệu Dream House luôn thẳng hàng, không bị bóp nghẹt.
+  - **Cụm Action Header:** Tối ưu hóa kích thước nút Theme Toggle thành khối tròn `36×36px`, nút chuyển ngôn ngữ `height: 36px; padding: 0 10px; font-size: 0.78rem;`, nút User Profile thu nhỏ `height: 36px; max-width: 76px;` để nhường diện tích trung tâm.
+  - **Hero Section:** Sửa lỗi từ "MỸ" bị rớt dòng trơ trọi trong khẩu hiệu "KIẾN TRÚC TINH HOA - XÂY DỰNG TỔ ẤM HOÀN MỸ". Cân bằng 2 nút bấm Hero CTA (`Khám phá mẫu nhà` và `Liên hệ`) thành lưới 2 cột 50/50 (`grid-template-columns: 1fr 1fr; gap: 10px;`).
+  - **Thư viện mẫu:** Ô tìm kiếm hiển thị full width 100%, 2 menu dropdown "Loại nhà" và "Sắp xếp" phân bổ đều 2 cột cân xứng 50/50.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.9`**.
+
+### Giai đoạn 53: Cải Thiện Toàn Diện Giao Diện Bảng Quản Trị Hệ Thống Trên Mobile (Admin Portal Mobile Redesign v7.0)
+- [x] **Tái thiết kế thanh điều hướng và Hero của Admin Portal trên điện thoại:**
+  - Khắc phục lỗi logo "Dream House" bị co ngắn thành `Dream Ho...` do cụm nút bên phải chiếm tới 314px.
+  - Chuyển đổi nút *"Về trang chủ"* (`.admin-btn-home`) và *"Đăng xuất"* (`.admin-btn-logout`) thành các nút Icon Pill tròn `36×36px`, ẩn chữ trên mobile, giải phóng hơn 220px chiều ngang.
+  - Thu gọn huy hiệu `ADMIN PORTAL`, tự động chỉ hiển thị chấm xanh nhấp nháy trên màn hình < 380px.
+  - Gộp nút làm mới `(⟳)` (44×44px) và nút `+ Thêm mẫu nhà mới` (`flex: 1`) lên chung một hàng ngang liền mạch, hiện đại.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.0`**.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 47** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
+### Giai đoạn 54: Khắc Phục Lỗi Thanh Tab Quản Trị Hệ Thống Bị Rớt Hàng & Méo Viên Thuốc Trên Mobile (Admin Nav Tabs Touch Scroll v7.1)
+- [x] **Xử lý dứt điểm lỗi bố cục 3 tab điều hướng Admin trên thiết bị di động:**
+  - **Hiện tượng:** Tab 1 và Tab 2 nằm ở dòng 1 (Tab 2 bị cụt chữ), Tab 3 *"Thống Kê & Phân Tích"* bị rớt xuống dòng 2 đứng lẻ loi, viền oval tròn `.admin-nav-tabs` bị kéo giãn và méo mó.
+  - **Nguyên nhân:** Bị kẹt thuộc tính cũ `display: grid; grid-template-columns: 1fr 1fr;` khi hệ thống ban đầu chỉ có 2 tab.
+  - **Giải pháp dứt điểm:**
+    1. Chuyển đổi `.admin-nav-tabs` dưới `@media (max-width: 640px)` sang layout Flex cuộn ngang chạm vuốt (`display: flex; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: var(--radius-full);`).
+    2. Các tab con `.tab-btn` nhận `flex-shrink: 0; white-space: nowrap; padding: 8px 14px; font-size: 0.82rem; gap: 6px;`.
+    3. Rút ngắn nhãn hiển thị trong `admin.html` từ *"Yêu Cầu Tư Vấn & Báo Giá"* thành *"Yêu Cầu Tư Vấn"*.
+  - **Kết quả:** Giữ trọn vẹn kiểu dáng viên thuốc tròn cao cấp chuẩn Apple/Bento UI, vuốt mượt mà trên mọi thiết bị di động, tự do mở rộng tab mà không bao giờ vỡ khung hình.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.1`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 48** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

@@ -815,6 +815,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Tối ưu 5 thẻ Bento KPI của Admin thành 1 cột dọc trên màn hình di động.
   5. Nâng tham số cache-busting lên `?v=7.0` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 48: Thanh Tab Điều Hướng Admin (`.admin-nav-tabs`) bị rớt hàng và méo mó viền bo tròn trên Mobile do cố định lưới 2 cột (`grid-template-columns: 1fr 1fr`) khi có 3 tabs
+- **Hiện tượng:**
+  1. Trên màn hình điện thoại, thanh tab điều hướng Admin hiển thị dị dạng: Tab 1 *"Quản lý Mẫu Nhà"* và Tab 2 *"Yêu Cầu Tư Vấn & Báo Gi..."* nằm ở dòng 1 (Tab 2 bị cụt chữ), trong khi Tab 3 *"Thống Kê & Phân Tích"* bị rớt xuống dòng 2 đứng một mình lệch sang trái.
+  2. Viền ngoài hình viên thuốc bo tròn (`border-radius: var(--radius-full)`) bị kéo giãn chiều dọc theo 2 dòng, cắt ngang nửa thân của Tab 3 tạo thành một hình oval méo mó rất mất thẩm mỹ.
+- **Nguyên nhân cốt lõi:**
+  1. Trước đây hệ thống Admin chỉ có 2 tabs ("Quản lý Mẫu Nhà" và "Yêu Cầu Tư Vấn"), CSS mobile `@media (max-width: 640px)` quy định `.admin-nav-tabs { display: grid; grid-template-columns: 1fr 1fr; }`.
+  2. Khi tích hợp thêm Tab 3 *"Thống Kê & Phân Tích"*, lưới 2 cột bắt buộc phần tử thứ 3 rớt xuống dòng thứ 2.
+  3. Tiêu đề Tab 2 quá dài *"Yêu Cầu Tư Vấn & Báo Giá"* chiếm nhiều diện tích ngang gây tràn chữ trên màn hình hẹp.
+- **Cách khắc phục dứt điểm:**
+  1. **Chuyển đổi sang Flex Cuộn Ngang Mượt Mà (Touch Horizontal Scroll):**
+     - Tại `@media (max-width: 640px)` trong `style.css`: Thay thế `display: grid; grid-template-columns: 1fr 1fr;` bằng layout Flex với `overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: var(--radius-full);`.
+     - Các nút `.tab-btn` được gán `flex-shrink: 0; white-space: nowrap; padding: 8px 14px; font-size: 0.82rem; gap: 6px;`.
+  2. **Tinh chỉnh tiêu đề Tab tinh gọn:** Rút ngắn nhãn hiển thị trong `admin.html` từ *"Yêu Cầu Tư Vấn & Báo Giá"* thành *"Yêu Cầu Tư Vấn"* để thanh thoát, cân xứng với các tab khác.
+  3. **Kết quả:** Thanh tab giữ trọn vẹn kiểu dáng viên thuốc tròn cao cấp chuẩn Apple/Bento UI, vuốt cảm ứng ngang êm ái, co giãn tự nhiên không bao giờ bị cắt chữ hay méo viền dù có thêm bao nhiêu tab mới.
+  4. Nâng tham số cache-busting lên `?v=7.1` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ### 🔴 Lỗi 47: Header trang Quản Trị (`admin.html`) bị đè chèn ép logo, vỡ chữ `Dream Ho...` và đẩy văng nút Đăng xuất trên Mobile
@@ -837,6 +853,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Áp dụng `display: flex; gap: 8px; width: 100%; align-items: center;`.
      - Nút Làm mới giữ `44×44px` bo góc 12px, nút Thêm mẫu nhà nhận `flex: 1; width: auto;`, hai nút nằm chung một hàng ngang liền mạch, sang trọng.
   5. Nâng tham số cache-busting lên `?v=7.0` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+### 🔴 Lỗi 48: Thanh Tab Điều Hướng Admin (`.admin-nav-tabs`) bị rớt hàng và méo mó viền bo tròn trên Mobile do cố định lưới 2 cột (`grid-template-columns: 1fr 1fr`) khi có 3 tabs
+- **Hiện tượng:**
+  1. Trên màn hình điện thoại, thanh tab điều hướng Admin hiển thị dị dạng: Tab 1 *"Quản lý Mẫu Nhà"* và Tab 2 *"Yêu Cầu Tư Vấn & Báo Gi..."* nằm ở dòng 1 (Tab 2 bị cụt chữ), trong khi Tab 3 *"Thống Kê & Phân Tích"* bị rớt xuống dòng 2 đứng một mình lệch sang trái.
+  2. Viền ngoài hình viên thuốc bo tròn (`border-radius: var(--radius-full)`) bị kéo giãn chiều dọc theo 2 dòng, cắt ngang nửa thân của Tab 3 tạo thành một hình oval méo mó rất mất thẩm mỹ.
+- **Nguyên nhân cốt lõi:**
+  1. Trước đây hệ thống Admin chỉ có 2 tabs ("Quản lý Mẫu Nhà" và "Yêu Cầu Tư Vấn"), CSS mobile `@media (max-width: 640px)` quy định `.admin-nav-tabs { display: grid; grid-template-columns: 1fr 1fr; }`.
+  2. Khi tích hợp thêm Tab 3 *"Thống Kê & Phân Tích"*, lưới 2 cột bắt buộc phần tử thứ 3 rớt xuống dòng thứ 2.
+  3. Tiêu đề Tab 2 quá dài *"Yêu Cầu Tư Vấn & Báo Giá"* chiếm nhiều diện tích ngang gây tràn chữ trên màn hình hẹp.
+- **Cách khắc phục dứt điểm:**
+  1. **Chuyển đổi sang Flex Cuộn Ngang Mượt Mà (Touch Horizontal Scroll):**
+     - Tại `@media (max-width: 640px)` trong `style.css`: Thay thế `display: grid; grid-template-columns: 1fr 1fr;` bằng layout Flex với `overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: var(--radius-full);`.
+     - Các nút `.tab-btn` được gán `flex-shrink: 0; white-space: nowrap; padding: 8px 14px; font-size: 0.82rem; gap: 6px;`.
+  2. **Tinh chỉnh tiêu đề Tab tinh gọn:** Rút ngắn nhãn hiển thị trong `admin.html` từ *"Yêu Cầu Tư Vấn & Báo Giá"* thành *"Yêu Cầu Tư Vấn"* để thanh thoát, cân xứng với các tab khác.
+  3. **Kết quả:** Thanh tab giữ trọn vẹn kiểu dáng viên thuốc tròn cao cấp chuẩn Apple/Bento UI, vuốt cảm ứng ngang êm ái, co giãn tự nhiên không bao giờ bị cắt chữ hay méo viền dù có thêm bao nhiêu tab mới.
+  4. Nâng tham số cache-busting lên `?v=7.1` trên toàn bộ dự án (`index.html` và `admin.html`).
 
 ---
 
