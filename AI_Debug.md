@@ -852,6 +852,25 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Hiệu ứng Active bấm nhún: `transform: rotate(90deg) scale(0.92);`.
   3. Nâng tham số cache-busting lên `?v=7.2` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 50: Vẫn hiển thị tiếng Việt tại nhiều vị trí giao diện khi chuyển sang Tiếng Anh (Song ngữ chưa triệt để)
+- **Hiện tượng:**
+  1. Người dùng bấm nút chuyển ngôn ngữ sang **EN**, giao diện chính đổi sang tiếng Anh nhưng trong Dropdown Menu của User Profile vẫn hiển thị: *"QUẢN TRỊ VIÊN (ADMIN)"*, *"Bảng quản trị Admin"*, *"Mẫu nhà đã lưu yêu thích"*, *"Chỉnh sửa hồ sơ"*, *"Cài đặt hệ thống"*.
+  2. Dòng phụ đề thư viện (`.section-sub`): *"Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch."* vẫn giữ nguyên tiếng Việt.
+  3. Thẻ mẫu nhà (house card) hiển thị nhãn phân loại *"Biệt thự"* và tên mẫu *"Nhà phố 2 tầng 5x16m"* bằng tiếng Việt do database chỉ lưu tên/phong cách tiếng Việt.
+  4. Các khu vực trong Contact Section, Auth Modal, Profile Modal thiếu thuộc tính `data-i18n` đồng bộ.
+- **Nguyên nhân cốt lõi:**
+  1. Các thẻ văn bản trong dropdown menu (`#user-dropdown-menu`), phụ đề gallery, kênh liên hệ và modal hồ sơ được viết hardcode tiếng Việt trong `index.html` mà không được gắn thuộc tính `data-i18n`.
+  2. Trong `js/app.js`, hàm `updateAuthUI()` gán nhãn cứng `roleBadge.textContent = isAdmin ? 'Quản trị viên (Admin)' : 'Thành viên';` thay vì lấy từ từ điển `window.i18n.t()`.
+  3. Trong `renderGallery()`, bảng tra cứu `typeDisplayNames` chỉ có các key slug tiếng Anh (`biet-thu`, `nha-pho`, `nha-cap-4`), khi gặp giá trị phong cách tiếng Việt (`Biệt thự`, `Nhà phố`) thì trả về `undefined` và giữ nguyên tiếng Việt.
+- **Cách khắc phục dứt điểm:**
+  1. **Bổ sung toàn diện từ điển song ngữ trong `js/i18n.js`:** Thêm đầy đủ 30+ key mới cho menu dropdown (`menu_admin`, `menu_favorites`, `menu_profile`, `menu_settings`, `role_admin`, `role_member`), phụ đề gallery (`gallery_sub`), kênh liên hệ, auth showcase và toàn bộ form hồ sơ cá nhân.
+  2. **Gắn thuộc tính `data-i18n` đồng bộ trong `index.html`:** Quét toàn bộ mã nguồn HTML bằng script phân tích cú pháp để phát hiện và gán thẻ `data-i18n` cho 100% các phần tử giao diện, không bỏ sót bất kỳ văn bản nào.
+  3. **Xây dựng bộ chuyển dịch thông minh (`getLocalizedTemplateName` & `getLocalizedStyle`) trong `js/app.js`:**
+     - Tự động chuyển đổi badge phong cách tiếng Việt sang tiếng Anh chuẩn: `Biệt thự` $\to$ `Villa`, `Nhà phố` $\to$ `Townhouse`, `Nhà cấp 4` $\to$ `Bungalow`, `Hiện đại` $\to$ `Modern`, `Tân cổ điển` $\to$ `Neo-Classical`, v.v.
+     - Tự động chuyển đổi cú pháp tên mẫu nhà kiến trúc phổ biến sang tiếng Anh: `Nhà phố 2 tầng 5x16m` $\to$ `2-Story Modern Townhouse 5x16m`, `Biệt thự 3 tầng` $\to$ `3-Story Luxury Villa`, v.v.
+  4. **Cập nhật `updateAuthUI()`:** Đồng bộ `roleBadge` và `profile-role-text` theo từ điển i18n hiện hành.
+  5. Nâng tham số cache-busting lên `?v=7.3` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ### 🔴 Lỗi 47: Header trang Quản Trị (`admin.html`) bị đè chèn ép logo, vỡ chữ `Dream Ho...` và đẩy văng nút Đăng xuất trên Mobile
@@ -911,6 +930,25 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Hiệu ứng Hover sang trọng: Nền đỏ hồng trong suốt `rgba(239, 68, 68, 0.2)`, viền đỏ nhẹ, icon phát sáng `#fca5a5`, đổ bóng glow `box-shadow: 0 4px 16px rgba(239, 68, 68, 0.28)`, chuyển động xoay 90 độ mượt mà với lò xo vật lý `transition: all 0.25s var(--ease-spring); transform: rotate(90deg) scale(1.08);`.
      - Hiệu ứng Active bấm nhún: `transform: rotate(90deg) scale(0.92);`.
   3. Nâng tham số cache-busting lên `?v=7.2` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+### 🔴 Lỗi 50: Vẫn hiển thị tiếng Việt tại nhiều vị trí giao diện khi chuyển sang Tiếng Anh (Song ngữ chưa triệt để)
+- **Hiện tượng:**
+  1. Người dùng bấm nút chuyển ngôn ngữ sang **EN**, giao diện chính đổi sang tiếng Anh nhưng trong Dropdown Menu của User Profile vẫn hiển thị: *"QUẢN TRỊ VIÊN (ADMIN)"*, *"Bảng quản trị Admin"*, *"Mẫu nhà đã lưu yêu thích"*, *"Chỉnh sửa hồ sơ"*, *"Cài đặt hệ thống"*.
+  2. Dòng phụ đề thư viện (`.section-sub`): *"Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch."* vẫn giữ nguyên tiếng Việt.
+  3. Thẻ mẫu nhà (house card) hiển thị nhãn phân loại *"Biệt thự"* và tên mẫu *"Nhà phố 2 tầng 5x16m"* bằng tiếng Việt do database chỉ lưu tên/phong cách tiếng Việt.
+  4. Các khu vực trong Contact Section, Auth Modal, Profile Modal thiếu thuộc tính `data-i18n` đồng bộ.
+- **Nguyên nhân cốt lõi:**
+  1. Các thẻ văn bản trong dropdown menu (`#user-dropdown-menu`), phụ đề gallery, kênh liên hệ và modal hồ sơ được viết hardcode tiếng Việt trong `index.html` mà không được gắn thuộc tính `data-i18n`.
+  2. Trong `js/app.js`, hàm `updateAuthUI()` gán nhãn cứng `roleBadge.textContent = isAdmin ? 'Quản trị viên (Admin)' : 'Thành viên';` thay vì lấy từ từ điển `window.i18n.t()`.
+  3. Trong `renderGallery()`, bảng tra cứu `typeDisplayNames` chỉ có các key slug tiếng Anh (`biet-thu`, `nha-pho`, `nha-cap-4`), khi gặp giá trị phong cách tiếng Việt (`Biệt thự`, `Nhà phố`) thì trả về `undefined` và giữ nguyên tiếng Việt.
+- **Cách khắc phục dứt điểm:**
+  1. **Bổ sung toàn diện từ điển song ngữ trong `js/i18n.js`:** Thêm đầy đủ 30+ key mới cho menu dropdown (`menu_admin`, `menu_favorites`, `menu_profile`, `menu_settings`, `role_admin`, `role_member`), phụ đề gallery (`gallery_sub`), kênh liên hệ, auth showcase và toàn bộ form hồ sơ cá nhân.
+  2. **Gắn thuộc tính `data-i18n` đồng bộ trong `index.html`:** Quét toàn bộ mã nguồn HTML bằng script phân tích cú pháp để phát hiện và gán thẻ `data-i18n` cho 100% các phần tử giao diện, không bỏ sót bất kỳ văn bản nào.
+  3. **Xây dựng bộ chuyển dịch thông minh (`getLocalizedTemplateName` & `getLocalizedStyle`) trong `js/app.js`:**
+     - Tự động chuyển đổi badge phong cách tiếng Việt sang tiếng Anh chuẩn: `Biệt thự` $\to$ `Villa`, `Nhà phố` $\to$ `Townhouse`, `Nhà cấp 4` $\to$ `Bungalow`, `Hiện đại` $\to$ `Modern`, `Tân cổ điển` $\to$ `Neo-Classical`, v.v.
+     - Tự động chuyển đổi cú pháp tên mẫu nhà kiến trúc phổ biến sang tiếng Anh: `Nhà phố 2 tầng 5x16m` $\to$ `2-Story Modern Townhouse 5x16m`, `Biệt thự 3 tầng` $\to$ `3-Story Luxury Villa`, v.v.
+  4. **Cập nhật `updateAuthUI()`:** Đồng bộ `roleBadge` và `profile-role-text` theo từ điển i18n hiện hành.
+  5. Nâng tham số cache-busting lên `?v=7.3` trên toàn bộ dự án (`index.html` và `admin.html`).
 
 ---
 

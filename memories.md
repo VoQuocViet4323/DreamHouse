@@ -826,6 +826,21 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.2`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 49** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 56: Rà Soát Toàn Diện & Chuẩn Hóa Song Ngữ Triệt Để (i18n Full Localization Polish v7.3)
+- [x] **Khắc phục triệt để hiện tượng vẫn sót tiếng Việt khi chuyển sang ngôn ngữ tiếng Anh (EN):**
+  - **Menu người dùng (User Dropdown Menu):**
+    - Bổ sung các nhãn song ngữ: `menu_admin` ("Admin Portal"), `menu_favorites` ("Saved Favorites"), `menu_profile` ("Edit Profile"), `menu_settings` ("System Settings").
+    - Cập nhật hàm `updateAuthUI()`: Badge vai trò người dùng tự động dịch chuẩn xác `role_admin` ("Administrator (Admin)") hoặc `role_member` ("Member").
+  - **Thư viện mẫu (Gallery):**
+    - Gắn `data-i18n="gallery_sub"` cho phụ đề gallery: "Curated architectural designs ready for construction with transparent estimates."
+    - Xây dựng bộ hàm dịch tự động thông minh `getLocalizedStyle(item, lang)`: Chuyển đổi toàn bộ nhãn badge phong cách tiếng Việt (`Biệt thự`, `Nhà phố`, `Nhà cấp 4`, `Hiện đại`, `Tân cổ điển`...) sang tiếng Anh tương ứng (`Villa`, `Townhouse`, `Bungalow`, `Modern`, `Neo-Classical`...).
+    - Xây dựng hàm dịch tên mẫu nhà `getLocalizedTemplateName(item, lang)`: Tự động chuyển đổi các tên mẫu kiến trúc tiếng Việt thành tiếng Anh chuẩn chỉ (ví dụ: *"Nhà phố 2 tầng 5x16m"* $\to$ *"2-Story Modern Townhouse 5x16m"*).
+  - **Liên hệ, Form & Modal toàn hệ thống:**
+    - Gắn `data-i18n` đồng bộ cho toàn bộ kênh liên hệ trực tiếp, lời dẫn Auth showcase và các trường form trong Hồ sơ cá nhân (Profile Modal).
+    - Quét toàn bộ mã nguồn HTML bằng script phân tích cú pháp, đảm bảo 0% văn bản bị bỏ sót.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.3`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 50** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

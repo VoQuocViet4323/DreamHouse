@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7.2" />
+    <link rel="stylesheet" href="style.css?v=7.3" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=7.2"></script>
-    <script src="js/i18n.js?v=7.2"></script>
-    <script src="js/toast.js?v=7.2"></script>
-    <script src="js/viewer3d.js?v=7.2"></script>
-    <script src="js/app.js?v=7.2" defer></script>
+    <script src="js/config.js?v=7.3"></script>
+    <script src="js/i18n.js?v=7.3"></script>
+    <script src="js/toast.js?v=7.3"></script>
+    <script src="js/viewer3d.js?v=7.3"></script>
+    <script src="js/app.js?v=7.3" defer></script>
 </head>
 
 <body>
@@ -187,13 +187,13 @@
                 </button>
 
                 <!-- Auth Buttons & Modern Dropdown -->
-                <button id="btn-open-login" class="btn-auth-outline" data-i18n="nav_login">
+                <button id="btn-open-login" class="btn-auth-outline">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
                     </svg>
-                    <span>Đăng nhập</span>
+                    <span data-i18n="nav_login">Đăng nhập</span>
                 </button>
                 <div id="user-menu" class="user-menu-container hidden">
                     <button type="button" id="user-profile-trigger" class="user-profile-trigger" aria-haspopup="true"
@@ -216,7 +216,7 @@
                     <!-- Dropdown Menu xổ xuống -->
                     <div id="user-dropdown-menu" class="user-dropdown-menu hidden" role="menu">
                         <div class="dropdown-header">
-                            <span class="dropdown-user-role" id="dropdown-user-role">Thành viên</span>
+                            <span class="dropdown-user-role" id="dropdown-user-role" data-i18n="role_member">Thành viên</span>
                             <span class="dropdown-user-email" id="dropdown-user-email">email@example.com</span>
                         </div>
                         <div class="dropdown-divider"></div>
@@ -228,7 +228,7 @@
                                 <rect x="14" y="14" width="7" height="7" />
                                 <rect x="3" y="14" width="7" height="7" />
                             </svg>
-                            <span>Bảng quản trị Admin</span>
+                            <span data-i18n="menu_admin">Bảng quản trị Admin</span>
                         </a>
                         <a href="#gallery-section" id="menu-favorites-link" class="dropdown-item" role="menuitem">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -236,7 +236,7 @@
                                 <path
                                     d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                             </svg>
-                            <span>Mẫu nhà đã lưu yêu thích</span>
+                            <span data-i18n="menu_favorites">Mẫu nhà đã lưu yêu thích</span>
                         </a>
                         <button type="button" id="menu-edit-profile-btn" class="dropdown-item" role="menuitem">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -244,7 +244,7 @@
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
-                            <span>Chỉnh sửa hồ sơ</span>
+                            <span data-i18n="menu_profile">Chỉnh sửa hồ sơ</span>
                         </button>
                         <button type="button" id="menu-settings-btn" class="dropdown-item" role="menuitem">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -253,7 +253,7 @@
                                 <path
                                     d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                             </svg>
-                            <span>Cài đặt hệ thống</span>
+                            <span data-i18n="menu_settings">Cài đặt hệ thống</span>
                         </button>
                         <div class="dropdown-divider"></div>
                         <button type="button" id="btn-logout" class="dropdown-item dropdown-logout-btn" role="menuitem">
@@ -291,8 +291,7 @@
         <div class="section-header">
             <div>
                 <h2 class="section-title" data-i18n="nav_gallery">Thư viện mẫu</h2>
-                <p class="section-sub">Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.
-                </p>
+                <p class="section-sub" data-i18n="gallery_sub">Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.</p>
             </div>
 
             <!-- Bộ lọc và Tìm kiếm -->
@@ -486,7 +485,7 @@
                 <!-- Cột bên phải: Thông số, Dự toán, Mô tả và Kêu gọi hành động -->
                 <div class="detail-info-col">
                     <div class="detail-header-block">
-                        <h2 id="detail-title" class="detail-title">Tên Mẫu Nhà</h2>
+                        <h2 id="detail-title" class="detail-title" data-i18n="detail_modal_default_title">Tên Mẫu Nhà</h2>
                         <div class="detail-price-badge">
                             <span data-i18n="spec_estimate">Dự toán tham khảo</span>:
                             <strong id="detail-spec-price">0 VNĐ</strong>
@@ -557,7 +556,7 @@
                 <!-- Kênh liên hệ trực tiếp -->
                 <div class="contact-card direct-channels">
                     <h3 data-i18n="contact_direct_title">Kết nối trực tiếp</h3>
-                    <p class="note">Thông tin liên hệ trực tiếp của phụ trách dự án Võ Quốc Việt:</p>
+                    <p class="note" data-i18n="contact_direct_note">Thông tin liên hệ trực tiếp của phụ trách dự án Võ Quốc Việt:</p>
 
                     <div class="channel-list">
                         <a href="https://zalo.me/0367020403" target="_blank" rel="noopener"
@@ -565,14 +564,14 @@
                             <span class="icon">💬</span>
                             <div>
                                 <strong data-i18n="contact_btn_zalo">Nhắn Zalo (0367020403)</strong>
-                                <small>Phản hồi nhanh trong 15 phút</small>
+                                <small data-i18n="contact_badge_zalo">Phản hồi nhanh trong 15 phút</small>
                             </div>
                         </a>
                         <a href="tel:0367020403" class="channel-btn btn-call">
                             <span class="icon">📞</span>
                             <div>
                                 <strong data-i18n="contact_btn_call">Hotline: 0367020403</strong>
-                                <small>Tư vấn kỹ thuật xây dựng</small>
+                                <small data-i18n="contact_badge_phone">Tư vấn kỹ thuật xây dựng</small>
                             </div>
                         </a>
                         <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener"
@@ -587,7 +586,7 @@
                             <span class="icon">✉️</span>
                             <div>
                                 <strong data-i18n="contact_btn_email">Email: voviet4323@gmail.com</strong>
-                                <small>Gửi hồ sơ mặt bằng & bản vẽ</small>
+                                <small data-i18n="contact_badge_email">Gửi hồ sơ mặt bằng & bản vẽ</small>
                             </div>
                         </a>
                     </div>
@@ -671,7 +670,7 @@
                             </div>
                             <div class="badge-text">
                                 <span class="badge-title">3D Walkthrough</span>
-                                <span class="badge-sub">Mô hình thực tế</span>
+                                <span class="badge-sub" data-i18n="auth_badge_model">Mô hình thực tế</span>
                             </div>
                             <span class="badge-pointer"></span>
                         </div>
@@ -690,7 +689,7 @@
                             </div>
                             <div class="badge-text">
                                 <span class="badge-title">BIM Standards</span>
-                                <span class="badge-sub">Bản vẽ kỹ thuật chuẩn</span>
+                                <span class="badge-sub" data-i18n="auth_badge_drawings">Bản vẽ kỹ thuật chuẩn</span>
                             </div>
                         </div>
 
@@ -822,16 +821,16 @@
                     <!-- Tiêu đề lớn & Lời dẫn truyền cảm hứng -->
                     <div class="auth-showcase-copy">
                         <h1 class="auth-showcase-headline">
-                            Kiến tạo không gian sống &amp;
-                            <span class="auth-headline-highlight">tổ ấm trong mơ</span>
+                            <span data-i18n="auth_headline_prefix">Kiến tạo không gian sống &amp;</span>
+                            <span class="auth-headline-highlight" data-i18n="auth_headline_highlight">tổ ấm trong mơ</span>
                         </h1>
-                        <p class="auth-showcase-sub">
+                        <p class="auth-showcase-sub" data-i18n="auth_showcase_sub">
                             Trải nghiệm trực quan mô hình 3D thực tế, lựa chọn phong cách kiến trúc độc bản và đồng hành
                             cùng chuyên gia xây dựng tổ ấm hoàn mỹ.
                         </p>
                         <div class="auth-showcase-actions">
                             <button type="button" class="auth-showcase-cta" id="auth-explore-cta">
-                                <span>Khám phá bộ sưu tập mẫu</span>
+                                <span data-i18n="auth_btn_explore">Khám phá bộ sưu tập mẫu</span>
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2.5">
                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -997,11 +996,11 @@
                                 <path
                                     d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            <span id="profile-role-text">Quản trị viên (Admin)</span>
+                            <span id="profile-role-text" data-i18n="role_admin">Quản trị viên (Admin)</span>
                         </span>
                     </div>
-                    <h3 id="profile-modal-title" class="profile-title">Hồ sơ cá nhân &amp; Tài khoản</h3>
-                    <p class="profile-subtitle">Quản lý và cập nhật thông tin tài khoản của bạn</p>
+                    <h3 id="profile-modal-title" class="profile-title" data-i18n="profile_title">Hồ sơ cá nhân &amp; Tài khoản</h3>
+                    <p class="profile-subtitle" data-i18n="profile_subtitle">Quản lý và cập nhật thông tin tài khoản của bạn</p>
                 </div>
             </div>
 
@@ -1017,7 +1016,7 @@
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
-                            <span>Họ và tên hiển thị</span>
+                            <span data-i18n="profile_label_name">Họ và tên hiển thị</span>
                         </label>
                         <input type="text" id="profile-name" required placeholder="Nhập họ và tên..." />
                     </div>
@@ -1029,7 +1028,7 @@
                                 <path
                                     d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                             </svg>
-                            <span>Số điện thoại liên hệ</span>
+                            <span data-i18n="profile_label_phone">Số điện thoại liên hệ</span>
                         </label>
                         <input type="tel" id="profile-phone" placeholder="09xx xxx xxx" />
                     </div>
@@ -1042,7 +1041,7 @@
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                         </svg>
-                        <span>Địa chỉ Email</span>
+                        <span data-i18n="profile_label_email">Địa chỉ Email</span>
                     </label>
                     <div class="input-with-badge">
                         <input type="email" id="profile-email" name="account_email_display" autocomplete="off" readonly
@@ -1052,7 +1051,7 @@
                                 stroke-width="3">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            Đã xác thực
+                            <span data-i18n="profile_badge_verified">Đã xác thực</span>
                         </span>
                     </div>
                 </div>
@@ -1065,7 +1064,7 @@
                             <circle cx="8.5" cy="8.5" r="1.5" />
                             <polyline points="21 15 16 10 5 21" />
                         </svg>
-                        <span>Ảnh đại diện (Avatar)</span>
+                        <span data-i18n="profile_label_avatar">Ảnh đại diện (Avatar)</span>
                     </label>
 
                     <!-- Khung chọn ảnh từ máy tính -->
@@ -1079,9 +1078,9 @@
                                 <polyline points="17 8 12 3 7 8" />
                                 <line x1="12" y1="3" x2="12" y2="15" />
                             </svg>
-                            <span>Chọn ảnh từ máy tính</span>
+                            <span data-i18n="profile_btn_choose_file">Chọn ảnh từ máy tính</span>
                         </button>
-                        <span id="profile-avatar-filename" class="avatar-file-status">Chưa chọn tệp ảnh mới</span>
+                        <span id="profile-avatar-filename" class="avatar-file-status" data-i18n="profile_avatar_no_file">Chưa chọn tệp ảnh mới</span>
                     </div>
 
                     <!-- Tùy chọn dán link URL nếu muốn -->
@@ -1092,7 +1091,7 @@
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                             </svg>
-                            <span>Hoặc dán liên kết URL ảnh</span>
+                            <span data-i18n="profile_or_url">Hoặc dán liên kết URL ảnh</span>
                         </button>
                     </div>
 
@@ -1102,17 +1101,17 @@
                     </div>
 
                     <div class="avatar-presets">
-                        <span class="preset-label">Mẫu nhanh:</span>
-                        <button type="button" class="preset-chip"
+                        <span class="preset-label" data-i18n="profile_preset_label">Mẫu nhanh:</span>
+                        <button type="button" class="preset-chip" data-i18n="profile_preset_architect"
                             data-avatar="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80">Kiến
                             trúc sư</button>
-                        <button type="button" class="preset-chip"
+                        <button type="button" class="preset-chip" data-i18n="profile_preset_engineer"
                             data-avatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80">Kỹ
                             sư</button>
-                        <button type="button" class="preset-chip"
+                        <button type="button" class="preset-chip" data-i18n="profile_preset_designer"
                             data-avatar="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80">Thiết
                             kế</button>
-                        <button type="button" class="preset-chip" data-avatar="">Dùng chữ cái</button>
+                        <button type="button" class="preset-chip" data-avatar="" data-i18n="profile_preset_letter">Dùng chữ cái</button>
                     </div>
                 </div>
 
@@ -1129,13 +1128,13 @@
                                 </svg>
                             </div>
                             <div class="security-header-text">
-                                <h4 class="security-title">Đổi mật khẩu tài khoản</h4>
-                                <span class="security-desc">Cập nhật mật khẩu bảo mật (tối thiểu 6 ký tự)</span>
+                                <h4 class="security-title" data-i18n="profile_security_title">Đổi mật khẩu tài khoản</h4>
+                                <span class="security-desc" data-i18n="profile_security_desc">Cập nhật mật khẩu bảo mật (tối thiểu 6 ký tự)</span>
                             </div>
                         </div>
                         <div class="security-header-right">
                             <span class="security-toggle-pill">
-                                <span class="pill-text" id="pass-toggle-pill-text">Mở</span>
+                                <span class="pill-text" id="pass-toggle-pill-text" data-i18n="profile_pill_open">Mở</span>
                                 <svg class="pass-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1180,7 +1179,7 @@
                             <!-- Ô mật khẩu mới -->
                             <div class="form-group pass-field-group">
                                 <label for="profile-new-pass" class="pass-field-label">
-                                    <span>Mật khẩu mới</span>
+                                    <span data-i18n="profile_new_pass">Mật khẩu mới</span>
                                 </label>
                                 <div class="password-input-box">
                                     <span class="pass-box-icon">
@@ -1194,7 +1193,8 @@
                                         minlength="6" autocomplete="new-password" readonly
                                         onfocus="this.removeAttribute('readonly')"
                                         onpointerdown="this.removeAttribute('readonly')"
-                                        placeholder="Nhập mật khẩu mới..." />
+                                        placeholder="Nhập mật khẩu mới..."
+                                        data-i18n="profile_new_pass" />
                                     <button type="button" class="btn-toggle-eye" id="toggle-new-pass-visibility"
                                         title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
                                         <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -1209,7 +1209,7 @@
                             <!-- Ô xác nhận mật khẩu -->
                             <div class="form-group pass-field-group">
                                 <label for="profile-confirm-pass" class="pass-field-label">
-                                    <span>Xác nhận mật khẩu</span>
+                                    <span data-i18n="profile_confirm_pass">Xác nhận mật khẩu</span>
                                 </label>
                                 <div class="password-input-box">
                                     <span class="pass-box-icon">
@@ -1224,7 +1224,8 @@
                                         minlength="6" autocomplete="new-password" readonly
                                         onfocus="this.removeAttribute('readonly')"
                                         onpointerdown="this.removeAttribute('readonly')"
-                                        placeholder="Nhập lại mật khẩu..." />
+                                        placeholder="Nhập lại mật khẩu..."
+                                        data-i18n="profile_confirm_pass" />
                                     <button type="button" class="btn-toggle-eye" id="toggle-confirm-pass-visibility"
                                         title="Hiện/ẩn mật khẩu" aria-label="Hiện/ẩn mật khẩu">
                                         <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -1246,8 +1247,8 @@
                                 <span class="meter-bar" id="meter-bar-4"></span>
                             </div>
                             <div class="strength-meta-text">
-                                <span class="strength-label-text" id="strength-label-text">Độ mạnh: <strong
-                                        id="strength-val">Chưa nhập</strong></span>
+                                <span class="strength-label-text" id="strength-label-text"><span data-i18n="profile_strength_label">Độ mạnh:</span> <strong
+                                        id="strength-val" data-i18n="profile_strength_val_empty">Chưa nhập</strong></span>
                                 <span class="pass-match-chip hidden" id="pass-match-chip"></span>
                             </div>
                         </div>
@@ -1259,26 +1260,26 @@
                                     stroke-width="3">
                                     <polyline points="20 6 9 17 4 12" />
                                 </svg>
-                                Tối thiểu 6 ký tự
+                                <span data-i18n="profile_crit_length">Tối thiểu 6 ký tự</span>
                             </span>
                             <span class="criteria-tag" id="crit-alphanumeric">
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="3">
                                     <polyline points="20 6 9 17 4 12" />
                                 </svg>
-                                Có cả chữ và số
+                                <span data-i18n="profile_crit_alphanumeric">Có cả chữ và số</span>
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <div class="profile-meta-info">
-                    <span>Thành viên từ: <strong id="profile-created-date">-</strong></span>
-                    <span>Mã ID: <code id="profile-user-id">-</code></span>
+                    <span><span data-i18n="profile_meta_member_since">Thành viên từ:</span> <strong id="profile-created-date">-</strong></span>
+                    <span><span data-i18n="profile_meta_id">Mã ID:</span> <code id="profile-user-id">-</code></span>
                 </div>
 
                 <div class="profile-modal-actions">
-                    <button type="button" id="btn-cancel-profile" class="btn-cancel">Hủy bỏ</button>
+                    <button type="button" id="btn-cancel-profile" class="btn-cancel" data-i18n="profile_btn_cancel">Hủy bỏ</button>
                     <button type="submit" id="btn-save-profile" class="btn-primary btn-save-profile">
                         <svg class="save-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5">
@@ -1286,7 +1287,7 @@
                             <polyline points="17 21 17 13 7 13 7 21" />
                             <polyline points="7 3 7 8 15 8" />
                         </svg>
-                        <span id="save-btn-text">Lưu thay đổi</span>
+                        <span id="save-btn-text" data-i18n="profile_btn_save">Lưu thay đổi</span>
                     </button>
                 </div>
             </form>

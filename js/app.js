@@ -908,6 +908,70 @@ class DreamHouseApp {
         return true;
     }
 
+    // 5.1. DỊCH TỰ ĐỘNG THÔNG MINH CHO TÊN MẪU NHÀ & PHONG CÁCH
+    getLocalizedTemplateName(item, lang = window.i18n.getLang()) {
+        if (!item) return '';
+        if (lang === 'vi') return item.name_vi || item.name_en || '';
+        if (item.name_en && item.name_en.trim() && item.name_en !== item.name_vi) {
+            return item.name_en;
+        }
+        let en = item.name_vi || '';
+        en = en.replace(/Nhà phố\s+(\d+)\s+tầng/gi, '$1-Story Modern Townhouse');
+        en = en.replace(/Biệt thự\s+(\d+)\s+tầng/gi, '$1-Story Luxury Villa');
+        en = en.replace(/Nhà cấp 4\s+(\d+)\s+tầng/gi, '$1-Story Country House');
+        en = en.replace(/Nhà cấp 4/gi, 'Modern Country Bungalow');
+        en = en.replace(/Nhà phố/gi, 'Modern Townhouse');
+        en = en.replace(/Biệt thự vườn/gi, 'Garden Villa');
+        en = en.replace(/Biệt thự/gi, 'Luxury Villa');
+        en = en.replace(/Hiện Đại/gi, 'Modern');
+        en = en.replace(/Mái Thái/gi, 'Gable Roof');
+        en = en.replace(/Mái Nhật/gi, 'Hip Roof');
+        en = en.replace(/Mái Bằng/gi, 'Flat Roof');
+        en = en.replace(/Tân Cổ Điển/gi, 'Neo-Classical');
+        en = en.replace(/Châu Âu/gi, 'European');
+        en = en.replace(/Truyền Thống/gi, 'Traditional');
+        en = en.replace(/Tiết Kiệm/gi, 'Budget-Friendly');
+        en = en.replace(/Sang Trọng/gi, 'Luxury');
+        en = en.replace(/Nghỉ Dưỡng/gi, 'Resort');
+        en = en.replace(/Mặt Tiền/gi, 'Frontage');
+        en = en.replace(/tầng/gi, 'Stories');
+        return en;
+    }
+
+    getLocalizedStyle(item, lang = window.i18n.getLang()) {
+        if (!item) return '';
+        const styleDict = {
+            'biet-thu': { vi: 'Biệt thự', en: 'Villa' },
+            'nha-pho': { vi: 'Nhà phố', en: 'Townhouse' },
+            'nha-cap-4': { vi: 'Nhà cấp 4', en: 'Bungalow' },
+            'Biệt thự': { vi: 'Biệt thự', en: 'Villa' },
+            'Nhà phố': { vi: 'Nhà phố', en: 'Townhouse' },
+            'Nhà cấp 4': { vi: 'Nhà cấp 4', en: 'Bungalow' },
+            'Hiện đại': { vi: 'Hiện đại', en: 'Modern' },
+            'Tân cổ điển': { vi: 'Tân cổ điển', en: 'Neo-Classical' },
+            'Cổ điển': { vi: 'Cổ điển', en: 'Classical' },
+            'Mái Nhật': { vi: 'Mái Nhật', en: 'Japanese Roof' },
+            'Mái Thái': { vi: 'Mái Thái', en: 'Thai Roof' },
+            'Mái bằng': { vi: 'Mái bằng', en: 'Flat Roof' },
+            'Mái bằng hiện đại': { vi: 'Mái bằng hiện đại', en: 'Modern Flat Roof' }
+        };
+
+        if (lang === 'vi') {
+            return item.style_vi || (styleDict[item.type] ? styleDict[item.type].vi : item.type);
+        }
+
+        if (item.style_en && item.style_en.trim() && item.style_en !== item.style_vi) {
+            return item.style_en;
+        }
+        if (item.style_vi && styleDict[item.style_vi.trim()]) {
+            return styleDict[item.style_vi.trim()].en;
+        }
+        if (styleDict[item.type]) {
+            return styleDict[item.type].en;
+        }
+        return item.style_en || item.type;
+    }
+
     // 6. RENDER GIAO DIỆN THƯ VIỆN (GALLERY)
     renderGallery() {
         const gallery = document.getElementById('gallery');
@@ -988,29 +1052,10 @@ class DreamHouseApp {
         }
 
         gallery.innerHTML = list.map((item, index) => {
-            const name = lang === 'vi' ? item.name_vi : item.name_en;
-            const style = lang === 'vi' ? item.style_vi : item.style_en;
+            const name = this.getLocalizedTemplateName(item, lang);
+            const displayBadge = this.getLocalizedStyle(item, lang);
             const costStr = window.i18n.formatCost(item.cost_estimate_vnd);
             const isFav = this.favorites.has(item.id);
-
-            const typeDisplayNames = {
-                'nha-pho': { vi: 'Nhà phố', en: 'Townhouse' },
-                'biet-thu': { vi: 'Biệt thự', en: 'Villa' },
-                'nha-cap-4': { vi: 'Nhà cấp 4', en: 'Bungalow' }
-            };
-
-            const getTypeLabel = (t, l) => {
-                if (typeDisplayNames[t]) {
-                    return l === 'vi' ? typeDisplayNames[t].vi : typeDisplayNames[t].en;
-                }
-                return t;
-            };
-
-            // Nếu style chưa có hoặc style bị lưu dạng slug ('biet-thu', 'nha-pho'...) thì tự động chuyển thành tên tiếng Việt/Anh chuẩn
-            let displayBadge = style;
-            if (!displayBadge || typeDisplayNames[displayBadge]) {
-                displayBadge = getTypeLabel(item.type, lang);
-            }
 
             return `
                 <article class="house-card" data-id="${item.id}" style="--card-index: ${index};">
@@ -1180,10 +1225,10 @@ class DreamHouseApp {
 
     updateDetailPanelContent(item) {
         const lang = window.i18n.getLang();
-        const name = lang === 'vi' ? item.name_vi : item.name_en;
-        const desc = lang === 'vi' ? item.description_vi : item.description_en;
-        const rooms = lang === 'vi' ? item.rooms_vi : item.rooms_en;
-        const style = lang === 'vi' ? item.style_vi : item.style_en;
+        const name = this.getLocalizedTemplateName(item, lang);
+        const desc = lang === 'vi' ? item.description_vi : (item.description_en || item.description_vi);
+        const rooms = lang === 'vi' ? item.rooms_vi : (item.rooms_en || item.rooms_vi);
+        const style = this.getLocalizedStyle(item, lang);
         const roofText = window.i18n.t(`roof_${item.roof}`) || item.roof;
 
         document.getElementById('detail-title').textContent = name;
@@ -1319,7 +1364,7 @@ class DreamHouseApp {
             }
             if (template) {
                 const lang = window.i18n.getLang();
-                const templateName = lang === 'vi' ? template.name_vi : template.name_en;
+                const templateName = this.getLocalizedTemplateName(template, lang);
                 const msgInput = document.getElementById('inquiry-message');
                 if (msgInput) {
                     msgInput.value = lang === 'vi'
@@ -2738,7 +2783,16 @@ class DreamHouseApp {
             const isAdmin = this.currentProfile?.role === 'admin' || 
                             this.currentUser.user_metadata?.role === 'admin' ||
                             this.currentUser.app_metadata?.role === 'admin';
-            if (roleBadge) roleBadge.textContent = isAdmin ? 'Quản trị viên (Admin)' : 'Thành viên';
+            const roleKey = isAdmin ? 'role_admin' : 'role_member';
+            if (roleBadge) {
+                roleBadge.setAttribute('data-i18n', roleKey);
+                roleBadge.textContent = window.i18n.t(roleKey);
+            }
+            const profileRoleEl = document.getElementById('profile-role-text');
+            if (profileRoleEl) {
+                profileRoleEl.setAttribute('data-i18n', roleKey);
+                profileRoleEl.textContent = window.i18n.t(roleKey);
+            }
             
             const displayIdentifier = this.currentProfile?.username 
                 ? `@${this.currentProfile.username}`

@@ -47,6 +47,7 @@ const I18N = {
         roof_gable: "Mái Thái",
 
         // Chi tiết mẫu
+        detail_modal_default_title: "Tên Mẫu Thiết Kế",
         detail_tab_photo: "Ảnh thiết kế & Phối cảnh",
         detail_tab_3d: "Mô hình 3D tương tác",
         detail_3d_hint: "Chuột trái xoay • Chuột phải/2 ngón di chuyển • Cuộn để vào trong nhà",
@@ -132,6 +133,56 @@ const I18N = {
         profile_save_success: "Cập nhật hồ sơ thành công!",
         btn_cancel: "Hủy bỏ",
 
+        // Menu xổ xuống của người dùng (User Profile Menu)
+        menu_admin: "Bảng quản trị Admin",
+        menu_favorites: "Mẫu nhà đã lưu yêu thích",
+        menu_profile: "Chỉnh sửa hồ sơ",
+        menu_settings: "Cài đặt hệ thống",
+        role_admin: "Quản trị viên (Admin)",
+        role_member: "Thành viên",
+
+        // Phụ đề Gallery
+        gallery_sub: "Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.",
+
+        // Kênh liên hệ trực tiếp
+        contact_direct_note: "Thông tin liên hệ trực tiếp của phụ trách dự án Võ Quốc Việt:",
+        contact_badge_zalo: "Phản hồi nhanh trong 15 phút",
+        contact_badge_phone: "Tư vấn kỹ thuật xây dựng",
+        contact_badge_email: "Gửi hồ sơ mặt bằng & bản vẽ",
+
+        // Khung giới thiệu Auth
+        auth_badge_model: "Mô hình thực tế",
+        auth_badge_drawings: "Bản vẽ kỹ thuật chuẩn",
+        auth_headline_prefix: "Kiến tạo không gian sống &",
+        auth_headline_highlight: "tổ ấm trong mơ",
+        auth_showcase_sub: "Trải nghiệm trực quan mô hình 3D thực tế, lựa chọn phong cách kiến trúc độc bản và đồng hành cùng chuyên gia xây dựng tổ ấm hoàn mỹ.",
+        auth_btn_explore: "Khám phá bộ sưu tập mẫu",
+
+        // Chi tiết Hồ sơ cá nhân (Profile Modal)
+        profile_label_name: "Họ và tên hiển thị",
+        profile_label_phone: "Số điện thoại liên hệ",
+        profile_label_email: "Địa chỉ Email",
+        profile_badge_verified: "Đã xác thực",
+        profile_label_avatar: "Ảnh đại diện (Avatar)",
+        profile_btn_choose_file: "Chọn ảnh từ máy tính",
+        profile_avatar_no_file: "Chưa chọn tệp ảnh mới",
+        profile_or_url: "Hoặc dán liên kết URL ảnh",
+        profile_preset_label: "Mẫu nhanh:",
+        profile_preset_architect: "Kiến trúc sư",
+        profile_preset_engineer: "Kỹ sư",
+        profile_preset_designer: "Thiết kế",
+        profile_preset_letter: "Dùng chữ cái",
+        profile_security_title: "Đổi mật khẩu tài khoản",
+        profile_security_desc: "Cập nhật mật khẩu bảo mật (tối thiểu 6 ký tự)",
+        profile_pill_open: "Mở",
+        profile_pill_close: "Đóng",
+        profile_strength_label: "Độ mạnh:",
+        profile_strength_val_empty: "Chưa nhập",
+        profile_crit_length: "Tối thiểu 6 ký tự",
+        profile_crit_alphanumeric: "Có cả chữ và số",
+        profile_meta_member_since: "Thành viên từ:",
+        profile_meta_id: "Mã ID:",
+
         // Trang quản trị
         admin_title: "Hệ Thống Quản Trị - DreamHouse",
         admin_tab_templates: "Quản lý mẫu nhà",
@@ -191,6 +242,7 @@ const I18N = {
         roof_gable: "Gable Roof (Thai Style)",
 
         // Modal
+        detail_modal_default_title: "House Design Model",
         detail_tab_photo: "Design Photos & Perspectives",
         detail_tab_3d: "Interactive 3D Walkthrough",
         detail_3d_hint: "Left drag to orbit • Right drag to pan • Scroll to zoom inside",
@@ -275,6 +327,56 @@ const I18N = {
         profile_saving: "Saving...",
         profile_save_success: "Profile updated successfully!",
         btn_cancel: "Cancel",
+
+        // User profile menu
+        menu_admin: "Admin Portal",
+        menu_favorites: "Saved Favorites",
+        menu_profile: "Edit Profile",
+        menu_settings: "System Settings",
+        role_admin: "Administrator (Admin)",
+        role_member: "Member",
+
+        // Gallery section
+        gallery_sub: "Curated architectural designs ready for construction with transparent estimates.",
+
+        // Direct channels
+        contact_direct_note: "Direct contact information for Project Lead Vo Quoc Viet:",
+        contact_badge_zalo: "Fast reply within 15 minutes",
+        contact_badge_phone: "Technical engineering support",
+        contact_badge_email: "Send floor plans & drawings",
+
+        // Auth showcase
+        auth_badge_model: "Interactive 3D Walkthrough",
+        auth_badge_drawings: "Standard BIM Blueprints",
+        auth_headline_prefix: "Crafting your living space &",
+        auth_headline_highlight: "your dream home",
+        auth_showcase_sub: "Visually experience real 3D models, select signature architectural styles, and partner with experts to craft your ideal sanctuary.",
+        auth_btn_explore: "Explore House Models",
+
+        // Profile modal
+        profile_label_name: "Full Name",
+        profile_label_phone: "Phone Number",
+        profile_label_email: "Email Address",
+        profile_badge_verified: "Verified",
+        profile_label_avatar: "Profile Avatar",
+        profile_btn_choose_file: "Choose from Computer",
+        profile_avatar_no_file: "No new file selected",
+        profile_or_url: "Or paste image URL",
+        profile_preset_label: "Quick presets:",
+        profile_preset_architect: "Architect",
+        profile_preset_engineer: "Engineer",
+        profile_preset_designer: "Designer",
+        profile_preset_letter: "Use Initials",
+        profile_security_title: "Change Account Password",
+        profile_security_desc: "Update security password (min. 6 characters)",
+        profile_pill_open: "Open",
+        profile_pill_close: "Close",
+        profile_strength_label: "Strength:",
+        profile_strength_val_empty: "Not entered",
+        profile_crit_length: "At least 6 characters",
+        profile_crit_alphanumeric: "Both letters and numbers",
+        profile_meta_member_since: "Member since:",
+        profile_meta_id: "User ID:",
 
         // Admin
         admin_title: "Dream House Management",
