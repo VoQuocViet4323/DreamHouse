@@ -810,6 +810,22 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.1`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 48** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 55: Nâng Cấp Toàn Diện UI Nút Đóng (X) & Khắc Phục Lỗi Đè Lấn Tiêu Đề Modal Admin (Luxury Glassmorphic Close Button v7.2)
+- [x] **Xử lý dứt điểm lỗi nút X đè lên tiêu đề modal thêm/sửa mẫu nhà:**
+  - **Hiện tượng:** Nút đóng tròn (X) nằm đè trực tiếp lên chữ cuối của tiêu đề "Thêm Mẫu Thiết Kế Mới" và "Chỉnh Sửa Mẫu Thiết Kế", che khuất chữ "Mới" và chữ "Kế".
+  - **Nguyên nhân:** Khối header modal `.admin-modal-header` không có padding-right cách ly vùng nút đóng absolute, khối tiêu đề `<h3>` dùng inline style `1.45rem` chiếm toàn bộ bề ngang.
+  - **Giải pháp bố cục an toàn:**
+    1. Thiết lập `padding-right: 54px;` (mobile: `46px;`) cho `.admin-modal-header`, bọc tiêu đề trong `.admin-modal-title-wrap { flex: 1; min-width: 0; }`.
+    2. Chuyển tiêu đề sang class `.admin-modal-title` với `font-size: 1.35rem;` (mobile: `1.18rem;`), `word-break: break-word;` tự động xuống dòng an toàn không bao giờ chạm tới vùng nút X.
+    3. Định vị lại nút close trong `.admin-modal-window` thẳng hàng cân xứng với icon header (`top: 24px; right: 28px;` trên desktop; `top: 18px; right: 16px;` trên mobile).
+- [x] **Tái thiết kế UI Nút X cao cấp chuẩn Glassmorphism (Apple & Luxury Bento UI):**
+  - **Vật liệu kính mờ:** Nền kính `backdrop-filter: blur(12px);`, đổ bóng nổi `box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);`, viền sáng phản chiếu ánh sáng ở mép trên `inset 0 1px 0 rgba(255, 255, 255, 0.12)`.
+  - **Biểu tượng SVG sắc nét:** Tinh chỉnh nét vẽ từ thô cứng (stroke 2.5) sang nét bo tròn tinh xảo `stroke-width: 2.2` kích thước `15×15px`.
+  - **Tương tác Micro-interaction:** Hover xoay 90 độ mượt mà kèm nảy nhẹ `transform: rotate(90deg) scale(1.08);`, chuyển sang ánh sáng đỏ hồng trong suốt `rgba(239, 68, 68, 0.2)` và glow viền đỏ; Active co lại 0.92 phản hồi xúc giác cơ học chân thực.
+  - Áp dụng đồng bộ trên toàn bộ website: `#close-template-modal`, `#close-detail-modal`, `#close-profile-modal`, `.confirm-close-btn`.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.2`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 49** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

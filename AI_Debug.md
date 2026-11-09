@@ -831,6 +831,27 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   3. **Kết quả:** Thanh tab giữ trọn vẹn kiểu dáng viên thuốc tròn cao cấp chuẩn Apple/Bento UI, vuốt cảm ứng ngang êm ái, co giãn tự nhiên không bao giờ bị cắt chữ hay méo viền dù có thêm bao nhiêu tab mới.
   4. Nâng tham số cache-busting lên `?v=7.1` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 49: Nút Đóng (X) trên Modal Thêm/Sửa Mẫu Nhà (`#template-modal`) bị đè lấn lên tiêu đề và giao diện chưa tối ưu thẩm mỹ
+- **Hiện tượng:**
+  1. Khi mở modal *"Thêm Mẫu Thiết Kế Mới"* hoặc *"Chỉnh Sửa Mẫu Thiết Kế"* trên Admin (đặc biệt trên màn hình di động), nút tròn đóng (X) nằm đè trực tiếp lên chữ cuối của tiêu đề (chữ "Mới" hoặc chữ "Kế").
+  2. Giao diện nút X trước đó có màu xám mờ đục đơn điệu, nét chữ X dày (stroke 2.5), thiếu chiều sâu và viền sáng phản chiếu kính mờ (frosted glass) chuẩn Apple / Luxury Bento.
+- **Nguyên nhân cốt lõi:**
+  1. `.admin-modal-header` không được thiết lập `padding-right` dành riêng cho nút đóng, trong khi nút `.modal-close` được gán `position: absolute; right: 18px; top: 16px;`.
+  2. Khối tiêu đề `<h3>` trong `admin.html` sử dụng inline style `font-size: 1.45rem;` kéo dài toàn bộ chiều rộng thẻ, không có khoảng thở dự phòng khiến text dài tràn qua góc phải và bị nút close đè lên.
+  3. Biến Design Tokens `--btn-close-...` dùng màu nền xám mờ và thiếu các lớp đổ bóng đa tầng (`box-shadow`, `inset highlight`).
+- **Cách khắc phục dứt điểm:**
+  1. **Tạo khoảng đệm an toàn tuyệt đối cho Header (`padding-right: 54px;`):**
+     - Trong `style.css`: Gán `.admin-modal-header { padding-right: 54px; position: relative; }` (trên mobile: `padding-right: 46px;`).
+     - Bọc tiêu đề trong `.admin-modal-title-wrap { flex: 1; min-width: 0; }`, áp dụng class `.admin-modal-title` với `word-break: break-word; font-size: 1.35rem;` (mobile: `1.18rem;`), loại bỏ hoàn toàn inline style cũ.
+     - Căn chỉnh vị trí nút close trong `.admin-modal-window .modal-close` ngay hàng thẳng lối với khối icon header (`top: 24px; right: 28px;` trên desktop; `top: 18px; right: 16px;` trên mobile).
+  2. **Nâng cấp toàn diện UI Nút X (Luxury Glassmorphic Button):**
+     - Chuẩn hóa kích thước `36×36px` (mobile `34×34px`), bo tròn hoàn hảo `var(--radius-full)`.
+     - Kính mờ siêu mịn với `backdrop-filter: blur(12px);`, đổ bóng đa tầng `box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);` kèm viền phản chiếu ánh sáng tinh tế `inset 0 1px 0 rgba(255, 255, 255, 0.12)`.
+     - Tinh chỉnh icon SVG: Kích thước `15×15px`, nét vẽ `stroke-width: 2.2` bo tròn `stroke-linecap="round"` sắc nét, thanh thoát.
+     - Hiệu ứng Hover sang trọng: Nền đỏ hồng trong suốt `rgba(239, 68, 68, 0.2)`, viền đỏ nhẹ, icon phát sáng `#fca5a5`, đổ bóng glow `box-shadow: 0 4px 16px rgba(239, 68, 68, 0.28)`, chuyển động xoay 90 độ mượt mà với lò xo vật lý `transition: all 0.25s var(--ease-spring); transform: rotate(90deg) scale(1.08);`.
+     - Hiệu ứng Active bấm nhún: `transform: rotate(90deg) scale(0.92);`.
+  3. Nâng tham số cache-busting lên `?v=7.2` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ### 🔴 Lỗi 47: Header trang Quản Trị (`admin.html`) bị đè chèn ép logo, vỡ chữ `Dream Ho...` và đẩy văng nút Đăng xuất trên Mobile
@@ -869,6 +890,27 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   2. **Tinh chỉnh tiêu đề Tab tinh gọn:** Rút ngắn nhãn hiển thị trong `admin.html` từ *"Yêu Cầu Tư Vấn & Báo Giá"* thành *"Yêu Cầu Tư Vấn"* để thanh thoát, cân xứng với các tab khác.
   3. **Kết quả:** Thanh tab giữ trọn vẹn kiểu dáng viên thuốc tròn cao cấp chuẩn Apple/Bento UI, vuốt cảm ứng ngang êm ái, co giãn tự nhiên không bao giờ bị cắt chữ hay méo viền dù có thêm bao nhiêu tab mới.
   4. Nâng tham số cache-busting lên `?v=7.1` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+### 🔴 Lỗi 49: Nút Đóng (X) trên Modal Thêm/Sửa Mẫu Nhà (`#template-modal`) bị đè lấn lên tiêu đề và giao diện chưa tối ưu thẩm mỹ
+- **Hiện tượng:**
+  1. Khi mở modal *"Thêm Mẫu Thiết Kế Mới"* hoặc *"Chỉnh Sửa Mẫu Thiết Kế"* trên Admin (đặc biệt trên màn hình di động), nút tròn đóng (X) nằm đè trực tiếp lên chữ cuối của tiêu đề (chữ "Mới" hoặc chữ "Kế").
+  2. Giao diện nút X trước đó có màu xám mờ đục đơn điệu, nét chữ X dày (stroke 2.5), thiếu chiều sâu và viền sáng phản chiếu kính mờ (frosted glass) chuẩn Apple / Luxury Bento.
+- **Nguyên nhân cốt lõi:**
+  1. `.admin-modal-header` không được thiết lập `padding-right` dành riêng cho nút đóng, trong khi nút `.modal-close` được gán `position: absolute; right: 18px; top: 16px;`.
+  2. Khối tiêu đề `<h3>` trong `admin.html` sử dụng inline style `font-size: 1.45rem;` kéo dài toàn bộ chiều rộng thẻ, không có khoảng thở dự phòng khiến text dài tràn qua góc phải và bị nút close đè lên.
+  3. Biến Design Tokens `--btn-close-...` dùng màu nền xám mờ và thiếu các lớp đổ bóng đa tầng (`box-shadow`, `inset highlight`).
+- **Cách khắc phục dứt điểm:**
+  1. **Tạo khoảng đệm an toàn tuyệt đối cho Header (`padding-right: 54px;`):**
+     - Trong `style.css`: Gán `.admin-modal-header { padding-right: 54px; position: relative; }` (trên mobile: `padding-right: 46px;`).
+     - Bọc tiêu đề trong `.admin-modal-title-wrap { flex: 1; min-width: 0; }`, áp dụng class `.admin-modal-title` với `word-break: break-word; font-size: 1.35rem;` (mobile: `1.18rem;`), loại bỏ hoàn toàn inline style cũ.
+     - Căn chỉnh vị trí nút close trong `.admin-modal-window .modal-close` ngay hàng thẳng lối với khối icon header (`top: 24px; right: 28px;` trên desktop; `top: 18px; right: 16px;` trên mobile).
+  2. **Nâng cấp toàn diện UI Nút X (Luxury Glassmorphic Button):**
+     - Chuẩn hóa kích thước `36×36px` (mobile `34×34px`), bo tròn hoàn hảo `var(--radius-full)`.
+     - Kính mờ siêu mịn với `backdrop-filter: blur(12px);`, đổ bóng đa tầng `box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);` kèm viền phản chiếu ánh sáng tinh tế `inset 0 1px 0 rgba(255, 255, 255, 0.12)`.
+     - Tinh chỉnh icon SVG: Kích thước `15×15px`, nét vẽ `stroke-width: 2.2` bo tròn `stroke-linecap="round"` sắc nét, thanh thoát.
+     - Hiệu ứng Hover sang trọng: Nền đỏ hồng trong suốt `rgba(239, 68, 68, 0.2)`, viền đỏ nhẹ, icon phát sáng `#fca5a5`, đổ bóng glow `box-shadow: 0 4px 16px rgba(239, 68, 68, 0.28)`, chuyển động xoay 90 độ mượt mà với lò xo vật lý `transition: all 0.25s var(--ease-spring); transform: rotate(90deg) scale(1.08);`.
+     - Hiệu ứng Active bấm nhún: `transform: rotate(90deg) scale(0.92);`.
+  3. Nâng tham số cache-busting lên `?v=7.2` trên toàn bộ dự án (`index.html` và `admin.html`).
 
 ---
 
