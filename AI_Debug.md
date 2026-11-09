@@ -786,6 +786,37 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
 
 ---
 
+### 🔴 Lỗi 46: Giao diện trên thiết bị di động (Mobile) bị vỡ bố cục Header, chèn ép logo, lệch nút Hero và tràn thanh bộ lọc
+- **Hiện tượng:**
+  1. Logo *"Dream House"* trên thanh điều hướng di động bị co ép xuống 2 hàng ("Dream" và "House"), chữ "Dream" bị tràn mép trên và cắt cụt nửa thân chữ; các nút Dark Mode, VI/EN và Admin bị dính chùm chật chội.
+  2. Huy hiệu câu châm ngôn *"KIẾN TRÚC TINH HOA - XÂY DỰNG TỔ ẤM HOÀN MỸ"* bị rớt chữ *"MỸ"* trơ trọi ở hàng thứ 2.
+  3. Hai nút bấm *"Khám phá mẫu nhà"* và *"Liên hệ"* trong khối Hero bị lệch kích thước nghiêm trọng (nút to nút nhỏ).
+  4. Ô tìm kiếm mẫu nhà bị cắt ngắn cụt chữ placeholder; hai dropdown *"Tất cả loại nhà"* và *"Mặc định sắp xếp"* bị co cụm méo mó; nút switch *"Chỉ hiện mục yêu thích"* bị dạt sang một bên không cân đối.
+- **Nguyên nhân cốt lõi:**
+  1. Thiếu các thiết lập CSS Media Queries `@media (max-width: 768px)` và `@media (max-width: 380px)` cho các thành phần hạt nhân (Navbar, Brand, Hero CTA, Filter Controls).
+  2. `.container` giữ padding cố định `24px` ở cả 2 bên khiến màn hình 375px (iPhone) chỉ còn 327px không gian khả dụng. Cụm `.header-actions` chiếm tới 228px, dồn ép phần còn lại cho Logo chỉ còn dưới 100px.
+  3. `.brand-title` thiếu thuộc tính `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` nên bị ngắt dòng không mong muốn.
+  4. `.hero-cta-group` và `.filter-dropdowns` sử dụng flexbox tự do không có tỷ lệ cột cố định cho màn hình hẹp.
+- **Cách khắc phục dứt điểm:**
+  1. **Tái thiết kế thanh điều hướng Header trên Mobile:**
+     - Giảm padding ngang `.container` xuống `16px`.
+     - Giảm kích thước `.u219-tg` (36×36px), `#lang-toggle` (cao 36px, padding 10px), menu tài khoản người dùng (`max-width: 76px` cho tên, tự động ẩn chữ chỉ giữ avatar trên màn hình < 380px).
+     - Khóa `.brand-title` trên **1 hàng duy nhất** (`white-space: nowrap; line-height: 1.15; font-size: 1.25rem;`), bảo đảm logo không bao giờ bị cắt xén hay đè chữ.
+  2. **Cân đối khối Hero:**
+     - Điều chỉnh font huy hiệu tagline thành `0.7rem`, padding `5px 12px; max-width: 100%;` triệt tiêu lỗi rớt chữ "MỸ".
+     - Giảm kích thước tiêu đề `.hero-headline` xuống `clamp(1.75rem, 6.8vw, 2.3rem)` với `line-height: 1.22;`.
+     - Bố cục 2 nút CTA thành lưới 2 cột đối xứng (`grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;`).
+  3. **Tối ưu thanh công cụ bộ lọc Thư viện mẫu (`#gallery-section`):**
+     - Ô tìm kiếm mở rộng `100%` toàn chiều ngang, font `0.86rem`.
+     - Nhóm 2 dropdown dàn đều dạng lưới 2 cột (`grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;`), nhãn text có `text-overflow: ellipsis;`, menu con mở rộng 100%.
+     - Công tắc lọc yêu thích mở rộng `100%`, căn giữa hoàn hảo.
+  4. **Tối ưu Modal Chi tiết mẫu nhà (`#detail-modal`) & Trang Admin:**
+     - Chuyển layout modal sang 1 cột dọc thông suốt, điều chỉnh canvas 3D cao 250px và ảnh 190px.
+     - Tối ưu 5 thẻ Bento KPI của Admin thành 1 cột dọc trên màn hình di động.
+  5. Nâng tham số cache-busting lên `?v=6.9` trên toàn bộ dự án (`index.html` và `admin.html`).
+
+---
+
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
 
 | Tình huống thử nghiệm | Hành vi mong đợi | Kết quả kiểm tra |

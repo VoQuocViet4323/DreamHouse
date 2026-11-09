@@ -708,6 +708,29 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=6.8`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang chẩn đoán vào **Lỗi 45** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 52: Tối Ưu Toàn Diện Giao Diện & Trải Nghiệm Người Dùng Trên Thiết Bị Di Động (Mobile Responsive System)
+- [x] **Xử lý triệt để hiện tượng vỡ giao diện trên màn hình điện thoại (Mobile Screens < 768px & < 380px):**
+  - **Khắc phục lỗi Header & Logo:**
+    1. Tiêu đề thương hiệu `.brand-title` bị bẻ đôi thành 2 dòng ("Dream" và "House") do các nút hành động bên phải quá to chiếm hết chiều ngang, dẫn tới chữ "Dream" bị cắt nửa thân trên.
+    2. Giải pháp: Đặt `.brand-title` kích thước `1.25rem` với `white-space: nowrap; line-height: 1.15; overflow: hidden; text-overflow: ellipsis;`. Cân đối padding của `.container` từ `24px` xuống `16px`.
+    3. Thu gọn các nút `.header-actions`: nút Dark/Light mode (`36x36px`), nút đổi ngôn ngữ VI/EN (`height: 36px; padding: 0 10px; font-size: 0.78rem;`), nút menu người dùng (`height: 36px; padding: 4px 10px 4px 6px; user-name max-width: 76px;`). Trên màn hình siêu nhỏ (< 380px), ẩn chữ tên người dùng để hiển thị dạng icon pill thanh thoát, bảo đảm logo luôn giữ nguyên 1 hàng sang trọng.
+  - **Tối ưu Khối Hero Banner:**
+    1. Khắc phục chữ "MỸ" bị ngắt xuống 1 dòng đơn lẻ trong huy hiệu tagline: gán font `0.7rem`, `padding: 5px 12px; max-width: 100%;`.
+    2. Hạ kích thước tiêu đề chính `.hero-headline` từ `2.6rem - 4.4rem` xuống `clamp(1.75rem, 6.8vw, 2.3rem)` với `line-height: 1.22;` giúp câu chữ gọn gàng, không bị dày đặc.
+    3. Cân đối 2 nút kêu gọi hành động `.hero-cta-group`: áp dụng `grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;`, mỗi nút chiếm đều 50% chiều ngang, căn giữa hoàn hảo.
+  - **Tối ưu Khối Thư Viện Mẫu Nhà & Thanh Công Cụ Bộ Lọc (`#gallery-section`):**
+    1. Ô tìm kiếm `#filter-search` mở rộng `width: 100% !important;` với `padding: 11px 16px; font-size: 0.86rem;`, không bị cắt cụt placeholder.
+    2. Nhóm dropdown phân loại và sắp xếp chuyển sang dạng lưới 2 cột (`grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;`), nút trigger co giãn theo cột và nhãn text có `text-overflow: ellipsis;`. Menu xổ xuống trải rộng `100%` vừa vặn màn hình.
+    3. Công tắc "Chỉ hiện mục yêu thích" trải rộng `100%`, căn giữa nội dung sang trọng.
+  - **Tối ưu Modal Chi Tiết Mẫu Nhà (`#detail-modal`) & Thẻ Nhà (`.house-card`):**
+    1. `.detail-grid` chuyển 1 cột dọc: visual column đặt phía trên (ảnh 190px, canvas 3D 250px) và cột thông tin đặt phía dưới.
+    2. Bảng thông số `.specs-table` dạng lưới 2 cột tinh tế với font 0.82rem, các nút điều hướng và nút nhận báo giá được thiết kế to rõ, dễ chạm bằng ngón tay cái.
+  - **Tối ưu Trang Quản Trị Admin (`admin.html`) trên Mobile:**
+    1. Bento KPI cards tự động chuyển thành 1 cột dọc (`grid-template-columns: 1fr;`).
+    2. Thanh tab và bộ lọc loại nhà thích ứng cuộn ngang mượt mà (`-webkit-overflow-scrolling: touch`).
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=6.9`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 46** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 ### Giai đoạn 51: Khắc Phục Triệt Để Hiện Tượng Nháy Nút Đăng Nhập & Xây Dựng Hệ Thống Thống Kê Lượt Xem / Thị Hiếu Thời Gian Thực (Realtime Analytics Dashboard)
 - [x] **Xử lý dứt điểm lỗi nháy trạng thái đăng nhập (Auth State Flash / Delay):**
   - **Hiện tượng:** Sau khi lưu mẫu nhà ở Admin rồi quay lại trang chủ, góc phải navbar hiển thị nút "[Đăng nhập]" như chưa đăng nhập, sau 1 lúc mới tự động chuyển sang Avatar người dùng.
