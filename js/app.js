@@ -907,6 +907,10 @@ class DreamHouseApp {
         } else {
             console.log('Chưa kết nối Supabase, mô phỏng lưu inquiry:', payload);
         }
+
+        // Tự động lưu vào tư vấn cá nhân và bắn thông báo phản hồi lên chuông của User
+        this.notifyUserInquirySubmitted(payload);
+
         return true;
     }
 
@@ -1962,7 +1966,17 @@ class DreamHouseApp {
     }
 
     /**
-     * Khởi tạo Notification Bell Dropdown (Prompt #074, Alerts & Feedback) - Bản Tinh Chỉnh Cân Đối Hoàn Hảo
+     * Kiểm tra quyền Quản trị viên (Admin)
+     */
+    checkIsAdmin() {
+        if (!this.currentUser) return false;
+        return this.currentProfile?.role === 'admin' || 
+               this.currentUser.user_metadata?.role === 'admin' ||
+               this.currentUser.app_metadata?.role === 'admin';
+    }
+
+    /**
+     * Khởi tạo Notification Bell Dropdown (Prompt #074, Alerts & Feedback) - Phân Quyền Thông Minh (Admin / User)
      * Lucian UX/UI Prompt #074 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#074
      */
     initNotificationBell() {
@@ -2003,73 +2017,209 @@ class DreamHouseApp {
             }
         };
 
-        // Dữ liệu mẫu thực tế của DreamHouse (kèm thông tin người cần tư vấn)
-        const getInitialData = () => {
+        // Lấy danh sách thông báo theo phân quyền tài khoản (Admin vs User cá nhân)
+        const getNotificationsForRole = () => {
             const isEn = window.i18n && window.i18n.currentLang === 'en';
-            const arr = isEn ? [
-                ['Nguyen Van Tuan', 'sent a consultation request: “2-Storey Townhouse 5x16m”', '12 min ago', 'linear-gradient(140deg,#8B6CFF,#5B8CFF)', '💬', 1],
-                ['Tran Thi Mai', 'requested an all-inclusive quote: “Neoclassical Villa”', '1 hr ago', 'linear-gradient(140deg,#22C3A6,#0EA5E9)', '📋', 1],
-                ['Le Hoang Nam', 'saved “Modern 1-Storey Japanese Roof House” to favorites', '2 hrs ago', 'linear-gradient(140deg,#FF7A93,#B04FD0)', '❤️', 0],
-                ['DreamHouse System', 'Architectural design catalog 2026 update is now live', 'Yesterday', 'linear-gradient(140deg,#FFB547,#FF7A45)', '📊', 0]
-            ] : [
-                ['Nguyễn Văn Tuấn', 'vừa gửi thông tin tư vấn: “Nhà phố 2 tầng 5×16m”', '12 phút trước', 'linear-gradient(140deg,#8B6CFF,#5B8CFF)', '💬', 1],
-                ['Trần Thị Mai', 'yêu cầu báo giá thi công: “Biệt thự Tân cổ điển 3 tầng”', '1 giờ trước', 'linear-gradient(140deg,#22C3A6,#0EA5E9)', '📋', 1],
-                ['Lê Hoàng Nam', 'vừa lưu mẫu “Nhà Cấp 4 Mái Nhật Tiện Nghi” vào yêu thích', '2 giờ trước', 'linear-gradient(140deg,#FF7A93,#B04FD0)', '❤️', 0],
-                ['Hệ thống DreamHouse', 'Bảng dự toán chi phí & catalog kiến trúc 2026 đã sẵn sàng', 'Hôm qua', 'linear-gradient(140deg,#FFB547,#FF7A45)', '📊', 0]
+            const isAdmin = this.checkIsAdmin();
+
+            // Cập nhật nhãn Tab 2 theo đúng vai trò tài khoản
+            if (tabs[1]) {
+                const tabKey = isAdmin ? 'notif_tab_inquiries' : 'notif_tab_my_inquiries';
+                tabs[1].setAttribute('data-i18n', tabKey);
+                tabs[1].textContent = window.i18n.t(tabKey);
+            }
+
+            // ============================================================
+            // 1. TRƯỜNG HỢP ADMIN: Xem danh sách lead tư vấn của khách hàng
+            // ============================================================
+            if (isAdmin) {
+                const adminArr = isEn ? [
+                    ['Nguyen Van Tuan', 'sent a consultation request: “2-Storey Townhouse 5x16m”', '12 min ago', 'linear-gradient(140deg,#8B6CFF,#5B8CFF)', '💬', 1],
+                    ['Tran Thi Mai', 'requested an all-inclusive quote: “Neoclassical Villa”', '1 hr ago', 'linear-gradient(140deg,#22C3A6,#0EA5E9)', '📋', 1],
+                    ['Le Hoang Nam', 'saved “Modern 1-Storey Japanese Roof House” to favorites', '2 hrs ago', 'linear-gradient(140deg,#FF7A93,#B04FD0)', '❤️', 0],
+                    ['DreamHouse System', 'Architectural design catalog 2026 update is now live', 'Yesterday', 'linear-gradient(140deg,#FFB547,#FF7A45)', '📊', 0]
+                ] : [
+                    ['Nguyễn Văn Tuấn', 'vừa gửi thông tin tư vấn: “Nhà phố 2 tầng 5×16m”', '12 phút trước', 'linear-gradient(140deg,#8B6CFF,#5B8CFF)', '💬', 1],
+                    ['Trần Thị Mai', 'yêu cầu báo giá thi công: “Biệt thự Tân cổ điển 3 tầng”', '1 giờ trước', 'linear-gradient(140deg,#22C3A6,#0EA5E9)', '📋', 1],
+                    ['Lê Hoàng Nam', 'vừa lưu mẫu “Nhà Cấp 4 Mái Nhật Tiện Nghi” vào yêu thích', '2 giờ trước', 'linear-gradient(140deg,#FF7A93,#B04FD0)', '❤️', 0],
+                    ['Hệ thống DreamHouse', 'Bảng dự toán chi phí & catalog kiến trúc 2026 đã sẵn sàng', 'Hôm qua', 'linear-gradient(140deg,#FFB547,#FF7A45)', '📊', 0]
+                ];
+
+                adminArr[0].inquiryData = {
+                    name: isEn ? 'Nguyen Van Tuan' : 'Nguyễn Văn Tuấn',
+                    contact: '0903 555 888',
+                    template_name: isEn ? '2-Storey Townhouse 5x16m' : 'Nhà phố 2 tầng 5×16m',
+                    template_id: 'nha-pho-2-tang-5x16m',
+                    message: isEn ? 
+                        'Our family of 4 wants to build this 2-storey house on a 5x16m plot with 3 bedrooms and an open living space. Please send an estimate and floor plan.' :
+                        'Gia đình tôi gồm 4 người dự định xây dựng mẫu nhà 2 tầng 5x16m với 3 phòng ngủ và 1 phòng thờ. Nhờ KTS tư vấn chi phí xây thô, hoàn thiện và phương án bố trí mặt bằng.',
+                    time: isEn ? '12 min ago' : '12 phút trước',
+                    status: 'new',
+                    gradient: adminArr[0][3]
+                };
+
+                adminArr[1].inquiryData = {
+                    name: isEn ? 'Tran Thi Mai' : 'Trần Thị Mai',
+                    contact: '0977 889 900',
+                    template_name: isEn ? '3-Storey Luxury Neoclassical Villa' : 'Biệt Thự Tân Cổ Điển Châu Âu 3 Tầng',
+                    template_id: 'biet-thu-tan-co-dien-chau-au-3-tang',
+                    message: isEn ? 
+                        'Requesting an all-inclusive design and construction quote for this villa on a 12x20m plot. Budget is around 5 billion VND.' :
+                        'Tôi muốn tư vấn mẫu biệt thự tân cổ điển có gara và hầm rượu, diện tích đất 12x20m tại Biên Hòa. Ngân sách dự kiến khoảng 4.8 - 5 tỷ VNĐ.',
+                    time: isEn ? '1 hr ago' : '1 giờ trước',
+                    status: 'new',
+                    gradient: adminArr[1][3]
+                };
+
+                adminArr[2].templateId = 'nha-cap-4-mai-nhat-tien-nghi-tiet-kiem';
+                return adminArr;
+            }
+
+            // ============================================================
+            // 2. TRƯỜNG HỢP USER (THÀNH VIÊN / KHÁCH): 
+            //    Chỉ hiển thị thông báo khi được Admin gửi lại hoặc nhận 
+            //    thông báo khi chính User gửi tư vấn về mẫu đang xem!
+            // ============================================================
+            const userArr = [];
+
+            // 2.1. Nạp các yêu cầu tư vấn do chính User đã gửi (lưu trong localStorage)
+            const myStoredInquiries = JSON.parse(localStorage.getItem('dream_house_my_inquiries') || '[]');
+            if (myStoredInquiries.length > 0) {
+                myStoredInquiries.slice(0, 3).forEach(inq => {
+                    const inqNotif = [
+                        isEn ? 'You' : 'Bạn',
+                        isEn ? `submitted consultation request for “${inq.template_name || 'Design template'}”. Architect has received it.` :
+                               `đã gửi yêu cầu tư vấn thành công về mẫu “${inq.template_name || 'Mẫu nhà đang xem'}”. Kiến trúc sư DreamHouse đã tiếp nhận.`,
+                        inq.time || (isEn ? 'Recently' : 'Gần đây'),
+                        'linear-gradient(140deg,#3D8BFF,#22C3A6)',
+                        '📋',
+                        1
+                    ];
+                    inqNotif.inquiryData = {
+                        isUserOwn: true,
+                        name: inq.name || (this.currentUser?.user_metadata?.full_name || (isEn ? 'You' : 'Bạn')),
+                        contact: inq.contact || 'Chưa cung cấp',
+                        template_name: inq.template_name || 'Tư vấn kiến trúc',
+                        template_id: inq.template_id,
+                        message: inq.message || (isEn ? 'Consultation request submitted.' : 'Yêu cầu tư vấn thiết kế và dự toán thi công.'),
+                        time: inq.time || (isEn ? 'Recently' : 'Vừa xong'),
+                        status: inq.status || 'new',
+                        gradient: 'linear-gradient(140deg,#3D8BFF,#22C3A6)'
+                    };
+                    userArr.push(inqNotif);
+                });
+            }
+
+            // 2.2. Thông báo Admin / Kiến trúc sư phản hồi về mẫu nhà User quan tâm
+            const curTpl = this.currentTemplate;
+            const feedbackTplName = curTpl ? this.getLocalizedTemplateName(curTpl) : (isEn ? 'Modern 3-Storey Townhouse 5m' : 'Nhà Phố Hiện Đại 3 Tầng Mặt Tiền 5m');
+            const feedbackTplId = curTpl ? curTpl.id : 'nha-pho-hien-dai-3-tang-mat-tien-5m';
+
+            const adminFeedbackNotif = [
+                isEn ? 'Architect Vo Quoc Viet' : 'Kiến trúc sư DreamHouse',
+                isEn ? `has replied to your consultation inquiry on “${feedbackTplName}”: Preliminary floor plan & cost estimate are ready!` :
+                       `đã gửi phản hồi tư vấn về “${feedbackTplName}”: Phương án bố trí mặt bằng và bảng dự toán thi công đã sẵn sàng.`,
+                isEn ? '15 min ago' : '15 phút trước',
+                'linear-gradient(140deg,#10B981,#059669)',
+                '🏛️',
+                1
             ];
-
-            // Gắn chi tiết tư vấn để khi click sẽ mở modal hiển thị đầy đủ thông tin
-            arr[0].inquiryData = {
-                name: isEn ? 'Nguyen Van Tuan' : 'Nguyễn Văn Tuấn',
-                contact: '0903 555 888',
-                template_name: isEn ? '2-Storey Townhouse 5x16m' : 'Nhà phố 2 tầng 5×16m',
-                template_id: 'nha-pho-2-tang-5x16m',
+            adminFeedbackNotif.inquiryData = {
+                isResponse: true,
+                name: isEn ? 'Architect Vo Quoc Viet (DreamHouse)' : 'Kiến trúc sư DreamHouse (Võ Quốc Việt)',
+                contact: 'Hotline/Zalo: 0367020403 (KTS Võ Quốc Việt)',
+                template_name: feedbackTplName,
+                template_id: feedbackTplId,
                 message: isEn ? 
-                    'Our family of 4 wants to build this 2-storey house on a 5x16m plot with 3 bedrooms and an open living space. Please send an estimate and floor plan.' :
-                    'Gia đình tôi gồm 4 người dự định xây dựng mẫu nhà 2 tầng 5x16m với 3 phòng ngủ và 1 phòng thờ. Nhờ KTS tư vấn chi phí xây thô, hoàn thiện và phương án bố trí mặt bằng.',
-                time: isEn ? '12 min ago' : '12 phút trước',
-                status: 'new',
-                gradient: arr[0][3]
+                    'Hello! Architect Vo Quoc Viet has prepared the functional layout and turnkey cost estimate for ' + feedbackTplName + '. Click "View 3D Model" to explore or call our hotline for direct discussion.' :
+                    'Chào bạn, Kiến trúc sư DreamHouse đã tiếp nhận yêu cầu và hoàn tất phương án mặt bằng sơ bộ cho ' + feedbackTplName + '. Chúng tôi đã chuẩn bị bảng dự toán chi phí chi tiết. Bạn có thể bấm "Xem mô hình 3D" để khám phá thêm hoặc liên hệ hotline để trao đổi trực tiếp.',
+                time: isEn ? '15 min ago' : '15 phút trước',
+                status: 'handled',
+                gradient: 'linear-gradient(140deg,#10B981,#059669)'
             };
+            userArr.push(adminFeedbackNotif);
 
-            arr[1].inquiryData = {
-                name: isEn ? 'Tran Thi Mai' : 'Trần Thị Mai',
-                contact: '0977 889 900',
-                template_name: isEn ? '3-Storey Luxury Neoclassical Villa' : 'Biệt Thự Tân Cổ Điển Châu Âu 3 Tầng',
-                template_id: 'biet-thu-tan-co-dien-chau-au-3-tang',
-                message: isEn ? 
-                    'Requesting an all-inclusive design and construction quote for this villa on a 12x20m plot. Budget is around 5 billion VND.' :
-                    'Tôi muốn tư vấn mẫu biệt thự tân cổ điển có gara và hầm rượu, diện tích đất 12x20m tại Biên Hòa. Ngân sách dự kiến khoảng 4.8 - 5 tỷ VNĐ.',
-                time: isEn ? '1 hr ago' : '1 giờ trước',
-                status: 'new',
-                gradient: arr[1][3]
-            };
+            // 2.3. Mẫu nhà yêu thích của người dùng
+            const favTplName = isEn ? 'Modern 1-Storey Japanese Roof House' : 'Nhà Cấp 4 Mái Nhật Tiện Nghi';
+            const favNotif = [
+                'DreamHouse',
+                isEn ? `The design “${favTplName}” in your watchlist has a new 3D model update.` :
+                       `Mẫu nhà “${favTplName}” bạn đang quan tâm đã có bản vẽ 3D cập nhật mới.`,
+                isEn ? '2 hrs ago' : '2 giờ trước',
+                'linear-gradient(140deg,#FF7A93,#B04FD0)',
+                '❤️',
+                0
+            ];
+            favNotif.templateId = 'nha-cap-4-mai-nhat-tien-nghi-tiet-kiem';
+            userArr.push(favNotif);
 
-            arr[2].templateId = 'nha-cap-4-mai-nhat-tien-nghi-tiet-kiem';
+            // 2.4. Thông báo chào mừng thành viên
+            const userName = this.currentUser?.user_metadata?.full_name || (this.currentUser?.email ? this.currentUser.email.split('@')[0] : (isEn ? 'Member' : 'Bạn'));
+            const sysNotif = [
+                isEn ? 'DreamHouse System' : 'Hệ thống DreamHouse',
+                isEn ? `Welcome ${userName}! Explore 100+ construction-ready architectural designs with transparent estimates.` :
+                       `Chào mừng ${userName} đến với DreamHouse! Khám phá danh mục kiến trúc 2026 với hơn 100+ mẫu nhà sẵn sàng thi công.`,
+                isEn ? 'Yesterday' : 'Hôm qua',
+                'linear-gradient(140deg,#FFB547,#FF7A45)',
+                '📊',
+                0
+            ];
+            userArr.push(sysNotif);
 
-            return arr;
+            return userArr;
         };
 
         const getIncomingData = () => {
             const isEn = window.i18n && window.i18n.currentLang === 'en';
-            const incoming = isEn ?
-                ['Pham Thanh Hai', 'requested consultation: “Modern 3-Storey Townhouse 5m”', 'Just now', 'linear-gradient(140deg,#3D8BFF,#22C3A6)', '✨', 1] :
-                ['Phạm Thanh Hải', 'gửi yêu cầu tư vấn: “Nhà Phố Hiện Đại 3 Tầng Mặt Tiền 5m”', 'Vừa xong', 'linear-gradient(140deg,#3D8BFF,#22C3A6)', '✨', 1];
+            const isAdmin = this.checkIsAdmin();
 
-            incoming.inquiryData = {
-                name: isEn ? 'Pham Thanh Hai' : 'Phạm Thanh Hải',
-                contact: '0988 123 456',
-                template_name: isEn ? 'Modern 3-Storey Townhouse 5m Frontage' : 'Nhà Phố Hiện Đại 3 Tầng Mặt Tiền 5m',
-                template_id: 'nha-pho-hien-dai-3-tang-mat-tien-5m',
+            if (isAdmin) {
+                // Admin nhận thông báo khi có khách hàng gửi tư vấn mới
+                const incoming = isEn ?
+                    ['Pham Thanh Hai', 'requested consultation: “Modern 3-Storey Townhouse 5m”', 'Just now', 'linear-gradient(140deg,#3D8BFF,#22C3A6)', '✨', 1] :
+                    ['Phạm Thanh Hải', 'gửi yêu cầu tư vấn: “Nhà Phố Hiện Đại 3 Tầng Mặt Tiền 5m”', 'Vừa xong', 'linear-gradient(140deg,#3D8BFF,#22C3A6)', '✨', 1];
+
+                incoming.inquiryData = {
+                    name: isEn ? 'Pham Thanh Hai' : 'Phạm Thanh Hải',
+                    contact: '0988 123 456',
+                    template_name: isEn ? 'Modern 3-Storey Townhouse 5m Frontage' : 'Nhà Phố Hiện Đại 3 Tầng Mặt Tiền 5m',
+                    template_id: 'nha-pho-hien-dai-3-tang-mat-tien-5m',
+                    message: isEn ? 
+                        'I have a 5x18m land plot in Thu Duc City, planning to start construction in Q2/2026. Please consult on structural design and turnkey estimate.' :
+                        'Tôi đang có mảnh đất 5x18m tại TP. Thủ Đức, dự kiến khởi công vào quý 2/2026. Nhờ kiến trúc sư tư vấn chi phí xây thô và hoàn thiện trọn gói mẫu 3 tầng hiện đại này.',
+                    time: isEn ? 'Just now' : 'Vừa xong',
+                    status: 'new',
+                    gradient: incoming[3]
+                };
+                return incoming;
+            }
+
+            // User nhận thông báo khi Admin / KTS phản hồi về mẫu nhà đang xem
+            const curTpl = this.currentTemplate;
+            const tplTitle = curTpl ? this.getLocalizedTemplateName(curTpl) : (isEn ? '2-Storey Luxury Villa' : 'Biệt Thự Tân Cổ Điển Châu Âu 3 Tầng');
+            const incomingUser = [
+                isEn ? 'Architect Vo Quoc Viet' : 'Kiến trúc sư DreamHouse',
+                isEn ? `sent a new consultation update for “${tplTitle}”: Structural layouts are ready!` :
+                       `vừa gửi phản hồi tư vấn về “${tplTitle}”: Hồ sơ thiết kế công năng và dự toán đã hoàn tất!`,
+                isEn ? 'Just now' : 'Vừa xong',
+                'linear-gradient(140deg,#10B981,#059669)',
+                '✨',
+                1
+            ];
+            incomingUser.inquiryData = {
+                isResponse: true,
+                name: isEn ? 'Architect Vo Quoc Viet (DreamHouse)' : 'Kiến trúc sư DreamHouse (Võ Quốc Việt)',
+                contact: 'Hotline/Zalo: 0367020403 (KTS Võ Quốc Việt)',
+                template_name: tplTitle,
+                template_id: curTpl ? curTpl.id : 'biet-thu-tan-co-dien-chau-au-3-tang',
                 message: isEn ? 
-                    'I have a 5x18m land plot in Thu Duc City, planning to start construction in Q2/2026. Please consult on structural design and turnkey estimate.' :
-                    'Tôi đang có mảnh đất 5x18m tại TP. Thủ Đức, dự kiến khởi công vào quý 2/2026. Nhờ kiến trúc sư tư vấn chi phí xây thô và hoàn thiện trọn gói mẫu 3 tầng hiện đại này.',
+                    'Architect Vo Quoc Viet has prepared the functional layout and turnkey cost estimate for ' + tplTitle + '. Click "View 3D Model" to inspect or call our hotline for direct discussion.' :
+                    'Kiến trúc sư DreamHouse đã chuẩn bị xong hồ sơ thiết kế công năng và bảng dự toán thi công trọn gói cho ' + tplTitle + '. Hãy bấm "Xem mô hình 3D" để khám phá chi tiết hoặc liên hệ hotline để nhận tư vấn trực tiếp.',
                 time: isEn ? 'Just now' : 'Vừa xong',
-                status: 'new',
-                gradient: incoming[3]
+                status: 'handled',
+                gradient: 'linear-gradient(140deg,#10B981,#059669)'
             };
-
-            return incoming;
+            return incomingUser;
         };
 
         let mentionOnly = false;
@@ -2161,10 +2311,10 @@ class DreamHouseApp {
             }
         };
 
-        // Render danh sách ban đầu
+        // Render danh sách thông báo theo vai trò hiện tại
         const renderList = () => {
             list.innerHTML = '';
-            const initial = getInitialData();
+            const initial = getNotificationsForRole();
             initial.forEach((d, i) => {
                 const li = createItem(d);
                 if (i > 1) {
@@ -2175,44 +2325,52 @@ class DreamHouseApp {
             filterNotifications();
             updateCount();
 
-            // Nếu Supabase có dữ liệu inquiries thực tế từ database, tải và hiển thị lên đầu
-            const client = this.getSupabase();
-            if (client) {
-                client.from('inquiries').select('*').order('created_at', { ascending: false }).limit(4)
-                    .then(({ data, error }) => {
-                        if (!error && data && data.length > 0) {
-                            data.forEach(inq => {
-                                const inqData = [
-                                    inq.name || 'Khách hàng',
-                                    `vừa gửi yêu cầu tư vấn: “${inq.template_id || 'Mẫu nhà quan tâm'}”`,
-                                    new Date(inq.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                                    'linear-gradient(140deg,#6366f1,#a855f7)',
-                                    '💬',
-                                    1
-                                ];
-                                inqData.inquiryData = {
-                                    id: inq.id,
-                                    name: inq.name,
-                                    contact: inq.contact,
-                                    template_name: inq.template_id || 'Tư vấn kiến trúc',
-                                    template_id: inq.template_id,
-                                    message: inq.message,
-                                    time: new Date(inq.created_at).toLocaleString('vi-VN'),
-                                    status: inq.status || 'new',
-                                    gradient: 'linear-gradient(140deg,#6366f1,#a855f7)'
-                                };
-                                const realLi = createItem(inqData);
-                                if (inq.status === 'handled') {
-                                    realLi.querySelector('.u074-row').classList.add('read');
-                                }
-                                list.insertBefore(realLi, list.firstChild);
-                            });
-                            filterNotifications();
-                            updateCount();
-                        }
-                    }).catch(() => {});
+            // CHỈ ADMIN MỚI ĐƯỢC TẢI TOÀN BỘ YÊU CẦU TƯ VẤN CỦA KHÁCH HÀNG TỪ DATABASE
+            if (this.checkIsAdmin()) {
+                const client = this.getSupabase();
+                if (client) {
+                    client.from('inquiries').select('*').order('created_at', { ascending: false }).limit(4)
+                        .then(({ data, error }) => {
+                            if (!error && data && data.length > 0) {
+                                data.forEach(inq => {
+                                    const inqData = [
+                                        inq.name || 'Khách hàng',
+                                        `vừa gửi yêu cầu tư vấn: “${inq.template_id || 'Mẫu nhà quan tâm'}”`,
+                                        new Date(inq.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                                        'linear-gradient(140deg,#6366f1,#a855f7)',
+                                        '💬',
+                                        1
+                                    ];
+                                    inqData.inquiryData = {
+                                        id: inq.id,
+                                        name: inq.name,
+                                        contact: inq.contact,
+                                        template_name: inq.template_id || 'Tư vấn kiến trúc',
+                                        template_id: inq.template_id,
+                                        message: inq.message,
+                                        time: new Date(inq.created_at).toLocaleString('vi-VN'),
+                                        status: inq.status || 'new',
+                                        gradient: 'linear-gradient(140deg,#6366f1,#a855f7)'
+                                    };
+                                    const realLi = createItem(inqData);
+                                    if (inq.status === 'handled') {
+                                        realLi.querySelector('.u074-row').classList.add('read');
+                                    }
+                                    list.insertBefore(realLi, list.firstChild);
+                                });
+                                filterNotifications();
+                                updateCount();
+                            }
+                        }).catch(() => {});
+                }
             }
         };
+
+        // Lưu trữ các hàm điều khiển vào instance app để gọi lại từ bên ngoài
+        this._createNotificationItem = createItem;
+        this._updateNotificationCount = updateCount;
+        this._filterNotifications = filterNotifications;
+        this._renderNotificationList = renderList;
 
         renderList();
 
@@ -2307,6 +2465,107 @@ class DreamHouseApp {
     }
 
     /**
+     * Bắn thông báo lên chuông ngay khi User gửi yêu cầu tư vấn thành công
+     */
+    notifyUserInquirySubmitted(payload) {
+        // 1. Lưu vào danh sách tư vấn cá nhân của User
+        const myInquiries = JSON.parse(localStorage.getItem('dream_house_my_inquiries') || '[]');
+        const tplName = payload.template_name || (this.currentTemplate ? this.getLocalizedTemplateName(this.currentTemplate) : (payload.template_id || 'Mẫu nhà đang xem'));
+        const inqRecord = {
+            id: 'inq_' + Date.now(),
+            name: payload.name || 'Bạn',
+            contact: payload.contact,
+            template_id: payload.template_id,
+            template_name: tplName,
+            message: payload.message,
+            time: 'Vừa xong',
+            status: 'submitted'
+        };
+        myInquiries.unshift(inqRecord);
+        localStorage.setItem('dream_house_my_inquiries', JSON.stringify(myInquiries.slice(0, 10)));
+
+        // 2. Đẩy thông báo xác nhận tức thì vào chuông của User
+        const root = document.getElementById('u074-notif');
+        if (!root) return;
+        const list = root.querySelector('.u074-list');
+        const bell = root.querySelector('.u074-bell');
+        if (!list || !bell) return;
+
+        const isEn = window.i18n && window.i18n.currentLang === 'en';
+        const notifData = [
+            isEn ? 'You' : 'Bạn',
+            isEn ? `successfully sent a consultation inquiry for “${tplName}”. Architect will contact you soon!` :
+                   `đã gửi yêu cầu tư vấn thành công về mẫu “${tplName}”. Kiến trúc sư DreamHouse đã tiếp nhận!`,
+            isEn ? 'Just now' : 'Vừa xong',
+            'linear-gradient(140deg,#3D8BFF,#22C3A6)',
+            '📋',
+            1
+        ];
+        notifData.inquiryData = {
+            isUserOwn: true,
+            name: inqRecord.name,
+            contact: inqRecord.contact,
+            template_name: tplName,
+            template_id: payload.template_id,
+            message: payload.message || 'Yêu cầu tư vấn thiết kế và dự toán thi công.',
+            time: isEn ? 'Just now' : 'Vừa xong',
+            status: 'submitted',
+            gradient: 'linear-gradient(140deg,#3D8BFF,#22C3A6)'
+        };
+
+        if (this._createNotificationItem) {
+            const li = this._createNotificationItem(notifData, true);
+            list.insertBefore(li, list.firstChild);
+            void li.offsetWidth;
+            li.classList.remove('new');
+            bell.classList.remove('ring');
+            void bell.offsetWidth;
+            bell.classList.add('ring');
+            if (this._updateNotificationCount) this._updateNotificationCount();
+            if (this._filterNotifications) this._filterNotifications();
+        }
+
+        // 3. Sau 6 giây, mô phỏng KTS gửi phản hồi tư vấn lại cho User
+        setTimeout(() => {
+            if (!root.isConnected || this.checkIsAdmin()) return;
+            const responseData = [
+                isEn ? 'Architect Vo Quoc Viet' : 'Kiến trúc sư DreamHouse',
+                isEn ? `has replied to your inquiry for “${tplName}”: Turnkey estimate and structural plans are ready! Click to view.` :
+                       `đã phản hồi yêu cầu tư vấn về “${tplName}”: Phương án bố trí mặt bằng và dự toán đã sẵn sàng! Bấm để xem.`,
+                isEn ? 'Just now' : 'Vừa xong',
+                'linear-gradient(140deg,#10B981,#059669)',
+                '✉️',
+                1
+            ];
+            responseData.inquiryData = {
+                isResponse: true,
+                name: isEn ? 'Architect Vo Quoc Viet (DreamHouse)' : 'Kiến trúc sư DreamHouse (Võ Quốc Việt)',
+                contact: 'Hotline/Zalo: 0367020403 (KTS Võ Quốc Việt)',
+                template_name: tplName,
+                template_id: payload.template_id,
+                message: isEn ?
+                    'Thank you for your interest! Architect Vo Quoc Viet has prepared the functional layout and preliminary estimate for ' + tplName + '. Click "View 3D Model" to inspect or call our hotline for direct discussion.' :
+                    'Cảm ơn bạn đã gửi yêu cầu! Kiến trúc sư DreamHouse đã tiếp nhận và chuẩn bị xong phương án mặt bằng sơ bộ kèm dự toán chi phí cho ' + tplName + '. Hãy bấm "Xem mô hình 3D" để xem chi tiết hoặc liên hệ hotline để trao đổi trực tiếp.',
+                time: isEn ? 'Just now' : 'Vừa xong',
+                status: 'handled',
+                gradient: 'linear-gradient(140deg,#10B981,#059669)'
+            };
+
+            if (this._createNotificationItem) {
+                const resLi = this._createNotificationItem(responseData, true);
+                list.insertBefore(resLi, list.firstChild);
+                void resLi.offsetWidth;
+                resLi.classList.remove('new');
+                bell.classList.remove('ring');
+                void bell.offsetWidth;
+                bell.classList.add('ring');
+                if (this._updateNotificationCount) this._updateNotificationCount();
+                if (this._filterNotifications) this._filterNotifications();
+            }
+        }, 6000);
+    }
+
+    /**
      * Mở modal xem chi tiết thông tin người cần tư vấn (Inquiry Detail Modal)
      */
     openInquiryDetailModal(inquiryData) {
@@ -2315,6 +2574,7 @@ class DreamHouseApp {
         if (!modal) return;
 
         const nameEl = document.getElementById('inquiry-client-name');
+        const subEl = document.getElementById('inquiry-client-sub');
         const initialEl = document.getElementById('inquiry-avatar-initial');
         const avatarCircle = document.getElementById('inquiry-avatar-circle');
         const statusBadge = document.getElementById('inquiry-status-badge');
@@ -2330,6 +2590,7 @@ class DreamHouseApp {
         const handledBtn = document.getElementById('inquiry-handled-btn');
         const adminLinkBtn = document.getElementById('inquiry-admin-link-btn');
 
+        const isAdmin = this.checkIsAdmin();
         const clientName = inquiryData.name || 'Khách hàng';
         if (nameEl) nameEl.textContent = clientName;
         if (initialEl) initialEl.textContent = clientName.trim().charAt(0).toUpperCase();
@@ -2338,16 +2599,31 @@ class DreamHouseApp {
             avatarCircle.style.background = inquiryData.gradient;
         }
 
-        const isHandled = inquiryData.status === 'handled';
-        if (statusBadge) {
-            statusBadge.classList.toggle('handled', isHandled);
-        }
-        if (statusText) {
-            statusText.textContent = isHandled ? 'Đã tư vấn / xử lý' : 'Yêu cầu tư vấn mới';
+        // Tùy biến hiển thị theo vai trò (User vs Admin)
+        if (inquiryData.isResponse) {
+            if (subEl) subEl.textContent = 'Phản hồi chính thức từ Kiến trúc sư DreamHouse';
+            if (statusBadge) statusBadge.className = 'inquiry-status-badge handled';
+            if (statusText) statusText.textContent = 'Admin / KTS đã phản hồi';
+            if (handledBtn) handledBtn.style.display = 'none';
+            if (adminLinkBtn) adminLinkBtn.style.display = 'none';
+        } else if (inquiryData.isUserOwn) {
+            if (subEl) subEl.textContent = 'Yêu cầu tư vấn của bạn đã gửi đến Kiến trúc sư';
+            if (statusBadge) statusBadge.className = 'inquiry-status-badge';
+            if (statusText) statusText.textContent = 'Đang chờ KTS liên hệ';
+            if (handledBtn) handledBtn.style.display = 'none';
+            if (adminLinkBtn) adminLinkBtn.style.display = 'none';
+        } else {
+            // Trường hợp Admin xem lead khách hàng
+            const isHandled = inquiryData.status === 'handled';
+            if (subEl) subEl.textContent = 'Khách hàng quan tâm dự án kiến trúc';
+            if (statusBadge) statusBadge.className = 'inquiry-status-badge' + (isHandled ? ' handled' : '');
+            if (statusText) statusText.textContent = isHandled ? 'Đã tư vấn / xử lý' : 'Yêu cầu tư vấn mới';
+            if (handledBtn) handledBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+            if (adminLinkBtn) adminLinkBtn.style.display = isAdmin ? 'inline-flex' : 'none';
         }
 
         if (timeEl) timeEl.textContent = inquiryData.time || 'Vừa xong';
-        const contact = inquiryData.contact || '0988 123 456';
+        const contact = inquiryData.contact || '0367020403';
         if (contactVal) contactVal.textContent = contact;
 
         if (callBtn) {
@@ -3310,6 +3586,11 @@ class DreamHouseApp {
             if (avatarCircle) {
                 avatarCircle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
             }
+        }
+
+        // Đồng bộ danh sách thông báo theo vai trò tài khoản (Admin xem lead khách hàng, User xem thông báo cá nhân)
+        if (typeof this._renderNotificationList === 'function') {
+            this._renderNotificationList();
         }
     }
 }

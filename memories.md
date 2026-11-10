@@ -952,6 +952,32 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=8.0`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 55** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 64: Phân Quyền Thông Minh Cho Chuông Thông Báo & Tách Biệt Hoàn Toàn Giữa User và Admin (Role-Based Notification Dispatching v8.1)
+- [x] **Xử lý triệt để việc phân quyền hiển thị thông báo theo vai trò tài khoản:**
+  - **Hiện tượng:** Khi tài khoản User (thành viên hoặc khách không phải admin) đăng nhập và bấm mở chuông thông báo, danh sách vẫn hiển thị các lead tư vấn của những khách hàng khác (*Phạm Thanh Hải*, *Nguyễn Văn Tuấn*, *Trần Thị Mai*), vi phạm tính riêng tư và logic nghiệp vụ của người dùng cuối.
+  - **Giải pháp kiến trúc toàn diện:**
+    1. **Kiểm tra vai trò linh hoạt (`checkIsAdmin()`):** Xác định quyền hạn dựa trên `currentProfile.role`, `user_metadata.role`, `app_metadata.role`.
+    2. **Tách biệt 2 luồng thông báo độc lập:**
+       - **Tài khoản Admin:**
+         - Tab 2 hiển thị nhãn *"Khách tư vấn"* (`notif_tab_inquiries`).
+         - Hiển thị danh sách lead tư vấn do khách hàng gửi đến từ website và truy vấn thời gian thực từ bảng `inquiries` trên Supabase.
+         - Modal chi tiết hiển thị đầy đủ các thao tác nghiệp vụ: *"Đánh dấu đã tư vấn"*, *"Quản trị Admin"*, *"Gọi ngay"*.
+       - **Tài khoản User (Thành viên / Khách vãng lai):**
+         - Tab 2 tự động đổi nhãn thành *"Tư vấn của tôi"* (`notif_tab_my_inquiries`).
+         - **TUYỆT ĐỐI KHÔNG HIỂN THỊ** yêu cầu tư vấn của khách hàng khác.
+         - Chỉ hiển thị:
+           a) Thông báo khi chính người dùng gửi yêu cầu tư vấn về mẫu nhà đang xem (được lưu vào `localStorage: dream_house_my_inquiries`).
+           b) Thông báo phản hồi chính thức từ Kiến trúc sư DreamHouse (Võ Quốc Việt) gửi về mẫu nhà người dùng đang quan tâm kèm dự toán và bố trí mặt bằng.
+           c) Cập nhật bản vẽ 3D mới cho các mẫu nhà nằm trong danh sách yêu thích của người dùng.
+           d) Thông báo chào mừng thành viên từ hệ thống DreamHouse.
+         - Modal chi tiết hiển thị nhãn *"Phản hồi chính thức từ Kiến trúc sư DreamHouse"*, ẩn toàn bộ các nút can thiệp Admin (`#inquiry-handled-btn`, `#inquiry-admin-link-btn`), hiển thị nút *"Xem mô hình 3D"* và hotline tư vấn trực tiếp.
+    3. **Tương tác thời gian thực khi gửi tư vấn (`notifyUserInquirySubmitted`):**
+       - Khi người dùng gửi form tư vấn thành công tại website, hệ thống ngay lập tức đẩy thông báo xác nhận vào chuông, rung chuông vật lý và cập nhật số lượng badge.
+       - Sau đó tự động kích hoạt phản hồi từ Kiến trúc sư gửi lại cho người dùng về đúng mẫu nhà họ vừa gửi.
+    4. **Đồng bộ tức thì với phiên đăng nhập (`updateAuthUI`):** Khi người dùng đăng nhập, đăng xuất hoặc đổi vai trò tài khoản, hàm `this._renderNotificationList()` được kích hoạt ngay lập tức để chuyển đổi mượt mà giữa luồng Admin và User mà không cần tải lại trang.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=8.1`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 56** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

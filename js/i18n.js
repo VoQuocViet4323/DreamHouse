@@ -143,7 +143,8 @@ const I18N = {
 
         // Chuông thông báo (Notification Bell #074)
         notif_tab_all: "Tất cả",
-        notif_tab_inquiries: "Tư vấn",
+        notif_tab_inquiries: "Khách tư vấn",
+        notif_tab_my_inquiries: "Tư vấn của tôi",
         notif_mark_all: "Đã đọc tất cả",
         notif_empty: "Không có thông báo mới",
 
@@ -344,7 +345,8 @@ const I18N = {
 
         // Notification Bell #074
         notif_tab_all: "All",
-        notif_tab_inquiries: "Inquiries",
+        notif_tab_inquiries: "Client Leads",
+        notif_tab_my_inquiries: "My Inquiries",
         notif_mark_all: "Mark all read",
         notif_empty: "No new notifications",
 

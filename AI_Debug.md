@@ -1042,6 +1042,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Tích hợp phím Escape và click backdrop đóng modal êm ái.
   3. Nâng tham số cache-busting lên `?v=8.0` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 56: Tài khoản User thông thường bị hiển thị danh sách lead tư vấn của khách hàng khác
+- **Hiện tượng:** Khi tài khoản thông thường (role `user`, không phải Admin) mở chuông thông báo, danh sách lại hiển thị các lead tư vấn của khách hàng khác (*Phạm Thanh Hải*, *Nguyễn Văn Tuấn*, *Trần Thị Mai*...). Người dùng cuối thấy dữ liệu riêng tư của người khác và các nút xử lý của Admin.
+- **Nguyên nhân cốt lõi:**
+  1. Hàm nạp thông báo ban đầu `getInitialData()` trước đó dùng chung một mảng mẫu chứa danh sách khách hàng và tự động tải toàn bộ bản ghi từ bảng `inquiries` của Supabase mà không phân biệt người dùng là Admin hay User thông thường.
+  2. Chưa có cơ chế phân tách quyền (`Role-Based Notification Dispatching`) giữa vai trò Quản trị viên và Khách hàng/Thành viên.
+  3. Nhãn Tab 2 cố định chữ *"Tư vấn"* (Inquiries) thay vì *"Tư vấn của tôi"* (My Inquiries) đối với User.
+- **Cách khắc phục dứt điểm:**
+  1. **Tạo hàm kiểm tra Admin (`checkIsAdmin()`):** Kiểm tra chặt chẽ `currentProfile.role === 'admin'` hoặc `user_metadata.role === 'admin'`.
+  2. **Tách biệt 2 nguồn dữ liệu thông báo:**
+     - **Với Admin:** Tải toàn bộ lead khách hàng gửi đến từ form website và truy vấn `supabase.from('inquiries')`. Tab 2 có tên *"Khách tư vấn"*. Modal cho phép đánh dấu đã tư vấn và truy cập trang quản trị Admin.
+     - **Với User:** Tab 2 tự động đổi thành *"Tư vấn của tôi"*. Chỉ hiển thị:
+       + Xác nhận khi chính người dùng gửi yêu cầu tư vấn về mẫu nhà đang xem (`localStorage: dream_house_my_inquiries`).
+       + Phản hồi chính thức từ Kiến trúc sư DreamHouse (Võ Quốc Việt) gửi riêng cho mẫu nhà người dùng đang quan tâm.
+       + Cập nhật bản vẽ mới của mẫu nhà yêu thích và thông báo chào mừng từ hệ thống.
+       + Ẩn hoàn toàn các nút can thiệp Admin trong modal chi tiết, thay bằng nút xem mô hình 3D và hotline KTS.
+  3. **Tự động đồng bộ khi chuyển tài khoản:** Lồng gọi `this._renderNotificationList()` vào `updateAuthUI()` để khi đăng nhập/đăng xuất lập tức cập nhật lại danh sách thông báo tương ứng với vai trò.
+  4. Nâng tham số cache-busting lên `?v=8.1` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
