@@ -1024,6 +1024,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Ẩn chữ `user-name` trên màn hình $\le 640\text{px}$ để bảo toàn không gian cho Logo "Dream House" không bao giờ bị cắt chữ `Dream H...`.
   4. Nâng tham số cache-busting lên `?v=7.9` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 55: Bấm vào dòng thông báo trong chuông không mở thông tin chi tiết người cần tư vấn
+- **Hiện tượng:** Khi người dùng click vào một mục thông báo yêu cầu tư vấn (ví dụ *"Phạm Thanh Hải gửi yêu cầu tư vấn..."*), dòng thông báo chỉ đổi sang trạng thái đã đọc (`.read`) và chấm xanh biến mất, không có modal hay cửa sổ nào hiển thị số điện thoại, lời nhắn hay thông tin khách hàng cần tư vấn.
+- **Nguyên nhân cốt lõi:**
+  1. Template gốc của Prompt #074 chỉ tập trung vào hiệu ứng hoạt họa UI (animating read dot, ring, spring counter) mà chưa được kết nối logic dữ liệu nghiệp vụ (Business Logic).
+  2. Chưa có cấu trúc Modal và bộ điều khiển để bóc tách các trường dữ liệu của khách hàng (`name`, `contact`, `template_name`, `message`, `status`).
+- **Cách khắc phục dứt điểm:**
+  1. **Xây dựng Modal Chi Tiết Tư Vấn (`#inquiry-detail-modal`):**
+     - Tạo layout Luxury Bento hiển thị đầy đủ: Avatar viết hoa với gradient, Tên khách hàng, Badge trạng thái (*Yêu cầu tư vấn mới* / *Đã tư vấn*), Thời gian gửi.
+     - Khối thông tin liên lạc có nút "Gọi ngay" (`tel:...`) và nút "Sao chép" (vào clipboard có Toast thông báo).
+     - Khối mẫu nhà quan tâm có nút "Xem mô hình 3D" (mở trực tiếp 3D viewer của mẫu nhà).
+     - Khối lời nhắn nhu cầu trích dẫn đẹp mắt.
+     - Khối chân modal hỗ trợ nút "Đánh dấu đã tư vấn" (cập nhật DB Supabase) và "Quản trị Admin".
+  2. **Gắn sự kiện tương tác trong `initNotificationBell()`:**
+     - Khi bấm vào dòng thông báo, tự động đóng dropdown chuông và gọi `this.openInquiryDetailModal(inquiryData)`.
+     - Tự động đồng bộ với các yêu cầu tư vấn thực tế từ bảng `inquiries` trên Supabase nếu có dữ liệu.
+     - Tích hợp phím Escape và click backdrop đóng modal êm ái.
+  3. Nâng tham số cache-busting lên `?v=8.0` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

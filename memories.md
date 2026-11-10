@@ -934,6 +934,24 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.9`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 54** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 63: Tích Hợp Modal Xem Chi Tiết Thông Tin Khách Hàng Cần Tư Vấn (Inquiry Detail Modal & Notification Interactivity v8.0)
+- [x] **Xử lý hoàn chỉnh tính năng bấm vào thông báo để hiển thị toàn bộ thông tin người cần tư vấn:**
+  - **Hiện tượng:** Trước đây khi bấm vào các dòng thông báo trong chuông thông báo (ví dụ *"Phạm Thanh Hải gửi yêu cầu tư vấn..."*), hệ thống chỉ đánh dấu đã đọc (`.read`) và ẩn chấm xanh mà không mở ra bất kỳ thông tin chi tiết nào về khách hàng, số điện thoại hay nhu cầu của họ.
+  - **Giải pháp toàn diện:**
+    1. **Xây dựng Modal Xem Chi Tiết Tư Vấn (`#inquiry-detail-modal`):**
+       - Thiết kế theo chuẩn giao diện Luxury Bento cao cấp, tương thích cả Light Theme và Dark Theme.
+       - Hiển thị đầy đủ thông tin định danh: Avatar vòng tròn ký tự viết hoa có gradient, Họ tên khách hàng, Thời gian gửi, Badge trạng thái (*Yêu cầu tư vấn mới* / *Đã tư vấn*).
+       - Khối thông tin liên hệ: Hiển thị Số điện thoại / Email kèm nút **"Gọi ngay"** (`tel:...`) và nút **"Sao chép"** (sao chép vào clipboard tức thì với Toast phản hồi).
+       - Khối mẫu nhà quan tâm: Hiển thị tên mẫu nhà kiến trúc và nút **"Xem mô hình 3D"** (bấm vào sẽ tự động đóng modal tư vấn và mở ngay không gian 3D tương tác của mẫu nhà đó).
+       - Khối nội dung / Lời nhắn: Đoạn trích dẫn lời nhắn nhu cầu cụ thể của khách hàng.
+       - Khối chân trang quản trị: Nút **"Đánh dấu đã tư vấn"** (cập nhật trạng thái tức thì và đồng bộ lên bảng `inquiries` trên Supabase nếu có kết nối) và nút **"Quản trị Admin"** (chuyển hướng nhanh sang trang quản trị).
+    2. **Đồng bộ dữ liệu Supabase Database:**
+       - Tự động truy vấn dữ liệu từ bảng `inquiries` trên Supabase để đưa các yêu cầu tư vấn thực tế của khách hàng lên danh sách chuông thông báo.
+       - Khi bấm vào thông báo mẫu nhà đã lưu hoặc danh mục hệ thống, tự động mở chi tiết mẫu hoặc cuộn tới thư viện kiến trúc.
+    3. **Hỗ trợ đầy đủ phím Escape và click ra ngoài backdrop** để đóng modal với hiệu ứng thu nhỏ mượt mà.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=8.0`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 55** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 
