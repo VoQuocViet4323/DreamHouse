@@ -878,6 +878,19 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.5`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 52** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 59: Nút Đóng (X) Ghim Cố Định Mọi Lúc Khi Cuộn Trang Modal Chi Tiết (Sticky / Fixed Always-Visible Close Button v7.6)
+- [x] **Xử lý hoàn tất yêu cầu nút X luôn xuất hiện mọi lúc kể cả khi cuộn xuống xem chi tiết:**
+  - **Hiện tượng:** Trước đây nút X được đặt bên trong container `.modal-window` với `position: absolute`. Khi người dùng cuộn (scroll) xuống dưới để xem mô hình 3D, đọc bảng thông số kỹ thuật, mô tả hay nút báo giá, nút X bị cuộn trôi lên trên và biến mất khỏi tầm mắt, buộc người dùng phải cuộn ngược lại đỉnh modal mới bấm tắt được.
+  - **Nguyên nhân:** Nút close là con của `.modal-window` (phần tử có `overflow-y: auto` và giữ `transform` sau animation mở modal), khiến định vị absolute/fixed bên trong bị phụ thuộc vào độ cuộn của nội dung.
+  - **Giải pháp tối ưu:**
+    1. Trong `index.html`: Di chuyển nút `<button id="close-detail-modal">` ra làm con trực tiếp của `#detail-modal` (`.modal-overlay`), đứng ngang hàng với `.modal-window`.
+    2. Trong `style.css`: Thiết lập nút ở trạng thái **Fixed Floating** (`position: fixed !important; z-index: 1050 !important;`).
+       - Trên Desktop: Tính toán tọa độ tự động khớp với góc phải trên của modal `right: max(18px, calc((100vw - 1200px) / 2 + 20px)); top: max(18px, calc((100vh - 92vh) / 2 + 16px));`.
+       - Trên Mobile & Tablet ($\le 768\text{px}$): Ghim cố định tại `top: 16px !important; right: 16px !important; width: 38px; height: 38px;` (màn hình nhỏ $\le 480\text{px}$: `top: 12px; right: 12px;`).
+    3. Khi modal ẩn, nút ẩn 100% cùng overlay. Khi modal mở và người dùng cuộn nội dung bên trong, nút X vẫn lơ lửng cố định ở góc trên bên phải màn hình mọi lúc mọi nơi, cho phép tắt modal bất kỳ lúc nào chỉ với 1 chạm.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.6`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 53** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

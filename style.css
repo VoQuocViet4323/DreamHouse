@@ -1518,27 +1518,27 @@ body.dark-theme {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Nút Đóng Chuyên Biệt Cho Modal Chi Tiết Mẫu Nhà (Đè lên ảnh phối cảnh hoặc nền sáng) - Luxury Dark Glass */
+/* Nút Đóng Chuyên Biệt Cho Modal Chi Tiết Mẫu Nhà - Luôn Ghim Cố Định Khi Cuộn Trang (Sticky/Fixed Always Visible) */
 #detail-modal .modal-close,
 #close-detail-modal {
-  position: absolute;
-  top: 16px;
-  right: 18px;
-  width: 38px;
-  height: 38px;
+  position: fixed !important;
+  top: max(18px, calc((100vh - 92vh) / 2 + 16px)) !important;
+  right: max(18px, calc((100vw - 1200px) / 2 + 20px)) !important;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-full);
-  background: rgba(15, 23, 42, 0.8) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  background: rgba(15, 23, 42, 0.82) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.38) !important;
   color: #ffffff !important;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   cursor: pointer;
-  z-index: 60;
+  z-index: 1050 !important;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
   transition: all 0.25s var(--ease-spring);
 }
 
@@ -3156,11 +3156,12 @@ body.dark-theme .auth-checkbox-box {
 
   #detail-modal .modal-close,
   #close-detail-modal {
-    top: 14px;
-    right: 14px;
-    width: 38px;
-    height: 38px;
-    z-index: 60;
+    position: fixed !important;
+    top: 16px !important;
+    right: 16px !important;
+    width: 38px !important;
+    height: 38px !important;
+    z-index: 1050 !important;
   }
 
   .detail-grid {
@@ -3463,6 +3464,16 @@ body.dark-theme .auth-checkbox-box {
     border-radius: 14px !important;
     width: 100% !important;
     max-width: 100% !important;
+  }
+
+  #detail-modal .modal-close,
+  #close-detail-modal {
+    position: fixed !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 38px !important;
+    height: 38px !important;
+    z-index: 1050 !important;
   }
 
   .detail-visual-col {

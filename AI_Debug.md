@@ -987,6 +987,19 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   4. **Triệt tiêu dòng đỏ 404 Console:** Thêm cờ `ENABLE_VIEW_RPC: false` vào `js/config.js` và `generate-config.js`. Khi cờ này tắt, hệ thống chỉ đếm cục bộ trên client (zero-lag UI) và không gửi request thăm dò, đảm bảo console sạch bóng 100%.
   5. Nâng tham số cache-busting lên `?v=7.5` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 53: Nút Đóng (X) trên Modal Chi Tiết Mẫu Nhà bị cuộn trôi mất khi xem nội dung phía dưới
+- **Hiện tượng:** Khi người dùng mở modal chi tiết mẫu nhà (`#detail-modal`) trên mobile hoặc desktop, lúc ở đầu trang thì nút X hiển thị bình thường. Nhưng khi vuốt cuộn xuống dưới để xem mô hình 3D, đọc bảng thông số kích thước, mô tả hay nút bấm nhận báo giá, nút X bị cuộn trôi lên trên và khuất khỏi màn hình, khiến người dùng muốn tắt modal phải cuộn ngược lại đỉnh trang.
+- **Nguyên nhân cốt lõi:**
+  1. Nút `#close-detail-modal` trước đây được đặt bên trong thẻ `.modal-window` với `position: absolute;`. Vì `.modal-window` là container có `overflow-y: auto`, toàn bộ con absolute bên trong nó đều bị cuộn trôi theo nội dung.
+  2. `.modal-window` giữ thuộc tính `transform` từ animation mở modal (`modalWindowIn`), khiến việc gán `position: fixed` cho phần tử con bên trong bị trình duyệt giáng cấp thành `absolute` so với chính `.modal-window`.
+- **Cách khắc phục dứt điểm:**
+  1. Trong `index.html`: Di chuyển nút `<button id="close-detail-modal">` ra làm con trực tiếp của `#detail-modal` (`.modal-overlay`), đứng ngang hàng với `.modal-window`.
+  2. Trong `style.css`: Thiết lập nút ở chế độ **Fixed Floating** với `z-index: 1050 !important;`:
+     - Trên Desktop: Tính toán tọa độ động `top: max(18px, calc((100vh - 92vh) / 2 + 16px)); right: max(18px, calc((100vw - 1200px) / 2 + 20px));` ghim chính xác ở góc trên bên phải của modal.
+     - Trên Mobile ($\le 768\text{px}$): Ghim cố định tại `top: 16px !important; right: 16px !important; width: 38px; height: 38px;` (màn hình nhỏ $\le 480\text{px}$: `top: 12px; right: 12px;`).
+  3. Khi cuộn `.modal-window`, nút X hoàn toàn độc lập và **luôn luôn hiện diện lơ lửng ở góc trên bên phải mọi lúc**, người dùng có thể chạm đóng bất kỳ lúc nào chỉ với 1 chạm.
+  4. Nâng tham số cache-busting lên `?v=7.6` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
