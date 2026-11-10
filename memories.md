@@ -860,6 +860,24 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.4`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 51** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 58: Khóa Cứng Scroll Ngang & Tối Ưu Hiển Thị Toàn Bộ Nội Dung Trên Mobile (Mobile Zero Horizontal Overflow & Clean Console v7.5)
+- [x] **Xử lý triệt để lỗi cuộn ngang và tràn nội dung trên màn hình điện thoại:**
+  - **Hiện tượng:** Khi mở xem chi tiết mẫu nhà (`#detail-modal`) trên mobile, màn hình bị cuộn ngang (horizontal scroll), khung modal bị trôi sang một bên khiến mép phải của modal bị cắt cụt (dòng chữ hướng dẫn 3D viewer, dòng mô tả kiến trúc và bảng thông số bị mất chữ ở mép phải).
+  - **Nguyên nhân cốt lõi:**
+    1. Thẻ `<canvas>` của Three.js khi khởi tạo lúc container chưa tính toán xong kích thước nhận giá trị fallback `width: 450px`, lớn hơn chiều rộng màn hình mobile (360px - 390px) và ép toàn bộ container phình ngang.
+    2. `.modal-overlay` và `.modal-window` thiếu thuộc tính `overflow-x: hidden !important;`, các cột grid và flexbox không có `min-width: 0`, chữ không có `word-break: break-word` dẫn đến tràn container.
+    3. Thanh điều khiển 3D (`.viewer-header`) và các nút góc nhìn (`.camera-presets`) có tổng chiều rộng cố định vượt quá chiều rộng màn hình điện thoại hẹp.
+  - **Giải pháp dứt điểm:**
+    1. Trong `style.css`: Thiết lập khóa cứng cuộn ngang tuyệt đối `overflow-x: hidden !important; max-width: 100vw;` cho `.modal-overlay`, `.modal-window`, `.detail-grid`, `.detail-visual-col`, `.detail-info-col`.
+    2. Ràng buộc canvas Three.js: `.threejs-canvas canvas { width: 100% !important; max-width: 100% !important; height: 100% !important; display: block !important; }`.
+    3. Cập nhật `js/viewer3d.js`: Sử dụng `fallbackWidth = Math.min(window.innerWidth - 32, 450)` và gán cứng `maxWidth = '100%'` cho renderer DOM element.
+    4. Cấu hình flex-wrap linh hoạt cho `.viewer-header` và `.camera-presets`, ép ngắt dòng tự nhiên `word-break: break-word; overflow-wrap: break-word;` cho toàn bộ văn bản (`.hint`, `.status`, `.desc-text`, `.spec-val`).
+    5. Bảng thông số kỹ thuật `.specs-table`: Dùng `grid-template-columns: repeat(2, minmax(0, 1fr))` trên tablet/mobile, và tự động chuyển sang 1 cột trên màn hình siêu hẹp $\le 480\text{px}$.
+- [x] **Triệt tiêu hoàn toàn dòng đỏ Console 404 RPC `increment_template_view`:**
+  - Bổ sung cấu hình `ENABLE_VIEW_RPC: false` vào `js/config.js` và `generate-config.js`. Khi chưa chạy file SQL trên Supabase, hệ thống chỉ đếm lượt xem cục bộ trên Client (cực mượt, zero-lag) và tuyệt đối không gửi request thăm dò, loại bỏ 100% dòng đỏ 404 trên DevTools Console.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.5`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 52** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

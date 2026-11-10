@@ -33,5 +33,6 @@ if (
 window.APP_CONFIG = {
     supabaseConfig: SUPABASE_CONFIG,
     contactInfo: CONTACT_INFO,
-    getClient: () => supabaseClient
+    getClient: () => supabaseClient,
+    ENABLE_VIEW_RPC: false // Bật true sau khi thực thi file supabase/09_template_views_analytics.sql trên Supabase SQL Editor
 };

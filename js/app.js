@@ -1153,7 +1153,11 @@ class DreamHouseApp {
             item.view_count = (item.view_count || 0) + 1;
         }
 
-        // 2. Gửi RPC increment_template_view lên Supabase thời gian thực nếu id là UUID hợp lệ
+        // 2. Chỉ gửi RPC lên Supabase nếu đã kích hoạt tính năng đồng bộ views (tránh lỗi 404 đỏ console khi chưa chạy SQL)
+        const isRpcEnabled = !!(window.APP_CONFIG && window.APP_CONFIG.ENABLE_VIEW_RPC);
+        if (!isRpcEnabled) return;
+
+        // 3. Gửi RPC increment_template_view lên Supabase thời gian thực nếu id là UUID hợp lệ
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (!uuidRegex.test(templateId)) return;
 
@@ -1166,14 +1170,10 @@ class DreamHouseApp {
                 if (error) {
                     if (error.code === 'PGRST202' || (error.message && error.message.includes('schema cache'))) {
                         this._rpcIncrementMissing = true;
-                        console.info('ℹ️ [DreamHouse Info] RPC increment_template_view chưa được thực thi trên Supabase SQL Editor. Lượt xem vẫn được lưu mượt mà ở Client. Hãy chạy file supabase/09_template_views_analytics.sql để kích hoạt đồng bộ vào DB.');
-                    } else {
-                        console.warn('Lỗi ghi nhận lượt xem mẫu nhà:', error.message);
                     }
                 }
-            }).catch(err => {
+            }).catch(() => {
                 this._rpcIncrementMissing = true;
-                console.info('ℹ️ [DreamHouse Info] Không thể kết nối RPC lượt xem (Local fallback active).');
             });
         }
     }

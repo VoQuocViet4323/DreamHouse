@@ -969,6 +969,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Chuyển cảnh báo console sang thông báo `console.info` thân thiện, hướng dẫn quản trị viên chạy file `09_template_views_analytics.sql` trong Supabase SQL Editor để kích hoạt tính năng đồng bộ vĩnh viễn vào DB.
   3. Nâng tham số cache-busting lên `?v=7.4` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 52: Tràn cuộn ngang trên giao diện Mobile khiến nội dung bị cắt mép & Vẫn sót dòng đỏ Console 404
+- **Hiện tượng:**
+  1. Khi mở panel chi tiết mẫu nhà (`#detail-modal`) trên mobile, khung modal bị phình to hơn màn hình điện thoại, trang bị cuộn ngang (horizontal scroll) qua lại. Toàn bộ mép phải của modal bị che khuất: dòng ghi chú điều khiển 3D (`.viewer-footer`), đoạn văn bản mô tả (`.detail-desc-block`) và bảng thông số kỹ thuật bị mất chữ ở mép phải.
+  2. Mặc dù đã có cơ chế cờ tắt lặp lại RPC, nhưng ở lần mở mẫu đầu tiên sau khi tải trang, trình duyệt vẫn gửi request `POST /rpc/increment_template_view` và in 1 dòng đỏ 404 trong Console.
+- **Nguyên nhân cốt lõi:**
+  1. *Lỗi tràn ngang Three.js Canvas:* Hàm `init()` của `Viewer3D` khi container chưa render xong lấy `fallbackWidth = 450px`, gán inline style `width: 450px` lên thẻ `<canvas>`, lớn hơn viewport mobile ($360\text{px} - 390\text{px}$) khiến container bị đẩy bung ra ngoài.
+  2. *Lỗi tràn ngang Container & Grid:* `.modal-overlay` và `.modal-window` thiếu `overflow-x: hidden !important;`, các cột grid trong `.specs-table` dùng `1fr 1fr` với `min-width: auto` làm cột phình theo text dài. Thanh điều khiển `.viewer-header` và `.camera-presets` có độ rộng cố định lớn hơn chiều rộng mobile.
+  3. *Lỗi dòng đỏ Console 404:* Khi người dùng chưa chạy script SQL trên Supabase, request thăm dò ở frame đầu tiên luôn bị PostgREST trả về 404 và trình duyệt tự động ghi log màu đỏ.
+- **Cách khắc phục dứt điểm:**
+  1. **Khóa cứng cuộn ngang toàn cục:** Thiết lập `overflow-x: hidden !important; max-width: 100vw;` cho `html`, `body`, `.modal-overlay`, `.modal-window`, `.detail-grid`, `.detail-visual-col`, `.detail-info-col`.
+  2. **Ràng buộc tuyệt đối thẻ Canvas Three.js:** Gán `.threejs-canvas canvas { width: 100% !important; max-width: 100% !important; display: block !important; }` và trong `js/viewer3d.js` tính `fallbackWidth = Math.min(window.innerWidth - 32, 450)`.
+  3. **Tự động co giãn linh hoạt & ngắt dòng an toàn:**
+     - Cho phép flex-wrap trên `.viewer-header` và `.camera-presets`.
+     - Áp dụng `word-break: break-word !important; overflow-wrap: break-word !important; white-space: normal !important;` cho 100% văn bản (`.hint`, `.status`, `.desc-text`, `.spec-val`).
+     - Bảng thông số: Dùng `repeat(2, minmax(0, 1fr))` trên mobile và tự động chuyển sang 1 cột trên màn hình siêu hẹp $\le 480\text{px}$.
+  4. **Triệt tiêu dòng đỏ 404 Console:** Thêm cờ `ENABLE_VIEW_RPC: false` vào `js/config.js` và `generate-config.js`. Khi cờ này tắt, hệ thống chỉ đếm cục bộ trên client (zero-lag UI) và không gửi request thăm dò, đảm bảo console sạch bóng 100%.
+  5. Nâng tham số cache-busting lên `?v=7.5` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

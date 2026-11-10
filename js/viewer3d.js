@@ -43,7 +43,8 @@ class House3DViewer {
     init() {
         if (!this.container || typeof THREE === 'undefined') return;
 
-        const width = this.container.clientWidth || 450;
+        const fallbackWidth = Math.min(window.innerWidth - 32, 450);
+        const width = this.container.clientWidth || fallbackWidth;
         const height = this.container.clientHeight || 350;
 
         // 1. Khung cảnh & Camera (near = 0.05 để xem rõ cận cảnh chi tiết nội thất phòng)
@@ -59,6 +60,14 @@ class House3DViewer {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // Khóa cứng chiều rộng canvas để không bao giờ bung tràn trên thiết bị di động
+        if (this.renderer.domElement) {
+            this.renderer.domElement.style.maxWidth = '100%';
+            this.renderer.domElement.style.width = '100%';
+            this.renderer.domElement.style.height = '100%';
+            this.renderer.domElement.style.display = 'block';
+        }
 
         this.container.innerHTML = '';
         this.container.appendChild(this.renderer.domElement);
@@ -281,6 +290,12 @@ class House3DViewer {
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(width, height);
+        if (this.renderer.domElement) {
+            this.renderer.domElement.style.maxWidth = '100%';
+            this.renderer.domElement.style.width = '100%';
+            this.renderer.domElement.style.height = '100%';
+            this.renderer.domElement.style.display = 'block';
+        }
     }
 
     // Nạp mẫu: Nếu có file .glb thì nạp thật, nếu không có thì sinh khối parametric

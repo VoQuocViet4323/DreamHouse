@@ -1371,6 +1371,10 @@ body.dark-theme {
   justify-content: center;
   padding: 24px 16px;
   overflow-y: auto;
+  overflow-x: hidden !important;
+  max-width: 100vw;
+  width: 100vw;
+  box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
   animation: modalOverlayIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   cursor: pointer;
@@ -1404,6 +1408,8 @@ body.dark-theme {
   border-radius: var(--radius-lg);
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
   animation: modalWindowIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1644,9 +1650,20 @@ body.dark-theme {
 
 .threejs-canvas {
   width: 100%;
+  max-width: 100%;
   height: 330px;
   background: #fdfdfd;
   cursor: grab;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.threejs-canvas canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  display: block !important;
 }
 
 .threejs-canvas:active {
@@ -3112,14 +3129,21 @@ body.dark-theme .auth-checkbox-box {
     font-size: 0.84rem;
   }
 
-  /* 5. Detail Modal */
+  /* 5. Detail Modal - Khóa cứng Scroll Ngang, Tối ưu 100% hiển thị Mobile */
   .modal-overlay {
-    padding: 10px;
+    padding: 10px 8px !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
   }
 
   .modal-window {
-    max-height: 94vh;
-    border-radius: 20px;
+    max-height: 94vh !important;
+    border-radius: 18px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
   }
 
   .modal-close {
@@ -3140,83 +3164,237 @@ body.dark-theme .auth-checkbox-box {
   }
 
   .detail-grid {
-    grid-template-columns: 1fr;
-    min-height: auto;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .detail-visual-col,
+  .detail-info-col {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
   }
 
   .detail-visual-col {
-    padding: 14px 14px 18px;
-    gap: 16px;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .photo-box img {
-    height: 190px;
-  }
-
-  .threejs-canvas {
-    height: 250px;
-  }
-
-  .camera-presets {
-    gap: 4px;
-  }
-
-  .camera-presets button {
-    padding: 4px 8px;
-    font-size: 0.7rem;
-  }
-
-  .viewer-footer {
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.72rem;
-    text-align: center;
+    padding: 12px 10px 16px !important;
+    gap: 14px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--color-border) !important;
   }
 
   .detail-info-col {
-    padding: 18px 16px 24px;
+    padding: 16px 12px 20px !important;
+  }
+
+  .media-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .photo-box img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 190px !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  /* Header thanh điều khiển 3D trên mobile */
+  .viewer-header {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .viewer-header .media-badge {
+    position: static !important;
+    display: inline-flex !important;
+    font-size: 0.7rem !important;
+    padding: 3px 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .camera-presets {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    justify-content: flex-end !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+  }
+
+  .camera-presets button {
+    padding: 4px 7px !important;
+    font-size: 0.68rem !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Khung canvas 3D Viewer */
+  .threejs-canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 240px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+
+  .threejs-canvas canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+  }
+
+  /* Footer ghi chú điều khiển 3D */
+  .viewer-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 8px 10px !important;
+    font-size: 0.7rem !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .viewer-footer .hint,
+  .viewer-footer .status {
+    width: 100% !important;
+    max-width: 100% !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Tiêu đề & Dự toán */
+  .detail-header-block {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
 
   .detail-title {
-    font-size: 1.35rem;
-    line-height: 1.3;
-    margin-bottom: 6px;
+    font-size: 1.25rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 6px !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
   }
 
   .detail-price-badge {
-    font-size: 1.15rem;
-    margin-bottom: 14px;
+    font-size: 1.1rem !important;
+    margin-bottom: 14px !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
   }
 
+  /* Bảng thông số kích thước */
   .specs-table {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 12px;
-    font-size: 0.82rem;
-    margin-bottom: 16px;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 12px 10px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
+  .spec-row {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .spec-row.full-width {
+    grid-column: 1 / -1 !important;
+  }
+
+  .spec-name {
+    font-size: 0.7rem !important;
+    word-break: break-word !important;
+  }
+
+  .spec-val {
+    font-size: 0.88rem !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  /* Khối mô tả kiến trúc */
   .detail-desc-block {
-    font-size: 0.86rem;
-    line-height: 1.6;
-    margin-bottom: 18px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 18px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
+  .detail-desc-block p,
+  .detail-desc-block .desc-text {
+    font-size: 0.85rem !important;
+    line-height: 1.6 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Các nút hành động */
   .detail-actions {
-    gap: 10px;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
   }
 
   .detail-actions button {
-    padding: 12px 14px;
-    font-size: 0.88rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px 10px !important;
+    font-size: 0.88rem !important;
+    white-space: normal !important;
+    text-align: center !important;
+    word-break: break-word !important;
+    box-sizing: border-box !important;
   }
 
   .detail-nav-footer {
-    margin-top: 16px;
-    padding-top: 12px;
-    font-size: 0.84rem;
+    margin-top: 14px !important;
+    padding-top: 12px !important;
+    font-size: 0.82rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* 6. Contact Section */
@@ -3272,6 +3450,52 @@ body.dark-theme .auth-checkbox-box {
 
   .hero-cta-group {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Khóa cứng scroll ngang cho màn hình cực hẹp <= 480px */
+  .modal-overlay {
+    padding: 6px 4px !important;
+  }
+
+  .modal-window {
+    border-radius: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .detail-visual-col {
+    padding: 10px 8px 14px !important;
+  }
+
+  .detail-info-col {
+    padding: 14px 10px 18px !important;
+  }
+
+  .specs-table {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    padding: 10px 8px !important;
+  }
+
+  .viewer-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .camera-presets {
+    width: 100% !important;
+    justify-content: space-between !important;
+    margin-left: 0 !important;
+  }
+
+  .camera-presets button {
+    flex: 1 !important;
+    text-align: center !important;
+    padding: 4px 2px !important;
+    font-size: 0.65rem !important;
   }
 }
 
