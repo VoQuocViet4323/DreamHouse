@@ -1695,13 +1695,6 @@ class DreamHouseApp {
             this.handleSaveProfile(e);
         });
 
-        document.getElementById('menu-settings-btn')?.addEventListener('click', () => {
-            dropdownMenu?.classList.add('hidden');
-            if (window.toast) {
-                window.toast.info('Hệ thống đang hoạt động tối ưu với Supabase và Three.js.');
-            }
-        });
-
         // Mặc định khởi tạo ở chế độ Đăng nhập
         this.setAuthMode('login');
 

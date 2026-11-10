@@ -891,6 +891,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.6`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 53** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 60: Tinh Gọn Dropdown Menu Tài Khoản & Gỡ Bỏ Nút Giữ Chỗ Cài Đặt Hệ Thống (Account Dropdown Clean Up v7.7)
+- [x] **Gỡ bỏ hoàn toàn nút giữ chỗ (placeholder) "Cài đặt hệ thống" (`#menu-settings-btn`):**
+  - **Hiện tượng & Bối cảnh:** Nút "Cài đặt hệ thống" trước đây được tạo ra như một mục giao diện mẫu, khi bấm vào chỉ hiển thị Toast thông báo trạng thái rồi đóng menu. Người dùng phản hồi thắc mắc về chức năng và yêu cầu gỡ bỏ cho tinh gọn giao diện.
+  - **Xử lý:**
+    1. Xóa thẻ `<button id="menu-settings-btn">` khỏi dropdown menu trong `index.html`.
+    2. Xóa event listener tương ứng trong `js/app.js`.
+    3. Giữ nguyên 4 mục thiết thực 100% chức năng: *Bảng quản trị Admin* (dành cho Admin), *Mẫu nhà đã lưu yêu thích*, *Chỉnh sửa hồ sơ* và *Đăng xuất*.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.7`** trên toàn bộ `index.html` và `admin.html`.
+
 
 
 
