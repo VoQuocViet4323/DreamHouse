@@ -141,6 +141,12 @@ const I18N = {
         role_admin: "Quản trị viên (Admin)",
         role_member: "Thành viên",
 
+        // Chuông thông báo (Notification Bell #074)
+        notif_tab_all: "Tất cả",
+        notif_tab_inquiries: "Tư vấn",
+        notif_mark_all: "Đã đọc tất cả",
+        notif_empty: "Không có thông báo mới",
+
         // Phụ đề Gallery
         gallery_sub: "Tuyển chọn các đồ án kiến trúc sẵn sàng thi công với dự toán tham khảo minh bạch.",
 
@@ -335,6 +341,12 @@ const I18N = {
         menu_settings: "System Settings",
         role_admin: "Administrator (Admin)",
         role_member: "Member",
+
+        // Notification Bell #074
+        notif_tab_all: "All",
+        notif_tab_inquiries: "Inquiries",
+        notif_mark_all: "Mark all read",
+        notif_empty: "No new notifications",
 
         // Gallery section
         gallery_sub: "Curated architectural designs ready for construction with transparent estimates.",

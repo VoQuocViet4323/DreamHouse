@@ -900,6 +900,21 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     3. Giữ nguyên 4 mục thiết thực 100% chức năng: *Bảng quản trị Admin* (dành cho Admin), *Mẫu nhà đã lưu yêu thích*, *Chỉnh sửa hồ sơ* và *Đăng xuất*.
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.7`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 61: Tích Hợp Chuông Thông Báo Thông Minh Cạnh Avatar Admin (Notification Bell Dropdown Prompt #074 v7.8)
+- [x] **Tích hợp phần tử Notification Bell Dropdown (074, Alerts & Feedback) theo chuẩn Lucian UX/UI:**
+  - **Vị trí tích hợp:** Đặt ngay cạnh nút Avatar Admin (`#user-menu` / `#user-profile-trigger`) trên thanh Header Actions của `index.html`.
+  - **Cơ chế hoạt động & Trải nghiệm tương tác (UX):**
+    1. **Huy hiệu số lượng thông báo (Badge count):** Hiển thị số lượng thông báo chưa đọc, tự động ẩn khi không còn thông báo (`.zero { transform: scale(0); }`), phóng to thu nhỏ dạng lò xo (`scale(1) -> scale(1.5) -> scale(1)`) khi có thông báo mới.
+    2. **Hiệu ứng rung chuông (Bell Shake):** Chuông tự động lắc lư (`@keyframes u074-ring`) trong $0.9\text{s}$ với đường cong `cubic-bezier(.2, .8, .2, 1)` khi có thông báo mới xuất hiện.
+    3. **Đẩy thông báo mới vào đầu danh sách (Push Animation):** Hàng thông báo mới trượt xuống từ trên (`translateY(-30px) -> 0`) và mở rộng chiều cao bằng CSS Grid (`grid-template-rows: 0fr -> 1fr`).
+    4. **Đánh dấu đã đọc từng mục (Read Dots):** Chạm vào thông báo để thu nhỏ và làm mờ chấm xanh unread `.u074-dot`, giảm bộ đếm tức thì.
+    5. **Đã đọc tất cả ("Mark all read"):** Bấm nút để xóa toàn bộ chấm xanh lần lượt theo hiệu ứng so le thời gian (stagger delay $i \times 110\text{ms}$).
+    6. **Phân loại thông báo (Tab switching):** Chuyển đổi giữa 2 tab: *"Tất cả"* (All) và *"Tư vấn"* (Inquiries/Mentions).
+    7. **Gập/mở panel & Đóng ngoài:** Panel thông báo thu nhỏ về góc chuông (`transform: scale(.4); opacity: 0;`), tự động đóng khi click ra ngoài hoặc bấm phím `Escape`.
+    8. **Dữ liệu thực tế:** Ánh xạ dữ liệu thực tiễn của DreamHouse (yêu cầu tư vấn mẫu nhà, báo giá thi công, lưu yêu thích, thông báo catalog kiến trúc 2026).
+    9. **Hỗ trợ Song ngữ & Chế độ màu:** Hỗ trợ đầy đủ tiếng Việt & tiếng Anh qua `js/i18n.js`, đồng bộ Design Tokens cho cả Light Theme và Dark Theme, tương thích hoàn hảo chế độ giảm chuyển động `prefers-reduced-motion`.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.8`** trên toàn bộ `index.html` và `admin.html`.
+
 
 
 

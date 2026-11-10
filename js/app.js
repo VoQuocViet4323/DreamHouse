@@ -58,6 +58,7 @@ class DreamHouseApp {
         this.loadLocalFavorites();
         await this.setupAuth();
         this.setupUIEvents();
+        this.initNotificationBell();
         await this.loadTemplates();
         this.renderGallery();
 
@@ -1957,6 +1958,186 @@ class DreamHouseApp {
 
     setupThemeToggle() {
         // Theme toggle được quản lý với hiệu ứng Circular Reveal (219) ngay trong index.html
+    }
+
+    /**
+     * Khởi tạo Notification Bell Dropdown (Prompt #074, Alerts & Feedback)
+     * Lucian UX/UI Prompt #074 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#074
+     */
+    initNotificationBell() {
+        const root = document.getElementById('u074-notif');
+        if (!root) return;
+
+        const bell = root.querySelector('.u074-bell');
+        const badge = root.querySelector('.u074-badge');
+        const list = root.querySelector('.u074-list');
+        const allB = root.querySelector('.u074-all');
+        const tabs = root.querySelectorAll('.u074-tab');
+        const pan = root.querySelector('.u074-pan');
+        if (!bell || !badge || !list || !allB || !pan) return;
+
+        const rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Dữ liệu mẫu thực tế của DreamHouse (Báo giá, quan tâm mẫu nhà, lưu yêu thích, cập nhật hệ thống)
+        // Format: [Tên khách hàng/nguồn, Nội dung thông báo, Thời gian, Gradient Avatar, Emoji Icon, isMention/isLead (1 hoặc 0)]
+        const isEn = window.i18n && window.i18n.currentLang === 'en';
+        const initialData = isEn ? [
+            ['Nguyen Van Tuan', ' sent a consultation request: “2-Storey Townhouse 5x16m”', 'Just now', 'linear-gradient(140deg,#8B6CFF,#5B8CFF)', '💬', 1],
+            ['Tran Thi Mai', ' requested an all-inclusive quote: “Neoclassical Villa”', '15 min ago', 'linear-gradient(140deg,#22C3A6,#0EA5E9)', '📋', 1],
+            ['Le Hoang Nam', ' saved “Modern 1-Storey Japanese Roof House” to favorites', '1 hr ago', 'linear-gradient(140deg,#FF7A93,#B04FD0)', '❤️', 0],
+            ['DreamHouse System', ' Architectural design catalog 2026 update is now live', 'Yesterday', 'linear-gradient(140deg,#FFB547,#FF7A45)', '📊', 0]
+        ] : [
+            ['Nguyễn Văn Tuấn', ' vừa gửi thông tin tư vấn: “Nhà phố 2 tầng 5×16m”', 'Vừa xong', 'linear-gradient(140deg,#8B6CFF,#5B8CFF)', '💬', 1],
+            ['Trần Thị Mai', ' yêu cầu báo giá thi công: “Biệt thự Tân cổ điển 3 tầng”', '15 phút trước', 'linear-gradient(140deg,#22C3A6,#0EA5E9)', '📋', 1],
+            ['Lê Hoàng Nam', ' vừa lưu mẫu “Nhà Cấp 4 Mái Nhật Tiện Nghi” vào yêu thích', '1 giờ trước', 'linear-gradient(140deg,#FF7A93,#B04FD0)', '❤️', 0],
+            ['Hệ thống DreamHouse', ' Bảng dự toán chi phí & catalog kiến trúc 2026 đã sẵn sàng', 'Hôm qua', 'linear-gradient(140deg,#FFB547,#FF7A45)', '📊', 0]
+        ];
+
+        const incomingData = isEn ?
+            ['Pham Thanh Hai', ' requested consultation: “Modern 3-Storey Townhouse 5m”', 'Just now', 'linear-gradient(140deg,#3D8BFF,#22C3A6)', '✨', 1] :
+            ['Phạm Thanh Hải', ' gửi yêu cầu tư vấn: “Nhà Phố Hiện Đại 3 Tầng Mặt Tiền 5m”', 'Vừa xong', 'linear-gradient(140deg,#3D8BFF,#22C3A6)', '✨', 1];
+
+        let mentionOnly = false;
+
+        const createItem = (d, isNew = false) => {
+            const li = document.createElement('li');
+            li.className = 'u074-it' + (isNew ? ' new' : '');
+            li.setAttribute('data-m', d[5]);
+            li.innerHTML = `<div>
+                <button class="u074-row" type="button">
+                    <span class="u074-av" style="--g:${d[3]}" aria-hidden="true"><em>${d[4]}</em></span>
+                    <span class="u074-tx">
+                        <b>${d[0]}</b>
+                        <span>${d[1]}</span>
+                        <small>${d[2]}</small>
+                    </span>
+                    <span class="u074-dot" aria-hidden="true"></span>
+                </button>
+            </div>`;
+
+            const row = li.querySelector('.u074-row');
+            row.addEventListener('click', () => {
+                row.classList.add('read');
+                updateCount();
+            });
+
+            return li;
+        };
+
+        const updateCount = () => {
+            const unreadItems = list.querySelectorAll('.u074-row:not(.read)');
+            const n = unreadItems.length;
+            const prev = Number(badge.textContent) || 0;
+            badge.textContent = n;
+            badge.classList.toggle('zero', n === 0);
+            bell.setAttribute('aria-label', (window.i18n && window.i18n.currentLang === 'en' ? 'Notifications, ' : 'Thông báo, ') + n + (window.i18n && window.i18n.currentLang === 'en' ? ' unread' : ' chưa đọc'));
+            allB.disabled = (n === 0);
+
+            list.querySelectorAll('.u074-row').forEach(r => {
+                const isRead = r.classList.contains('read');
+                r.setAttribute('aria-label', r.textContent.replace(/\s+/g, ' ').trim() + (isRead ? '' : ', chưa đọc'));
+            });
+
+            if (n > prev && !rm && typeof badge.animate === 'function') {
+                badge.animate([
+                    { transform: 'scale(1)' },
+                    { transform: 'scale(1.5)' },
+                    { transform: 'scale(1)' }
+                ], {
+                    duration: 450,
+                    easing: 'cubic-bezier(.34,1.5,.64,1)'
+                });
+            }
+        };
+
+        const filterNotifications = () => {
+            list.querySelectorAll('.u074-it').forEach(li => {
+                li.classList.toggle('hide', mentionOnly && li.getAttribute('data-m') !== '1');
+            });
+        };
+
+        // Render danh sách ban đầu (2 item đầu chưa đọc, các item sau đã đọc)
+        list.innerHTML = '';
+        initialData.forEach((d, i) => {
+            const li = createItem(d);
+            if (i > 1) {
+                li.querySelector('.u074-row').classList.add('read');
+            }
+            list.appendChild(li);
+        });
+        updateCount();
+
+        // Xử lý chuyển tabs
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                mentionOnly = (index === 1);
+                tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === index)));
+                filterNotifications();
+            });
+        });
+
+        // Xử lý nút "Đã đọc tất cả"
+        allB.addEventListener('click', () => {
+            const unreadRows = list.querySelectorAll('.u074-row:not(.read)');
+            unreadRows.forEach((r, i) => {
+                setTimeout(() => {
+                    if (!root.isConnected) return;
+                    r.classList.add('read');
+                    updateCount();
+                }, i * 110);
+            });
+        });
+
+        // Xử lý Mở / Đóng Dropdown
+        const setOpen = (open) => {
+            root.classList.toggle('is-closed', !open);
+            bell.setAttribute('aria-expanded', String(open));
+            pan.inert = !open;
+        };
+
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isClosed = root.classList.contains('is-closed');
+            setOpen(isClosed);
+        });
+
+        pan.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            if (!root.contains(e.target) && !root.classList.contains('is-closed')) {
+                setOpen(false);
+            }
+        });
+
+        // Đóng dropdown khi nhấn phím Esc
+        root.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !root.classList.contains('is-closed')) {
+                setOpen(false);
+                bell.focus();
+            }
+        });
+
+        // Hiệu ứng rung chuông khi có thông báo mới sau 2.4s (Prompt #074)
+        setTimeout(() => {
+            if (!root.isConnected) return;
+            const newLi = createItem(incomingData, true);
+            list.insertBefore(newLi, list.firstChild);
+            filterNotifications();
+            void newLi.offsetWidth; // Force reflow
+            newLi.classList.remove('new');
+
+            bell.classList.remove('ring');
+            void bell.offsetWidth; // Force reflow
+            bell.classList.add('ring');
+            updateCount();
+        }, rm ? 400 : 2400);
+
+        bell.addEventListener('animationend', () => {
+            bell.classList.remove('ring');
+        });
     }
 
     /**
