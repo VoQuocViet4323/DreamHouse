@@ -1000,6 +1000,30 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   3. Khi cuộn `.modal-window`, nút X hoàn toàn độc lập và **luôn luôn hiện diện lơ lửng ở góc trên bên phải mọi lúc**, người dùng có thể chạm đóng bất kỳ lúc nào chỉ với 1 chạm.
   4. Nâng tham số cache-busting lên `?v=7.6` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 54: UI Dropdown thông báo khi xổ xuống bị lệch hẳn sang trái, mất cân đối và đứt gãy liên kết với chuông
+- **Hiện tượng:**
+  1. Khi người dùng bấm vào nút chuông thông báo (đặc biệt trên màn hình điện thoại hoặc tablet), panel thông báo xổ xuống bị trôi dạt về tận cùng bên trái của màn hình (nằm dưới logo thương hiệu), để lại khoảng trống mênh mông ở nửa phải màn hình.
+  2. Mũi tên tam giác chỉ hướng bị lệch vị trí hoàn toàn, không trỏ vào chuông, tạo cảm giác panel thông báo như rơi tự do không có điểm neo.
+  3. Thẻ tab đang chọn ("Tư vấn") hiển thị màu trắng sáng chói trên nền Dark Theme, gây nhức mắt và lạc quẻ với phong cách vàng kim sang trọng của Dream House; nút "Đã đọc tất cả" màu xám xanh chìm nghỉm, tương phản kém khó bấm.
+  4. Tên người dùng và nội dung bị xuống dòng dạng block nhiều tầng khiến danh sách cồng kềnh, thiếu vạch phân chia ngăn cách.
+- **Nguyên nhân cốt lõi:**
+  1. Quy tắc CSS `@media (max-width: 768px)` sử dụng thuộc tính `position: absolute; right: -42px; width: 320px;`. Vì chuông nằm bên trái nút Admin avatar (~90px), việc dịch -42px khiến panel rộng 320px bị tràn sang góc trái của màn hình điện thoại (360px - 414px).
+  2. Mũi tên `.u074-pan::before` dùng giá trị hardcode tĩnh `right: 54px;` không tính toán động theo tọa độ thực tế của nút chuông.
+  3. Thiếu token đồng bộ vàng kim `--u074-accent-bg` cho tab active, dùng màu trắng của Light mode áp dụng vào Dark mode.
+- **Cách khắc phục dứt điểm:**
+  1. **Căn giữa đối xứng hoàn hảo trên Mobile:** Đặt `position: fixed !important; left: 14px !important; right: 14px !important; width: auto !important; max-width: calc(100vw - 28px); top: 68px;` tạo viền đối xứng 14px hai bên trên mọi kích thước màn hình.
+  2. **Mũi tên định vị tâm chuông tự động (Dynamic Arrow Positioning):**
+     - Trong `js/app.js`: Xây dựng hàm `positionDropdown()` tự động đo đạc tọa độ `bellRect` và `panRect`, tính toán khoảng cách `bellCenter - panRect.left` và gán vào biến CSS `--u074-arrow-left`.
+     - Mũi tên `.u074-pan::before` dùng `left: var(--u074-arrow-left); transform: translateX(-50%) rotate(45deg);` bảo đảm luôn luôn trỏ chính xác $100\%$ vào tâm nút chuông.
+     - Cập nhật `transformOrigin` đồng bộ theo tọa độ này giúp hiệu ứng bung mở và thu gập diễn ra mượt mà từ đúng vị trí chuông.
+  3. **Nâng cấp mỹ thuật Bento & Thước đo Lux:**
+     - Tab active chuyển sang Luxury Gold Pill (`background: var(--u074-accent-bg); color: var(--u074-accent); border: 1px solid rgba(229,185,93,0.35);`).
+     - Nút "Đã đọc tất cả" có nền pill nổi bật, chữ vàng dễ bấm, tương phản đạt chuẩn WCAG.
+     - Tên khách hàng và nội dung hiển thị `inline` thanh thoát, bổ sung đường phân cách mờ tinh tế `.u074-it:not(:last-child) { border-bottom: 1px solid var(--u074-line); }`.
+     - Bổ sung thông báo trạng thái trống `.u074-empty` khi tab lọc không có dữ liệu.
+     - Ẩn chữ `user-name` trên màn hình $\le 640\text{px}$ để bảo toàn không gian cho Logo "Dream House" không bao giờ bị cắt chữ `Dream H...`.
+  4. Nâng tham số cache-busting lên `?v=7.9` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

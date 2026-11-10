@@ -915,6 +915,25 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     9. **Hỗ trợ Song ngữ & Chế độ màu:** Hỗ trợ đầy đủ tiếng Việt & tiếng Anh qua `js/i18n.js`, đồng bộ Design Tokens cho cả Light Theme và Dark Theme, tương thích hoàn hảo chế độ giảm chuyển động `prefers-reduced-motion`.
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.8`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 62: Tối Ưu Cân Đối Tuyệt Đối Cho UI Dropdown Thông Báo & Căn Chỉnh Mũi Tên Động (Notification Dropdown Centering & Dynamic Arrow v7.9)
+- [x] **Xử lý triệt để hiện tượng panel thông báo khi xổ xuống bị lệch hẳn sang trái, mất cân đối:**
+  - **Hiện tượng:** Khi bấm mở chuông thông báo trên mobile hoặc màn hình vừa, panel thông báo `.u074-pan` bị trôi dạt về tận cùng bên trái màn hình (đè lên logo Dream House), để lại khoảng trống mênh mông bên phải. Mũi tên chỉ chuông bị mất hoặc lệch tâm hoàn toàn. Tab đang chọn có nền trắng gắt chói mắt trên nền tối, chữ "Đã đọc tất cả" bị chìm mờ khó bấm.
+  - **Nguyên nhân cốt lõi:**
+    1. CSS quy định `right: -42px;` trên container con bên trong `.header-actions`, trong khi chuông không nằm ở mép phải màn hình mà đứng trước nút Admin avatar (~90px), khiến panel 320px bị đẩy dạt toàn bộ sang bên trái.
+    2. Mũi tên tam giác `.u074-pan::before` dùng giá trị hardcode `right: 54px;` tĩnh, không thể thích ứng với các độ rộng màn hình khác nhau (360px - 430px).
+    3. Tab active dùng biến màu `--u074-ink` (trắng sáng) làm nền, phá vỡ phong cách sang trọng tổng thể của giao diện Dark Theme. Tên và nội dung dùng `display: block` khiến mỗi dòng thông báo bị kéo giãn quá nhiều hàng dọc.
+  - **Giải pháp dứt điểm:**
+    1. **Căn giữa đối xứng hoàn hảo trên Mobile:** Thiết lập `position: fixed !important; left: 14px !important; right: 14px !important; width: auto !important; max-width: calc(100vw - 28px); top: 68px;` tạo khoảng cách cân đối 14px đều đặn ở cả hai mép trái/phải trên mọi dòng máy (iPhone SE, 13/14/15, Android).
+    2. **Mũi tên định vị tâm chuông thời gian thực:** Tích hợp hàm `positionDropdown()` trong `js/app.js`, tự động tính toán tọa độ `bellCenter - panRect.left` và gán vào biến CSS `--u074-arrow-left`. Mũi tên tam giác luôn luôn trỏ chính xác $100\%$ vào tâm nút chuông. Đồng thời cập nhật `transformOrigin` để panel mở bung và gập lại mượt mà đúng từ vị trí chuông.
+    3. **Nâng cấp thẩm mỹ Tab & Danh sách:**
+       - Tab active chuyển sang phong cách Luxury Gold Pill: nền `rgba(229, 185, 93, 0.14)`, viền vàng kim, chữ vàng `#e5b95d`.
+       - Nút *"Đã đọc tất cả"* có nền phụ, chữ vàng nổi bật, hỗ trợ hiệu ứng hover/active rõ ràng.
+       - Tên người dùng và nội dung thông báo được dàn hàng `inline` gọn gàng, có đường viền ngăn cách phân tách mỏng tinh tế (`border-bottom: 1px solid var(--u074-line)`).
+       - Thêm thông báo trạng thái trống `.u074-empty` khi tab không có dữ liệu.
+       - Tự động ẩn chữ `user-name` trên màn hình $\le 640\text{px}$ để giải phóng không gian cho Logo "Dream House" không bị cắt cụt.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.9`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 54** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

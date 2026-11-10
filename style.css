@@ -8094,19 +8094,20 @@ body.dark-theme .ux {
 }
 
 /* ==============================================================================
-   NOTIFICATION BELL DROPDOWN (074, Alerts & Feedback)
+   NOTIFICATION BELL DROPDOWN (074, Alerts & Feedback) - REFINED BALANCED UI
    Lucian UX/UI Prompt #074 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#074
    ============================================================================== */
 :root {
   --u074-surface: #FFFFFF;
-  --u074-surface-2: #F5F3EF;
-  --u074-surface-3: #EAE7E1;
-  --u074-ink: #16151B;
-  --u074-ink-2: #57535F;
-  --u074-ink-3: #8E8A97;
-  --u074-line: rgba(22, 21, 27, .09);
-  --u074-accent: #e5b95d;
-  --u074-shadow-strong: rgba(0, 0, 0, .25);
+  --u074-surface-2: #F8F7F4;
+  --u074-surface-3: #EFECE6;
+  --u074-ink: #111827;
+  --u074-ink-2: #4B5563;
+  --u074-ink-3: #9CA3AF;
+  --u074-line: rgba(0, 0, 0, 0.08);
+  --u074-accent: #c49a45;
+  --u074-accent-bg: rgba(196, 154, 69, 0.12);
+  --u074-shadow-strong: rgba(0, 0, 0, 0.16);
   --u074-ease: cubic-bezier(.2, .8, .2, 1);
   --u074-spring: cubic-bezier(.34, 1.45, .64, 1);
 }
@@ -8116,12 +8117,13 @@ body.dark-theme {
   --u074-surface: #141724;
   --u074-surface-2: #1b1f30;
   --u074-surface-3: #262b42;
-  --u074-ink: #F4F0E8;
-  --u074-ink-2: rgba(244, 240, 232, .75);
-  --u074-ink-3: rgba(244, 240, 232, .45);
-  --u074-line: rgba(255, 255, 255, .1);
-  --u074-shadow-strong: rgba(0, 0, 0, .65);
+  --u074-ink: #F8FAFC;
+  --u074-ink-2: #CBD5E1;
+  --u074-ink-3: #64748B;
+  --u074-line: rgba(255, 255, 255, 0.08);
   --u074-accent: #e5b95d;
+  --u074-accent-bg: rgba(229, 185, 93, 0.14);
+  --u074-shadow-strong: rgba(0, 0, 0, 0.7);
 }
 
 .u074 {
@@ -8153,7 +8155,7 @@ body.dark-theme {
 }
 
 .u074-bell:active {
-  transform: scale(.9);
+  transform: scale(.92);
 }
 
 .u074-bell:focus-visible {
@@ -8186,16 +8188,16 @@ body.dark-theme {
 
 .u074-badge {
   position: absolute;
-  right: -3px;
-  top: -3px;
+  right: -2px;
+  top: -2px;
   min-width: 18px;
   height: 18px;
   padding: 0 4.5px;
   border-radius: 10px;
   background: #FF5A6E;
   color: #fff;
-  font-size: 10.5px;
-  font-weight: 850;
+  font-size: 10px;
+  font-weight: 800;
   line-height: 18px;
   text-align: center;
   box-shadow: 0 0 0 2px var(--u074-surface);
@@ -8208,70 +8210,89 @@ body.dark-theme {
   transform: scale(0);
 }
 
+/* ==============================================================================
+   DROPDOWN PANEL CONTAINER (.u074-pan)
+   ============================================================================== */
 .u074-pan {
   position: absolute;
-  right: 0;
+  right: -90px;
   top: calc(100% + 12px);
-  width: 350px;
-  max-width: 90vw;
-  max-height: 480px;
+  width: 360px;
+  max-width: 92vw;
+  max-height: 490px;
   display: flex;
   flex-direction: column;
   border-radius: 20px;
   background: var(--u074-surface);
-  box-shadow: 0 0 0 1px var(--u074-line), 0 25px 50px -20px var(--u074-shadow-strong);
-  transform-origin: calc(100% - 20px) -8px;
-  transition: transform .45s var(--u074-spring), opacity .25s;
+  border: 1px solid var(--u074-line);
+  box-shadow: 0 20px 50px -10px var(--u074-shadow-strong), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: transform .4s var(--u074-spring), opacity .25s ease;
   z-index: 1000;
-  overflow: hidden;
+  overflow: visible;
 }
 
+/* Mũi tên định vị chính xác vào tâm chuông */
 .u074-pan::before {
   content: "";
   position: absolute;
-  right: 13px;
+  left: var(--u074-arrow-left, calc(100% - 109px));
   top: -6px;
   width: 13px;
   height: 13px;
   border-radius: 2.5px;
   background: var(--u074-surface);
-  transform: rotate(45deg);
-  box-shadow: -1px -1px 0 0 var(--u074-line);
+  transform: translateX(-50%) rotate(45deg);
+  border-left: 1px solid var(--u074-line);
+  border-top: 1px solid var(--u074-line);
+  z-index: 5;
 }
 
 .u074.is-closed .u074-pan {
   transform: scale(.4);
   opacity: 0;
   pointer-events: none;
-  transition: transform .3s var(--u074-ease), opacity .2s;
+  transition: transform .3s var(--u074-ease), opacity .2s ease;
 }
 
+/* ==============================================================================
+   PANEL HEADER & TABS (.u074-ph)
+   ============================================================================== */
 .u074-ph {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 12px 14px 10px;
   border-bottom: 1px solid var(--u074-line);
   position: relative;
-  z-index: 2;
+  z-index: 4;
 }
 
 .u074-tab {
   height: 30px;
   padding: 0 12px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 999px;
-  background: none;
+  background: transparent;
   font-size: 12.5px;
-  font-weight: 750;
+  font-weight: 600;
   color: var(--u074-ink-3);
   cursor: pointer;
-  transition: background-color .25s, color .25s;
+  transition: all .2s var(--u074-ease);
+}
+
+.u074-tab:hover {
+  color: var(--u074-ink);
+  background: var(--u074-surface-2);
 }
 
 .u074-tab[aria-selected="true"] {
-  background: var(--u074-ink);
-  color: var(--u074-surface);
+  background: var(--u074-accent-bg);
+  color: var(--u074-accent);
+  border-color: rgba(229, 185, 93, 0.35);
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .u074-tab:focus-visible,
@@ -8283,26 +8304,40 @@ body.dark-theme {
 .u074-all {
   margin-left: auto;
   border: 0;
-  padding: 4px 6px;
-  background: none;
-  font-size: 12px;
-  font-weight: 750;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--u074-surface-2);
+  font-size: 11.5px;
+  font-weight: 700;
   color: var(--u074-accent);
   cursor: pointer;
-  transition: opacity .2s;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.u074-all:hover:not(:disabled) {
+  background: var(--u074-accent-bg);
+  color: var(--u074-ink);
+  transform: translateY(-1px);
 }
 
 .u074-all:disabled {
-  color: var(--u074-ink-3);
-  cursor: default;
-  opacity: .5;
+  opacity: .35;
+  background: transparent;
+  cursor: not-allowed;
+  transform: none;
 }
 
+/* ==============================================================================
+   NOTIFICATION LIST & ITEMS (.u074-list)
+   ============================================================================== */
 .u074-list {
   position: relative;
   flex: 1;
   margin: 0;
-  padding: 6px 8px 10px;
+  padding: 4px 6px 8px;
   list-style: none;
   overflow-y: auto;
   max-height: 380px;
@@ -8313,6 +8348,10 @@ body.dark-theme {
   display: grid;
   grid-template-rows: 1fr;
   transition: grid-template-rows .45s var(--u074-ease);
+}
+
+.u074-it:not(:last-child) {
+  border-bottom: 1px solid var(--u074-line);
 }
 
 .u074-it.new {
@@ -8331,12 +8370,13 @@ body.dark-theme {
 .u074-row {
   position: relative;
   display: flex;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
   width: 100%;
-  padding: 10px 24px 10px 8px;
+  padding: 10px 24px 10px 10px;
   border: 0;
   border-radius: 12px;
-  background: none;
+  background: transparent;
   text-align: left;
   cursor: pointer;
   transition: background-color .2s, transform .5s var(--u074-spring), opacity .3s;
@@ -8352,10 +8392,11 @@ body.dark-theme {
 }
 
 .u074-it.new .u074-row {
-  transform: translateY(-30px);
+  transform: translateY(-24px);
   opacity: 0;
 }
 
+/* Avatar vòng tròn với icon thể loại */
 .u074-av {
   position: relative;
   width: 36px;
@@ -8365,7 +8406,8 @@ body.dark-theme {
   background: var(--g);
   display: grid;
   place-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  margin-top: 1px;
 }
 
 .u074-av em {
@@ -8379,42 +8421,52 @@ body.dark-theme {
   place-items: center;
   background: var(--u074-surface);
   font-style: normal;
-  font-size: 9px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  font-size: 9.5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  border: 1.5px solid var(--u074-surface);
 }
 
+/* Nội dung thông báo */
 .u074-tx {
   flex: 1;
   min-width: 0;
   font-size: 12.5px;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--u074-ink-2);
 }
 
 .u074-tx b {
   color: var(--u074-ink);
-  font-weight: 750;
-  display: block;
+  font-weight: 700;
+  font-size: 12.8px;
+  display: inline;
+  margin-right: 4px;
+}
+
+.u074-tx span {
+  color: var(--u074-ink-2);
+  word-break: break-word;
 }
 
 .u074-tx small {
   display: block;
-  margin-top: 2px;
+  margin-top: 3px;
   font-size: 11px;
   font-weight: 600;
   color: var(--u074-ink-3);
 }
 
+/* Chấm xanh biểu thị Chưa đọc */
 .u074-dot {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
-  width: 8px;
-  height: 8px;
-  margin-top: -4px;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
   border-radius: 50%;
   background: #3b82f6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
   transition: transform .35s var(--u074-spring), opacity .25s;
 }
 
@@ -8427,6 +8479,27 @@ body.dark-theme {
   color: var(--u074-ink-3);
 }
 
+.u074-row.read .u074-tx b {
+  color: var(--u074-ink-2);
+  font-weight: 600;
+}
+
+/* Empty placeholder */
+.u074-empty {
+  padding: 32px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--u074-ink-3);
+  display: none;
+}
+.u074-empty.show {
+  display: block;
+}
+
+/* ==============================================================================
+   RESPONSIVE MOBILE OVERRIDES (CÂN ĐỐI TUYỆT ĐỐI)
+   ============================================================================== */
 @media (max-width: 768px) {
   .u074-bell {
     width: 36px;
@@ -8437,12 +8510,26 @@ body.dark-theme {
     height: 18px;
   }
   .u074-pan {
-    width: 320px;
-    max-width: calc(100vw - 24px);
-    right: -42px;
+    position: fixed !important;
+    top: 68px;
+    left: 14px !important;
+    right: 14px !important;
+    width: auto !important;
+    max-width: calc(100vw - 28px) !important;
+    margin: 0 auto;
+    border-radius: 18px;
   }
-  .u074-pan::before {
-    right: 54px;
+}
+
+@media (max-width: 640px) {
+  .header-actions {
+    gap: 6px;
+  }
+  .user-name {
+    display: none;
+  }
+  .user-profile-trigger {
+    padding: 6px;
   }
 }
 
