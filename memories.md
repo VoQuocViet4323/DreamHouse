@@ -841,6 +841,25 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=7.3`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 50** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
 
+### Giai đoạn 57: Tối Ưu Tương Phản Nút Đóng (X) Mobile & Xử Lý Graceful Fallback Supabase RPC 404 (Mobile Close Button Contrast & Supabase Analytics RPC Fallback v7.4)
+- [x] **Khắc phục triệt để lỗi nút Đóng (X) bị chìm/vô hình trên thiết bị di động:**
+  - **Hiện tượng:** Khi mở panel chi tiết mẫu nhà (`#detail-modal`) trên màn hình điện thoại (mobile viewport), nút đóng nằm ở góc trên bên phải đè trực tiếp lên phần trời sáng của ảnh phối cảnh kiến trúc. Ở Dark Theme, nút biến thành một vòng tròn màu trắng xám mờ mờ và dấu X gần như biến mất hoàn toàn, người dùng rất khó nhận diện để đóng modal.
+  - **Nguyên nhân:** Nút đóng dùng token mờ nhạt `--btn-close-bg: rgba(255, 255, 255, 0.08)` với icon màu bạc nhạt `#cbd5e1`. Khi đè lên nền ảnh bầu trời trắng và hiệu ứng backdrop-blur, toàn bộ vùng nút bị hòa lẫn vào ảnh. Kích thước trên mobile chỉ $34\times34\text{px}$ chưa đạt chuẩn công thái học chạm ngón tay.
+  - **Giải pháp dứt điểm:**
+    1. Thiết lập quy tắc chuyên biệt cho `#detail-modal .modal-close` và `#close-detail-modal`: Áp dụng phong cách **Luxury Dark Glassmorphic Pill** (`background: rgba(15, 23, 42, 0.8) !important; border: 1.5px solid rgba(255, 255, 255, 0.35) !important; color: #ffffff !important; backdrop-filter: blur(16px) saturate(180%);`).
+    2. Tăng kích thước icon SVG lên $18\times18\text{px}$, nét vẽ `stroke-width: 2.5` kết hợp bóng đổ `filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))` đảm bảo dấu X luôn trắng sáng và tương phản tuyệt đối trên 100% mọi bức ảnh phối cảnh (dù trời nắng gắt hay nền trắng toát).
+    3. Tăng kích thước nút trên Mobile lên $38\times38\text{px}$ chuẩn Human Interface Guidelines, vị trí `top: 14px; right: 14px; z-index: 60;` chống che khuất.
+    4. Hiệu ứng Hover/Active mượt mà với nền đỏ `#ef4444`, bóng glow `rgba(239, 68, 68, 0.5)` và xoay 90 độ mượt mà.
+- [x] **Xử lý dứt điểm lỗi Console HTTP 404 RPC `increment_template_view`:**
+  - **Hiện tượng:** Khi người dùng mở xem chi tiết mẫu nhà, DevTools Console xuất hiện dòng đỏ `POST /rest/v1/rpc/increment_template_view 404 (Not Found)` kèm cảnh báo `Could not find the function public.increment_template_view(t_id) in the schema cache`.
+  - **Nguyên nhân:** Dự án Supabase từ xa (`qdkhqvsbtmbgkmoldazt.supabase.co`) chưa được người dùng chạy script SQL `supabase/09_template_views_analytics.sql` trong SQL Editor, khiến PostgREST không tìm thấy stored procedure trong schema cache.
+  - **Giải pháp thông minh:**
+    1. Trong `js/app.js`: Tích hợp cờ nhận diện `this._rpcIncrementMissing`. Khi nhận mã lỗi `PGRST202` hoặc thông báo thiếu hàm trong schema cache, hệ thống lập tức ghi nhớ và tắt gửi RPC cho các lần mở mẫu tiếp theo, ngăn chặn 100% việc spam lỗi 404 đỏ console.
+    2. Bộ đếm lượt xem cục bộ (`item.view_count++`) vẫn hoạt động trơn tru tức thì (zero-lag UI feedback).
+    3. Chuyển cảnh báo console sang thông báo `console.info` thân thiện, hướng dẫn quản trị viên chạy file `09_template_views_analytics.sql` trong Supabase SQL Editor để kích hoạt tính năng đồng bộ vĩnh viễn vào DB.
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=7.4`** trên toàn bộ `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 51** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

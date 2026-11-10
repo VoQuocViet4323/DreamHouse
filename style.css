@@ -1512,6 +1512,58 @@ body.dark-theme {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
+/* Nút Đóng Chuyên Biệt Cho Modal Chi Tiết Mẫu Nhà (Đè lên ảnh phối cảnh hoặc nền sáng) - Luxury Dark Glass */
+#detail-modal .modal-close,
+#close-detail-modal {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 60;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.25s var(--ease-spring);
+}
+
+#detail-modal .modal-close svg,
+#close-detail-modal svg {
+  width: 18px;
+  height: 18px;
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+#detail-modal .modal-close:hover,
+#detail-modal .modal-close:focus-visible,
+#close-detail-modal:hover,
+#close-detail-modal:focus-visible {
+  background: #ef4444 !important;
+  border-color: #f87171 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  transform: rotate(90deg) scale(1.08);
+}
+
+#detail-modal .modal-close:active,
+#close-detail-modal:active {
+  background: #dc2626 !important;
+  border-color: #ef4444 !important;
+  transform: rotate(90deg) scale(0.92) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: 1.25fr 1fr;
@@ -3071,10 +3123,20 @@ body.dark-theme .auth-checkbox-box {
   }
 
   .modal-close {
-    top: 12px;
-    right: 12px;
-    width: 34px;
-    height: 34px;
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    z-index: 60;
+  }
+
+  #detail-modal .modal-close,
+  #close-detail-modal {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    z-index: 60;
   }
 
   .detail-grid {
@@ -3293,6 +3355,26 @@ body.dark-theme .modal-close {
   border: 1px solid rgba(255, 255, 255, 0.16);
   color: #cbd5e1;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Bảo đảm nút đóng của Detail Modal luôn dùng Dark Glass độ tương phản cao kể cả trong Dark Mode */
+:root[data-theme="dark"] #detail-modal .modal-close,
+:root[data-theme="dark"] #close-detail-modal,
+body.dark-theme #detail-modal .modal-close,
+body.dark-theme #close-detail-modal {
+  background: rgba(15, 23, 42, 0.88) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.38) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+:root[data-theme="dark"] #detail-modal .modal-close svg,
+:root[data-theme="dark"] #close-detail-modal svg,
+body.dark-theme #detail-modal .modal-close svg,
+body.dark-theme #close-detail-modal svg {
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
 }
 
 :root[data-theme="dark"] .modal-close:hover,

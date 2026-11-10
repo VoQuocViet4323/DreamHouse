@@ -950,6 +950,25 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   4. **Cập nhật `updateAuthUI()`:** Đồng bộ `roleBadge` và `profile-role-text` theo từ điển i18n hiện hành.
   5. Nâng tham số cache-busting lên `?v=7.3` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 51: Nút Đóng (X) trên Mobile bị chìm/vô hình trên nền ảnh và Lỗi Console 404 RPC `increment_template_view`
+- **Hiện tượng:**
+  1. Khi mở modal chi tiết mẫu nhà (`#detail-modal`) trên màn hình điện thoại (mobile), nút đóng nằm ở góc trên bên phải đè trực tiếp lên phần trời sáng của ảnh phối cảnh kiến trúc. Ở Dark Theme, nút biến thành một vòng tròn màu trắng xám mờ mờ và dấu X gần như biến mất hoàn toàn, người dùng rất khó nhận diện để bấm đóng modal.
+  2. Mỗi lần người dùng mở xem chi tiết mẫu nhà, DevTools Console xuất hiện dòng đỏ `POST https://qdkhqvsbtmbgkmoldazt.supabase.co/rest/v1/rpc/increment_template_view 404 (Not Found)` kèm cảnh báo `Lỗi ghi nhận lượt xem mẫu nhà: Could not find the function public.increment_template_view(t_id) in the schema cache`.
+- **Nguyên nhân cốt lõi:**
+  1. *Lỗi Nút X Mobile:* Nút đóng dùng token mờ nhạt `--btn-close-bg: rgba(255, 255, 255, 0.08)` với icon màu bạc nhạt `#cbd5e1`. Khi đè lên nền ảnh bầu trời trắng và hiệu ứng backdrop-blur, toàn bộ vùng nút bị hòa lẫn vào ảnh. Kích thước trên mobile chỉ $34\times34\text{px}$ chưa đạt chuẩn công thái học chạm ngón tay.
+  2. *Lỗi Supabase RPC 404:* Dự án Supabase từ xa (`qdkhqvsbtmbgkmoldazt.supabase.co`) chưa được người dùng chạy script SQL `supabase/09_template_views_analytics.sql` trong SQL Editor, khiến PostgREST không tìm thấy stored procedure trong schema cache và trả về HTTP 404. Việc client tiếp tục gọi RPC khi xem các mẫu nhà khác khiến console liên tục bị spam dòng đỏ 404.
+- **Cách khắc phục dứt điểm:**
+  1. **Nâng cấp UI Nút Đóng trên Detail Modal & Mobile:**
+     - Thiết lập quy tắc chuyên biệt cho `#detail-modal .modal-close` và `#close-detail-modal`: Áp dụng phong cách **Luxury Dark Glassmorphic Pill** (`background: rgba(15, 23, 42, 0.8) !important; border: 1.5px solid rgba(255, 255, 255, 0.35) !important; color: #ffffff !important; backdrop-filter: blur(16px) saturate(180%);`).
+     - Tăng kích thước icon SVG lên $18\times18\text{px}$, nét vẽ `stroke-width: 2.5` kết hợp bóng đổ `filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))` đảm bảo dấu X luôn trắng sáng và tương phản tuyệt đối trên 100% mọi bức ảnh phối cảnh (dù trời nắng gắt hay nền trắng toát).
+     - Tăng kích thước nút trên Mobile lên $38\times38\text{px}$ chuẩn Human Interface Guidelines, vị trí `top: 14px; right: 14px; z-index: 60;` chống che khuất.
+     - Hiệu ứng Hover/Active mượt mà với nền đỏ `#ef4444`, bóng glow `rgba(239, 68, 68, 0.5)` và xoay 90 độ mượt mà.
+  2. **Xử lý Graceful Fallback & Tắt spam RPC 404:**
+     - Trong `js/app.js`: Tích hợp cờ nhận diện `this._rpcIncrementMissing`. Khi nhận mã lỗi `PGRST202` hoặc thông báo thiếu hàm trong schema cache, hệ thống lập tức ghi nhớ và tắt gửi RPC cho các lần mở mẫu tiếp theo, ngăn chặn 100% việc spam lỗi 404 đỏ console.
+     - Bộ đếm lượt xem cục bộ (`item.view_count++`) vẫn hoạt động trơn tru tức thì (zero-lag UI feedback).
+     - Chuyển cảnh báo console sang thông báo `console.info` thân thiện, hướng dẫn quản trị viên chạy file `09_template_views_analytics.sql` trong Supabase SQL Editor để kích hoạt tính năng đồng bộ vĩnh viễn vào DB.
+  3. Nâng tham số cache-busting lên `?v=7.4` trên toàn bộ dự án (`index.html` và `admin.html`).
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

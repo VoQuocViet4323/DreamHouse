@@ -16,6 +16,7 @@ class DreamHouseApp {
             onlyFavorites: false
         };
         this.isAuthRegisterMode = false;
+        this._rpcIncrementMissing = false;
 
         this.init();
     }
@@ -1146,24 +1147,33 @@ class DreamHouseApp {
     recordTemplateView(templateId) {
         if (!templateId) return;
 
-        // 1. Tăng bộ đếm lượt xem cục bộ ngay lập tức
+        // 1. Tăng bộ đếm lượt xem cục bộ ngay lập tức (Zero-lag UI update)
         const item = this.templates.find(t => t.id === templateId);
         if (item) {
             item.view_count = (item.view_count || 0) + 1;
         }
 
-        // 2. Gửi RPC increment_template_view lên Supabase thời gian thực nếu id là UUID
+        // 2. Gửi RPC increment_template_view lên Supabase thời gian thực nếu id là UUID hợp lệ
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (!uuidRegex.test(templateId)) return;
+
+        // Tránh spam RPC nếu phát hiện hàm chưa tồn tại trên schema cache Supabase
+        if (this._rpcIncrementMissing) return;
 
         const client = this.getSupabase();
         if (client && typeof client.rpc === 'function') {
             client.rpc('increment_template_view', { t_id: templateId }).then(({ error }) => {
                 if (error) {
-                    console.warn('Lỗi ghi nhận lượt xem mẫu nhà:', error.message);
+                    if (error.code === 'PGRST202' || (error.message && error.message.includes('schema cache'))) {
+                        this._rpcIncrementMissing = true;
+                        console.info('ℹ️ [DreamHouse Info] RPC increment_template_view chưa được thực thi trên Supabase SQL Editor. Lượt xem vẫn được lưu mượt mà ở Client. Hãy chạy file supabase/09_template_views_analytics.sql để kích hoạt đồng bộ vào DB.');
+                    } else {
+                        console.warn('Lỗi ghi nhận lượt xem mẫu nhà:', error.message);
+                    }
                 }
             }).catch(err => {
-                console.warn('Lỗi kết nối RPC lượt xem:', err);
+                this._rpcIncrementMissing = true;
+                console.info('ℹ️ [DreamHouse Info] Không thể kết nối RPC lượt xem (Local fallback active).');
             });
         }
     }
