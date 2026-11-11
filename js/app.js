@@ -2999,6 +2999,8 @@ class DreamHouseApp {
 
         // Lấy danh sách thông báo theo phân quyền tài khoản (Admin vs User cá nhân)
         const getNotificationsForRole = () => {
+            if (!this.currentUser) return [];
+
             const isEn = window.i18n && window.i18n.currentLang === 'en';
             const isAdmin = this.checkIsAdmin();
 
@@ -3294,6 +3296,11 @@ class DreamHouseApp {
         // Render danh sách thông báo theo vai trò hiện tại
         const renderList = () => {
             list.innerHTML = '';
+            if (!this.currentUser) {
+                filterNotifications();
+                updateCount();
+                return;
+            }
             const initial = getNotificationsForRole();
             initial.forEach((d, i) => {
                 const li = createItem(d);
@@ -3423,7 +3430,7 @@ class DreamHouseApp {
 
         // Hiệu ứng rung chuông khi có thông báo mới sau 2.4s (Prompt #074)
         setTimeout(() => {
-            if (!root.isConnected) return;
+            if (!root.isConnected || !this.currentUser) return;
             const newLi = createItem(getIncomingData(), true);
             list.insertBefore(newLi, list.firstChild);
             filterNotifications();
@@ -4507,6 +4514,7 @@ class DreamHouseApp {
     updateAuthUI() {
         const loginBtn = document.getElementById('btn-open-login');
         const userDropdown = document.getElementById('user-menu');
+        const notifBell = document.getElementById('u074-notif');
         const userNameSpan = document.getElementById('user-display-name');
         const roleBadge = document.getElementById('dropdown-user-role');
         const emailBadge = document.getElementById('dropdown-user-email');
@@ -4516,6 +4524,7 @@ class DreamHouseApp {
         if (this.currentUser) {
             if (loginBtn) loginBtn.classList.add('hidden');
             if (userDropdown) userDropdown.classList.remove('hidden');
+            if (notifBell) notifBell.classList.remove('hidden');
 
             const displayName = this.currentProfile?.full_name || 
                                 this.currentUser.user_metadata?.full_name || 
@@ -4563,6 +4572,12 @@ class DreamHouseApp {
         } else {
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (userDropdown) userDropdown.classList.add('hidden');
+            if (notifBell) {
+                notifBell.classList.add('hidden');
+                notifBell.classList.add('is-closed');
+                const bellBtn = notifBell.querySelector('.u074-bell');
+                if (bellBtn) bellBtn.setAttribute('aria-expanded', 'false');
+            }
             if (avatarCircle) {
                 avatarCircle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
             }

@@ -1265,21 +1265,23 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.4`** trên `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 62** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
-### Giai đoạn 79: Thay Ảnh Chân Dung KTS Võ Quốc Việt & Khắc Phục Triệt Để Lỗi Che Khuất Khuôn Mặt (Architect Lead Portrait Framing Fix v9.5)
-- [x] **Giải quyết triệt để yêu cầu "ảnh đang bị khuất chưa nhìn thấy toàn diện khuôn mặt rồi, fix lại và thay file ảnh của tôi vào":**
-  - **Tích hợp ảnh chân dung thực tế của KTS. Võ Quốc Việt:**
-    - Cắt chỉnh khung hình Bust Portrait nghệ thuật chuẩn tỉ lệ vàng: làm nổi bật diện mạo gương mặt tự tin, đeo kính tri thức, nụ cười hòa nhã cùng hàng cột kiến trúc công trình bề thế phía sau.
-    - Lưu trữ trực tiếp tại `images/kts-vo-quoc-viet.jpg` (bảo lưu ảnh gốc toàn cảnh tại `images/kts-vo-quoc-viet-full.jpg`).
-  - **Mở rộng chiều cao khung ảnh `.portrait-media-wrap`:**
-    - Nâng từ 280px lên **380px** trên Desktop (và từ 220px lên **320px** trên Mobile) giúp bố cục chân dung thoáng đãng, sang trọng.
-  - **Tối ưu vị trí `object-position: center 20%`:**
-    - Định vị khuôn mặt ở 1/3 trên cùng khung nhìn, không bị cắt mất cằm, trán hay tóc trên bất kỳ thiết bị nào.
-  - **Thu gọn lớp phủ gradient mờ tối `.portrait-overlay`:**
-    - Thay đổi điểm bắt đầu mờ từ `40%` xuống `70%`, bảo đảm khuôn mặt và thân trên luôn sáng rõ, tươi tắn, không bị bóng đen nuốt chửng.
-  - **Dời vị trí huy hiệu kinh nghiệm `.portrait-badge` ("✦ 10+ Năm Kinh Nghiệm"):**
-    - Chuyển từ góc dưới (`bottom: 14px; left: 14px;`) lên góc trên bên phải (`top: 14px; right: 14px;`), tạo thành huy hiệu chứng nhận VIP danh giá mà tuyệt đối không che khuất khuôn mặt KTS.
-- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.5`** trên `index.html` và `admin.html`.
-- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 63** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+### Giai đoạn 80: Chuẩn Hóa Chuông Thông Báo - Chỉ Hiển Thị Khi Đã Đăng Nhập & Đặt Trước Menu Tài Khoản (Notification Bell Auth Guard & Placement Fix v9.6)
+- [x] **Giải quyết triệt để lỗi "sao chưa login vào mà đã có nút thông báo vậy, mà nút thông báo còn nằm bên phải nút login nữa ? Sửa lại cho tôi, tránh lặp lại lỗi này":**
+  - **Khắc phục vị trí hiển thị sai trong Navbar (`index.html`):**
+    - Chuyển phần tử `#u074-notif` lên trước `#btn-open-login` và trước `#user-menu`.
+    - Mặc định thêm class `hidden` vào `#u074-notif` (`class="ux u074 is-closed hidden"`) để khách vãng lai khi vừa vào trang web không bao giờ nhìn thấy nút chuông.
+    - Thứ tự trực quan khi **Chưa đăng nhập (Guest):** `[Nút Đổi Sáng/Tối] -> [Nút Đổi VI/EN] -> [Nút Đăng Nhập]` (Chuông thông báo và Menu người dùng đều bị ẩn hoàn toàn).
+    - Thứ tự trực quan khi **Đã đăng nhập (Logged-in User/Admin):** `[Nút Đổi Sáng/Tối] -> [Nút Đổi VI/EN] -> [Chuông Thông Báo #u074-notif] -> [Avatar / Menu Tài Khoản]`.
+  - **Kiểm soát trạng thái hiển thị theo Auth trong `js/app.js` (`updateAuthUI()`):**
+    - Khi có `this.currentUser`: gỡ bỏ class `hidden` khỏi `#u074-notif`.
+    - Khi `!this.currentUser`: thêm class `hidden` và `is-closed` vào `#u074-notif`, đặt lại thuộc tính accessibility `aria-expanded="false"`.
+  - **Bảo vệ luồng dữ liệu thông báo trong `initNotificationBell()`:**
+    - Trong hàm `getNotificationsForRole()`: trả về mảng rỗng `[]` nếu `!this.currentUser`.
+    - Trong hàm `renderList()`: dọn sạch danh sách, gọi `filterNotifications()` và đặt số đếm badge về `0` (ẩn badge đỏ) nếu `!this.currentUser`.
+    - Trong bộ hẹn giờ mô phỏng `setTimeout` nhận thông báo mới sau 2.4s: bổ sung điều kiện dừng `if (!root.isConnected || !this.currentUser) return;` để không tự động nảy số thông báo giả khi người dùng chưa đăng nhập.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.6`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 64** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+
 
 
 

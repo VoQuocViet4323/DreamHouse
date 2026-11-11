@@ -1203,6 +1203,26 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   5. **Dời huy hiệu kinh nghiệm lên góc trên bên phải (`top: 14px; right: 14px;`):** Trở thành huy hiệu chứng nhận VIP sang trọng gắn ở góc ảnh kiến trúc, tuyệt đối không còn che khuất bất kỳ chi tiết nào trên người KTS.
   6. Nâng tham số cache-busting lên `?v=9.5` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 64: Chuông thông báo hiển thị cho khách chưa đăng nhập và đặt sai vị trí bên phải nút Đăng nhập
+- **Hiện tượng:** Khi người dùng truy cập trang chủ mà chưa hề đăng nhập (vẫn đang hiển thị nút "Đăng nhập" / "Sign In"), nút Chuông thông báo (`#u074-notif`) vẫn xuất hiện chễm chệ ở góc trên bên phải, hiển thị chấm đỏ badge có số lượng "3", và khi bấm vào vẫn bung ra danh sách thông báo riêng tư của thành viên/hệ thống. Đồng thời, nút chuông bị xếp ở phía bên phải nút "Đăng nhập", vi phạm nguyên tắc công thái học UI/UX tiêu chuẩn.
+- **Nguyên nhân cốt lõi:**
+  1. **Thiếu class `hidden` trong mã nguồn khởi tạo HTML (`index.html`):** Phần tử `<div id="u074-notif" class="ux u074 is-closed">` không được gán class `hidden` ban đầu, khiến trình duyệt render chuông ngay lập tức khi tải trang.
+  2. **Thứ tự DOM đặt sai:** Thẻ `#u074-notif` được đặt phía sau thẻ `#btn-open-login`. Khi người dùng chưa đăng nhập, nút Đăng nhập hiện ra và chuông thông báo hiện ngay cạnh phải của nó.
+  3. **Hàm `updateAuthUI()` không kiểm soát hiển thị của chuông:** Chỉ quản lý `#btn-open-login` và `#user-menu`, hoàn toàn bỏ quên `#u074-notif`.
+  4. **Dữ liệu giả lập tự sinh khi chưa đăng nhập:** Hàm `getNotificationsForRole()` và bộ đếm giờ rung chuông `setTimeout` tự động bơm dữ liệu demo và tăng số đếm badge đỏ ngay cả khi `this.currentUser === null`.
+- **Cách khắc phục dứt điểm:**
+  1. **Đổi thứ tự phần tử trong `index.html`:** Chuyển `#u074-notif` lên trước `#btn-open-login` và `#user-menu`, đồng thời mặc định thêm class `hidden` (`class="ux u074 is-closed hidden"`).
+     - Khi chưa đăng nhập (Guest): Chỉ thấy `[Sáng/Tối] -> [VI/EN] -> [Đăng nhập]` (chuông và user-menu bị ẩn hoàn toàn).
+     - Khi đã đăng nhập: Hiển thị theo thứ tự chuẩn `[Sáng/Tối] -> [VI/EN] -> [Chuông thông báo] -> [Menu tài khoản / Avatar]`.
+  2. **Bổ sung toggle hiển thị trong `updateAuthUI()` (`js/app.js`):**
+     - Khi có `this.currentUser`: `notifBell.classList.remove('hidden')`.
+     - Khi không có `this.currentUser`: `notifBell.classList.add('hidden')`, `notifBell.classList.add('is-closed')`, đặt `aria-expanded="false"`.
+  3. **Chặn nạp thông báo khi chưa đăng nhập:**
+     - Trong `getNotificationsForRole()`: trả về `[]` nếu `!this.currentUser`.
+     - Trong `renderList()`: dọn sạch danh sách và reset badge về 0 nếu `!this.currentUser`.
+     - Trong `setTimeout` hiệu ứng chuông rung 2.4s: bổ sung điều kiện dừng `if (!root.isConnected || !this.currentUser) return;`.
+  4. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.6`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
