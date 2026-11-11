@@ -992,6 +992,26 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
       5. **Xuất hồ sơ tóm tắt 1-Click (PDF Concept Brochure):** Tải bản vẽ phối cảnh kèm thông số và dự toán có logo DreamHouse và hotline KTS.
   - Tạo tài liệu phân tích chuyên sâu tại [`dreamhouse_benchmark_comparison.md`](file:///C:/Users/IT/.gemini/antigravity/brain/1585f13f-b91c-4a12-abb0-1185d116e3ab/dreamhouse_benchmark_comparison.md).
 
+### Giai đoạn 66: Triển Khai Tính Năng 1 - Bộ Tính Dự Toán Chi Phí Xây Dựng Tương Tác & Bóc Tách Khái Toán Chuẩn Kỹ Thuật (Interactive Cost Engine v8.2)
+- [x] **Xây dựng hoàn chỉnh Hệ thống Dự toán Chi phí Xây dựng Dân dụng 2026 (Civil Engineering Cost Engine):**
+  - **Cơ sở kỹ thuật & Công thức tính toán chuẩn ngành:**
+    1. **Diện tích quy đổi xây dựng ($S_{xd}$):** 
+       - Móng: Móng đơn (25%), Móng cọc (40%), Móng băng (50%), Móng bè (75%).
+       - Thân nhà: 100% diện tích sàn mỗi tầng.
+       - Mái: Mái bằng BTCT (35%), Mái Nhật / Mái Thái kèo thép (70%), Mái bê tông dán ngói (100%).
+    2. **Đơn giá 4 gói thi công hoàn thiện năm 2026:**
+       - *Xây Thô & Nhân Công:* 3.8 triệu/m² (Sắt thép Hòa Phát, xi măng INSEE, gạch Tuynel, ống Bình Minh, dây Cadivi).
+       - *Trọn Gói Tiêu Chuẩn:* 5.8 triệu/m² (Sơn Jotun/Maxilite, gạch 60x60, nhôm Xingfa, thiết bị Inax tiêu chuẩn).
+       - *Trọn Gói Nâng Cao (Khuyên dùng):* 7.2 triệu/m² (Sơn Dulux/Jotun Majestic, gạch 80x80 nhập khẩu, nhôm kính Kinlong, thiết bị TOTO/Inax cao cấp).
+       - *Trọn Gói Luxury:* 9.5 triệu/m² (Đá Marble, nhôm Slim/Schuco, thiết bị vệ sinh Kohler/Grohe, Smarthome).
+    3. **Bóc tách 4 cấu phần chi phí:** Thô & Kết cấu (52%), Hoàn thiện kiến trúc (33%), Điện nước MEP (10%), Quản lý & Dự phòng (5%).
+  - **Tích hợp giao diện 2 cấp độ:**
+    1. **Cấp độ mẫu nhà (`#detail-calc-card` trong `#detail-modal`):** Khách hàng vừa xoay 3D vừa bấm chuyển đổi tức thì giữa các gói vật tư và loại móng; tổng tiền và biểu đồ thanh phân bổ (Segmented Progress Bar) tự động nhảy số theo thời gian thực (zero-lag).
+    2. **Cấp độ toàn trang (`#quick-calc-modal`):** Mở từ Header Navigation (*"Tính dự toán"*) hoặc Hero Banner (*"Dự toán chi phí"*). Khách hàng kéo thanh trượt mặt tiền (3.5m - 15m), chiều sâu (6m - 30m), chọn số tầng (1 - 5), kiểu mái, loại móng; hệ thống tự động bóc tách chi phí và **tìm kiếm gợi ý ngay mẫu nhà tương thích nhất trong thư viện Dream House** kèm ảnh và thông số.
+    3. **Liên kết nghiệp vụ một chạm (1-Click Consultation Bridge):** Khi bấm nút *"Nhận báo giá theo phương án này"* hoặc *"Gửi dự toán này để KTS tư vấn"*, hệ thống tự động đóng modal, cuộn mượt xuống Form liên hệ và điền sẵn trọn vẹn toàn bộ thông số kỹ thuật, gói vật tư và số tiền dự toán vào lời nhắn cho KTS Võ Quốc Việt.
+  - **Kiểm thử đối chiếu cẩm nang [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md):** Đảm bảo nút đóng (X) kính mờ nổi bật trên cả nền ảnh (Lỗi 51 & 53), khóa cuộn ngang tuyệt đối trên mobile (Lỗi 52), hỗ trợ 100% song ngữ VI/EN (Lỗi 50), chuẩn Design Tokens tương phản cao Dark/Light Mode (Lỗi 54 & 55).
+- [x] Tăng tham số phiên bản cache-busting lên **`?v=8.2`** trên toàn bộ `index.html` và `admin.html`.
+
 
 
 

@@ -201,7 +201,58 @@ const I18N = {
         admin_status_new: "Mới",
         admin_status_handled: "Đã xử lý",
         admin_mark_handled: "Đánh dấu đã xử lý",
-        admin_unauthorized: "Bạn không có quyền quản trị! Đang quay lại trang chủ..."
+        admin_unauthorized: "Bạn không có quyền quản trị! Đang quay lại trang chủ...",
+
+        // Tính dự toán tương tác (Feature 1: Interactive Cost Calculator)
+        nav_calculator: "Tính dự toán",
+        hero_btn_calc: "Dự toán chi phí",
+        calc_interactive_title: "Dự Toán Chi Phí Tương Tác",
+        calc_interactive_sub: "Tự động bóc tách theo quy mô & gói vật tư 2026",
+        calc_package_label: "Gói vật tư thi công hoàn thiện:",
+        calc_foundation_label: "Giải pháp kết cấu móng:",
+        calc_area_badge: "m² quy đổi",
+        calc_total_estimate: "Tổng mức đầu tư ước tính:",
+        calc_formula_detail: "Đơn giá:",
+        calc_vat_note: "(Ước tính theo đơn giá Q1/2026 • Đã gồm nhân công trọn gói)",
+        calc_part_raw: "Thô & Kết cấu (52%)",
+        calc_part_finish: "Hoàn thiện (33%)",
+        calc_part_me: "Điện nước MEP (10%)",
+        calc_part_mgmt: "Dự phòng & QL (5%)",
+        calc_btn_inquire_pkg: "Nhận báo giá theo phương án này →",
+
+        // Gói vật tư
+        pkg_rough: "Xây Thô",
+        pkg_rough_desc: "Nhân công + sắt thép xi măng",
+        pkg_standard: "Tiêu Chuẩn",
+        pkg_standard_desc: "Chìa khóa trao tay phổ thông",
+        pkg_premium: "Nâng Cao",
+        pkg_premium_desc: "Vật liệu cao cấp, bảo hành 5 năm",
+        pkg_luxury: "Luxury",
+        pkg_luxury_desc: "Đẳng cấp dinh thự & Smarthome",
+        pkg_popular: "Khuyên dùng",
+
+        // Loại móng
+        fnd_single: "Móng Đơn (25%)",
+        fnd_pile: "Móng Cọc (40%)",
+        fnd_strip: "Móng Băng (50%)",
+        fnd_raft: "Móng Bè (75%)",
+
+        // Quick Calculator Modal
+        calc_modal_title: "Bảng Tính Dự Toán Xây Nhà Nhanh",
+        calc_modal_sub: "Nhập kích thước khu đất để nhận ngay bảng khái toán chi tiết",
+        calc_input_width: "Mặt tiền khu đất (m):",
+        calc_input_depth: "Chiều sâu khu đất (m):",
+        calc_input_floors: "Số tầng xây dựng:",
+        calc_input_roof: "Kiểu kết cấu mái:",
+        roof_flat_short: "Mái bằng BTCT (35%)",
+        roof_hip_short: "Mái Nhật kèo thép (70%)",
+        roof_gable_short: "Mái Thái kèo thép (70%)",
+        roof_concrete_tile: "Mái đúc dán ngói (100%)",
+        calc_land_area: "Diện tích đất:",
+        calc_total_gfa: "Tổng diện tích xây dựng quy đổi:",
+        calc_match_title: "Gợi ý mẫu nhà Dream House phù hợp:",
+        calc_btn_view_match: "Xem chi tiết mẫu này",
+        calc_btn_send_consult: "Gửi dự toán này để KTS tư vấn chi tiết →"
     },
     en: {
         site_name: "Dream House",
@@ -403,7 +454,58 @@ const I18N = {
         admin_status_new: "New",
         admin_status_handled: "Handled",
         admin_mark_handled: "Mark as Handled",
-        admin_unauthorized: "Access denied. Admin privileges required. Redirecting to home..."
+        admin_unauthorized: "Access denied. Admin privileges required. Redirecting to home...",
+
+        // Interactive Cost Calculator
+        nav_calculator: "Cost Estimator",
+        hero_btn_calc: "Estimate Cost",
+        calc_interactive_title: "Interactive Cost Estimator",
+        calc_interactive_sub: "Real-time itemized estimate by floor area & finish tiers (2026)",
+        calc_package_label: "Construction package:",
+        calc_foundation_label: "Foundation engineering solution:",
+        calc_area_badge: "equiv. m²",
+        calc_total_estimate: "Estimated Total Investment:",
+        calc_formula_detail: "Unit price:",
+        calc_vat_note: "(Estimated at Q1/2026 market rates • All-inclusive turnkey labor)",
+        calc_part_raw: "Structure & Core (52%)",
+        calc_part_finish: "Finishes & Deco (33%)",
+        calc_part_me: "MEP & Electrical (10%)",
+        calc_part_mgmt: "Contingency & Mgmt (5%)",
+        calc_btn_inquire_pkg: "Request Quote for this Package →",
+
+        // Packages
+        pkg_rough: "Rough & Labor",
+        pkg_rough_desc: "Core structure + basic utilities",
+        pkg_standard: "Standard",
+        pkg_standard_desc: "Turnkey standard residential",
+        pkg_premium: "Premium",
+        pkg_premium_desc: "High-grade materials, 5yr warranty",
+        pkg_luxury: "Luxury",
+        pkg_luxury_desc: "Bespoke finishes & smart home",
+        pkg_popular: "Popular",
+
+        // Foundations
+        fnd_single: "Single Footing (25%)",
+        fnd_pile: "Piled Foundation (40%)",
+        fnd_strip: "Strip Footing (50%)",
+        fnd_raft: "Raft / Mat (75%)",
+
+        // Quick Calculator Modal
+        calc_modal_title: "Quick Home Construction Estimator",
+        calc_modal_sub: "Enter your land plot dimensions to get an instant turnkey estimate",
+        calc_input_width: "Land frontage width (m):",
+        calc_input_depth: "Land plot depth (m):",
+        calc_input_floors: "Number of floors:",
+        calc_input_roof: "Roof structure type:",
+        roof_flat_short: "RC Flat Roof (35%)",
+        roof_hip_short: "Japanese Hip Roof (70%)",
+        roof_gable_short: "Thai Gable Roof (70%)",
+        roof_concrete_tile: "Concrete Tiled Roof (100%)",
+        calc_land_area: "Plot area:",
+        calc_total_gfa: "Total equivalent construction area:",
+        calc_match_title: "Matched Dream House Designs:",
+        calc_btn_view_match: "View this design",
+        calc_btn_send_consult: "Send this estimate for Architect Consultation →"
     }
 };
 

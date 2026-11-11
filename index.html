@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.1" />
+    <link rel="stylesheet" href="style.css?v=8.2" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.1"></script>
-    <script src="js/i18n.js?v=8.1"></script>
-    <script src="js/toast.js?v=8.1"></script>
-    <script src="js/viewer3d.js?v=8.1"></script>
-    <script src="js/app.js?v=8.1" defer></script>
+    <script src="js/config.js?v=8.2"></script>
+    <script src="js/i18n.js?v=8.2"></script>
+    <script src="js/toast.js?v=8.2"></script>
+    <script src="js/viewer3d.js?v=8.2"></script>
+    <script src="js/app.js?v=8.2" defer></script>
 </head>
 
 <body>
@@ -51,6 +51,7 @@
 
             <nav class="main-nav">
                 <a href="#gallery-section" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
+                <button type="button" class="nav-link btn-nav-link" id="nav-open-calc" data-i18n="nav_calculator">Tính dự toán</button>
                 <a href="#contact-section" class="nav-link" data-i18n="nav_contact">Liên hệ</a>
             </nav>
 
@@ -292,6 +293,10 @@
             </p>
             <div class="hero-cta-group">
                 <a href="#gallery-section" class="btn-primary" data-i18n="hero_cta">Khám phá mẫu nhà ↓</a>
+                <button type="button" class="btn-secondary hero-calc-trigger" id="hero-calc-btn">
+                    <span class="hero-calc-icon">⚡</span>
+                    <span data-i18n="hero_btn_calc">Dự toán chi phí</span>
+                </button>
                 <a href="#contact-section" class="btn-secondary" data-i18n="nav_contact">Nhận tư vấn ngay</a>
             </div>
         </div>
@@ -527,6 +532,117 @@
                         <div class="spec-row full-width">
                             <span class="spec-name" data-i18n="spec_rooms">Công năng bố trí</span>
                             <strong class="spec-val" id="detail-spec-rooms">-</strong>
+                        </div>
+                    </div>
+
+                    <!-- BỘ TÍNH DỰ TOÁN CHI PHÍ TƯƠNG TÁC (INTERACTIVE COST CALCULATOR) -->
+                    <div class="detail-calc-card" id="detail-calc-card">
+                        <div class="calc-card-header">
+                            <div class="calc-card-title-group">
+                                <div class="calc-card-icon-badge">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="2" width="16" height="20" rx="2"/>
+                                        <line x1="8" y1="6" x2="16" y2="6"/>
+                                        <line x1="16" y1="14" x2="16" y2="18"/>
+                                        <path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="calc-card-title" data-i18n="calc_interactive_title">Dự Toán Chi Phí Tương Tác</h3>
+                                    <p class="calc-card-sub" data-i18n="calc_interactive_sub">Tự động bóc tách theo quy mô & gói vật tư 2026</p>
+                                </div>
+                            </div>
+                            <span class="calc-equiv-badge" id="detail-calc-equiv-badge">0 m² quy đổi</span>
+                        </div>
+
+                        <!-- 1. Gói vật tư hoàn thiện -->
+                        <div class="calc-card-field">
+                            <div class="calc-field-label-row">
+                                <label class="calc-field-label" data-i18n="calc_package_label">Gói vật tư thi công hoàn thiện:</label>
+                                <span class="calc-selected-rate" id="detail-calc-unit-rate">7.2 tr/m²</span>
+                            </div>
+                            <div class="calc-package-pills" id="detail-calc-packages" role="radiogroup">
+                                <button type="button" class="calc-pkg-pill" data-pkg="rough" data-rate="3800000">
+                                    <span class="pkg-pill-name" data-i18n="pkg_rough">Xây Thô</span>
+                                    <span class="pkg-pill-rate">3.8 tr/m²</span>
+                                </button>
+                                <button type="button" class="calc-pkg-pill" data-pkg="standard" data-rate="5800000">
+                                    <span class="pkg-pill-name" data-i18n="pkg_standard">Tiêu Chuẩn</span>
+                                    <span class="pkg-pill-rate">5.8 tr/m²</span>
+                                </button>
+                                <button type="button" class="calc-pkg-pill active" data-pkg="premium" data-rate="7200000">
+                                    <span class="pkg-popular-tag" data-i18n="pkg_popular">Khuyên dùng</span>
+                                    <span class="pkg-pill-name" data-i18n="pkg_premium">Nâng Cao</span>
+                                    <span class="pkg-pill-rate">7.2 tr/m²</span>
+                                </button>
+                                <button type="button" class="calc-pkg-pill" data-pkg="luxury" data-rate="9500000">
+                                    <span class="pkg-pill-name" data-i18n="pkg_luxury">Luxury</span>
+                                    <span class="pkg-pill-rate">9.5 tr/m²</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Loại móng -->
+                        <div class="calc-card-field">
+                            <div class="calc-field-label-row">
+                                <label class="calc-field-label" data-i18n="calc_foundation_label">Giải pháp kết cấu móng:</label>
+                                <span class="calc-foundation-info" id="detail-calc-fnd-info">+40% sàn trệt</span>
+                            </div>
+                            <div class="calc-foundation-pills" id="detail-calc-foundations" role="radiogroup">
+                                <button type="button" class="calc-fnd-pill" data-fnd="don" data-coef="0.25" data-i18n="fnd_single">Móng Đơn (25%)</button>
+                                <button type="button" class="calc-fnd-pill active" data-fnd="coc" data-coef="0.4" data-i18n="fnd_pile">Móng Cọc (40%)</button>
+                                <button type="button" class="calc-fnd-pill" data-fnd="bang" data-coef="0.5" data-i18n="fnd_strip">Móng Băng (50%)</button>
+                                <button type="button" class="calc-fnd-pill" data-fnd="be" data-coef="0.75" data-i18n="fnd_raft">Móng Bè (75%)</button>
+                            </div>
+                        </div>
+
+                        <!-- 3. Bảng kết quả tổng tiền & Bóc tách 4 cấu phần -->
+                        <div class="calc-display-box">
+                            <div class="calc-display-header">
+                                <span class="calc-display-title" data-i18n="calc_total_estimate">Tổng mức đầu tư ước tính:</span>
+                                <strong class="calc-display-total" id="detail-calc-total-val">0 VNĐ</strong>
+                            </div>
+                            <p class="calc-display-note" data-i18n="calc_vat_note">(Ước tính theo đơn giá Q1/2026 • Đã gồm nhân công trọn gói)</p>
+
+                            <!-- Thanh phân bổ Segmented Progress Bar -->
+                            <div class="calc-segmented-bar" aria-hidden="true">
+                                <div class="calc-segment seg-raw" id="detail-seg-raw" style="width: 52%" title="Thô & Kết cấu: 52%"></div>
+                                <div class="calc-segment seg-finish" id="detail-seg-finish" style="width: 33%" title="Hoàn thiện: 33%"></div>
+                                <div class="calc-segment seg-me" id="detail-seg-me" style="width: 10%" title="Điện nước MEP: 10%"></div>
+                                <div class="calc-segment seg-mgmt" id="detail-seg-mgmt" style="width: 5%" title="Dự phòng & QL: 5%"></div>
+                            </div>
+
+                            <!-- Grid 4 hạng mục chi tiết -->
+                            <div class="calc-breakdown-grid">
+                                <div class="calc-breakdown-item">
+                                    <span class="breakdown-dot dot-raw"></span>
+                                    <div class="breakdown-text">
+                                        <span class="breakdown-name" data-i18n="calc_part_raw">Thô & Kết cấu (52%)</span>
+                                        <strong class="breakdown-amount" id="detail-breakdown-raw">0 VNĐ</strong>
+                                    </div>
+                                </div>
+                                <div class="calc-breakdown-item">
+                                    <span class="breakdown-dot dot-finish"></span>
+                                    <div class="breakdown-text">
+                                        <span class="breakdown-name" data-i18n="calc_part_finish">Hoàn thiện (33%)</span>
+                                        <strong class="breakdown-amount" id="detail-breakdown-finish">0 VNĐ</strong>
+                                    </div>
+                                </div>
+                                <div class="calc-breakdown-item">
+                                    <span class="breakdown-dot dot-me"></span>
+                                    <div class="breakdown-text">
+                                        <span class="breakdown-name" data-i18n="calc_part_me">Điện nước MEP (10%)</span>
+                                        <strong class="breakdown-amount" id="detail-breakdown-me">0 VNĐ</strong>
+                                    </div>
+                                </div>
+                                <div class="calc-breakdown-item">
+                                    <span class="breakdown-dot dot-mgmt"></span>
+                                    <div class="breakdown-text">
+                                        <span class="breakdown-name" data-i18n="calc_part_mgmt">Dự phòng & QL (5%)</span>
+                                        <strong class="breakdown-amount" id="detail-breakdown-mgmt">0 VNĐ</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1403,6 +1519,210 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     <span>Quản trị Admin</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. MODAL DỰ TOÁN XÂY NHÀ NHANH (QUICK ESTIMATOR MODAL) -->
+    <div id="quick-calc-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="quick-calc-title">
+        <button type="button" id="close-quick-calc-modal" class="modal-close" aria-label="Đóng bảng dự toán" title="Đóng bảng dự toán (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
+        <div class="modal-window quick-calc-window">
+            <div class="quick-calc-header">
+                <div class="quick-calc-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                    <span>Civil Engineering Cost Engine 2026</span>
+                </div>
+                <h2 id="quick-calc-title" class="quick-calc-heading" data-i18n="calc_modal_title">Bảng Tính Dự Toán Xây Nhà Nhanh</h2>
+                <p class="quick-calc-desc" data-i18n="calc_modal_sub">Nhập kích thước khu đất để nhận ngay bảng khái toán chi tiết</p>
+            </div>
+
+            <div class="quick-calc-layout">
+                <!-- Cột trái: Bộ điều khiển nhập thông số kích thước & kỹ thuật -->
+                <div class="quick-calc-inputs-col">
+                    <div class="quick-calc-input-card">
+                        <h4 class="input-card-title">1. Kích thước & Quy mô công trình</h4>
+                        
+                        <div class="calc-input-row">
+                            <div class="calc-input-field">
+                                <label for="qc-width">
+                                    <span data-i18n="calc_input_width">Mặt tiền khu đất (m):</span>
+                                    <strong class="range-live-val" id="qc-width-val">5.0 m</strong>
+                                </label>
+                                <input type="range" id="qc-width" min="3.5" max="15.0" step="0.5" value="5.0" />
+                            </div>
+                            <div class="calc-input-field">
+                                <label for="qc-depth">
+                                    <span data-i18n="calc_input_depth">Chiều sâu khu đất (m):</span>
+                                    <strong class="range-live-val" id="qc-depth-val">16.0 m</strong>
+                                </label>
+                                <input type="range" id="qc-depth" min="6.0" max="30.0" step="1.0" value="16.0" />
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-input-field">
+                                <label><span data-i18n="calc_input_floors">Số tầng xây dựng:</span></label>
+                                <div class="quick-calc-floor-pills" id="qc-floors-group">
+                                    <button type="button" class="qc-btn-pill" data-floors="1">1 Tầng</button>
+                                    <button type="button" class="qc-btn-pill active" data-floors="2">2 Tầng</button>
+                                    <button type="button" class="qc-btn-pill" data-floors="3">3 Tầng</button>
+                                    <button type="button" class="qc-btn-pill" data-floors="4">4 Tầng</button>
+                                    <button type="button" class="qc-btn-pill" data-floors="5">5 Tầng</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-input-field">
+                                <label><span data-i18n="calc_input_roof">Kiểu kết cấu mái:</span></label>
+                                <div class="quick-calc-roof-pills" id="qc-roof-group">
+                                    <button type="button" class="qc-btn-pill" data-roof="flat" data-coef="0.35" data-i18n="roof_flat_short">Mái bằng BTCT (35%)</button>
+                                    <button type="button" class="qc-btn-pill active" data-roof="hip" data-coef="0.7" data-i18n="roof_hip_short">Mái Nhật (70%)</button>
+                                    <button type="button" class="qc-btn-pill" data-roof="gable" data-coef="0.7" data-i18n="roof_gable_short">Mái Thái (70%)</button>
+                                    <button type="button" class="qc-btn-pill" data-roof="tile" data-coef="1.0" data-i18n="roof_concrete_tile">Mái đúc dán ngói (100%)</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-input-field">
+                                <label><span data-i18n="calc_foundation_label">Giải pháp kết cấu móng:</span></label>
+                                <div class="quick-calc-fnd-pills" id="qc-fnd-group">
+                                    <button type="button" class="qc-btn-pill" data-fnd="don" data-coef="0.25" data-i18n="fnd_single">Móng Đơn (25%)</button>
+                                    <button type="button" class="qc-btn-pill active" data-fnd="coc" data-coef="0.4" data-i18n="fnd_pile">Móng Cọc (40%)</button>
+                                    <button type="button" class="qc-btn-pill" data-fnd="bang" data-coef="0.5" data-i18n="fnd_strip">Móng Băng (50%)</button>
+                                    <button type="button" class="qc-btn-pill" data-fnd="be" data-coef="0.75" data-i18n="fnd_raft">Móng Bè (75%)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-calc-input-card">
+                        <h4 class="input-card-title">2. Gói vật tư hoàn thiện</h4>
+                        <div class="quick-calc-pkg-grid" id="qc-pkg-group">
+                            <button type="button" class="qc-pkg-card" data-pkg="rough" data-rate="3800000">
+                                <div class="qc-pkg-head">
+                                    <strong class="qc-pkg-name" data-i18n="pkg_rough">Xây Thô</strong>
+                                    <span class="qc-pkg-price">3.8 tr/m²</span>
+                                </div>
+                                <p class="qc-pkg-desc" data-i18n="pkg_rough_desc">Nhân công + sắt thép xi măng</p>
+                            </button>
+                            <button type="button" class="qc-pkg-card" data-pkg="standard" data-rate="5800000">
+                                <div class="qc-pkg-head">
+                                    <strong class="qc-pkg-name" data-i18n="pkg_standard">Tiêu Chuẩn</strong>
+                                    <span class="qc-pkg-price">5.8 tr/m²</span>
+                                </div>
+                                <p class="qc-pkg-desc" data-i18n="pkg_standard_desc">Chìa khóa trao tay phổ thông</p>
+                            </button>
+                            <button type="button" class="qc-pkg-card active" data-pkg="premium" data-rate="7200000">
+                                <div class="qc-pkg-badge-rec" data-i18n="pkg_popular">Khuyên dùng</div>
+                                <div class="qc-pkg-head">
+                                    <strong class="qc-pkg-name" data-i18n="pkg_premium">Nâng Cao</strong>
+                                    <span class="qc-pkg-price">7.2 tr/m²</span>
+                                </div>
+                                <p class="qc-pkg-desc" data-i18n="pkg_premium_desc">Vật liệu cao cấp, bảo hành 5 năm</p>
+                            </button>
+                            <button type="button" class="qc-pkg-card" data-pkg="luxury" data-rate="9500000">
+                                <div class="qc-pkg-head">
+                                    <strong class="qc-pkg-name" data-i18n="pkg_luxury">Luxury</strong>
+                                    <span class="qc-pkg-price">9.5 tr/m²</span>
+                                </div>
+                                <p class="qc-pkg-desc" data-i18n="pkg_luxury_desc">Đẳng cấp dinh thự & Smarthome</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Bảng kết quả tổng hợp & Bóc tách chi phí & Gợi ý mẫu nhà -->
+                <div class="quick-calc-summary-col">
+                    <div class="qc-summary-box">
+                        <div class="qc-stat-grid">
+                            <div class="qc-stat-card">
+                                <span class="qc-stat-label" data-i18n="calc_land_area">Diện tích đất:</span>
+                                <strong class="qc-stat-val" id="qc-res-land">80.0 m²</strong>
+                            </div>
+                            <div class="qc-stat-card">
+                                <span class="qc-stat-label" data-i18n="calc_total_gfa">Tổng DT quy đổi:</span>
+                                <strong class="qc-stat-val highlight" id="qc-res-gfa">248 m²</strong>
+                            </div>
+                        </div>
+
+                        <div class="qc-total-card">
+                            <span class="qc-total-sub" data-i18n="calc_total_estimate">Tổng mức đầu tư ước tính:</span>
+                            <div class="qc-total-amount" id="qc-res-total">1,78 tỷ VNĐ</div>
+                            <span class="qc-total-calc-line" id="qc-res-formula">248 m² × 7.200.000 đ/m²</span>
+                        </div>
+
+                        <!-- Segmented progress bar -->
+                        <div class="calc-segmented-bar">
+                            <div class="calc-segment seg-raw" id="qc-seg-raw" style="width: 52%"></div>
+                            <div class="calc-segment seg-finish" id="qc-seg-finish" style="width: 33%"></div>
+                            <div class="calc-segment seg-me" id="qc-seg-me" style="width: 10%"></div>
+                            <div class="calc-segment seg-mgmt" id="qc-seg-mgmt" style="width: 5%"></div>
+                        </div>
+
+                        <!-- Breakdown items -->
+                        <div class="calc-breakdown-grid">
+                            <div class="calc-breakdown-item">
+                                <span class="breakdown-dot dot-raw"></span>
+                                <div class="breakdown-text">
+                                    <span class="breakdown-name" data-i18n="calc_part_raw">Thô & Kết cấu (52%)</span>
+                                    <strong class="breakdown-amount" id="qc-val-raw">925 triệu</strong>
+                                </div>
+                            </div>
+                            <div class="calc-breakdown-item">
+                                <span class="breakdown-dot dot-finish"></span>
+                                <div class="breakdown-text">
+                                    <span class="breakdown-name" data-i18n="calc_part_finish">Hoàn thiện (33%)</span>
+                                    <strong class="breakdown-amount" id="qc-val-finish">587 triệu</strong>
+                                </div>
+                            </div>
+                            <div class="calc-breakdown-item">
+                                <span class="breakdown-dot dot-me"></span>
+                                <div class="breakdown-text">
+                                    <span class="breakdown-name" data-i18n="calc_part_me">Điện nước MEP (10%)</span>
+                                    <strong class="breakdown-amount" id="qc-val-me">178 triệu</strong>
+                                </div>
+                            </div>
+                            <div class="calc-breakdown-item">
+                                <span class="breakdown-dot dot-mgmt"></span>
+                                <div class="breakdown-text">
+                                    <span class="breakdown-name" data-i18n="calc_part_mgmt">Dự phòng & QL (5%)</span>
+                                    <strong class="breakdown-amount" id="qc-val-mgmt">89 triệu</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mẫu nhà gợi ý phù hợp nhất -->
+                        <div class="qc-matched-template-box" id="qc-matched-box">
+                            <div class="qc-matched-header">
+                                <span class="qc-matched-tag" data-i18n="calc_match_title">Gợi ý mẫu nhà Dream House phù hợp:</span>
+                            </div>
+                            <div class="qc-matched-card">
+                                <img id="qc-match-img" src="" alt="Matched House" />
+                                <div class="qc-match-info">
+                                    <h4 id="qc-match-name">Nhà phố 2 tầng 5x16m</h4>
+                                    <p id="qc-match-spec">5m × 16m • 2 tầng • Mái Nhật</p>
+                                    <button type="button" id="qc-btn-view-match" class="btn-text-gold" data-i18n="calc_btn_view_match">Xem chi tiết mẫu này →</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action button -->
+                        <button type="button" id="qc-btn-send-consult" class="btn-primary full-btn qc-consult-btn" data-i18n="calc_btn_send_consult">
+                            Gửi dự toán này để KTS tư vấn chi tiết →
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

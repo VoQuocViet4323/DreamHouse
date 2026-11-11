@@ -59,6 +59,7 @@ class DreamHouseApp {
         await this.setupAuth();
         this.setupUIEvents();
         this.initNotificationBell();
+        this.initCostCalculator();
         await this.loadTemplates();
         this.renderGallery();
 
@@ -74,6 +75,9 @@ class DreamHouseApp {
             this.renderGallery();
             if (this.currentTemplate) {
                 this.updateDetailPanelContent(this.currentTemplate);
+            }
+            if (typeof this.recalcQuickEstimator === 'function') {
+                this.recalcQuickEstimator();
             }
             this.updateAuthUI();
         });
@@ -1262,6 +1266,7 @@ class DreamHouseApp {
         document.getElementById('detail-spec-rooms').textContent = rooms || '-';
         document.getElementById('detail-spec-price').textContent = window.i18n.formatCost(item.cost_estimate_vnd);
 
+        this.updateDetailCalculator(item);
         this.updateDetailFavButton();
     }
 
@@ -1370,7 +1375,7 @@ class DreamHouseApp {
             }
         });
 
-        // Nút "Nhận báo giá mẫu này" trong panel -> cuộn xuống form liên hệ và tự điền tên mẫu
+        // Nút "Nhận báo giá mẫu này" trong panel -> cuộn xuống form liên hệ và tự điền tên mẫu kèm phương án dự toán đã chọn
         document.getElementById('detail-inquire-btn')?.addEventListener('click', () => {
             const template = this.currentTemplate;
             this.closeDetailPanel();
@@ -1381,17 +1386,26 @@ class DreamHouseApp {
             if (template) {
                 const lang = window.i18n.getLang();
                 const templateName = this.getLocalizedTemplateName(template, lang);
+                const calcState = this.detailCalcState || {};
+                const pkgName = window.i18n.t(`pkg_${calcState.pkg || 'premium'}`);
+                const fndName = window.i18n.t(`fnd_${calcState.fnd || 'coc'}`);
+                const totalCostFormatted = window.i18n.formatCost(this.currentDetailCalcTotal || template.cost_estimate_vnd);
+                const equivArea = this.currentDetailEquivArea || template.gfa_m2;
+
                 const msgInput = document.getElementById('inquiry-message');
                 if (msgInput) {
                     msgInput.value = lang === 'vi'
-                        ? `Tôi muốn nhận tư vấn và bảng dự toán chi tiết cho mẫu "${templateName}".`
-                        : `I would like to receive detailed consulting and cost estimates for the "${templateName}" model.`;
+                        ? `Tôi quan tâm mẫu "${templateName}".\n• Phương án dự toán: Gói ${pkgName}, ${fndName}.\n• Diện tích quy đổi: ~${equivArea} m² sàn.\n• Dự toán ước tính: ${totalCostFormatted}.\nNhờ Kiến trúc sư DreamHouse tư vấn chi tiết hồ sơ thiết kế & phương án thi công.`
+                        : `I am interested in the "${templateName}" design.\n• Estimate plan: ${pkgName} Package, ${fndName}.\n• Equivalent construction area: ~${equivArea} m².\n• Estimated investment: ${totalCostFormatted}.\nPlease provide detailed architectural layouts and turnkey construction quotation.`;
                 }
                 const refLabel = document.getElementById('inquiry-selected-model');
                 if (refLabel) {
-                    refLabel.textContent = templateName;
+                    refLabel.textContent = `${templateName} (${totalCostFormatted})`;
                     refLabel.dataset.templateId = template.id;
                 }
+                setTimeout(() => {
+                    document.getElementById('inquiry-name')?.focus();
+                }, 400);
             }
         });
 
@@ -1963,6 +1977,374 @@ class DreamHouseApp {
 
     setupThemeToggle() {
         // Theme toggle được quản lý với hiệu ứng Circular Reveal (219) ngay trong index.html
+    }
+
+    /**
+     * Khởi tạo Bộ Tính Dự Toán Chi Phí Tương Tác (Feature 1: Interactive Cost Engine 2026)
+     * Chuẩn Kỹ thuật Xây dựng Dân dụng Việt Nam & Giao diện Luxury Bento Box
+     */
+    initCostCalculator() {
+        this.detailCalcState = {
+            pkg: 'premium',
+            rate: 7200000,
+            fnd: 'coc',
+            coef: 0.40
+        };
+
+        this.quickCalcState = {
+            width: 5.0,
+            depth: 16.0,
+            floors: 2,
+            roof: 'hip',
+            roofCoef: 0.70,
+            fnd: 'coc',
+            fndCoef: 0.40,
+            pkg: 'premium',
+            pkgRate: 7200000
+        };
+
+        // 1. Sự kiện chọn Gói vật tư trong Detail Modal
+        const detailPkgPills = document.querySelectorAll('#detail-calc-packages .calc-pkg-pill');
+        detailPkgPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                detailPkgPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                this.detailCalcState.pkg = pill.dataset.pkg;
+                this.detailCalcState.rate = Number(pill.dataset.rate) || 7200000;
+                
+                const rateText = (this.detailCalcState.rate / 1000000).toFixed(1) + ' tr/m²';
+                const rateEl = document.getElementById('detail-calc-unit-rate');
+                if (rateEl) rateEl.textContent = rateText;
+
+                if (this.currentTemplate) {
+                    this.updateDetailCalculator(this.currentTemplate);
+                }
+            });
+        });
+
+        // 2. Sự kiện chọn Loại móng trong Detail Modal
+        const detailFndPills = document.querySelectorAll('#detail-calc-foundations .calc-fnd-pill');
+        detailFndPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                detailFndPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                this.detailCalcState.fnd = pill.dataset.fnd;
+                this.detailCalcState.coef = Number(pill.dataset.coef) || 0.40;
+
+                const hintEl = document.getElementById('detail-calc-fnd-info');
+                if (hintEl) {
+                    const percent = Math.round(this.detailCalcState.coef * 100);
+                    hintEl.textContent = `+${percent}% sàn trệt`;
+                }
+
+                if (this.currentTemplate) {
+                    this.updateDetailCalculator(this.currentTemplate);
+                }
+            });
+        });
+
+        // 3. Khởi tạo Modal Dự toán Nhanh (Quick Estimator Modal)
+        this.setupQuickEstimatorModal();
+    }
+
+    /**
+     * Tính toán chi phí dự toán chuẩn kỹ sư xây dựng
+     */
+    calculateConstructionCost(groundAreaM2, totalFloorAreaM2, roofCoef, fndCoef, unitRate) {
+        // Diện tích móng = Diện tích sàn trệt × Hệ số móng
+        const fndArea = groundAreaM2 * fndCoef;
+        // Diện tích các tầng = Tổng diện tích sàn các tầng
+        const floorsArea = totalFloorAreaM2;
+        // Diện tích mái = Diện tích sàn trệt × Hệ số mái
+        const roofArea = groundAreaM2 * roofCoef;
+
+        // Tổng diện tích quy đổi xây dựng (Equivalent Gross Construction Area)
+        const equivArea = Math.round(fndArea + floorsArea + roofArea);
+        const total = Math.round(equivArea * unitRate);
+
+        // Bóc tách 4 cấu phần chuẩn ngành xây dựng:
+        // 1. Thô & Kết cấu: 52%
+        // 2. Hoàn thiện kiến trúc: 33%
+        // 3. Cơ điện MEP (Điện nước): 10%
+        // 4. Quản lý, Giám sát & Dự phòng: 5%
+        const raw = Math.round(total * 0.52);
+        const finish = Math.round(total * 0.33);
+        const me = Math.round(total * 0.10);
+        const mgmt = total - raw - finish - me; // 5% còn lại để cân bằng 100%
+
+        return { equivArea, total, raw, finish, me, mgmt };
+    }
+
+    /**
+     * Cập nhật số liệu hiển thị trong Detail Modal Calculator
+     */
+    updateDetailCalculator(item) {
+        if (!item) return;
+
+        const floors = Number(item.floors) || 2;
+        const gfa = Number(item.gfa_m2) || 160;
+        const groundArea = (item.width_m && item.depth_m) ? (item.width_m * item.depth_m) : Math.round(gfa / floors);
+
+        // Xác định hệ số mái theo kiểu mái của mẫu
+        let roofCoef = 0.70; // Mặc định Mái Nhật / Mái Thái
+        if (item.roof === 'flat') roofCoef = 0.35;
+        else if (item.roof === 'tile') roofCoef = 1.00;
+
+        const fndCoef = this.detailCalcState?.coef || 0.40;
+        const unitRate = this.detailCalcState?.rate || 7200000;
+
+        const res = this.calculateConstructionCost(groundArea, gfa, roofCoef, fndCoef, unitRate);
+        this.currentDetailCalcTotal = res.total;
+        this.currentDetailEquivArea = res.equivArea;
+
+        // Cập nhật DOM
+        const equivBadge = document.getElementById('detail-calc-equiv-badge');
+        if (equivBadge) equivBadge.textContent = `${res.equivArea} m² quy đổi`;
+
+        const totalEl = document.getElementById('detail-calc-total-val');
+        if (totalEl) totalEl.textContent = window.i18n.formatCost(res.total);
+
+        const rawEl = document.getElementById('detail-breakdown-raw');
+        if (rawEl) rawEl.textContent = window.i18n.formatCost(res.raw);
+
+        const finishEl = document.getElementById('detail-breakdown-finish');
+        if (finishEl) finishEl.textContent = window.i18n.formatCost(res.finish);
+
+        const meEl = document.getElementById('detail-breakdown-me');
+        if (meEl) meEl.textContent = window.i18n.formatCost(res.me);
+
+        const mgmtEl = document.getElementById('detail-breakdown-mgmt');
+        if (mgmtEl) mgmtEl.textContent = window.i18n.formatCost(res.mgmt);
+    }
+
+    /**
+     * Thiết lập Modal Dự Toán Xây Nhà Nhanh (Quick Estimator Modal)
+     */
+    setupQuickEstimatorModal() {
+        const modal = document.getElementById('quick-calc-modal');
+        if (!modal) return;
+
+        const openBtnNav = document.getElementById('nav-open-calc');
+        const openBtnHero = document.getElementById('hero-calc-btn');
+        const closeBtn = document.getElementById('close-quick-calc-modal');
+
+        const openModal = () => {
+            modal.classList.remove('hidden');
+            modal.classList.remove('is-closing');
+            document.body.style.overflow = 'hidden';
+            this.recalcQuickEstimator();
+        };
+
+        const closeModal = () => {
+            if (modal.classList.contains('hidden') || modal.classList.contains('is-closing')) return;
+            modal.classList.add('is-closing');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('is-closing');
+                document.body.style.overflow = '';
+            }, 260);
+        };
+
+        openBtnNav?.addEventListener('click', openModal);
+        openBtnHero?.addEventListener('click', openModal);
+        closeBtn?.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // 1. Slider Chiều rộng mặt tiền
+        const widthSlider = document.getElementById('qc-width');
+        const widthVal = document.getElementById('qc-width-val');
+        widthSlider?.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            this.quickCalcState.width = val;
+            if (widthVal) widthVal.textContent = val.toFixed(1) + ' m';
+            this.recalcQuickEstimator();
+        });
+
+        // 2. Slider Chiều sâu khu đất
+        const depthSlider = document.getElementById('qc-depth');
+        const depthVal = document.getElementById('qc-depth-val');
+        depthSlider?.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            this.quickCalcState.depth = val;
+            if (depthVal) depthVal.textContent = val.toFixed(1) + ' m';
+            this.recalcQuickEstimator();
+        });
+
+        // 3. Số tầng
+        const floorPills = document.querySelectorAll('#qc-floors-group .qc-btn-pill');
+        floorPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                floorPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                this.quickCalcState.floors = parseInt(pill.dataset.floors, 10) || 2;
+                this.recalcQuickEstimator();
+            });
+        });
+
+        // 4. Kiểu mái
+        const roofPills = document.querySelectorAll('#qc-roof-group .qc-btn-pill');
+        roofPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                roofPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                this.quickCalcState.roof = pill.dataset.roof;
+                this.quickCalcState.roofCoef = parseFloat(pill.dataset.coef) || 0.70;
+                this.recalcQuickEstimator();
+            });
+        });
+
+        // 5. Loại móng
+        const fndPills = document.querySelectorAll('#qc-fnd-group .qc-btn-pill');
+        fndPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                fndPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                this.quickCalcState.fnd = pill.dataset.fnd;
+                this.quickCalcState.fndCoef = parseFloat(pill.dataset.coef) || 0.40;
+                this.recalcQuickEstimator();
+            });
+        });
+
+        // 6. Gói vật tư
+        const pkgCards = document.querySelectorAll('#qc-pkg-group .qc-pkg-card');
+        pkgCards.forEach(card => {
+            card.addEventListener('click', () => {
+                pkgCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                this.quickCalcState.pkg = card.dataset.pkg;
+                this.quickCalcState.pkgRate = parseInt(card.dataset.rate, 10) || 7200000;
+                this.recalcQuickEstimator();
+            });
+        });
+
+        // 7. Nút xem chi tiết mẫu nhà gợi ý
+        document.getElementById('qc-btn-view-match')?.addEventListener('click', () => {
+            if (this._matchedQuickTemplate) {
+                closeModal();
+                setTimeout(() => {
+                    this.openDetailPanel(this._matchedQuickTemplate.id);
+                }, 280);
+            }
+        });
+
+        // 8. Nút "Gửi dự toán này để KTS tư vấn chi tiết →"
+        document.getElementById('qc-btn-send-consult')?.addEventListener('click', () => {
+            closeModal();
+            const contactSection = document.getElementById('contact-section');
+            if (contactSection) {
+                this.scrollToSection(contactSection);
+            }
+            const state = this.quickCalcState;
+            const res = this._lastQuickCalcResult || {};
+            const pkgName = window.i18n.t(`pkg_${state.pkg}`);
+            const fndName = window.i18n.t(`fnd_${state.fnd}`);
+            const roofName = window.i18n.t(`roof_${state.roof}_short`) || state.roof;
+            const costFormatted = window.i18n.formatCost(res.total || 0);
+
+            const isVi = window.i18n.getLang() === 'vi';
+            const msgInput = document.getElementById('inquiry-message');
+            if (msgInput) {
+                msgInput.value = isVi
+                    ? `Dự toán tự tính cho khu đất ${state.width}m × ${state.depth}m (${state.width * state.depth}m²):\n• Quy mô: ${state.floors} tầng, ${roofName}.\n• Kết cấu móng: ${fndName}.\n• Gói vật tư: ${pkgName} (${(state.pkgRate / 1000000).toFixed(1)} tr/m²).\n• Diện tích sàn quy đổi: ~${res.equivArea || 0} m².\n• Tổng mức đầu tư ước tính: ${costFormatted}.\nNhờ KTS Võ Quốc Việt liên hệ tư vấn phương án bố trí mặt bằng tối ưu!`
+                    : `Self-calculated estimate for land plot ${state.width}m × ${state.depth}m (${state.width * state.depth}m²):\n• Scale: ${state.floors} storeys, ${roofName}.\n• Foundation: ${fndName}.\n• Material package: ${pkgName} (${(state.pkgRate / 1000000).toFixed(1)}M VND/m²).\n• Equivalent gross floor area: ~${res.equivArea || 0} m².\n• Estimated total investment: ${costFormatted}.\nPlease provide architectural consultation and floor plan options!`;
+            }
+            const refLabel = document.getElementById('inquiry-selected-model');
+            if (refLabel) {
+                refLabel.textContent = isVi 
+                    ? `Dự toán đất ${state.width}m×${state.depth}m (${costFormatted})`
+                    : `Custom ${state.width}m×${state.depth}m (${costFormatted})`;
+                delete refLabel.dataset.templateId;
+            }
+            if (window.toast) {
+                window.toast.success(isVi ? 'Đã nạp bảng dự toán vào form tư vấn bên dưới!' : 'Estimate prefilled into consultation form below!');
+            }
+            setTimeout(() => {
+                document.getElementById('inquiry-name')?.focus();
+            }, 450);
+        });
+    }
+
+    /**
+     * Tính toán và cập nhật giao diện Quick Estimator Modal
+     */
+    recalcQuickEstimator() {
+        const state = this.quickCalcState;
+        if (!state) return;
+
+        const landArea = state.width * state.depth;
+        const totalFloorsArea = landArea * state.floors;
+
+        const res = this.calculateConstructionCost(landArea, totalFloorsArea, state.roofCoef, state.fndCoef, state.pkgRate);
+        this._lastQuickCalcResult = res;
+
+        // Cập nhật các ô số liệu
+        const landEl = document.getElementById('qc-res-land');
+        if (landEl) landEl.textContent = `${landArea.toFixed(1)} m²`;
+
+        const gfaEl = document.getElementById('qc-res-gfa');
+        if (gfaEl) gfaEl.textContent = `${res.equivArea} m²`;
+
+        const totalEl = document.getElementById('qc-res-total');
+        if (totalEl) totalEl.textContent = window.i18n.formatCost(res.total);
+
+        const formulaEl = document.getElementById('qc-res-formula');
+        if (formulaEl) {
+            formulaEl.textContent = `${res.equivArea} m² × ${(state.pkgRate / 1000000).toFixed(1)} tr/m²`;
+        }
+
+        const rawEl = document.getElementById('qc-val-raw');
+        if (rawEl) rawEl.textContent = window.i18n.formatCost(res.raw);
+
+        const finishEl = document.getElementById('qc-val-finish');
+        if (finishEl) finishEl.textContent = window.i18n.formatCost(res.finish);
+
+        const meEl = document.getElementById('qc-val-me');
+        if (meEl) meEl.textContent = window.i18n.formatCost(res.me);
+
+        const mgmtEl = document.getElementById('qc-val-mgmt');
+        if (mgmtEl) mgmtEl.textContent = window.i18n.formatCost(res.mgmt);
+
+        // Tìm mẫu nhà tương thích nhất trong thư viện
+        if (this.templates && this.templates.length > 0) {
+            let bestTpl = null;
+            let minDiff = Infinity;
+            this.templates.forEach(t => {
+                const diff = Math.abs((t.width_m || 5) - state.width) * 2 +
+                             Math.abs((t.depth_m || 16) - state.depth) * 0.8 +
+                             Math.abs((t.floors || 2) - state.floors) * 5;
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestTpl = t;
+                }
+            });
+
+            this._matchedQuickTemplate = bestTpl || this.templates[0];
+            const lang = window.i18n.getLang();
+            const matchNameEl = document.getElementById('qc-match-name');
+            const matchSpecEl = document.getElementById('qc-match-spec');
+            const matchImgEl = document.getElementById('qc-match-img');
+
+            if (matchNameEl && this._matchedQuickTemplate) {
+                matchNameEl.textContent = this.getLocalizedTemplateName(this._matchedQuickTemplate, lang);
+            }
+            if (matchSpecEl && this._matchedQuickTemplate) {
+                const roofName = window.i18n.t(`roof_${this._matchedQuickTemplate.roof}`) || this._matchedQuickTemplate.roof;
+                matchSpecEl.textContent = `${this._matchedQuickTemplate.width_m}m × ${this._matchedQuickTemplate.depth_m}m • ${this._matchedQuickTemplate.floors} tầng • ${roofName}`;
+            }
+            if (matchImgEl && this._matchedQuickTemplate) {
+                matchImgEl.src = this._matchedQuickTemplate.photo_path || '';
+                matchImgEl.alt = matchNameEl ? matchNameEl.textContent : 'House';
+            }
+        }
     }
 
     /**
