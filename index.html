@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.8" />
+    <link rel="stylesheet" href="style.css?v=8.9" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.8"></script>
-    <script src="js/i18n.js?v=8.8"></script>
-    <script src="js/toast.js?v=8.8"></script>
-    <script src="js/viewer3d.js?v=8.8"></script>
-    <script src="js/app.js?v=8.8" defer></script>
+    <script src="js/config.js?v=8.9"></script>
+    <script src="js/i18n.js?v=8.9"></script>
+    <script src="js/toast.js?v=8.9"></script>
+    <script src="js/viewer3d.js?v=8.9"></script>
+    <script src="js/app.js?v=8.9" defer></script>
 </head>
 
 <body>
@@ -50,7 +50,9 @@
             </a>
 
             <nav class="main-nav">
+                <a href="#about-section" class="nav-link" data-i18n="nav_about">Về chúng tôi</a>
                 <a href="#gallery-section" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
+                <a href="#workflow-section" class="nav-link" data-i18n="nav_workflow">Quy trình</a>
                 <button type="button" class="nav-link btn-nav-link" id="nav-open-calc" data-i18n="nav_calculator">Tính dự toán</button>
                 <button type="button" class="nav-link btn-nav-link" id="nav-open-fengshui" data-i18n="nav_fengshui">Phong thủy</button>
                 <a href="#contact-section" class="nav-link" data-i18n="nav_contact">Liên hệ</a>
@@ -410,6 +412,106 @@
             </div>
         </div>
     </div>
+
+    <!-- 2.8. PHẦN GIỚI THIỆU CHUYÊN SÂU & TRIẾT LÝ THIẾT KẾ (ABOUT & PHILOSOPHY SECTION v8.9) -->
+    <section id="about-section" class="about-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tag" data-i18n="about_tagline">Kiến trúc tinh hoa · Triết lý bền vững</span>
+                <h2 class="section-title" data-i18n="about_title">Kiến Tạo Không Gian Sống Đậm Bản Sắc & Vị Nhân Sinh</h2>
+                <p class="section-sub" data-i18n="about_sub">Dream House không chỉ xây nên những bức tường, chúng tôi kết tinh ước mơ, vi khí hậu bản địa và giải pháp thi công chuẩn mực cho từng tổ ấm.</p>
+            </div>
+
+            <div class="about-grid">
+                <!-- CỘT TRÁI: CHÂN DUNG & BẢN SẮC KTS CHỦ TRÌ -->
+                <div class="about-portrait-card">
+                    <div class="portrait-media-wrap">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80" alt="KTS. Võ Quốc Việt - Dream House Lead Architect" class="portrait-photo" loading="lazy" />
+                        <div class="portrait-overlay" aria-hidden="true"></div>
+                        <div class="portrait-badge">
+                            <span class="badge-icon">✦</span>
+                            <span>10+ Năm Kinh Nghiệm</span>
+                        </div>
+                    </div>
+
+                    <div class="portrait-info">
+                        <div class="portrait-author-block">
+                            <h3 class="author-name" data-i18n="about_lead_arch">KTS. Võ Quốc Việt</h3>
+                            <span class="author-title" data-i18n="about_lead_title">Sáng lập & Chủ nhiệm thiết kế Dream House</span>
+                        </div>
+                        <blockquote class="author-quote" data-i18n="about_quote">
+                            “Một ngôi nhà hoàn mỹ phải là nơi gia chủ cảm nhận được sự bình yên ngay khi bước qua ngưỡng cửa, và bền vững cùng năm tháng mà không lỗi thời.”
+                        </blockquote>
+
+                        <div class="about-stats-row">
+                            <div class="about-stat-item">
+                                <span class="about-stat-num" data-i18n="about_stat_1_num">350+</span>
+                                <span class="about-stat-label" data-i18n="about_stat_1_label">Đồ án hoàn thiện</span>
+                            </div>
+                            <div class="about-stat-sep" aria-hidden="true"></div>
+                            <div class="about-stat-item">
+                                <span class="about-stat-num" data-i18n="about_stat_2_num">98.5%</span>
+                                <span class="about-stat-label" data-i18n="about_stat_2_label">Dự toán chuẩn xác</span>
+                            </div>
+                            <div class="about-stat-sep" aria-hidden="true"></div>
+                            <div class="about-stat-item">
+                                <span class="about-stat-num" data-i18n="about_stat_3_num">63</span>
+                                <span class="about-stat-label" data-i18n="about_stat_3_label">Tỉnh thành kết nối</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CỘT PHẢI: 3 TRỤ CỘT TRIẾT LÝ KIẾN TRÚC -->
+                <div class="about-pillars-stack">
+                    <!-- Trụ cột 1 -->
+                    <div class="pillar-card">
+                        <div class="pillar-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                                <circle cx="12" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-content">
+                            <h3 class="pillar-title" data-i18n="about_pillar1_title">Tinh Hoa Hình Khối & Vi Khí Hậu</h3>
+                            <p class="pillar-desc" data-i18n="about_pillar1_desc">Tối ưu hóa đối lưu gió tự nhiên, giếng trời trung tâm và ánh sáng nhiệt đới, giúp không gian luôn tràn ngập năng lượng sinh thái và tiết kiệm điện năng.</p>
+                        </div>
+                    </div>
+
+                    <!-- Trụ cột 2 -->
+                    <div class="pillar-card">
+                        <div class="pillar-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-content">
+                            <h3 class="pillar-title" data-i18n="about_pillar2_title">Phong Thủy Hoàng Đạo & Cung Mệnh</h3>
+                            <p class="pillar-desc" data-i18n="about_pillar2_desc">Tích hợp nghiêm ngặt Thước Lỗ Ban 3 dải đo thông thủy và La bàn Bát Trạch hợp tuổi, đem lại vượng khí, tài lộc và sự an tâm trọn vẹn cho gia đạo.</p>
+                        </div>
+                    </div>
+
+                    <!-- Trụ cột 3 -->
+                    <div class="pillar-card">
+                        <div class="pillar-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-content">
+                            <h3 class="pillar-title" data-i18n="about_pillar3_title">Minh Bạch Dự Toán & Chuẩn TCXDVN</h3>
+                            <p class="pillar-desc" data-i18n="about_pillar3_desc">Bóc tách chính xác 4 cấp độ vật tư 2026, đối chiếu mô hình 3D với bản vẽ CAD Vector 1/100, bảo vệ gia chủ khỏi rủi ro phát sinh chi phí ngoài hợp đồng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- 3. THƯ VIỆN MẪU NHÀ & BỘ LỌC (GALLERY SECTION) -->
     <main id="gallery-section" class="gallery-section container">
@@ -869,6 +971,136 @@
             </div>
         </div>
     </div>
+
+    <!-- 4.5. QUY TRÌNH THIẾT KẾ CHUẨN 4 BƯỚC (WORKFLOW SECTION v8.9) -->
+    <section id="workflow-section" class="workflow-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tag" data-i18n="workflow_tagline">QUY TRÌNH BÀN GIAO KHÉP KÍN</span>
+                <h2 class="section-title" data-i18n="workflow_title">4 Bước Hiện Thực Hóa Ngôi Nhà Mơ Ước</h2>
+                <p class="section-sub" data-i18n="workflow_sub">Quy trình làm việc minh bạch, khoa học và chặt chẽ giúp gia chủ hoàn toàn thảnh thơi từ nét vẽ đầu tiên đến ngày nhận chìa khóa.</p>
+            </div>
+
+            <div class="workflow-grid">
+                <!-- Bước 1 -->
+                <div class="workflow-card">
+                    <div class="step-num" data-i18n="step1_num">01</div>
+                    <div class="workflow-card-inner">
+                        <div class="step-icon">📋</div>
+                        <h3 class="step-title" data-i18n="step1_title">Khảo Sát & Khởi Tạo Ý Tưởng</h3>
+                        <p class="step-desc" data-i18n="step1_desc">Lắng nghe nhu cầu sinh hoạt, đo đạc khu đất, xác định ngân sách dự toán mục tiêu và tra cứu hướng nhà phong thủy hợp tuổi.</p>
+                    </div>
+                </div>
+
+                <!-- Bước 2 -->
+                <div class="workflow-card">
+                    <div class="step-num" data-i18n="step2_num">02</div>
+                    <div class="workflow-card-inner">
+                        <div class="step-icon">🏛️</div>
+                        <h3 class="step-title" data-i18n="step2_title">Mô Hình 3D & Dạo Bước 360°</h3>
+                        <p class="step-desc" data-i18n="step2_desc">Phác thảo không gian kiến trúc 3D tương tác thực tế, cho phép gia chủ trải nghiệm trực quan từng phòng ốc trước khi đặt viên gạch đầu tiên.</p>
+                    </div>
+                </div>
+
+                <!-- Bước 3 -->
+                <div class="workflow-card">
+                    <div class="step-num" data-i18n="step3_num">03</div>
+                    <div class="workflow-card-inner">
+                        <div class="step-icon">📐</div>
+                        <h3 class="step-title" data-i18n="step3_title">Bản Vẽ CAD & Bóc Tách Dự Toán</h3>
+                        <p class="step-desc" data-i18n="step3_desc">Triển khai đầy đủ hồ sơ kỹ thuật kiến trúc, kết cấu, điện nước (MEP) và bảng khái toán chi tiết 4 hạng mục vật tư thi công 2026.</p>
+                    </div>
+                </div>
+
+                <!-- Bước 4 -->
+                <div class="workflow-card">
+                    <div class="step-num" data-i18n="step4_num">04</div>
+                    <div class="workflow-card-inner">
+                        <div class="step-icon">🔑</div>
+                        <h3 class="step-title" data-i18n="step4_title">Xuất Hồ Sơ & Giám Sát Tác Giả</h3>
+                        <p class="step-desc" data-i18n="step4_desc">Bàn giao hồ sơ in ấn A4 chuẩn thi công hoặc PDF Concept 1-Click, tư vấn cấp phép xây dựng và đồng hành giám sát tới ngày tân gia.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dải Cam Kết Chất Lượng Vàng -->
+            <div class="workflow-guarantee-banner">
+                <div class="guarantee-badge">
+                    <span class="badge-star">★</span>
+                    <span data-i18n="guarantee_badge">CAM KẾT CHẤT LƯỢNG VÀNG</span>
+                </div>
+                <div class="guarantee-list">
+                    <div class="guarantee-item">
+                        <span class="check-icon">✓</span>
+                        <span data-i18n="guarantee_1">100% Không phát sinh chi phí ngoài dự toán thẩm duyệt</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <span class="check-icon">✓</span>
+                        <span data-i18n="guarantee_2">Bản vẽ kỹ thuật chuẩn TCXDVN 2026 dễ hiểu cho mọi đội thợ</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <span class="check-icon">✓</span>
+                        <span data-i18n="guarantee_3">Đồng hành giám sát tác giả trọn vẹn tới ngày tân gia</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4.8. CẢM NHẬN & CÂU CHUYỆN GIA CHỦ THỰC TẾ (TESTIMONIALS SECTION v8.9) -->
+    <section id="testimonials-section" class="testimonials-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tag" data-i18n="testimonials_tagline">BẢO CHỨNG TỪ GIA CHỦ</span>
+                <h2 class="section-title" data-i18n="testimonials_title">Những Câu Chuyện Tổ Ấm Đã Thành Hình</h2>
+                <p class="section-sub" data-i18n="testimonials_sub">Sự hài lòng và niềm hạnh phúc của hơn 350+ gia đình là thước đo giá trị cao quý nhất của đội ngũ Dream House.</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 -->
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-comment" data-i18n="testi_1_comment">“Nhờ bản vẽ 3D tương tác và bộ tính dự toán của Dream House, vợ chồng tôi nắm chắc từng đồng chi phí, thi công thực tế khớp 99% so với thiết kế ban đầu. Rất an tâm!”</p>
+                    <div class="testi-author-wrap">
+                        <div class="testi-avatar">NT</div>
+                        <div class="testi-meta">
+                            <h4 class="testi-name" data-i18n="testi_1_name">Anh Nguyễn Văn Tuấn</h4>
+                            <span class="testi-loc" data-i18n="testi_1_loc">KĐT Ecopark, Hà Nội</span>
+                            <span class="testi-model-badge" data-i18n="testi_1_model">Nhà phố 3 tầng mặt tiền 5m</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-comment" data-i18n="testi_2_comment">“Phần tra cứu phong thủy Bát Trạch và thước Lỗ Ban đo cửa rất tỉ mỉ, người lớn trong nhà xem xong ai cũng ưng ý. Hồ sơ xuất PDF in A4 cực kỳ sắc nét để thợ xây làm theo.”</p>
+                    <div class="testi-author-wrap">
+                        <div class="testi-avatar">TM</div>
+                        <div class="testi-meta">
+                            <h4 class="testi-name" data-i18n="testi_2_name">Chị Trần Thị Mai</h4>
+                            <span class="testi-loc" data-i18n="testi_2_loc">Thủ Đức, TP. Hồ Chí Minh</span>
+                            <span class="testi-model-badge" data-i18n="testi_2_model">Biệt thự vườn Mái Nhật</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-comment" data-i18n="testi_3_comment">“Làm nhà ở quê cứ sợ thợ làm sai ý, may có hồ sơ bản vẽ CAD của KTS Võ Quốc Việt rành mạch từng chi tiết. Giám sát từ xa nhiệt tình, nhà xây xong thoáng mát đúng ý nguyện.”</p>
+                    <div class="testi-author-wrap">
+                        <div class="testi-avatar">LN</div>
+                        <div class="testi-meta">
+                            <h4 class="testi-name" data-i18n="testi_3_name">Bác Lê Hoàng Nam</h4>
+                            <span class="testi-loc" data-i18n="testi_3_loc">Cẩm Lệ, TP. Đà Nẵng</span>
+                            <span class="testi-model-badge" data-i18n="testi_3_model">Nhà cấp 4 Mái Nhật</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- 5. PHẦN LIÊN HỆ & FORM TƯ VẤN BÁO GIÁ (CONTACT SECTION) -->
     <section id="contact-section" class="contact-section">
@@ -2322,20 +2554,56 @@
         </div>
     </div>
 
-    <!-- 7. CHÂN TRANG (FOOTER) -->
+    <!-- 7. CHÂN TRANG ĐẲNG CẤP (SIGNATURE BRAND FOOTER) -->
     <footer class="site-footer">
-        <div class="container footer-content">
-            <div class="footer-left">
-                <h4 data-i18n="site_name">Dream House</h4>
-                <p data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</p>
-                <p class="copyright">© 2026 Dream House. All rights reserved.</p>
+        <div class="container footer-content-grid">
+            <div class="footer-col footer-col-brand">
+                <a href="index.html" class="brand footer-brand">
+                    <span class="brand-title" data-i18n="site_name">Dream House</span>
+                    <span class="brand-sub">Architectural Design</span>
+                </a>
+                <p class="footer-bio" data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</p>
+                <div class="footer-seal-badge">
+                    <span class="seal-icon">🏛️</span>
+                    <span>Hệ thống thiết kế kiến trúc chuẩn quốc tế & số hóa 3D</span>
+                </div>
             </div>
-            <div class="footer-right">
-                <p><strong>Hotline/Zalo:</strong> 0367020403</p>
-                <p><strong>Email:</strong> voviet4323@gmail.com</p>
-                <p><strong>Facebook:</strong> <a href="https://www.facebook.com/quocviet43" target="_blank"
-                        rel="noopener">quocviet43</a></p>
+
+            <div class="footer-col">
+                <h4 class="footer-col-title">Điều Hướng Nhanh</h4>
+                <ul class="footer-links">
+                    <li><a href="#about-section" data-i18n="nav_about">Về chúng tôi</a></li>
+                    <li><a href="#gallery-section" data-i18n="nav_gallery">Thư viện mẫu nhà</a></li>
+                    <li><a href="#workflow-section" data-i18n="nav_workflow">Quy trình bàn giao</a></li>
+                    <li><a href="#testimonials-section" data-i18n="testimonials_tagline">Cảm nhận gia chủ</a></li>
+                    <li><a href="#contact-section" data-i18n="nav_contact">Liên hệ & Báo giá</a></li>
+                </ul>
             </div>
+
+            <div class="footer-col">
+                <h4 class="footer-col-title">Công Nghệ & Năng Lực</h4>
+                <ul class="footer-links">
+                    <li><span class="footer-feat-tag">✦</span> Thực tế ảo 3D Three.js</li>
+                    <li><span class="footer-feat-tag">✦</span> Bản vẽ CAD Vector 1/100</li>
+                    <li><span class="footer-feat-tag">✦</span> Bóc tách diện tích quy đổi Sxd</li>
+                    <li><span class="footer-feat-tag">✦</span> Thước Lỗ Ban 3 dải đo</li>
+                    <li><span class="footer-feat-tag">✦</span> Xuất hồ sơ PDF Concept 1-Click</li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-col-contact">
+                <h4 class="footer-col-title">KTS Chủ Trì & Liên Hệ</h4>
+                <p class="footer-contact-line"><strong>KTS. Võ Quốc Việt</strong> (Chủ nhiệm đồ án)</p>
+                <p class="footer-contact-line"><strong>Hotline / Zalo:</strong> <a href="https://zalo.me/0367020403" target="_blank" rel="noopener">0367020403</a></p>
+                <p class="footer-contact-line"><strong>Email:</strong> <a href="mailto:voviet4323@gmail.com">voviet4323@gmail.com</a></p>
+                <p class="footer-contact-line"><strong>Facebook:</strong> <a href="https://www.facebook.com/quocviet43" target="_blank" rel="noopener">fb.com/quocviet43</a></p>
+                <p class="footer-contact-line"><strong>Giờ làm việc:</strong> 08:00 – 21:00 (Hàng ngày)</p>
+            </div>
+        </div>
+
+        <div class="container footer-bottom-bar">
+            <p class="copyright">© 2026 Dream House Architectural Design. All rights reserved.</p>
+            <p class="footer-credits">Designed with Passion & Engineering Precision by Vo Quoc Viet.</p>
         </div>
     </footer>
 </body>

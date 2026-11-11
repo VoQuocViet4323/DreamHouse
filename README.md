@@ -92,6 +92,12 @@
     - **Hàng chỉ số bảo chứng năng lực (Trust Metrics):** `150+` Đồ án thực tế, `100%` Bản vẽ CAD Vector, `4.9★` Gia chủ tin cậy.
     - **Dải băng năng lực kiến trúc Marquee Ticker Strip:** Thanh chạy chữ vô tận sang trọng kết nối liền mạch giữa Hero và Thư viện mẫu.
 
+14. **Hệ Thống Nội Dung Chuyên Sâu, Quy Trình Bàn Giao 4 Bước & Cảm Nhận Gia Chủ (Editorial Architecture Storytelling - v8.9):**
+    - **Phần Giới Thiệu & Triết Lý Thiết Kế (`#about-section`):** Chân dung và câu chuyện KTS chủ trì Võ Quốc Việt (`.about-portrait-card`), 10+ năm kinh nghiệm, 350+ đồ án hoàn thiện cùng 3 trụ cột triết lý kiến trúc cốt lõi (*Hình khối vi khí hậu*, *Phong thủy hoàng đạo*, *Dự toán minh bạch TCXDVN 2026*).
+    - **Quy Trình Làm Việc Chuẩn 4 Bước (`#workflow-section`):** Minh bạch từng giai đoạn từ *01 Khảo sát địa hình* ➔ *02 Mô hình 3D 360°* ➔ *03 Bóc tách CAD & Dự toán* ➔ *04 Xuất hồ sơ & Giám sát tác giả*, đi kèm biểu ngữ 3 Cam kết chất lượng vàng không phát sinh chi phí.
+    - **Cảm Nhận Gia Chủ Thực Tế (`#testimonials-section`):** Lời chứng thực 5 sao `★★★★★` chân thực từ các gia chủ tại Hà Nội, TP.HCM và Đà Nẵng.
+    - **Chân Trang 4 Cột Đẳng Cấp (Signature 4-Column Footer):** Nhận diện thương hiệu, điều hướng nhanh, năng lực công nghệ và kênh liên lạc trực tiếp KTS.
+
 ---
 
 ## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)

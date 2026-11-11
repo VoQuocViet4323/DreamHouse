@@ -67,9 +67,15 @@ html {
   box-sizing: border-box;
 }
 
+#about-section,
 #gallery-section,
+#workflow-section,
+#testimonials-section,
 #contact-section,
+.about-section,
 .gallery-section,
+.workflow-section,
+.testimonials-section,
 .contact-section {
   scroll-margin-top: 104px;
 }
@@ -159,9 +165,9 @@ body::before {
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
   background: rgba(255, 255, 255, 0.6);
-  padding: 6px 18px;
+  padding: 6px 16px;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -3230,47 +3236,177 @@ body.dark-theme .auth-checkbox-box {
   text-decoration: underline;
 }
 
-/* 10. FOOTER */
+/* 10. FOOTER ĐẲNG CẤP BIÊN TẬP */
 .site-footer {
   background: #09090b;
   color: #e2e8f0;
-  padding: 64px 0 40px;
+  padding: 70px 0 30px;
+  border-top: 1px solid rgba(196, 154, 69, 0.22);
+  position: relative;
+  z-index: 10;
 }
 
-.footer-content {
-  display: flex;
-  justify-content: space-between;
+:root[data-theme="light"] .site-footer,
+body:not(.dark-theme) .site-footer {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+.footer-content-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1.2fr 1.3fr;
+  gap: 40px;
   align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 32px;
+  margin-bottom: 48px;
 }
 
-.footer-left h4 {
-  font-family: var(--font-serif);
+.footer-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-brand {
+  margin-bottom: 12px;
+}
+
+.footer-brand .brand-title {
+  color: #ffffff;
   font-size: 1.5rem;
-  margin: 0 0 8px 0;
-  color: #fff;
 }
 
-.footer-left p {
+.footer-bio {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 0 0 16px;
 }
 
-.footer-left .copyright {
+.footer-seal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(196, 154, 69, 0.1);
+  border: 1px solid rgba(196, 154, 69, 0.25);
+  font-size: 0.74rem;
+  color: var(--color-accent);
+  line-height: 1.4;
+}
+
+.footer-col-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 18px 0;
+  letter-spacing: -0.01em;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.footer-col-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 2px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links li {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--color-accent);
+  transform: translateX(3px);
+}
+
+.footer-feat-tag {
+  color: var(--color-accent);
+  font-size: 0.72rem;
+}
+
+.footer-contact-line {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.footer-contact-line strong {
+  color: #e2e8f0;
+}
+
+.footer-contact-line a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-contact-line a:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.8rem;
   color: #64748b;
-  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.footer-right p {
-  margin: 6px 0;
-  font-size: 0.92rem;
+.footer-bottom-bar p {
+  margin: 0;
 }
 
-.footer-right a {
-  color: #fff;
-  text-decoration: underline;
+.footer-credits {
+  color: #94a3b8;
+}
+
+@media (max-width: 992px) {
+  .footer-content-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-content-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
 .hidden {
@@ -13395,5 +13531,600 @@ body:not(.dark-theme) .brochure-modal-heading {
     flex-direction: column;
     align-items: center;
     gap: 20px;
+  }
+}
+
+/* ==========================================================================
+   8.9. SECTIONS GIỚI THIỆU CHUYÊN SÂU, QUY TRÌNH & CẢM NHẬN GIA CHỦ (v8.9)
+   ========================================================================== */
+
+/* Eyebrow Section Tag */
+.section-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+/* --- PHẦN GIỚI THIỆU & TRIẾT LÝ THIẾT KẾ (#about-section) --- */
+.about-section {
+  padding: 95px 0 85px;
+  position: relative;
+  border-bottom: 1px solid rgba(196, 154, 69, 0.15);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 48px;
+  align-items: stretch;
+  margin-top: 48px;
+}
+
+/* Cột Trái: Thẻ Chân Dung & KTS Chủ Trì */
+.about-portrait-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(18, 20, 29, 0.75);
+  border: 1px solid rgba(196, 154, 69, 0.32);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  transition: all 0.35s var(--ease-spring);
+}
+
+:root[data-theme="light"] .about-portrait-card,
+body:not(.dark-theme) .about-portrait-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(196, 154, 69, 0.35);
+  box-shadow: 0 16px 40px rgba(196, 154, 69, 0.15);
+}
+
+.about-portrait-card:hover {
+  border-color: rgba(196, 154, 69, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 35px rgba(196, 154, 69, 0.15);
+}
+
+.portrait-media-wrap {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #09090b;
+}
+
+.portrait-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-portrait-card:hover .portrait-photo {
+  transform: scale(1.035);
+}
+
+.portrait-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(9, 9, 11, 0.85) 100%);
+  pointer-events: none;
+}
+
+.portrait-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(196, 154, 69, 0.95), rgba(229, 185, 93, 0.95));
+  color: #09090b;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(196, 154, 69, 0.4);
+}
+
+.portrait-badge .badge-icon {
+  font-size: 0.8rem;
+}
+
+.portrait-info {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.portrait-author-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.author-name {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.author-title {
+  font-size: 0.82rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.author-quote {
+  margin: 16px 0;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  padding-left: 14px;
+  border-left: 2px solid var(--color-accent);
+}
+
+.about-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid rgba(196, 154, 69, 0.2);
+}
+
+.about-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.about-stat-num {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.about-stat-label {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.about-stat-sep {
+  width: 1px;
+  height: 28px;
+  background: rgba(196, 154, 69, 0.22);
+}
+
+/* Cột Phải: 3 Trụ Cột Triết Lý Thiết Kế */
+.about-pillars-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.pillar-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 20px;
+  background: rgba(18, 20, 29, 0.65);
+  border: 1px solid rgba(196, 154, 69, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="light"] .pillar-card,
+body:not(.dark-theme) .pillar-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(196, 154, 69, 0.3);
+}
+
+.pillar-card:hover {
+  border-color: rgba(196, 154, 69, 0.6);
+  transform: translateX(6px);
+  box-shadow: 0 10px 30px rgba(196, 154, 69, 0.14);
+}
+
+.pillar-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(196, 154, 69, 0.12);
+  border: 1px solid rgba(196, 154, 69, 0.35);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.pillar-card:hover .pillar-icon-box {
+  background: linear-gradient(135deg, #c49a45, #ffd77a);
+  color: #09090b;
+  transform: scale(1.05);
+}
+
+.pillar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pillar-title {
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.pillar-desc {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* --- PHẦN QUY TRÌNH THIẾT KẾ CHUẨN 4 BƯỚC (#workflow-section) --- */
+.workflow-section {
+  padding: 95px 0 85px;
+  position: relative;
+  border-bottom: 1px solid rgba(196, 154, 69, 0.15);
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+  position: relative;
+}
+
+.workflow-card {
+  position: relative;
+  padding: 32px 20px 24px;
+  border-radius: 20px;
+  background: rgba(18, 20, 29, 0.65);
+  border: 1px solid rgba(196, 154, 69, 0.24);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+:root[data-theme="light"] .workflow-card,
+body:not(.dark-theme) .workflow-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(196, 154, 69, 0.3);
+}
+
+.workflow-card:hover {
+  border-color: rgba(196, 154, 69, 0.65);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(196, 154, 69, 0.18);
+}
+
+.step-num {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: rgba(196, 154, 69, 0.25);
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.workflow-card:hover .step-num {
+  color: var(--color-accent);
+}
+
+.step-icon {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+}
+
+.step-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+
+.step-desc {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Dải Cam Kết Vàng */
+.workflow-guarantee-banner {
+  margin-top: 40px;
+  padding: 22px 32px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(196, 154, 69, 0.12) 0%, rgba(229, 185, 93, 0.05) 100%);
+  border: 1px solid rgba(196, 154, 69, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme="light"] .workflow-guarantee-banner,
+body:not(.dark-theme) .workflow-guarantee-banner {
+  background: linear-gradient(135deg, rgba(196, 154, 69, 0.16) 0%, rgba(217, 163, 62, 0.08) 100%);
+}
+
+.guarantee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.guarantee-badge .badge-star {
+  color: #f59e0b;
+}
+
+.guarantee-list {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.guarantee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.guarantee-item .check-icon {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* --- PHẦN CẢM NHẬN GIA CHỦ THỰC TẾ (#testimonials-section) --- */
+.testimonials-section {
+  padding: 95px 0 85px;
+  position: relative;
+  border-bottom: 1px solid rgba(196, 154, 69, 0.15);
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 48px;
+}
+
+.testi-card {
+  padding: 30px 24px;
+  border-radius: 22px;
+  background: rgba(18, 20, 29, 0.7);
+  border: 1px solid rgba(196, 154, 69, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="light"] .testi-card,
+body:not(.dark-theme) .testi-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(196, 154, 69, 0.3);
+}
+
+.testi-card:hover {
+  border-color: rgba(196, 154, 69, 0.6);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+}
+
+.testi-stars {
+  color: #f59e0b;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+
+.testi-comment {
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0 0 22px;
+  flex-grow: 1;
+}
+
+.testi-author-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(196, 154, 69, 0.2);
+}
+
+.testi-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c49a45, #ffd77a);
+  color: #09090b;
+  font-weight: 700;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(196, 154, 69, 0.35);
+}
+
+.testi-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.testi-name {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.testi-loc {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.testi-model-badge {
+  font-size: 0.72rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   RESPONSIVE CHO CÁC PHẦN NỘI DUNG MỚI (v8.9)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .workflow-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section,
+  .workflow-section,
+  .testimonials-section {
+    padding: 60px 0 50px;
+  }
+
+  .portrait-media-wrap {
+    height: 220px;
+  }
+
+  .author-name {
+    font-size: 1.25rem;
+  }
+
+  .about-stats-row {
+    gap: 8px;
+    padding-top: 14px;
+  }
+
+  .about-stat-num {
+    font-size: 1.25rem;
+  }
+
+  .about-stat-label {
+    font-size: 0.68rem;
+  }
+
+  .pillar-card {
+    padding: 18px 16px;
+    gap: 14px;
+  }
+
+  .pillar-icon-box {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pillar-title {
+    font-size: 1.05rem;
+  }
+
+  .pillar-desc {
+    font-size: 0.85rem;
+  }
+
+  .workflow-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .workflow-card {
+    padding: 24px 18px 20px;
+  }
+
+  .workflow-guarantee-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 16px;
+  }
+
+  .guarantee-list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .main-nav {
+    overflow-x: auto;
+    max-width: 100%;
+    padding: 4px 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .main-nav::-webkit-scrollbar {
+    display: none;
   }
 }
