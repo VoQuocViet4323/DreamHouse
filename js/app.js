@@ -63,6 +63,7 @@ class DreamHouseApp {
         this.initFloorplanExplorer();
         this.initFengShuiSuite();
         this.initCompareEngine();
+        this.initBrochureExporter();
         await this.loadTemplates();
         this.renderGallery();
 
@@ -1418,6 +1419,13 @@ class DreamHouseApp {
         document.getElementById('detail-compare-btn')?.addEventListener('click', () => {
             if (this.currentTemplate) {
                 this.toggleCompareItem(this.currentTemplate.id);
+            }
+        });
+
+        // Nút xuất hồ sơ Concept PDF (Feature 5)
+        document.getElementById('detail-export-pdf-btn')?.addEventListener('click', () => {
+            if (this.currentTemplate) {
+                this.openBrochureModal(this.currentTemplate);
             }
         });
 
@@ -5814,6 +5822,292 @@ class DreamHouseApp {
                 }
             });
         });
+    }
+
+    /**
+     * =========================================================================
+     * FEATURE 5: XUẤT HỒ SƠ CONCEPT PDF BROCHURE (ARCHITECTURAL CONCEPT DOSSIER)
+     * Xem trước hồ sơ A4, in ấn @media print & tải Concept Dossier 1-Click
+     * =========================================================================
+     */
+    initBrochureExporter() {
+        const modal = document.getElementById('brochure-modal');
+        const closeBtn = document.getElementById('close-brochure-modal');
+        const printBtn = document.getElementById('btn-print-brochure');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeBrochureModal());
+        }
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) this.closeBrochureModal();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+                this.closeBrochureModal();
+            }
+        });
+
+        if (printBtn) {
+            printBtn.addEventListener('click', () => {
+                window.print();
+            });
+        }
+    }
+
+    /**
+     * Mở Modal Xem Trước & Xuất Hồ Sơ Concept PDF
+     */
+    openBrochureModal(template) {
+        if (!template) {
+            template = this.currentTemplate || (this.templates && this.templates[0]);
+        }
+        if (!template) return;
+
+        const modal = document.getElementById('brochure-modal');
+        const content = document.getElementById('brochure-printable-content');
+        if (!modal || !content) return;
+
+        const lang = window.i18n.getLang();
+        const name = this.getLocalizedTemplateName(template, lang);
+        const styleBadge = this.getLocalizedStyle(template, lang);
+        const costStr = window.i18n.formatCost(template.cost_estimate_vnd);
+        const dossierId = 'DH-2026-' + (template.id ? template.id.toString().slice(0, 6).toUpperCase() : '001');
+        const issueDate = new Date().toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Kích thước & Diện tích
+        const width = template.width_m || 5;
+        const depth = template.depth_m || 16;
+        const landArea = width * depth;
+        const gfa = template.gfa_m2 || 150;
+        const floors = template.floors || 2;
+        const photoUrl = template.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80';
+
+        // Kết cấu mái
+        let roofName = lang === 'vi' ? 'Mái bằng BTCT lấy sáng đối lưu' : 'Reinforced Concrete Flat Roof';
+        if (template.type === 'nha-cap-4') {
+            roofName = lang === 'vi' ? 'Mái Thái / Mái Nhật kèo thép lợp ngói' : 'Thai / Japanese Tiled Pitch Roof';
+        } else if (template.type === 'biet-thu') {
+            roofName = lang === 'vi' ? 'Mái Mansard tân cổ điển bê tông dán ngói' : 'Mansard Tiled Concrete Roof';
+        }
+
+        // Bóc tách mặt bằng tầng 1 CAD Vector SVG
+        const floorsData = this.generateFloorplanData(template);
+        const floor1 = floorsData[0] || { floorNum: 1, title: 'Mặt bằng Tầng 1 (Trệt)', usableArea: gfa, rooms: [] };
+        const blueprintSvg = this.renderFloorplanSVG(floor1, template, false);
+
+        // Khái toán 4 cấu phần
+        const totalCost = template.cost_estimate_vnd || 1500000000;
+        const costRaw = totalCost * 0.52;
+        const costFinish = totalCost * 0.33;
+        const costME = totalCost * 0.10;
+        const costMgmt = totalCost * 0.05;
+
+        // Dựng HTML cho toàn bộ hồ sơ A4
+        content.innerHTML = `
+            <!-- HEADER HỒ SƠ ĐỒ ÁN (DOSSIER COVER HEADER) -->
+            <header class="dossier-top-header">
+                <div>
+                    <h1 class="dossier-brand-title">DREAM HOUSE</h1>
+                    <div class="dossier-brand-sub">Architectural Design & Construction Portfolio</div>
+                </div>
+                <div class="dossier-meta-grid">
+                    <div class="dossier-meta-item">
+                        <span>${window.i18n.t('brochure_code_label')}</span>
+                        <strong>${dossierId}</strong>
+                    </div>
+                    <div class="dossier-meta-item">
+                        <span>${window.i18n.t('brochure_date_label')}</span>
+                        <strong>${issueDate}</strong>
+                    </div>
+                    <div class="dossier-meta-item">
+                        <span>${window.i18n.t('brochure_architect_label')}</span>
+                        <strong>KTS. Võ Quốc Việt</strong>
+                    </div>
+                    <div class="dossier-meta-item">
+                        <span>Hotline/Zalo:</span>
+                        <strong>0367020403</strong>
+                    </div>
+                </div>
+            </header>
+
+            <!-- PHẦN 1: PHỐI CẢNH & THÔNG SỐ ĐẶC TẢ KIẾN TRÚC -->
+            <section class="dossier-section">
+                <h3 class="dossier-section-title">${window.i18n.t('brochure_page1_title')}</h3>
+                <div class="dossier-hero-grid">
+                    <div class="dossier-hero-photo-wrap">
+                        <img src="${photoUrl}" alt="${name}" class="dossier-hero-photo" crossorigin="anonymous" />
+                        <span class="dossier-hero-badge">${styleBadge}</span>
+                    </div>
+                    <div class="dossier-specs-box">
+                        <div>
+                            <h2 class="dossier-house-name">${name}</h2>
+                            <table class="dossier-specs-table">
+                                <tr>
+                                    <td>${window.i18n.t('compare_row_dims')}:</td>
+                                    <td><strong>${width}m × ${depth}m</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>${window.i18n.t('compare_row_land_area')}:</td>
+                                    <td><strong>${landArea} m²</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>${window.i18n.t('compare_row_gfa')}:</td>
+                                    <td><strong>${gfa} m² (Quy đổi)</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>${window.i18n.t('compare_row_floors')}:</td>
+                                    <td><strong>${floors} tầng cao</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>${window.i18n.t('compare_row_roof')}:</td>
+                                    <td><strong>${roofName}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>${window.i18n.t('spec_rooms')}:</td>
+                                    <td><strong>${template.bedrooms || (floors > 2 ? 3 : 2)} PN, ${floors} WC, Khách, Bếp</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="dossier-price-callout">
+                            <span class="dossier-price-label">${lang === 'vi' ? 'Dự toán tham khảo:' : 'Estimated Cost:'}</span>
+                            <span class="dossier-price-val">${costStr}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PHẦN 2: BẢN VẼ SƠ ĐỒ MẶT BẰNG CAD VECTOR & CÔNG NĂNG -->
+            <section class="dossier-section">
+                <h3 class="dossier-section-title">${window.i18n.t('brochure_page2_title')}</h3>
+                <div class="dossier-blueprint-preview-wrap">
+                    <div class="dossier-blueprint-stage">
+                        ${blueprintSvg}
+                    </div>
+                </div>
+
+                <!-- Bảng diện tích các phòng -->
+                <table class="dossier-rooms-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Không Gian / Phòng</th>
+                            <th>Công Năng Bố Trí</th>
+                            <th style="text-align: right;">Diện Tích (m²)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${floor1.rooms.map((rm, idx) => `
+                            <tr>
+                                <td style="width: 40px; color: #64748b;">0${idx + 1}</td>
+                                <td><strong>${rm.name}</strong></td>
+                                <td style="color: #475569;">${rm.desc || 'Thiết kế thông thoáng tiêu chuẩn'}</td>
+                                <td style="text-align: right; font-weight: 750; color: #b45309;">${rm.area} m²</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- PHẦN 3: KHÁI TOÁN KINH PHÍ THI CÔNG & PHONG THỦY KIẾN TRÚC -->
+            <section class="dossier-section">
+                <h3 class="dossier-section-title">${window.i18n.t('brochure_page3_title')}</h3>
+                <div class="dossier-budget-grid">
+                    <!-- Bóc tách chi phí -->
+                    <div class="dossier-card-tile">
+                        <h4 class="dossier-card-tile-title">${lang === 'vi' ? 'Cấu Phần Chi Phí Xây Dựng (Q1/2026):' : 'Cost Breakdown Structure:'}</h4>
+                        <div class="dossier-tile-row">
+                            <span>Phần Thô & Kết Cấu BTCT (52%):</span>
+                            <strong>${window.i18n.formatCost(costRaw)}</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Hoàn Thiện Kiến Trúc (33%):</span>
+                            <strong>${window.i18n.formatCost(costFinish)}</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Hệ Thống Điện Nước MEP (10%):</span>
+                            <strong>${window.i18n.formatCost(costME)}</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Quản Lý & Dự Phòng (5%):</span>
+                            <strong>${window.i18n.formatCost(costMgmt)}</strong>
+                        </div>
+                        <div class="dossier-tile-row" style="margin-top: 6px; padding-top: 6px; border-top: 1.5px solid #0f172a; border-bottom: none;">
+                            <strong style="color: #0f172a;">${lang === 'vi' ? 'Tổng Dự Toán Trọn Gói:' : 'Total Turnkey:'}</strong>
+                            <strong style="color: #b45309; font-size: 0.95rem;">${costStr}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Tiêu chuẩn Lỗ Ban & Phong Thủy -->
+                    <div class="dossier-card-tile">
+                        <h4 class="dossier-card-tile-title">${lang === 'vi' ? 'Quy Chuẩn Thước Lỗ Ban & Phong Thủy:' : 'Auspicious Dimensions & Feng Shui:'}</h4>
+                        <div class="dossier-tile-row">
+                            <span>Cửa chính (Lỗ Ban 52.2cm):</span>
+                            <strong>810 × 2120 mm (Cung Quý Nhân)</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Bàn thờ (Lỗ Ban 38.8cm):</span>
+                            <strong>1270 × 610 mm (Cung Tiến Bảo)</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Chiều cao thông thủy trệt:</span>
+                            <strong>3600 mm (Cung Thuận Khoa)</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Hướng nhà đón gió mát:</span>
+                            <strong>Nam, Đông Nam, Bắc</strong>
+                        </div>
+                        <div class="dossier-tile-row">
+                            <span>Nhóm Bát Trạch hợp:</span>
+                            <strong>Đông Tứ Mệnh / Tây Tứ Mệnh</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CHÂN TRANG XÁC THỰC PHÁP NHÂN & DẤU PHÊ DUYỆT (SIGNATURE & SEAL) -->
+            <footer class="dossier-signature-block">
+                <div class="dossier-seal-wrap">
+                    <div class="dossier-red-stamp">
+                        <div class="stamp-inner">
+                            <span class="stamp-org">DREAM HOUSE</span>
+                            <span class="stamp-star">★ ★ ★</span>
+                            <span class="stamp-status">ĐÃ PHÊ DUYỆT</span>
+                        </div>
+                    </div>
+                    <div class="dossier-verify-text">
+                        <strong>${window.i18n.t('brochure_seal_text')}</strong><br/>
+                        Hotline/Zalo: 0367020403 • Email: voviet4323@gmail.com<br/>
+                        Website: dreamhouse.vn • Facebook: fb.com/quocviet43
+                    </div>
+                </div>
+
+                <div class="dossier-signature-col">
+                    <div class="dossier-sign-role">${window.i18n.t('brochure_architect_label')}</div>
+                    <div class="dossier-sign-name">${window.i18n.t('brochure_signature_title')}</div>
+                </div>
+            </footer>
+        `;
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Đóng Modal Xem Trước Hồ Sơ
+     */
+    closeBrochureModal() {
+        const modal = document.getElementById('brochure-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
     }
 }
 

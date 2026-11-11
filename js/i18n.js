@@ -365,7 +365,22 @@ const I18N = {
         compare_btn_view_detail: "Xem chi tiết mẫu này",
         compare_btn_select_this: "Chọn mẫu này & Tư vấn →",
         detail_btn_add_compare: "⚖️ Thêm vào so sánh",
-        detail_btn_remove_compare: "✓ Đã trong danh sách so sánh"
+        detail_btn_remove_compare: "✓ Đã trong danh sách so sánh",
+
+        // Feature 5: Xuất hồ sơ tóm tắt 1-Click (Concept PDF Brochure)
+        detail_btn_export_pdf: "📄 Xuất hồ sơ Concept PDF",
+        brochure_title: "Hồ Sơ Thiết Kế Kiến Trúc Concept",
+        brochure_sub: "Hồ sơ tóm tắt đồ án kiến trúc, mặt bằng bố trí công năng & khái toán kinh phí thi công 2026",
+        brochure_btn_print: "In hồ sơ / Lưu file PDF (A4)",
+        brochure_btn_zalo: "Nhận tư vấn qua Zalo KTS",
+        brochure_code_label: "Mã hồ sơ đồ án:",
+        brochure_date_label: "Ngày phát hành:",
+        brochure_architect_label: "Kiến trúc sư chủ trì:",
+        brochure_page1_title: "1. Phối Cảnh & Đặc Tả Kiến Trúc",
+        brochure_page2_title: "2. Mặt Bằng Kỹ Thuật & Công Năng Từng Tầng",
+        brochure_page3_title: "3. Khái Toán Kinh Phí & Tiêu Chuẩn Thi Công",
+        brochure_seal_text: "HỒ SƠ THIẾT KẾ DREAM HOUSE ARCHITECTURAL DESIGN",
+        brochure_signature_title: "KTS. Võ Quốc Việt"
     },
     en: {
         site_name: "Dream House",
@@ -731,7 +746,22 @@ const I18N = {
         compare_btn_view_detail: "View Full Details",
         compare_btn_select_this: "Select This & Consult →",
         detail_btn_add_compare: "⚖️ Add to Compare",
-        detail_btn_remove_compare: "✓ In Compare List"
+        detail_btn_remove_compare: "✓ In Compare List",
+
+        // Feature 5: Download Concept PDF Brochure
+        detail_btn_export_pdf: "📄 Download Concept PDF",
+        brochure_title: "Executive Architectural Concept Dossier",
+        brochure_sub: "Curated architectural concept, CAD floor layouts & 2026 cost estimation breakdown",
+        brochure_btn_print: "Print Dossier / Save as PDF (A4)",
+        brochure_btn_zalo: "Consult with Lead Architect on Zalo",
+        brochure_code_label: "Dossier ID:",
+        brochure_date_label: "Issue Date:",
+        brochure_architect_label: "Lead Architect:",
+        brochure_page1_title: "1. Perspectives & Architectural Specs",
+        brochure_page2_title: "2. Technical Floor Plans & Room Schedule",
+        brochure_page3_title: "3. Cost Estimates & Material Standards",
+        brochure_seal_text: "CERTIFIED DREAM HOUSE ARCHITECTURAL DESIGN",
+        brochure_signature_title: "Arch. Vo Quoc Viet"
     }
 };
 

@@ -72,6 +72,16 @@
    - **Công tắc "Chỉ hiện điểm khác biệt" (Highlight Differences Only):** Tự động lọc và làm nổi bật các thông số khác nhau giữa các mẫu nhà đang so sánh, ẩn các thông số giống nhau giúp gia chủ ra quyết định nhanh chóng.
    - **Cầu nối tư vấn 1-chạm (1-Click Consultation Bridge):** Nút *"Chọn mẫu này & Tư vấn"* tự động cuộn xuống Form liên hệ và điền toàn bộ thông số mẫu nhà đã chọn vào lời nhắn cho KTS Võ Quốc Việt.
 
+12. **Xuất Hồ Sơ Concept PDF Brochure & In Ấn Chuẩn Kiến Trúc 1-Click (Executive Concept Dossier & Print Engine - v8.7):**
+    - **Khởi tạo tức thì trong Modal Chi Tiết:** Nút bấm *"Xuất hồ sơ PDF Concept"* trong bảng điều khiển hành động nhanh mở ra trình xem trước hồ sơ kiến trúc chuẩn A4.
+    - **Hồ sơ định dạng A4 chuẩn hồ sơ thiết kế thi công:**
+      - *Trang bìa & Tổng quan:* Tiêu đề dự án sang trọng, mã hồ sơ duy nhất (`DH-2026-XXXXXX`), ngày xuất bản, thông tin KTS chủ trì Võ Quốc Việt, Hotline/Zalo `0367020403`, ảnh phối cảnh thực tế sắc nét, bảng thông số kỹ thuật (mặt tiền, chiều sâu, diện tích đất, diện tích sàn $S_{xd}$, kết cấu mái, phòng ngủ/WC) và tổng mức đầu tư dự kiến.
+      - *Bản vẽ kỹ thuật Vector CAD:* Kết nối trực tiếp động cơ CAD SVG Vector với tỉ lệ chuẩn, hiển thị mặt bằng công năng các tầng kèm bảng thống kê diện tích chi tiết từng phòng ($m^2$).
+      - *Khái toán vật tư & Phong thủy Bát Trạch:* Bóc tách chi phí 4 hạng mục (Thô 52%, Hoàn thiện 33%, ME 10%, Dự phòng & Quản lý 5%), thông số kích thước Lỗ Ban vàng (cửa chính, ban thờ, chiều cao tầng), hướng nhà Bát Quái hợp mệnh.
+      - *Con dấu thẩm duyệt & Chữ ký KTS:* Dấu mộc đỏ *"DREAM HOUSE DESIGN - BẢN VẼ Ý TƯỞNG SƠ BỘ"* cùng chữ ký và thông tin bản quyền thiết kế.
+    - **Động cơ In & Xuất PDF tối ưu (@media print):** Cấu hình chuẩn A4 Portrait (`12mm 10mm`), ẩn toàn bộ thanh công cụ web và nút điều khiển, tương thích 100% lệnh In trình duyệt hoặc "Lưu dưới dạng PDF" (Save as PDF) với độ phân giải cao 300 DPI.
+    - **Cầu nối Zalo tức thì (1-Click Consultation Bridge):** Nút *"Gửi hồ sơ qua Zalo KTS"* mở trực tiếp kết nối Zalo kèm lời nhắn soạn sẵn.
+
 ---
 
 ## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)
@@ -84,7 +94,7 @@
 | **2** | **Bóc tách mặt bằng 2D/3D từng tầng** *(Floor-by-Floor Layer Explorer)* | Hiện chỉ xem được khối ngoại thất 3D, chưa thấy bố trí phòng ốc công năng bên trong từng tầng. | Thêm tab xem mặt bằng Tầng 1, Tầng 2, Tầng 3, Mái với diện tích từng phòng (Phòng khách, Bếp, PN Master, WC), tích hợp bản vẽ kỹ thuật CAD Vector chuẩn 1/100, tương tác 2 chiều và chế độ Mặt cắt 3D Top-Down. | ✅ **Đã hoàn thành** *(v8.3)* |
 | **3** | **Tiện ích Phong Thủy bản địa hóa** *(Thước Lỗ Ban & Hướng Nhà)* | 90% người Việt Nam khi làm nhà đều xem phong thủy (kích thước thông thủy cửa chính, cửa sổ, hướng bếp, hướng nhà hợp tuổi). | Tích hợp Thước Lỗ Ban trực tuyến đa dải đo (52.2cm Thông thủy, 42.9cm Dương trạch, 38.8cm Âm phần) và công cụ nhập năm sinh/giới tính tra cứu Bát Trạch, Cung Mệnh, hướng nhà cát hung chính xác, kèm quy tắc bố trí mặt bằng chuẩn KTS. | ✅ **Đã hoàn thành** *(v8.4)* |
 | **4** | **Công cụ So sánh mẫu nhà** *(Side-by-Side Compare)* | Khách hàng phân vân giữa 2–3 mẫu nhà nhưng phải mở đi mở lại các trang riêng lẻ khó đánh giá. | Chọn 2–3 mẫu và mở bảng so sánh đối đầu trực quan: Kích thước mặt tiền, chiều sâu, công năng số phòng ngủ, diện tích sàn quy đổi, đơn giá và tổng dự toán chi phí, kèm công tắc lọc điểm khác biệt. | ✅ **Đã hoàn thành** *(v8.5)* |
-| **5** | **Xuất hồ sơ tóm tắt 1-Click** *(Download Concept PDF Brochure)* | Khách muốn mang bản vẽ sơ bộ, phối cảnh và bảng giá về bàn bạc cùng gia đình trước khi ký hợp đồng. | Bấm 1 nút tải ngay file PDF Concept chuyên nghiệp gồm ảnh phối cảnh, sơ đồ mặt bằng các tầng, bảng khái toán vật tư có sẵn logo Dream House và thông tin liên hệ Hotline/Zalo KTS Võ Quốc Việt. | ⏳ *Kế hoạch tiếp theo* |
+| **5** | **Xuất hồ sơ tóm tắt 1-Click** *(Download Concept PDF Brochure)* | Khách muốn mang bản vẽ sơ bộ, phối cảnh và bảng giá về bàn bạc cùng gia đình trước khi ký hợp đồng. | Bấm 1 nút tải ngay file PDF Concept chuyên nghiệp gồm ảnh phối cảnh, sơ đồ mặt bằng các tầng, bảng khái toán vật tư có sẵn logo Dream House và thông tin liên hệ Hotline/Zalo KTS Võ Quốc Việt. | ✅ **Đã hoàn thành** *(v8.7)* |
 
 ---
 

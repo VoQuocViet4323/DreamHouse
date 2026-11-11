@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.6" />
+    <link rel="stylesheet" href="style.css?v=8.7" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.6"></script>
-    <script src="js/i18n.js?v=8.6"></script>
-    <script src="js/toast.js?v=8.6"></script>
-    <script src="js/viewer3d.js?v=8.6"></script>
-    <script src="js/app.js?v=8.6" defer></script>
+    <script src="js/config.js?v=8.7"></script>
+    <script src="js/i18n.js?v=8.7"></script>
+    <script src="js/toast.js?v=8.7"></script>
+    <script src="js/viewer3d.js?v=8.7"></script>
+    <script src="js/app.js?v=8.7" defer></script>
 </head>
 
 <body>
@@ -748,6 +748,9 @@
                             </button>
                             <button id="detail-compare-btn" class="btn-outline-compare" data-i18n="detail_btn_add_compare">
                                 ⚖️ Thêm vào so sánh
+                            </button>
+                            <button id="detail-export-pdf-btn" class="btn-outline-export" data-i18n="detail_btn_export_pdf">
+                                📄 Xuất hồ sơ Concept PDF
                             </button>
                         </div>
                     </div>
@@ -2175,6 +2178,42 @@
             <!-- Bảng Ma Trận So Sánh Đối Đầu -->
             <div class="compare-table-responsive" id="compare-table-container">
                 <!-- Bảng so sánh 2 - 3 cột tự sinh qua JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 13. MODAL XEM TRƯỚC & XUẤT HỒ SƠ CONCEPT PDF BROCHURE (FEATURE 5) -->
+    <div id="brochure-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="brochure-modal-title">
+        <button type="button" id="close-brochure-modal" class="modal-close" aria-label="Đóng hồ sơ thiết kế" title="Đóng hồ sơ (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
+        <div class="modal-window brochure-modal-window">
+            <!-- Thanh Công Cụ Thao Tác Hồ Sơ (Brochure Actions Bar) -->
+            <div class="brochure-toolbar-wrap">
+                <div class="brochure-toolbar-left">
+                    <span class="brochure-badge">HỒ SƠ CONCEPT CHÍNH THỨC</span>
+                    <h3 id="brochure-modal-title" class="brochure-modal-heading" data-i18n="brochure_title">Hồ Sơ Thiết Kế Kiến Trúc Concept</h3>
+                </div>
+                <div class="brochure-toolbar-actions">
+                    <button type="button" class="btn-primary brochure-print-btn" id="btn-print-brochure">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        <span data-i18n="brochure_btn_print">In hồ sơ / Lưu file PDF (A4)</span>
+                    </button>
+                    <a href="https://zalo.me/0367020403" target="_blank" rel="noopener" class="btn-secondary brochure-zalo-btn" id="btn-brochure-zalo">
+                        <span>💬</span>
+                        <span data-i18n="brochure_btn_zalo">Tư vấn Zalo KTS</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- KHUNG TÀI LIỆU HỒ SƠ IN ẤN A4 (PRINTABLE DOSSIER CONTAINER) -->
+            <div class="brochure-printable-document" id="brochure-printable-content">
+                <!-- Nạp động qua JS: Header, Trang 1 Phối cảnh, Trang 2 Mặt bằng CAD, Trang 3 Dự toán & Pháp nhân -->
             </div>
         </div>
     </div>

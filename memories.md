@@ -1109,6 +1109,24 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Trạng thái kích hoạt (`.active`): Nền vàng gold rực rỡ kèm vòng sáng neon `rgba(234, 179, 8, 0.3)`.
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.6`** trên `index.html` và `admin.html`.
 
+### Giai đoạn 71: Triển Khai Tính Năng 5 - Xuất Hồ Sơ Concept PDF Brochure & In Ấn Chuẩn Kiến Trúc 1-Click (Executive Concept Dossier & Print Engine v8.7)
+- [x] **Xây dựng Hệ Thống Xuất Hồ Sơ Concept PDF Brochure 1-Click (`#brochure-modal`):**
+  - **Nút xuất hồ sơ trong Modal Chi Tiết (`#detail-export-pdf-btn`):** Nằm trang trọng trong cụm `.detail-secondary-actions` với nhãn *"📄 Xuất hồ sơ Concept PDF"*.
+  - **Cửa sổ xem trước tập hồ sơ in ấn A4 chuẩn Catalogue kiến trúc (`#brochure-printable-content`):**
+    1. *Header Đồ án:* Logo Dream House Architectural Design vàng gold, Mã số hồ sơ chuẩn hóa quốc tế (`DH-2026-XXXXXX`), Ngày phát hành thời gian thực, Hotline KTS Võ Quốc Việt (`0367020403`).
+    2. *Phần 1 - Phối Cảnh & Đặc Tả Kiến Trúc:* Ảnh render/chụp thực tế lớn độ phân giải cao, tên công trình, bảng thông số kích thước (Mặt tiền × Chiều sâu, Diện tích đất, $S_{xd}$ quy đổi, Số tầng cao, Giải pháp kết cấu mái, Bố trí phòng ốc) và hộp bật nổi Tổng dự toán đầu tư.
+    3. *Phần 2 - Bản Vẽ Kỹ Thuật CAD Vector & Bảng Công Năng:* Trích xuất trực tiếp sơ đồ mặt bằng kiến trúc từ Vector CAD Engine (Feature 2) sắc nét chuẩn tỉ lệ 1/100, kèm bảng diện tích chi tiết từng phòng ($m^2$).
+    4. *Phần 3 - Khái Toán Kinh Phí 2026 & Quy Chuẩn Phong Thủy Lỗ Ban:* Bóc tách 4 cấu phần (Thô 52%, Hoàn thiện 33%, MEP 10%, Quản lý 5%), thông số đo Lỗ Ban cung Quý Nhân / Tiến Bảo (Cửa chính 810×2120mm, Bàn thờ 1270×610mm, Chiều cao trệt 3600mm) và hướng nhà đón vượng khí.
+    5. *Chân trang thị thực pháp nhân & Chữ ký KTS:* Dấu mộc tròn đỏ chứng nhận đồ án Dream House (*"ĐÃ PHÊ DUYỆT"*), chữ ký KTS Chủ trì Võ Quốc Việt và thông tin pháp nhân liên hệ.
+- [x] **Tối ưu hóa In ấn & Xuất PDF Trình Duyệt Chuẩn Xác Tuyệt Đối (`@media print`):**
+  - Ẩn toàn bộ thanh điều hướng, nút đóng, nền tối, chỉ in đúng khổ giấy A4 Portrait sạch sẽ với lề chuẩn $12\text{mm} \times 10\text{mm}$.
+  - Nút *"In hồ sơ / Lưu file PDF (A4)"* kích hoạt hộp thoại in ấn / lưu PDF của hệ điều hành với độ nét 300 DPI.
+  - Nút *"Nhận tư vấn qua Zalo KTS"* kết nối trực tiếp đến Zalo `0367020403`.
+- [x] **Kiểm thử đối chiếu cẩm nang [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md):**
+  - Đảm bảo 100% song ngữ VI/EN với 13 từ khóa hồ sơ mới trong `js/i18n.js` (Lỗi 50).
+  - Tương thích hoàn hảo Dark Mode & Light Mode, không vỡ layout trên màn hình điện thoại (Lỗi 52, 54 & 55).
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.7`** trên `index.html` và `admin.html`.
+
 
 
 

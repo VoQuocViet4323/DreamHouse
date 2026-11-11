@@ -11522,11 +11522,46 @@ body:not(.dark-theme) .rule-row strong {
    FEATURE 4: CÔNG CỤ SO SÁNH MẪU NHÀ ĐỐI ĐẦU (SIDE-BY-SIDE COMPARE ENGINE)
    ========================================================================== */
 
-/* 1. Nút thêm so sánh trong Modal Chi Tiết (.detail-secondary-actions) */
+/* 1. Nút thêm so sánh & xuất hồ sơ trong Modal Chi Tiết (.detail-secondary-actions) */
 .detail-secondary-actions {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+}
+
+.btn-outline-export {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #eab308;
+  font-size: 0.85rem;
+  font-weight: 650;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+
+.btn-outline-export:hover {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: #eab308;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.3);
+}
+
+body:not(.dark-theme) .btn-outline-export {
+  background: #fefce8;
+  border-color: #fde047;
+  color: #a16207;
+}
+
+body:not(.dark-theme) .btn-outline-export:hover {
+  background: #fef08a;
+  color: #854d0e;
 }
 
 .btn-outline-compare {
@@ -12297,5 +12332,558 @@ body:not(.dark-theme) .btn-compare-view:hover {
 
   .detail-secondary-actions {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   FEATURE 5: XUẤT HỒ SƠ CONCEPT PDF BROCHURE (ARCHITECTURAL CONCEPT DOSSIER)
+   ========================================================================== */
+
+/* 1. Cửa Sổ Modal Xem Trước Hồ Sơ (.brochure-modal-window) */
+.brochure-modal-window {
+  max-width: 1040px;
+  width: 96vw;
+  max-height: 94vh;
+  padding: 24px;
+  border-radius: 24px;
+  background: #0b0d14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body:not(.dark-theme) .brochure-modal-window {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25);
+}
+
+/* 2. Thanh Công Cụ Hồ Sơ (.brochure-toolbar-wrap) */
+.brochure-toolbar-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+body:not(.dark-theme) .brochure-toolbar-wrap {
+  border-bottom-color: #cbd5e1;
+}
+
+.brochure-toolbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brochure-badge {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #eab308;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body:not(.dark-theme) .brochure-badge {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #a16207;
+}
+
+.brochure-modal-heading {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+}
+
+body:not(.dark-theme) .brochure-modal-heading {
+  color: #0f172a;
+}
+
+.brochure-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brochure-print-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brochure-zalo-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+/* 3. Khung Tài Liệu A4 Mô Phỏng Trang In Ấn (.brochure-printable-document) */
+.brochure-printable-document {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 36px 40px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+/* Tiêu đề đầu trang hồ sơ (Dossier Header) */
+.dossier-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #0f172a;
+  margin-bottom: 28px;
+}
+
+.dossier-brand-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px;
+  letter-spacing: -0.02em;
+}
+
+.dossier-brand-sub {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+.dossier-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 6px 18px;
+  font-size: 0.76rem;
+  color: #475569;
+  text-align: right;
+}
+
+.dossier-meta-item strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Tiêu đề từng phần hồ sơ (Section Divider) */
+.dossier-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 28px 0 16px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid #cbd5e1;
+  letter-spacing: -0.01em;
+}
+
+.dossier-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: #c49a45;
+  border-radius: 2px;
+}
+
+/* Phần 1: Phối cảnh & Thông số tổng quan */
+.dossier-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.dossier-hero-photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+
+.dossier-hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dossier-hero-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.dossier-specs-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dossier-house-name {
+  margin: 0 0 10px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 750;
+  color: #0f172a;
+}
+
+.dossier-specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.dossier-specs-table td {
+  padding: 6px 4px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.dossier-specs-table td:first-child {
+  color: #64748b;
+  width: 55%;
+}
+
+.dossier-specs-table td:last-child {
+  color: #0f172a;
+  font-weight: 700;
+  text-align: right;
+}
+
+.dossier-price-callout {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fefce8;
+  border: 1px solid #fde047;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dossier-price-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #854d0e;
+  text-transform: uppercase;
+}
+
+.dossier-price-val {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #b45309;
+}
+
+/* Phần 2: Mặt bằng kỹ thuật CAD */
+.dossier-blueprint-preview-wrap {
+  width: 100%;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dossier-blueprint-stage {
+  width: 100%;
+  max-height: 380px;
+}
+
+.dossier-blueprint-stage svg {
+  max-height: 380px;
+  width: 100%;
+}
+
+.dossier-rooms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-bottom: 24px;
+}
+
+.dossier-rooms-table th {
+  background: #f1f5f9;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 750;
+  color: #334155;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.dossier-rooms-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+/* Phần 3: Dự toán chi phí & Phong thủy */
+.dossier-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.dossier-card-tile {
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+}
+
+.dossier-card-tile-title {
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: #0f172a;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dossier-tile-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding: 4px 0;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.dossier-tile-row:last-child {
+  border-bottom: none;
+}
+
+.dossier-tile-row span {
+  color: #64748b;
+}
+
+.dossier-tile-row strong {
+  color: #0f172a;
+}
+
+/* Chân trang xác thực đồ án (Dossier Footer & Seal) */
+.dossier-signature-block {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 2px solid #0f172a;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.dossier-seal-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dossier-red-stamp {
+  width: 90px;
+  height: 90px;
+  border: 2px solid #dc2626;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
+  text-align: center;
+  padding: 4px;
+  transform: rotate(-8deg);
+  opacity: 0.9;
+}
+
+.stamp-inner {
+  border: 1px dashed #dc2626;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.stamp-org {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stamp-star {
+  font-size: 0.75rem;
+  margin: 1px 0;
+}
+
+.stamp-status {
+  font-size: 0.6rem;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+}
+
+.dossier-verify-text {
+  font-size: 0.74rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.dossier-signature-col {
+  text-align: center;
+  width: 220px;
+}
+
+.dossier-sign-role {
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: #334155;
+  margin-bottom: 38px;
+}
+
+.dossier-sign-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+  border-top: 1px solid #0f172a;
+  padding-top: 4px;
+}
+
+/* 4. CHẾ ĐỘ IN ẤN CHUẨN XÁC (@media print) */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #brochure-modal,
+  #brochure-modal * {
+    visibility: visible !important;
+  }
+
+  #brochure-modal {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .brochure-modal-window {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .brochure-toolbar-wrap,
+  #close-brochure-modal {
+    display: none !important;
+  }
+
+  .brochure-printable-document {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .dossier-page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+}
+
+/* Responsive Cho Feature 5 */
+@media (max-width: 768px) {
+  .brochure-modal-window {
+    padding: 16px 12px;
+  }
+
+  .brochure-printable-document {
+    padding: 20px 16px;
+  }
+
+  .dossier-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dossier-budget-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dossier-signature-block {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
   }
 }
