@@ -1111,6 +1111,42 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   3. **Tạo khoảng đệm an toàn trên Header Modal:** Bổ sung `padding-right: 48px - 52px;` cho toàn bộ header của các modal (`.quick-calc-header`, `.fengshui-header`, `.compare-header`, `.brochure-toolbar-wrap`, `.lightbox-header`) để tuyệt đối không bị chữ hoặc badge đè lên nút đóng.
   4. Nâng tham số cache-busting lên `?v=9.1` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 60: Nút Đóng Modal (X) bị trôi mất khỏi tầm mắt khi người dùng cuộn nội dung modal xuống dưới
+- **Hiện tượng:** Khi người dùng mở các Modal có nội dung dài (như Bảng Tính Dự Toán `#quick-calc-modal`, Hồ Sơ Concept `#brochure-modal`, Bảng So Sánh Đối Đầu `#compare-modal`, Tiện Ích Phong Thủy `#fengshui-modal`, Chỉnh Sửa Hồ Sơ `#profile-modal` hoặc Quản Trị Mẫu Nhà `admin.html`), nếu người dùng cuộn trang xuống bên dưới để điền thông số hoặc xem chi tiết, nút Đóng `✕` trước đó dùng `position: absolute` sẽ bị trượt cuộn lên trên và biến mất khỏi khung nhìn. Người dùng bị cảm giác "mắc kẹt" (trapped), buộc phải cuộn ngược trở lại đỉnh trang mới có thể bấm nút thoát.
+- **Nguyên nhân cốt lõi:**
+  1. Các cửa sổ modal `.modal-window` đều có `overflow-y: auto; max-height: 92vh - 94vh;`.
+  2. Thuộc tính `position: absolute;` chỉ neo nút ở tọa độ cố định của luồng tài liệu ban đầu (`top: 20px; right: 22px;`). Khi khối nội dung bên trong bị cuộn, toàn bộ phần tử `absolute` bị cuốn trôi theo chiều cuộn và lọt ra khỏi khung nhìn (viewport) của modal.
+- **Cách khắc phục dứt điểm:**
+  1. **Chuyển đổi toàn bộ nút Đóng sang cơ chế Sticky Pin (`position: sticky`):**
+     - Áp dụng trên toàn bộ modal:
+       ```css
+       .modal-window > .modal-close,
+       .profile-close-btn,
+       .inquiry-close-btn,
+       .admin-modal-window .modal-close {
+         position: sticky !important;
+         top: 14px !important;
+         float: right !important;
+         margin-top: -6px !important;
+         margin-right: -6px !important;
+         margin-bottom: -44px !important;
+         width: 40px !important;
+         height: 40px !important;
+         border-radius: var(--radius-full) !important;
+         z-index: 120 !important;
+       }
+       ```
+     - Với `margin-bottom: -44px;`, nút chiếm đúng 0px chiều cao trong luồng bố cục, giữ nguyên vị trí hoàn hảo của các Header bên dưới mà không bị đẩy xô lệch.
+     - Khi người dùng cuộn xuống bất kỳ độ sâu nào (kể cả cuộn hàng nghìn pixel), nút đóng `✕` tự động ghim chặt tại `top: 14px` (mobile: `top: 10px`) ở góc trên bên phải khung modal, không bao giờ biến mất.
+  2. **Tăng cường vật liệu kính mờ Frosted Glass Shield chống hòa lẫn chữ:**
+     - Thiết lập nền bán đục cao cấp:
+       + Light Mode: Nền `rgba(255, 255, 255, 0.94)`, viền `1.5px solid rgba(15, 23, 42, 0.16)`, chữ `#0f172a`, bóng đổ `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16)`.
+       + Dark Mode: Nền `rgba(17, 20, 34, 0.94)`, viền `1.5px solid rgba(255, 255, 255, 0.25)`, chữ `#f8fafc`, bóng đổ sâu `box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5)`.
+       + Kính mờ siêu nét: `backdrop-filter: blur(16px) saturate(180%)`.
+     - Nhờ đó, bất kể nội dung văn bản, bảng biểu hay ảnh nào trôi qua phía sau nút khi cuộn, nút `✕` vẫn luôn nổi bật 100%, sắc nét và sẵn sàng để nhấn thoát bất kỳ lúc nào.
+  3. **Đồng bộ trên Mobile (`max-width: 768px`):** Tọa độ `top: 10px; width: 40px; height: 40px; min-width: 40px; min-height: 40px;` - chuẩn công thái học chạm ngón tay cái một chạm.
+  4. Nâng tham số cache-busting lên `?v=9.2` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

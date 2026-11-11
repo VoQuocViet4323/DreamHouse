@@ -1210,6 +1210,21 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.1`** trên `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 59** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 76: Chuẩn Hóa Nút Đóng (X) Cố Định Sticky Khi Trượt Cuộn - Chống Trôi Nút & Hỗ Trợ Thoát Mọi Lúc (Modal Sticky Close Button Architecture v9.2)
+- [x] **Giải quyết yêu cầu "nút X cố định khi trượt cuộn không bị mất để user có thể thoát bất cứ lúc nào":**
+  - **Chuyển đổi toàn bộ nút Đóng sang cơ chế `position: sticky`:**
+    - Thay vì `position: absolute` (bị cuộn trôi theo nội dung dài), chuyển sang `position: sticky !important; top: 14px !important; float: right !important; margin-bottom: -44px !important; z-index: 120 !important;`.
+    - Khi người dùng cuộn xem nội dung dài của bất kỳ modal nào (`#quick-calc-modal`, `#brochure-modal`, `#compare-modal`, `#fengshui-modal`, `#profile-modal`, `#inquiry-detail-modal`, hoặc modal admin `#template-modal`), nút `✕` luôn ghim cố định ở góc trên bên phải khung cửa sổ, không bao giờ bị trôi mất.
+    - Với `margin-bottom: -44px;`, nút chiếm đúng 0px chiều cao trong luồng khối, bảo đảm các tiêu đề và huy hiệu bên dưới giữ nguyên bố cục hoàn hảo.
+  - **Tăng cường vật liệu chống hòa lẫn chữ (Frosted Glass Shield):**
+    - Light Mode: Nền kính mờ bán đục `rgba(255, 255, 255, 0.94)`, viền hairline `1.5px solid rgba(15, 23, 42, 0.16)`, icon màu tối `#0f172a`, bóng đổ nổi `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16)`.
+    - Dark Mode: Nền `rgba(17, 20, 34, 0.94)`, viền sáng `1.5px solid rgba(255, 255, 255, 0.25)`, icon trắng sáng `#f8fafc`, bóng đổ sâu `box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5)`.
+    - Kính lọc mờ sâu `backdrop-filter: blur(16px) saturate(180%)`, bảo đảm khi nội dung văn bản, bảng giá hay ảnh trôi bên dưới, nút đóng vẫn luôn rõ nét, nổi bật 100%.
+  - **Đồng bộ tối ưu trên Mobile:**
+    - Tọa độ `top: 10px !important; float: right; margin-bottom: -40px; width: 40px; height: 40px; min-width: 40px; min-height: 40px;` - chuẩn công thái học chạm ngón tay cái, bấm phát ăn ngay.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.2`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 60** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

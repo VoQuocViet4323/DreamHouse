@@ -2023,33 +2023,37 @@ body.dark-theme {
   }
 }
 
-/* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website - Luxury Glassmorphic Design (PC & Mobile) */
+/* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website - Luxury Glassmorphic Design (PC & Mobile)
+   Cố định (Sticky/Fixed) khi trượt cuộn để người dùng luôn nhìn thấy và thoát bất cứ lúc nào */
 .modal-close,
 .profile-close-btn,
 [id^="close-"][id$="-modal"],
 [id^="close-"][id$="-lightbox"],
 .modal-window > .modal-close {
-  position: absolute;
-  top: 20px;
-  right: 22px;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--btn-close-bg, rgba(15, 23, 42, 0.06)) !important;
-  border: 1px solid var(--btn-close-border, rgba(15, 23, 42, 0.14)) !important;
-  color: var(--btn-close-color, #1e293b) !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  z-index: 70;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-  transition: all 0.25s var(--ease-spring);
+  position: sticky !important;
+  top: 14px !important;
+  float: right !important;
+  margin-top: -6px !important;
+  margin-right: -6px !important;
+  margin-bottom: -44px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--btn-close-bg, rgba(255, 255, 255, 0.94)) !important;
+  border: 1.5px solid var(--btn-close-border, rgba(15, 23, 42, 0.16)) !important;
+  color: var(--btn-close-color, #0f172a) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  z-index: 120 !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.25s var(--ease-spring) !important;
 }
 
 .modal-close svg,
@@ -2057,13 +2061,13 @@ body.dark-theme {
 [id^="close-"][id$="-modal"] svg,
 [id^="close-"][id$="-lightbox"] svg,
 .modal-window > .modal-close svg {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
-  stroke-width: 2.5;
-  flex-shrink: 0;
-  pointer-events: none;
-  transition: transform 0.25s var(--ease-spring);
+  width: 18px !important;
+  height: 18px !important;
+  stroke: currentColor !important;
+  stroke-width: 2.5 !important;
+  flex-shrink: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.25s var(--ease-spring) !important;
 }
 
 .modal-close:hover,
@@ -2076,11 +2080,11 @@ body.dark-theme {
 [id^="close-"][id$="-modal"]:focus-visible,
 [id^="close-"][id$="-lightbox"]:focus-visible,
 .modal-window > .modal-close:focus-visible {
-  background: var(--btn-close-hover-bg, rgba(239, 68, 68, 0.14)) !important;
-  border-color: var(--btn-close-hover-border, rgba(239, 68, 68, 0.45)) !important;
-  color: var(--btn-close-hover-color, #ef4444) !important;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
-  transform: rotate(90deg) scale(1.08);
+  background: #ef4444 !important;
+  border-color: #f87171 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  transform: rotate(90deg) scale(1.08) !important;
 }
 
 .modal-close:active,
@@ -2092,7 +2096,7 @@ body.dark-theme {
 [id^="close-"][id$="-lightbox"]:active,
 .modal-window > .modal-close:active {
   transform: rotate(90deg) scale(0.92) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Nút Đóng Chuyên Biệt Cho Modal Chi Tiết Mẫu Nhà - Luôn Ghim Cố Định Khi Cuộn Trang (Sticky/Fixed Always Visible) */
@@ -3923,13 +3927,17 @@ body:not(.dark-theme) .site-footer {
   [id^="close-"][id$="-modal"],
   [id^="close-"][id$="-lightbox"],
   .modal-window > .modal-close {
-    top: 14px !important;
-    right: 14px !important;
+    position: sticky !important;
+    top: 10px !important;
+    float: right !important;
+    margin-top: -4px !important;
+    margin-right: -4px !important;
+    margin-bottom: -40px !important;
     width: 40px !important;
     height: 40px !important;
     min-width: 40px !important;
     min-height: 40px !important;
-    z-index: 70 !important;
+    z-index: 120 !important;
   }
 
   #detail-modal .modal-close,
@@ -4370,10 +4378,10 @@ body.dark-theme .modal-window > .modal-close,
 body.dark-theme [id^="close-"][id$="-modal"],
 :root[data-theme="dark"] [id^="close-"][id$="-lightbox"],
 body.dark-theme [id^="close-"][id$="-lightbox"] {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  background: rgba(17, 20, 34, 0.94) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
   color: #f8fafc !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 :root[data-theme="dark"] .modal-close:hover,
@@ -4384,10 +4392,10 @@ body.dark-theme .modal-window > .modal-close:hover,
 body.dark-theme [id^="close-"][id$="-modal"]:hover,
 :root[data-theme="dark"] [id^="close-"][id$="-lightbox"]:hover,
 body.dark-theme [id^="close-"][id$="-lightbox"]:hover {
-  background: rgba(239, 68, 68, 0.24) !important;
-  border-color: rgba(239, 68, 68, 0.55) !important;
-  color: #fca5a5 !important;
-  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35) !important;
+  background: #ef4444 !important;
+  border-color: #f87171 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Bảo đảm nút đóng của Detail Modal luôn dùng Dark Glass độ tương phản cao kể cả trong Dark Mode */
@@ -7375,8 +7383,12 @@ body.dark-theme .confirm-modal-card {
 }
 
 .admin-modal-window .modal-close {
-  top: 24px;
-  right: 28px;
+  position: sticky !important;
+  top: 14px !important;
+  float: right !important;
+  margin-top: -6px !important;
+  margin-right: -6px !important;
+  margin-bottom: -44px !important;
 }
 
 .admin-modal-header {
@@ -7767,10 +7779,14 @@ body.dark-theme .confirm-modal-card {
   }
 
   .admin-modal-window .modal-close {
-    top: 18px;
-    right: 16px;
-    width: 34px;
-    height: 34px;
+    position: sticky !important;
+    top: 10px !important;
+    float: right !important;
+    margin-top: -4px !important;
+    margin-right: -4px !important;
+    margin-bottom: -40px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
 
   .admin-modal-header {
