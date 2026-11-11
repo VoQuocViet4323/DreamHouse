@@ -1012,6 +1012,35 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - **Kiểm thử đối chiếu cẩm nang [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md):** Đảm bảo nút đóng (X) kính mờ nổi bật trên cả nền ảnh (Lỗi 51 & 53), khóa cuộn ngang tuyệt đối trên mobile (Lỗi 52), hỗ trợ 100% song ngữ VI/EN (Lỗi 50), chuẩn Design Tokens tương phản cao Dark/Light Mode (Lỗi 54 & 55).
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=8.2`** trên toàn bộ `index.html` và `admin.html`.
 
+### Giai đoạn 67: Triển Khai Tính Năng 2 - Bóc Tách Mặt Bằng 2D/3D Bố Trí Từng Tầng (Floor-by-Floor Layer Explorer & Architectural Vector CAD Engine v8.3)
+- [x] **Xây dựng động cơ biểu diễn bản vẽ kỹ thuật mặt bằng kiến trúc SVG Vector (Vector CAD Engine):**
+  - **Cơ chế bóc tách công năng thông minh theo loại hình nhà:**
+    1. *Nhà phố (Townhouse):* Tầng 1 (Sân trước/Gara xe, Sảnh khách đón gió, Sảnh thang trung tâm có Giếng trời lấy sáng, Bếp & Bàn ăn thông thoáng, Sân sau); Tầng 2 (Phòng ngủ Master khép kín có Ban công trước, Phòng ngủ con, Vệ sinh chung); Tầng 3 (Phòng thờ gia tiên hướng mặt tiền, Phòng ngủ phụ, Sân thượng BBQ & Giặt phơi đón nắng).
+    2. *Biệt thự (Villa):* Sảnh đón Grand Foyer đại sảnh thông tầng, Phòng khách lớn tiếp khách VIP, Bếp đảo phong cách Âu, Phòng ngủ Master Tổng thống (Jacuzzi & Walk-in closet), Phòng sinh hoạt chung/Thư viện, Phòng Gym/Giải trí và Vườn treo tầng thượng.
+    3. *Nhà cấp 4 (Country House / Villa 1 tầng):* Phân bổ mặt bằng rộng toàn khu: Đại sảnh Phòng khách liên thông gian Thờ, Bếp ăn tiện nghi liên thông sân ướt, 3 Phòng ngủ tiện ích (1 Master en-suite), 2 WC tiêu chuẩn.
+  - **Bản vẽ kỹ thuật Vector CAD tỉ lệ chuẩn 1/100 theo TCXDVN 2026:**
+    - Tường bao chịu lực dày 200mm nét đậm kép, tường ngăn chia phòng 100mm.
+    - Ký hiệu cửa đi 1 cánh, 2 cánh với cung quét góc mở $90^\circ$ chân thực.
+    - Cầu thang 21 bậc zigzag chuẩn thước Lỗ Ban (Cung Sinh), giếng trời lấy sáng tự nhiên.
+    - Ký hiệu nội thất CAD tiêu chuẩn: Bàn ghế sofa, tivi, giường ngủ & táp đầu giường, bồn cầu, chậu rửa lavabo, bồn tắm nằm, bếp nấu, chậu rửa bát.
+    - Đường gióng kích thước (Dimension lines) ghi rõ khẩu độ các trục (Dài x Rộng mm / mét) và Kim chỉ hướng Bắc (North Arrow Compass).
+    - Khung tên đồ án kiến trúc CAD chuyên nghiệp: *"TỶ LỆ 1/100 • TIÊU CHUẨN TCXDVN 2026"*.
+- [x] **Hệ thống điều hướng tương tác đa góc nhìn Visual Nav Switcher (`#detail-visual-nav`):**
+  - 3 chế độ chuyển đổi mượt mà trong cột truyền thông chi tiết: **Phối cảnh (Photo)** | **3D Tương tác (Viewer)** | **Mặt bằng tầng (Floorplan)**.
+  - Tích hợp thanh chọn tầng trực quan (`#detail-floorplan-tabs`): Tầng 1 (Trệt), Tầng 2 (Lầu 1), Tầng 3 (Lầu 2), Mặt bằng Mái.
+- [x] **Tương tác hai chiều thời gian thực (Bidirectional Real-Time Highlight):**
+  - Rê chuột hoặc chạm vào phòng trên bản vẽ SVG CAD: phòng sáng màu hiệu ứng glowing stroke, thẻ phòng tương ứng trong danh sách tự động highlight viền vàng gold và trồi lên.
+  - Rê chuột vào thẻ phòng trong bảng bóc tách công năng: phòng trên sơ đồ CAD sáng rực rỡ, kèm huy hiệu diện tích $m^2$ nổi bật.
+- [x] **Công cụ phóng to toàn màn hình (Fullscreen Lightbox Modal `#floorplan-lightbox-modal`):**
+  - Cho phép KTS và Khách hàng zoom sâu từng chi tiết bản vẽ, hiển thị tên đồ án, diện tích sàn sử dụng, thanh chọn tầng nhanh chóng.
+  - Đóng mở mượt mà qua phím `Esc`, nút đóng (X) kính mờ chuẩn Design Tokens và click ra ngoài backdrop.
+- [x] **Nút chuyển đổi "Mặt cắt 3D" (Isometric Top-Down 3D Cutaway):**
+  - Bấm nút *"Mặt cắt 3D"* từ thanh công cụ bản vẽ: Tự động chuyển thẳng sang tab 3D Viewer và đặt góc nhìn camera nhìn từ trên xuống (Top-down Isometric View), cho phép quan sát không gian 3 chiều đồng bộ.
+- [x] **Kiểm thử đối chiếu cẩm nang [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md):**
+  - Đảm bảo 100% song ngữ VI/EN với 27 từ khóa kiến trúc mới trong `js/i18n.js`.
+  - Tương thích hoàn hảo Dark Mode & Light Mode, không vỡ layout trên màn hình điện thoại dưới 480px.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.3`** trên `index.html` và `admin.html`.
+
 
 
 

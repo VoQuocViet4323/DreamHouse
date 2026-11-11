@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.2" />
+    <link rel="stylesheet" href="style.css?v=8.3" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.2"></script>
-    <script src="js/i18n.js?v=8.2"></script>
-    <script src="js/toast.js?v=8.2"></script>
-    <script src="js/viewer3d.js?v=8.2"></script>
-    <script src="js/app.js?v=8.2" defer></script>
+    <script src="js/config.js?v=8.3"></script>
+    <script src="js/i18n.js?v=8.3"></script>
+    <script src="js/toast.js?v=8.3"></script>
+    <script src="js/viewer3d.js?v=8.3"></script>
+    <script src="js/app.js?v=8.3" defer></script>
 </head>
 
 <body>
@@ -471,15 +471,31 @@
 
         <div class="modal-window">
             <div class="detail-grid">
-                <!-- Cột bên trái: Ảnh phối cảnh thiết kế -->
+                <!-- Cột bên trái: Ảnh phối cảnh thiết kế & Mặt bằng từng tầng -->
                 <div class="detail-visual-col">
-                    <div class="media-box photo-box">
+                    <!-- Thanh điều hướng Visual Tabs: Phối cảnh | 3D | Mặt bằng -->
+                    <div class="detail-visual-nav" id="detail-visual-nav" role="tablist">
+                        <button type="button" class="visual-nav-btn active" data-visual-tab="photo" role="tab" aria-selected="true">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span data-i18n="tab_view_photo">Phối cảnh</span>
+                        </button>
+                        <button type="button" class="visual-nav-btn" data-visual-tab="viewer" role="tab" aria-selected="false">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                            <span data-i18n="tab_view_3d">3D Tương tác</span>
+                        </button>
+                        <button type="button" class="visual-nav-btn" data-visual-tab="floorplan" role="tab" aria-selected="false">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9M15 21V9"/></svg>
+                            <span data-i18n="tab_view_floorplan">Mặt bằng tầng</span>
+                        </button>
+                    </div>
+
+                    <div class="media-box photo-box" id="detail-photo-box">
                         <span class="media-badge" data-i18n="detail_tab_photo">Ảnh thiết kế</span>
                         <img id="detail-photo" src="" alt="House Design" />
                     </div>
 
                     <!-- Cột 3D Viewer tương tác -->
-                    <div class="media-box viewer-box">
+                    <div class="media-box viewer-box" id="detail-viewer-box">
                         <div class="viewer-header">
                             <span class="media-badge" data-i18n="detail_tab_3d">Mô hình 3D tương tác</span>
                             <div class="camera-presets">
@@ -494,6 +510,49 @@
                             <span class="hint" data-i18n="detail_3d_hint">Chuột trái xoay • Chuột phải/2 ngón di chuyển
                                 • Cuộn để vào trong nhà</span>
                             <span id="viewer-status-text" class="status"></span>
+                        </div>
+                    </div>
+
+                    <!-- Khối Bóc Tách Mặt Bằng 2D/3D Từng Tầng (Feature 2) -->
+                    <div class="media-box floorplan-box" id="detail-floorplan-box">
+                        <div class="floorplan-header">
+                            <div class="floorplan-title-wrap">
+                                <span class="media-badge" data-i18n="tab_view_floorplan">Mặt bằng tầng</span>
+                                <span class="floorplan-area-badge" id="floorplan-usable-area">80 m²</span>
+                            </div>
+                            <!-- Thanh chọn tầng (Floor Selector Tabs) -->
+                            <div class="floorplan-pills" id="detail-floorplan-tabs" role="tablist">
+                                <!-- Sinh động qua JS: Tầng 1, Tầng 2, Tầng 3, Mái -->
+                            </div>
+                        </div>
+
+                        <!-- Sân khấu hiển thị bản vẽ CAD SVG -->
+                        <div class="floorplan-canvas-wrap" id="floorplan-canvas-wrap">
+                            <div class="floorplan-blueprint-stage" id="floorplan-blueprint-stage">
+                                <!-- Sơ đồ SVG kiến trúc tự sinh -->
+                            </div>
+
+                            <!-- Thanh công cụ bản vẽ: Phóng to & Mặt cắt 3D -->
+                            <div class="floorplan-toolbar">
+                                <button type="button" class="fp-tool-btn" id="btn-fp-zoom" title="Phóng to bản vẽ (Fullscreen Lightbox)">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                    <span data-i18n="floor_btn_zoom">Phóng to</span>
+                                </button>
+                                <button type="button" class="fp-tool-btn" id="btn-fp-iso3d" title="Góc nhìn mặt cắt 3D Isometric">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                                    <span data-i18n="floor_btn_iso3d">Mặt cắt 3D</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách bóc tách công năng & diện tích từng phòng -->
+                        <div class="floorplan-rooms-schedule">
+                            <div class="rooms-schedule-header">
+                                <span class="rooms-schedule-label" data-i18n="floor_room_list_title">Chi tiết công năng & diện tích các phòng:</span>
+                            </div>
+                            <div class="rooms-schedule-grid" id="floorplan-rooms-grid">
+                                <!-- Dynamic Room Cards -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1723,6 +1782,38 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. MODAL PHÓNG TO BẢN VẼ MẶT BẰNG (FLOORPLAN FULLSCREEN LIGHTBOX) -->
+    <div id="floorplan-lightbox-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="lightbox-floor-title">
+        <button type="button" id="close-floorplan-lightbox" class="modal-close" aria-label="Đóng bản vẽ" title="Đóng bản vẽ (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
+        <div class="modal-window floorplan-lightbox-window">
+            <div class="lightbox-header">
+                <div class="lightbox-title-group">
+                    <span class="media-badge" data-i18n="tab_view_floorplan">Mặt bằng tầng</span>
+                    <h3 id="lightbox-floor-title" class="lightbox-heading">Mặt bằng Tầng 1 (Trệt)</h3>
+                    <p id="lightbox-template-name" class="lightbox-sub">Nhà phố 2 tầng 5x16m</p>
+                </div>
+                <div class="lightbox-pills" id="lightbox-floor-tabs" role="tablist">
+                    <!-- Tầng 1, Tầng 2, Tầng 3, Mái -->
+                </div>
+            </div>
+
+            <div class="lightbox-canvas-area" id="lightbox-blueprint-stage">
+                <!-- SVG Blueprint zoomed -->
+            </div>
+
+            <div class="lightbox-footer">
+                <span class="lightbox-hint" data-i18n="floor_lightbox_hint">Bấm ra ngoài hoặc phím Esc để đóng bản vẽ</span>
             </div>
         </div>
     </div>

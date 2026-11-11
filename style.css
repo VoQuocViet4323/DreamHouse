@@ -9809,3 +9809,457 @@ body.dark-theme .qc-summary-box {
     font-size: 1.65rem;
   }
 }
+
+/* ==========================================================================
+   9. TÍNH NĂNG 2: BÓC TÁCH MẶT BẰNG 2D/3D TỪNG TẦNG (FLOOR-BY-FLOOR EXPLORER)
+   Chuẩn Bản Vẽ Kiến Trúc CAD & Tương Tác Mặt Bằng Vector SVG
+   ========================================================================== */
+
+/* Thanh điều hướng Visual Tabs: Phối cảnh | 3D | Mặt bằng */
+.detail-visual-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 6px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="dark"] .detail-visual-nav,
+body.dark-theme .detail-visual-nav {
+  background: rgba(17, 20, 34, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.visual-nav-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.visual-nav-btn:hover {
+  color: var(--color-text-main);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="dark"] .visual-nav-btn:hover,
+body.dark-theme .visual-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f1f5f9;
+}
+
+.visual-nav-btn.active {
+  background: var(--color-primary, #0f172a);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme="dark"] .visual-nav-btn.active,
+body.dark-theme .visual-nav-btn.active {
+  background: rgba(229, 185, 93, 0.18);
+  color: #e5b95d;
+  border: 1px solid rgba(229, 185, 93, 0.4);
+  box-shadow: 0 2px 10px rgba(229, 185, 93, 0.2);
+}
+
+/* Floorplan Box Container */
+.media-box.floorplan-box {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+:root[data-theme="dark"] .media-box.floorplan-box,
+body.dark-theme .media-box.floorplan-box {
+  background: #151828;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.floorplan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.floorplan-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.floorplan-area-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+:root[data-theme="dark"] .floorplan-area-badge,
+body.dark-theme .floorplan-area-badge {
+  background: rgba(52, 211, 153, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+/* Floor Selector Pills */
+.floorplan-pills,
+.lightbox-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fp-pill-btn {
+  padding: 5px 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: #f8fafc;
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:root[data-theme="dark"] .fp-pill-btn,
+body.dark-theme .fp-pill-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.fp-pill-btn:hover {
+  border-color: var(--color-accent, #c49a45);
+  color: var(--color-text);
+}
+
+.fp-pill-btn.active {
+  background: rgba(196, 154, 69, 0.15);
+  border-color: #c49a45;
+  color: #c49a45;
+  font-weight: 750;
+}
+
+:root[data-theme="dark"] .fp-pill-btn.active,
+body.dark-theme .fp-pill-btn.active {
+  background: rgba(229, 185, 93, 0.18);
+  border-color: #e5b95d;
+  color: #e5b95d;
+  box-shadow: 0 0 10px rgba(229, 185, 93, 0.25);
+}
+
+/* Canvas Stage (Blueprint Area) */
+.floorplan-canvas-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0d131f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="light"] .floorplan-canvas-wrap,
+body:not(.dark-theme) .floorplan-canvas-wrap {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.floorplan-blueprint-stage {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.floorplan-blueprint-stage svg {
+  max-width: 100%;
+  max-height: 380px;
+  display: block;
+  user-select: none;
+}
+
+/* Floating Toolbar */
+.floorplan-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.fp-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.fp-tool-btn:hover {
+  background: #c49a45;
+  border-color: #c49a45;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .fp-tool-btn:hover,
+body.dark-theme .fp-tool-btn:hover {
+  background: #e5b95d;
+  border-color: #e5b95d;
+  color: #0b0d14;
+}
+
+/* Room Schedule Grid */
+.floorplan-rooms-schedule {
+  margin-top: 14px;
+}
+
+.rooms-schedule-header {
+  margin-bottom: 8px;
+}
+
+.rooms-schedule-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rooms-schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.room-card-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="dark"] .room-card-item,
+body.dark-theme .room-card-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.room-card-item:hover,
+.room-card-item.is-highlighted {
+  border-color: #e5b95d;
+  background: rgba(229, 185, 93, 0.1);
+  transform: translateX(2px);
+}
+
+.room-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(196, 154, 69, 0.12);
+  color: #c49a45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+:root[data-theme="dark"] .room-card-icon,
+body.dark-theme .room-card-icon {
+  background: rgba(229, 185, 93, 0.15);
+  color: #e5b95d;
+}
+
+.room-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-card-name {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:root[data-theme="dark"] .room-card-name,
+body.dark-theme .room-card-name {
+  color: #f1f5f9;
+}
+
+.room-card-area {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-accent, #c49a45);
+}
+
+:root[data-theme="dark"] .room-card-area,
+body.dark-theme .room-card-area {
+  color: #e5b95d;
+}
+
+/* --- FULLSCREEN FLOORPLAN LIGHTBOX MODAL (#floorplan-lightbox-modal) --- */
+.floorplan-lightbox-window {
+  max-width: 1100px;
+  width: 95vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px 20px;
+  border-radius: 24px;
+  background: #0d131f;
+  color: #f8fafc;
+  border: 1px solid rgba(229, 185, 93, 0.25);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+:root[data-theme="light"] .floorplan-lightbox-window,
+body:not(.dark-theme) .floorplan-lightbox-window {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+:root[data-theme="light"] .lightbox-header,
+body:not(.dark-theme) .lightbox-header {
+  border-bottom-color: #e2e8f0;
+}
+
+.lightbox-heading {
+  margin: 4px 0 2px;
+  font-size: 1.35rem;
+  font-family: var(--font-serif);
+  color: #e5b95d;
+}
+
+:root[data-theme="light"] .lightbox-heading,
+body:not(.dark-theme) .lightbox-heading {
+  color: #c49a45;
+}
+
+.lightbox-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.lightbox-canvas-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: auto;
+}
+
+.lightbox-canvas-area svg {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.lightbox-footer {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+:root[data-theme="light"] .lightbox-footer,
+body:not(.dark-theme) .lightbox-footer {
+  border-top-color: #e2e8f0;
+}
+
+.lightbox-hint {
+  font-size: 0.74rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .detail-visual-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rooms-schedule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .floorplan-lightbox-window {
+    padding: 20px 14px 16px;
+    height: 94vh;
+  }
+
+  .lightbox-heading {
+    font-size: 1.15rem;
+  }
+}
