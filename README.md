@@ -82,6 +82,16 @@
     - **Động cơ In & Xuất PDF tối ưu (@media print):** Cấu hình chuẩn A4 Portrait (`12mm 10mm`), ẩn toàn bộ thanh công cụ web và nút điều khiển, tương thích 100% lệnh In trình duyệt hoặc "Lưu dưới dạng PDF" (Save as PDF) với độ phân giải cao 300 DPI.
     - **Cầu nối Zalo tức thì (1-Click Consultation Bridge):** Nút *"Gửi hồ sơ qua Zalo KTS"* mở trực tiếp kết nối Zalo kèm lời nhắn soạn sẵn.
 
+13. **Giao Diện Hero Đẳng Cấp Biên Tập "Có Động Có Tĩnh" & Sân Khấu Kiến Trúc Nổi (Editorial Hero Split Showcase & Ticker Strip - v8.8):**
+    - **Bố cục Hero Split 2 cột chuẩn Awwwards:** Kết hợp hoàn hảo giữa văn phong tạp chí kiến trúc tối giản (Editorial Luxury) và sân khấu trưng bày công trình nổi bật.
+    - **Sân khấu kiến trúc tương tác (Hero Showcase Stage):**
+      - Quầng sáng môi trường Ambient Aura lan tỏa mềm mại phía sau khối kiến trúc.
+      - Ảnh phối cảnh công trình thực tế độ phân giải cao kết hợp 2 thẻ kính mờ lơ lửng: phân loại phong cách kiến trúc và huy hiệu xung nhịp 3D 360°.
+      - Bảng thông số kỹ thuật (kích thước, số tầng, giá dự toán) và nút bấm xem chi tiết kết nối trực tiếp đến 3D Viewer.
+      - Chuyển đổi linh hoạt giữa 3 phong cách tiêu biểu (Biệt thự tân cổ điển, Biệt thự vườn mái Nhật, Nhà phố hiện đại) với cơ chế tự động xoay chuyển 7 giây.
+    - **Hàng chỉ số bảo chứng năng lực (Trust Metrics):** `150+` Đồ án thực tế, `100%` Bản vẽ CAD Vector, `4.9★` Gia chủ tin cậy.
+    - **Dải băng năng lực kiến trúc Marquee Ticker Strip:** Thanh chạy chữ vô tận sang trọng kết nối liền mạch giữa Hero và Thư viện mẫu.
+
 ---
 
 ## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)

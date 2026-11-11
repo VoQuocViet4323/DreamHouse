@@ -1127,6 +1127,29 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tương thích hoàn hảo Dark Mode & Light Mode, không vỡ layout trên màn hình điện thoại (Lỗi 52, 54 & 55).
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.7`** trên `index.html` và `admin.html`.
 
+### Giai đoạn 72: Tái Thiết Kế Giao Diện Hero "Có Động Có Tĩnh" - Sân Khấu Kiến Trúc Nổi Hero Showcase & Dải Ticker Năng Lực (v8.8)
+- [x] **Giải quyết triệt để điểm nghẽn thị giác "Trang nhìn tổng thể chưa thu hút":**
+  - Khắc phục khoảng trống vô định (First-Fold Void) ở nửa phải màn hình Hero khi ở Dark Mode.
+  - Mang ngay hình ảnh phối cảnh và giá trị 3D tương tác lên nếp gấp đầu tiên (First Fold) mà không bắt buộc gia chủ phải cuộn trang.
+  - Giữ nguyên 100% bản sắc màu sắc (Obsidian `#09090b`, viền vàng Champagne `#c49a45`), font chữ Serif biên tập và toàn bộ cấu trúc DB / chức năng sẵn có.
+- [x] **Cột Trái Hero - Thông Điệp Biên Tập & Hàng Chỉ Số Năng Lực Bảo Chứng (Trust Metrics):**
+  - Thẻ Pill viền vàng với chấm nhịp thở kim quang (`.hero-pulse-dot`): `✦ ĐỒ ÁN KIẾN TRÚC & KHÁI TOÁN 2026`.
+  - Tiêu đề Shimmer Metallic Gradient phản quang sang trọng theo góc sáng.
+  - Bộ 3 chỉ số năng lực: `150+ Đồ án thực tế`, `100% Bản vẽ CAD Vector`, `4.9★ Gia chủ tin cậy`.
+- [x] **Cột Phải Hero - Sân Khấu Kiến Trúc Nổi (Interactive Hero Showcase Stage):**
+  - **Quầng sáng môi trường Ambient Aura:** Quầng sáng vàng & xanh kiến trúc lan toả mềm mại phía sau (`ambientAuraPulse`), tạo chiều sâu không gian (Spatial Depth) chân thực.
+  - **Khung trưng bày Glassmorphic:** Bo góc mềm mại 24px, viền kính mỏng mạ vàng hairline, hiển thị ảnh phối cảnh công trình thực tế sắc nét với hiệu ứng phóng nhẹ khi hover.
+  - **Bộ đôi thẻ kính mờ lơ lửng (Floating Glass Tags):** Thẻ phân loại phong cách góc trái trên (`floatSlowTag`) và thẻ kích hoạt 3D góc phải trên kèm vòng xung xung phát sáng (`pulseRingAnim` & `floatSlightTag`).
+  - **Bảng thông số đồ án:** Tên mẫu, kích thước mặt tiền × chiều sâu, số tầng, giá dự toán và nút *"Xem chi tiết & 3D →"* kết nối trực tiếp đến Modal Chi Tiết & 3D Viewer.
+  - **Thanh điều hướng phân trang (Dots) & Xoay chuyển tự động:** Hỗ trợ click xem nhanh 3 phong cách tiêu biểu (Biệt thự tân cổ điển, Biệt thự vườn mái Nhật, Nhà phố hiện đại), tự động xoay chuyển sau mỗi 7 giây và tự dừng khi di chuột vào.
+- [x] **Dải Băng Năng Lực Kiến Trúc Marquee Ticker (Architectural Competency Ticker):**
+  - Nối liền mượt mà giữa Hero và Thư viện mẫu: Chạy mượt mà 5 trụ cột năng lực (3D Three.js, Bản vẽ CAD 1/100, Bóc tách diện tích quy đổi $S_{xd}$, Thước Lỗ Ban Bát Trạch, Xuất PDF Brochure 1-Click), pause on hover.
+- [x] **Đa ngôn ngữ & Responsive hoàn hảo:**
+  - Bổ sung 14 từ khóa song ngữ VI/EN trong `js/i18n.js`.
+  - Tự động co giãn 1 cột trên iPad/Tablet (< 992px) và Mobile (< 768px), đảm bảo không tràn viền.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.8`** trên `index.html` và `admin.html`.
+
+
 
 
 

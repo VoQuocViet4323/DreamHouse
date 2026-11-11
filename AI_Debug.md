@@ -1076,6 +1076,18 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Trạng thái kích hoạt (`.active`): Chuyển màu vàng gold sang trọng với viền sáng neon (`box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.3)`).
   3. Tăng tham số cache-busting lên `?v=8.6` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 58: Màn hình First Fold của trang chủ thiếu điểm thu hút thị giác và bị khoảng trống đen (Void) ở Dark Mode
+- **Hiện tượng:** Khu vực Hero ban đầu chỉ có khối văn bản biên tập lệch sang góc trái trên nền lưới tối, toàn bộ nửa bên phải là khoảng trống đen phẳng lặng. Khách hàng truy cập không thấy được hình ảnh đồ án thực tế hay mô hình 3D ngay ở nếp gấp đầu tiên (First Fold), làm giảm ấn tượng ban đầu và tỷ lệ chuyển đổi.
+- **Nguyên nhân cốt lõi:**
+  1. Bố cục Hero cũ là dạng 1 cột đơn điệu với `max-width: 880px`, không có khu vực giới thiệu đồ án trực quan.
+  2. Nền Dark Mode thiếu quầng sáng hắt không gian (Spatial Depth / Ambient Lighting) khiến trang web có cảm giác quá tĩnh và đơn sắc.
+- **Cách khắc phục dứt điểm:**
+  1. Nâng cấp bố cục Hero thành dạng Hero Split 2 cột (`1.15fr` / `0.95fr`): Cột trái giữ trọn vẹn văn phong biên tập sang trọng, bổ sung hàng chỉ số năng lực bảo chứng (`150+ Đồ án thực tế`, `100% Bản vẽ CAD Vector`, `4.9★ Gia chủ tin cậy`).
+  2. Bổ sung Sân Khấu Kiến Trúc Nổi (Interactive Hero Showcase Stage): Khung kính mờ Glassmorphism mạ viền vàng hairline, quầng sáng mềm mại Ambient Aura lan tỏa phía sau, 2 thẻ kính mờ lơ lửng (Floating Glass Tags: *Loại nhà* và *3D Tương tác 360°*), nút xem chi tiết & 3D, và thanh pagination chấm tròn tự động xoay chuyển 3 phong cách tiêu biểu sau 7 giây.
+  3. Bổ sung dải băng chạy chữ năng lực Marquee Ticker Strip phân cách mượt mà giữa Hero và Thư viện mẫu.
+  4. Đảm bảo co giãn 1 cột hoàn hảo trên Mobile/Tablet (`< 992px` và `< 768px`) và tương thích 100% cả Light Mode lẫn Dark Mode.
+  5. Tăng tham số cache-busting lên `?v=8.8` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

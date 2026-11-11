@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.7" />
+    <link rel="stylesheet" href="style.css?v=8.8" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.7"></script>
-    <script src="js/i18n.js?v=8.7"></script>
-    <script src="js/toast.js?v=8.7"></script>
-    <script src="js/viewer3d.js?v=8.7"></script>
-    <script src="js/app.js?v=8.7" defer></script>
+    <script src="js/config.js?v=8.8"></script>
+    <script src="js/i18n.js?v=8.8"></script>
+    <script src="js/toast.js?v=8.8"></script>
+    <script src="js/viewer3d.js?v=8.8"></script>
+    <script src="js/app.js?v=8.8" defer></script>
 </head>
 
 <body>
@@ -284,28 +284,132 @@
         </div>
     </header>
 
-    <!-- 2. KHU VỰC HERO ĐẶC TẢ BIÊN TẬP (EDITORIAL HERO) -->
+    <!-- 2. KHU VỰC HERO ĐẶC TẢ BIÊN TẬP (EDITORIAL HERO SPLIT SHOWCASE v8.8) -->
     <section class="hero-section">
-        <div class="container hero-content">
-            <p class="hero-tagline" data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</p>
-            <h1 class="hero-headline" data-i18n="hero_title">Không gian sống lý tưởng trong tầm tay bạn</h1>
-            <p class="hero-description" data-i18n="hero_sub">
-                Khám phá bộ sưu tập mẫu nhà phố, biệt thự và nhà cấp 4 hiện đại cùng mô hình 3D tương tác thực tế.
-            </p>
-            <div class="hero-cta-group">
-                <a href="#gallery-section" class="btn-primary" data-i18n="hero_cta">Khám phá mẫu nhà ↓</a>
-                <button type="button" class="btn-secondary hero-calc-trigger" id="hero-calc-btn">
-                    <span class="hero-calc-icon">⚡</span>
-                    <span data-i18n="hero_btn_calc">Dự toán chi phí</span>
-                </button>
-                <button type="button" class="btn-secondary hero-fengshui-trigger" id="hero-fengshui-btn">
-                    <span class="hero-calc-icon">🧭</span>
-                    <span data-i18n="hero_btn_fengshui">Tra cứu phong thủy</span>
-                </button>
-                <a href="#contact-section" class="btn-secondary" data-i18n="nav_contact">Nhận tư vấn ngay</a>
+        <!-- Ambient lighting aura behind showcase -->
+        <div class="hero-ambient-aura" aria-hidden="true"></div>
+
+        <div class="container hero-split-grid">
+            <!-- CỘT TRÁI: THÔNG ĐIỆP BIÊN TẬP & BẢO CHỨNG -->
+            <div class="hero-left-col">
+                <div class="hero-badge-pill">
+                    <span class="hero-pulse-dot" aria-hidden="true"></span>
+                    <span class="hero-tagline" data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</span>
+                </div>
+                <h1 class="hero-headline" data-i18n="hero_title">Không gian sống lý tưởng trong tầm tay bạn</h1>
+                <p class="hero-description" data-i18n="hero_sub">
+                    Khám phá bộ sưu tập mẫu nhà phố, biệt thự và nhà cấp 4 hiện đại cùng mô hình 3D tương tác thực tế.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="#gallery-section" class="btn-primary" data-i18n="hero_cta">Khám phá mẫu nhà ↓</a>
+                    <button type="button" class="btn-secondary hero-calc-trigger" id="hero-calc-btn">
+                        <span class="hero-calc-icon">⚡</span>
+                        <span data-i18n="hero_btn_calc">Dự toán chi phí</span>
+                    </button>
+                    <button type="button" class="btn-secondary hero-fengshui-trigger" id="hero-fengshui-btn">
+                        <span class="hero-calc-icon">🧭</span>
+                        <span data-i18n="hero_btn_fengshui">Tra cứu phong thủy</span>
+                    </button>
+                    <a href="#contact-section" class="btn-secondary" data-i18n="nav_contact">Nhận tư vấn ngay</a>
+                </div>
+
+                <!-- HÀNG CHỈ SỐ BẢO CHỨNG KIẾN TRÚC (TRUST METRICS) -->
+                <div class="hero-trust-metrics" aria-label="Chỉ số năng lực kiến trúc">
+                    <div class="trust-metric-item">
+                        <span class="trust-metric-num" data-i18n="hero_stat_projects_num">150+</span>
+                        <span class="trust-metric-label" data-i18n="hero_stat_projects_label">Đồ án thực tế</span>
+                    </div>
+                    <div class="trust-metric-divider" aria-hidden="true"></div>
+                    <div class="trust-metric-item">
+                        <span class="trust-metric-num" data-i18n="hero_stat_cad_num">100%</span>
+                        <span class="trust-metric-label" data-i18n="hero_stat_cad_label">Bản vẽ CAD Vector</span>
+                    </div>
+                    <div class="trust-metric-divider" aria-hidden="true"></div>
+                    <div class="trust-metric-item">
+                        <span class="trust-metric-num" data-i18n="hero_stat_rating_num">4.9★</span>
+                        <span class="trust-metric-label" data-i18n="hero_stat_rating_label">Gia chủ tin cậy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: SÂN KHẤU KIẾN TRÚC NỔI TƯƠNG TÁC (HERO SHOWCASE STAGE) -->
+            <div class="hero-right-col">
+                <div class="hero-stage-card" id="hero-showcase-stage" role="region" aria-label="Đồ án kiến trúc tiêu biểu">
+                    <!-- Ảnh phối cảnh chính -->
+                    <div class="hero-stage-media">
+                        <img id="hero-stage-img" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80" alt="Đồ án kiến trúc tiêu biểu Dream House" class="hero-stage-photo" loading="eager" />
+                        <div class="hero-stage-gradient" aria-hidden="true"></div>
+
+                        <!-- Tag kính mờ lơ lửng góc trên trái (Loại nhà) -->
+                        <div class="hero-floating-tag tag-top-left" id="hero-stage-tag-type">
+                            <span class="tag-icon">🏛️</span>
+                            <span id="hero-stage-type-text">Biệt thự Tân cổ điển</span>
+                        </div>
+
+                        <!-- Tag kính mờ lơ lửng góc trên phải (3D Interactive Pulse) -->
+                        <div class="hero-floating-tag tag-top-right hero-3d-pulse-tag" id="hero-stage-3d-tag" title="Mô hình 3D tương tác thực tế">
+                            <span class="pulse-ring" aria-hidden="true"></span>
+                            <span class="tag-icon">✦</span>
+                            <span data-i18n="hero_stage_badge_3d">3D Tương tác 360°</span>
+                        </div>
+                    </div>
+
+                    <!-- Thẻ thông tin kính mờ đặt dưới chân ảnh -->
+                    <div class="hero-stage-meta">
+                        <div class="hero-stage-info">
+                            <h3 class="hero-stage-title" id="hero-stage-title">Biệt Thự Tân Cổ Điển Châu Âu 3 Tầng</h3>
+                            <div class="hero-stage-chips">
+                                <span class="stage-chip">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                    <strong id="hero-stage-dims">10m × 16m</strong>
+                                </span>
+                                <span class="stage-chip">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21h18M5 21V7l8-4 6 4v14"/></svg>
+                                    <strong id="hero-stage-floors">3 Tầng</strong>
+                                </span>
+                                <span class="stage-chip chip-cost">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8"/></svg>
+                                    <strong id="hero-stage-cost">4,8 tỷ VNĐ</strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Nút xem chi tiết & 3D -->
+                        <button type="button" class="hero-stage-explore-btn" id="hero-stage-explore-btn" aria-label="Xem chi tiết đồ án này">
+                            <span data-i18n="hero_stage_explore">Xem chi tiết & 3D →</span>
+                        </button>
+                    </div>
+
+                    <!-- Thanh điều hướng chọn 3 phong cách tiêu biểu -->
+                    <div class="hero-stage-pagination" role="tablist" aria-label="Chọn đồ án tiêu biểu">
+                        <button type="button" class="stage-dot active" data-index="0" role="tab" aria-selected="true" aria-label="Đồ án 1: Biệt thự Tân cổ điển"></button>
+                        <button type="button" class="stage-dot" data-index="1" role="tab" aria-selected="false" aria-label="Đồ án 2: Biệt thự vườn Mái Nhật"></button>
+                        <button type="button" class="stage-dot" data-index="2" role="tab" aria-selected="false" aria-label="Đồ án 3: Nhà phố Hiện đại"></button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- 2.5 DẢI BĂNG NĂNG LỰC KIẾN TRÚC (ARCHITECTURAL MARQUEE TICKER) -->
+    <div class="hero-ticker-band" aria-label="Năng lực kiến trúc nổi bật">
+        <div class="hero-ticker-track">
+            <div class="ticker-cluster">
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_1">Thực tế ảo 3D & Three.js Interactive</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_2">Bản vẽ kỹ thuật CAD Vector 1/100 TCXDVN</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_3">Dự toán bóc tách diện tích quy đổi Sxd 2026</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_4">Thước Lỗ Ban 3 dải đo & La bàn Bát Trạch</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_5">Xuất hồ sơ Concept PDF Brochure 1-Click</span></span>
+            </div>
+            <div class="ticker-cluster" aria-hidden="true">
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_1">Thực tế ảo 3D & Three.js Interactive</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_2">Bản vẽ kỹ thuật CAD Vector 1/100 TCXDVN</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_3">Dự toán bóc tách diện tích quy đổi Sxd 2026</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_4">Thước Lỗ Ban 3 dải đo & La bàn Bát Trạch</span></span>
+                <span class="ticker-item"><span class="ticker-star">✦</span> <span data-i18n="ticker_item_5">Xuất hồ sơ Concept PDF Brochure 1-Click</span></span>
+            </div>
+        </div>
+    </div>
 
     <!-- 3. THƯ VIỆN MẪU NHÀ & BỘ LỌC (GALLERY SECTION) -->
     <main id="gallery-section" class="gallery-section container">

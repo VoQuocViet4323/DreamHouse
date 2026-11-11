@@ -17,6 +17,9 @@ class DreamHouseApp {
         };
         this.isAuthRegisterMode = false;
         this._rpcIncrementMissing = false;
+        this.heroShowcaseIndex = 0;
+        this.heroShowcaseTimer = null;
+        this.featuredShowcaseTemplates = [];
 
         this.init();
     }
@@ -66,6 +69,7 @@ class DreamHouseApp {
         this.initBrochureExporter();
         await this.loadTemplates();
         this.renderGallery();
+        this.initHeroShowcase();
 
         // Khởi tạo 3D viewer khi DOM sẵn sàng
         setTimeout(() => {
@@ -77,6 +81,7 @@ class DreamHouseApp {
         // Lắng nghe sự kiện đổi ngôn ngữ để render lại chữ động
         window.addEventListener('languageChanged', () => {
             this.renderGallery();
+            this.updateHeroShowcase(true);
             if (this.currentTemplate) {
                 this.updateDetailPanelContent(this.currentTemplate);
             }
@@ -6108,6 +6113,172 @@ class DreamHouseApp {
         if (!modal) return;
         modal.classList.add('hidden');
         document.body.style.overflow = '';
+    }
+
+    /**
+     * Khởi tạo Sân khấu Kiến trúc Nổi Hero Showcase v8.8
+     */
+    initHeroShowcase() {
+        const stage = document.getElementById('hero-showcase-stage');
+        if (!stage) return;
+
+        // Lựa chọn 3 đồ án kiến trúc đại diện xuất sắc nhất
+        if (this.templates && this.templates.length > 0) {
+            const bt02 = this.templates.find(t => t.slug === 'biet-thu-tan-co-dien-bt02' || (t.slug && t.slug.includes('bt02')));
+            const bt01 = this.templates.find(t => t.slug === 'biet-thu-vuon-bt01' || (t.slug && t.slug.includes('bt01')));
+            const np01 = this.templates.find(t => t.slug === 'nha-pho-hien-dai-np01' || (t.slug && t.slug.includes('np01')));
+
+            this.featuredShowcaseTemplates = [
+                bt02 || this.templates[0],
+                bt01 || (this.templates[1] || this.templates[0]),
+                np01 || (this.templates[2] || this.templates[0])
+            ].filter(Boolean);
+        }
+
+        if (!this.featuredShowcaseTemplates || this.featuredShowcaseTemplates.length === 0) {
+            return;
+        }
+
+        // Render mẫu đầu tiên
+        this.updateHeroShowcase();
+
+        // Gán sự kiện cho các chấm tròn điều hướng (dots)
+        const dots = stage.querySelectorAll('.stage-dot');
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                e.preventDefault();
+                const idx = parseInt(dot.getAttribute('data-index'), 10);
+                if (!isNaN(idx) && idx !== this.heroShowcaseIndex) {
+                    this.heroShowcaseIndex = idx;
+                    this.updateHeroShowcase();
+                    this.restartHeroShowcaseTimer();
+                }
+            });
+        });
+
+        // Nút xem chi tiết & 3D
+        const exploreBtn = document.getElementById('hero-stage-explore-btn');
+        if (exploreBtn) {
+            exploreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const currentItem = this.featuredShowcaseTemplates[this.heroShowcaseIndex];
+                if (currentItem) {
+                    this.openDetailPanel(currentItem.id);
+                }
+            });
+        }
+
+        // Tag 3D tương tác ở góc ảnh
+        const tag3D = document.getElementById('hero-stage-3d-tag');
+        if (tag3D) {
+            tag3D.addEventListener('click', (e) => {
+                e.preventDefault();
+                const currentItem = this.featuredShowcaseTemplates[this.heroShowcaseIndex];
+                if (currentItem) {
+                    this.openDetailPanel(currentItem.id);
+                    setTimeout(() => {
+                        const viewerBtn = document.querySelector('.visual-nav-btn[data-visual-tab="viewer"]');
+                        if (viewerBtn) viewerBtn.click();
+                    }, 220);
+                }
+            });
+        }
+
+        // Click trực tiếp vào khung ảnh
+        const stageMedia = stage.querySelector('.hero-stage-media');
+        if (stageMedia) {
+            stageMedia.style.cursor = 'pointer';
+            stageMedia.addEventListener('click', (e) => {
+                if (e.target.closest('#hero-stage-3d-tag')) return;
+                const currentItem = this.featuredShowcaseTemplates[this.heroShowcaseIndex];
+                if (currentItem) {
+                    this.openDetailPanel(currentItem.id);
+                }
+            });
+        }
+
+        // Tự động xoay chuyển đồ án sau mỗi 7 giây (tạm dừng khi hover chuột)
+        this.startHeroShowcaseTimer();
+        stage.addEventListener('mouseenter', () => this.stopHeroShowcaseTimer());
+        stage.addEventListener('mouseleave', () => this.startHeroShowcaseTimer());
+    }
+
+    startHeroShowcaseTimer() {
+        this.stopHeroShowcaseTimer();
+        this.heroShowcaseTimer = setInterval(() => {
+            if (!this.featuredShowcaseTemplates || this.featuredShowcaseTemplates.length <= 1) return;
+            this.heroShowcaseIndex = (this.heroShowcaseIndex + 1) % this.featuredShowcaseTemplates.length;
+            this.updateHeroShowcase();
+        }, 7000);
+    }
+
+    stopHeroShowcaseTimer() {
+        if (this.heroShowcaseTimer) {
+            clearInterval(this.heroShowcaseTimer);
+            this.heroShowcaseTimer = null;
+        }
+    }
+
+    restartHeroShowcaseTimer() {
+        this.stopHeroShowcaseTimer();
+        this.startHeroShowcaseTimer();
+    }
+
+    /**
+     * Cập nhật thông tin đồ án trên Sân khấu Hero Showcase
+     */
+    updateHeroShowcase(isLanguageChangeOnly = false) {
+        if (!this.featuredShowcaseTemplates || this.featuredShowcaseTemplates.length === 0) return;
+        const item = this.featuredShowcaseTemplates[this.heroShowcaseIndex];
+        if (!item) return;
+
+        const isVi = (window.i18n ? window.i18n.getLang() : 'vi') === 'vi';
+
+        const stageImg = document.getElementById('hero-stage-img');
+        const stageTypeText = document.getElementById('hero-stage-type-text');
+        const stageTitle = document.getElementById('hero-stage-title');
+        const stageDims = document.getElementById('hero-stage-dims');
+        const stageFloors = document.getElementById('hero-stage-floors');
+        const stageCost = document.getElementById('hero-stage-cost');
+
+        if (stageImg && !isLanguageChangeOnly) {
+            stageImg.style.opacity = '0.35';
+            stageImg.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                stageImg.src = item.photo_path || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80';
+                stageImg.alt = isVi ? item.name_vi : (item.name_en || item.name_vi);
+                stageImg.style.opacity = '1';
+                stageImg.style.transform = 'scale(1)';
+            }, 180);
+        }
+
+        if (stageTypeText) {
+            stageTypeText.textContent = isVi ? (item.style_vi || item.type) : (item.style_en || item.style_vi || item.type);
+        }
+
+        if (stageTitle) {
+            stageTitle.textContent = isVi ? item.name_vi : (item.name_en || item.name_vi);
+        }
+
+        if (stageDims) {
+            stageDims.textContent = `${item.width_m}m × ${item.depth_m}m`;
+        }
+
+        if (stageFloors) {
+            stageFloors.textContent = `${item.floors} ${isVi ? 'Tầng' : 'Floors'}`;
+        }
+
+        if (stageCost) {
+            stageCost.textContent = window.i18n.formatCost(item.cost_estimate_vnd);
+        }
+
+        // Cập nhật trạng thái active của dots
+        const dots = document.querySelectorAll('.hero-stage-pagination .stage-dot');
+        dots.forEach((dot, idx) => {
+            const isActive = idx === this.heroShowcaseIndex;
+            dot.classList.toggle('active', isActive);
+            dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
     }
 }
 

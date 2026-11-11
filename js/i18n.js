@@ -380,7 +380,23 @@ const I18N = {
         brochure_page2_title: "2. Mặt Bằng Kỹ Thuật & Công Năng Từng Tầng",
         brochure_page3_title: "3. Khái Toán Kinh Phí & Tiêu Chuẩn Thi Công",
         brochure_seal_text: "HỒ SƠ THIẾT KẾ DREAM HOUSE ARCHITECTURAL DESIGN",
-        brochure_signature_title: "KTS. Võ Quốc Việt"
+        brochure_signature_title: "KTS. Võ Quốc Việt",
+
+        // Hero Redesign & Ticker v8.8
+        hero_badge_pill: "Đồ án kiến trúc & Khái toán 2026",
+        hero_stat_projects_num: "150+",
+        hero_stat_projects_label: "Đồ án thực tế",
+        hero_stat_cad_num: "100%",
+        hero_stat_cad_label: "Bản vẽ CAD Vector",
+        hero_stat_rating_num: "4.9★",
+        hero_stat_rating_label: "Gia chủ tin cậy",
+        hero_stage_badge_3d: "Mô hình 3D tương tác 360°",
+        hero_stage_explore: "Xem chi tiết & 3D →",
+        ticker_item_1: "Thực tế ảo 3D & Three.js Interactive",
+        ticker_item_2: "Bản vẽ kỹ thuật CAD Vector 1/100 TCXDVN",
+        ticker_item_3: "Dự toán bóc tách diện tích quy đổi Sxd 2026",
+        ticker_item_4: "Thước Lỗ Ban 3 dải đo & La bàn Bát Trạch",
+        ticker_item_5: "Xuất hồ sơ Concept PDF Brochure 1-Click"
     },
     en: {
         site_name: "Dream House",
@@ -761,7 +777,23 @@ const I18N = {
         brochure_page2_title: "2. Technical Floor Plans & Room Schedule",
         brochure_page3_title: "3. Cost Estimates & Material Standards",
         brochure_seal_text: "CERTIFIED DREAM HOUSE ARCHITECTURAL DESIGN",
-        brochure_signature_title: "Arch. Vo Quoc Viet"
+        brochure_signature_title: "Arch. Vo Quoc Viet",
+
+        // Hero Redesign & Ticker v8.8
+        hero_badge_pill: "Architectural Dossiers & 2026 Estimates",
+        hero_stat_projects_num: "150+",
+        hero_stat_projects_label: "Real Projects",
+        hero_stat_cad_num: "100%",
+        hero_stat_cad_label: "Vector CAD Plans",
+        hero_stat_rating_num: "4.9★",
+        hero_stat_rating_label: "Homeowner Trust",
+        hero_stage_badge_3d: "Interactive 3D 360°",
+        hero_stage_explore: "View Details & 3D →",
+        ticker_item_1: "Interactive 3D Three.js Spatial Experience",
+        ticker_item_2: "TCXDVN Standard 1/100 Vector CAD Blueprints",
+        ticker_item_3: "Transparent 2026 Equivalent Area Cost Engine",
+        ticker_item_4: "3-Tier Lu Ban Ruler & 8-Mansion Feng Shui",
+        ticker_item_5: "1-Click Architectural Concept PDF Dossier"
     }
 };
 
