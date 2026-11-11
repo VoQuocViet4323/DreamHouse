@@ -596,7 +596,11 @@
                 .eq('id', session.user.id)
                 .single();
 
-            if (profErr || !profile || profile.role !== 'admin') {
+            const isUserAdmin = (profile && profile.role === 'admin') ||
+                                (session.user.user_metadata && session.user.user_metadata.role === 'admin') ||
+                                (session.user.app_metadata && session.user.app_metadata.role === 'admin');
+
+            if (!isUserAdmin) {
                 if (window.toast) window.toast.error('Bạn không có quyền quản trị viên! Đang quay lại trang chủ...');
                 setTimeout(() => { window.location.href = 'index.html'; }, 1500);
                 return;
