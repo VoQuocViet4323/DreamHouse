@@ -978,6 +978,20 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Tăng tham số phiên bản cache-busting lên **`?v=8.1`** trên toàn bộ `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 56** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 65: Nghiên Cứu Đối Chuẩn Thị Trường (Benchmarking) & Định Hình Lộ Trình Nâng Cấp Tính Năng Toàn Diện
+- [x] **Nghiên cứu đối chiếu Dream House với các nền tảng kiến trúc hàng đầu trong nước và quốc tế:**
+  - **Đối thủ nội địa khảo sát:** Betaviet (`betaviet.vn`), WEDO (`wedo.vn`), Space T (`spacet.vn`).
+  - **Đối thủ quốc tế khảo sát:** ArchitecturalDesigns (`architecturaldesigns.com`), Houseplans (`houseplans.com`), Floorplanner.
+  - **Kết quả đối chuẩn (Benchmarking):**
+    + *Thế mạnh vượt trội của Dream House:* Nền tảng 3D tương tác WebGL trực tiếp (zero-lag), giao diện Luxury Bento chuẩn Dark/Light Mode, chuông thông báo phân quyền 2 luồng cá nhân hóa, hệ thống quản trị Supabase CMS thời gian thực.
+    + *5 tính năng mũi nhọn cần bổ sung để dẫn đầu thị trường:*
+      1. **Bộ tính dự toán chi phí tương tác (Interactive Cost Calculator):** Cho phép khách hàng trượt chọn mức vật tư (Tiết kiệm / Tiêu chuẩn / Cao cấp), bóc tách phần thô, hoàn thiện, ME và phát sinh.
+      2. **Bóc tách mặt bằng 2D bố trí từng tầng (Floor-by-Floor Layout Explorer):** Tab xem mặt bằng tầng 1, tầng 2, mái có chú thích diện tích từng phòng.
+      3. **Tiện ích phong thủy bản địa hóa:** Thước Lỗ Ban online (52.2cm, 42.9cm, 38.8cm) và tra cứu hướng nhà/năm xây hợp tuổi gia chủ.
+      4. **Công cụ so sánh đối đầu mẫu nhà (Side-by-Side Compare):** So sánh 2-3 mẫu về kích thước, công năng, đơn giá thi công.
+      5. **Xuất hồ sơ tóm tắt 1-Click (PDF Concept Brochure):** Tải bản vẽ phối cảnh kèm thông số và dự toán có logo DreamHouse và hotline KTS.
+  - Tạo tài liệu phân tích chuyên sâu tại [`dreamhouse_benchmark_comparison.md`](file:///C:/Users/IT/.gemini/antigravity/brain/1585f13f-b91c-4a12-abb0-1185d116e3ab/dreamhouse_benchmark_comparison.md).
+
 
 
 
