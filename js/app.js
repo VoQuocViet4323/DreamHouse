@@ -1077,14 +1077,20 @@ class DreamHouseApp {
                         <img src="${item.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80'}" 
                              alt="${name}" loading="lazy" />
                         <span class="card-badge">${displayBadge}</span>
-                        <!-- Nút Thêm So Sánh Nổi (Feature 4) -->
+                        <!-- Nút Thêm So Sánh Nổi (Feature 4: Circular Glassmorphic Button) -->
                         <button type="button" 
                                 class="card-compare-btn ${isCompared ? 'active' : ''}" 
                                 data-compare-id="${item.id}" 
+                                data-tooltip="${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}"
                                 aria-label="${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}"
                                 title="${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}">
-                            <span>⚖️</span>
-                            <span>${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}</span>
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+                                <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+                                <path d="M7 21h10"/>
+                                <path d="M12 3v18"/>
+                                <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+                            </svg>
                         </button>
                         <div class="u022 card-fav-u022 ${isFav ? 'is-on' : ''}" data-fav-id="${item.id}">
                             <div class="u022-scaler">

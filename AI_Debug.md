@@ -1060,6 +1060,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   3. **Tự động đồng bộ khi chuyển tài khoản:** Lồng gọi `this._renderNotificationList()` vào `updateAuthUI()` để khi đăng nhập/đăng xuất lập tức cập nhật lại danh sách thông báo tương ứng với vai trò.
   4. Nâng tham số cache-busting lên `?v=8.1` trên toàn bộ dự án (`index.html` và `admin.html`).
 
+### 🔴 Lỗi 57: Nút So Sánh trên thẻ mẫu nhà bị đặt đè lên huy hiệu (Badge) loại nhà gây xung đột thị giác và che khuất nội dung
+- **Hiện tượng:** Khi hiển thị danh sách mẫu nhà ở Thư viện, nút bấm so sánh dạng viên thuốc mang nhãn `[⚖️ So sánh]` bị đặt tại góc trên cùng bên trái (`top: 12px; left: 12px;`), đè trực tiếp lên huy hiệu phân loại nhà (`.card-badge` tại `top: 14px; left: 14px;` như "Nhà phố", "Biệt thự"). Nút chiếm diện tích lớn, che khuất chữ của huy hiệu và làm mất đi vẻ thẩm mỹ tinh giản, cao cấp của ảnh phối cảnh.
+- **Nguyên nhân cốt lõi:**
+  1. CSS vị trí `.card-compare-btn` dùng tọa độ tuyệt đối `top: 12px; left: 12px;` trùng khớp với tọa độ của `.card-badge`.
+  2. Nút chứa cả icon và chuỗi văn bản dài ("⚖️ So sánh") gây cồng kềnh, bất cân xứng với nút thả tim yêu thích tròn $40\text{px}$ ở góc đối diện.
+- **Cách khắc phục dứt điểm:**
+  1. **Tách biệt vị trí hoàn toàn:**
+     - Giữ nguyên góc trên bên trái (`top: 14px; left: 14px;`) cho huy hiệu `.card-badge` để luôn hiển thị thoáng đãng 100%.
+     - Di chuyển nút so sánh sang góc trên bên phải, nằm song song bên cạnh nút Yêu Thích hình tròn (`top: 14px; right: 60px;`).
+  2. **Chuẩn hóa thiết kế tròn kính mờ (Circular Glassmorphic Duo):**
+     - Đổi nút so sánh thành dạng hình tròn $40\text{px} \times 40\text{px}$ đồng bộ chuẩn với nút Heart Like (`.card-fav-u022`).
+     - Sử dụng icon vector SVG cán cân đối chuẩn sắc nét (Lucide/Feather scale icon), loại bỏ text tĩnh che ảnh.
+     - Tích hợp Tooltip nổi nhẹ (Floating Tooltip) khi rê chuột (`data-tooltip="So sánh"` / `data-tooltip="Đã chọn so sánh"`).
+     - Trạng thái kích hoạt (`.active`): Chuyển màu vàng gold sang trọng với viền sáng neon (`box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.3)`).
+  3. Tăng tham số cache-busting lên `?v=8.6` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

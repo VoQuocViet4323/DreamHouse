@@ -1097,6 +1097,18 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Độ tương phản cao, chữ rõ nét trên cả Dark Mode lẫn Light Mode (Lỗi 54 & 55).
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.5`** trên `index.html` và `admin.html`.
 
+### Giai đoạn 70: Tối Ưu Hóa & Tái Thiết Kế UI Nút So Sánh Trên Thẻ Mẫu Nhà (Card Compare Button UI Redesign & Glassmorphic Duo v8.6)
+- [x] **Xử lý triệt để lỗi xung đột vị trí hiển thị (Lỗi 57 trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md)):**
+  - Khắc phục hiện tượng nút so sánh đè lên huy hiệu loại hình nhà (`.card-badge`) ở góc trên cùng bên trái.
+  - Trả lại không gian hiển thị thông thoáng 100% cho `.card-badge` ("Nhà phố", "Biệt thự", "Nhà cấp 4").
+  - Di chuyển nút so sánh sang góc trên bên phải (`top: 14px; right: 60px;`), nằm liền kề bên cạnh nút Thả Tim Yêu Thích (`.card-fav-u022` tại `top: 14px; right: 14px;`).
+- [x] **Chuẩn hóa thiết kế tròn kính mờ (Circular Glassmorphic Duo):**
+  - Kích thước chuẩn tròn $40\text{px} \times 40\text{px}$ đồng bộ hoàn hảo với nút Yêu Thích.
+  - Sử dụng biểu tượng cán cân vector SVG sắc nét (Lucide Scale Icon), loại bỏ nhãn chữ cồng kềnh trên ảnh.
+  - Bổ sung hiệu ứng Tooltip nổi thông minh khi rê chuột (`data-tooltip="So sánh mẫu này"` / `data-tooltip="Đã chọn so sánh"`).
+  - Trạng thái kích hoạt (`.active`): Nền vàng gold rực rỡ kèm vòng sáng neon `rgba(234, 179, 8, 0.3)`.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.6`** trên `index.html` và `admin.html`.
+
 
 
 
