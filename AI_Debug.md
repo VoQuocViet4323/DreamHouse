@@ -1164,6 +1164,30 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   3. **Tối ưu CSS cho `body`:** Chuyển `overflow-x: hidden` sang `overflow-x: clip;` trên thẻ `body` để chống tràn ngang hoàn hảo mà không can thiệp hay phá vỡ `position: sticky` của thanh `.site-header`.
   4. Nâng tham số cache-busting lên `?v=9.3` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 62: Giao diện Thước Lỗ Ban 3 dải đo bị chật chội, chữ tên cung bị ép sát, chồng chéo và cắt cụt ("...") cực kỳ khó nhìn
+- **Hiện tượng:** Trong Tiện ích Phong Thủy (`#fengshui-modal`), 3 dải Thước Lỗ Ban (52.2 cm Thông Thủy, 42.9 cm Dương Trạch, 38.8 cm Âm Phần) hiển thị rất bí bách, tên các cung lớn và cung nhỏ bị ép vào các khối hộp siêu hẹp chỉ rộng từ 21px đến 35px. Tên cung bị vỡ dòng, ký tự chồng chéo lên nhau, tên cung phụ bị cắt cụt bằng dấu "..." (ví dụ: `Tán..`, `Thoát..`, `Thi..`). Toàn bộ thước thiếu vạch chia milimet/centimet chuẩn kiến trúc, kim chỉ thị đơn điệu và người dùng không thể kéo rê thước trực tiếp.
+- **Nguyên nhân cốt lõi:**
+  1. **Tỉ lệ scale kích thước `pxPerMm` quá bé (`0.55`):** Với hệ số `0.55`, một cung của thước 38.8 cm chỉ đạt `38.8 × 0.55 = 21.34px`, thước 42.9 cm chỉ đạt `29.5px`, thước 52.2 cm chỉ đạt `35.88px`. Không thể nào hiển thị chữ tiếng Việt có dấu rõ ràng trong bề rộng 21px–29px.
+  2. **Chiều cao khung thước `.ruler-tape-viewport` quá thấp (52px):** Không đủ không gian để tách biệt vạch đo centimet, tên cung lớn và phân ô cung nhỏ.
+  3. **Cơ chế render cung con gộp chung và cắt cụt chuỗi thô sơ:** Code cũ chỉ lấy `${cung.minors[0]}..` thay vì chia ô chuẩn xác cho từng cung nhỏ.
+  4. **Thiếu vạch chia thước thực tế và tương tác kéo trực tiếp:** Người dùng chỉ có thể dùng slider hoặc nhập số, không có cảm giác kéo thước cuộn vật lý thực tế.
+- **Cách khắc phục dứt điểm:**
+  1. **Nâng hệ số scale kiến trúc lên `pxPerMm = 2.0` (tăng gấp gần 4 lần):**
+     - Thước 52.2 cm: Mỗi Cung lớn rộng **130.5px**; mỗi Cung nhỏ rộng **26.1px**.
+     - Thước 42.9 cm: Mỗi Cung lớn rộng **107.25px**; mỗi Cung nhỏ rộng **26.8px**.
+     - Thước 38.8 cm: Mỗi Cung lớn rộng **77.6px**; mỗi Cung nhỏ rộng **19.4px**.
+     Không gian cực kỳ thoáng đãng, chữ to rõ, không còn bất kỳ hiện tượng xô lệch hay cắt cụt nào.
+  2. **Tái cấu trúc thước 3 tầng đa lớp chuẩn Thước Cuộn Kiến Trúc Thực Tế (Chiều cao nâng lên 88px):**
+     - **Tầng 1 (22px) - Thước Centimet & Milimet:** Khắc các vạch chia mm, vạch 5mm và in số centimet thực tế (`208`, `209`, `210`, `211`, `212`...) chạy đồng bộ với kích thước thực.
+     - **Tầng 2 (36px) - Hàng Cung Lớn:** Hiển thị tên Cung Lớn viết hoa to đậm kèm huy hiệu `[CÁT]` hoặc `[HUNG]`. Màu Đỏ Cát dùng gradient son vermilion `#dc2626` sang `#991b1b`, màu Hung dùng gradient than kỹ thuật `#1e293b` sang `#0f172a`.
+     - **Tầng 3 (30px) - Hàng Cung Nhỏ:** Tách riêng từng ô cung nhỏ với đường phân cách viền mờ. Tên 2 từ tiếng Việt được xếp 2 dòng gọn gàng. Ô cung nhỏ đang trúng tâm kim đo tự động kích hoạt hiệu ứng phát sáng vàng kim hoàng gia `is-active-minor` (`box-shadow: inset 0 0 0 1.5px #fbbf24`).
+  3. **Bổ sung Huy hiệu Tọa độ Laser & Huy hiệu Trạng thái Trực tiếp:**
+     - Tại đỉnh Kim chỉ thị trung tâm: Đặt huy hiệu tọa độ `hairline-coord-badge` hiển thị trực tiếp giá trị đo dạng `2120 mm (212.0 cm)` kèm mũi tên trỏ chuẩn xác.
+     - Tại tiêu đề từng thước: Bổ sung thanh trạng thái tức thì `ruler-live-pill` (ví dụ: `✓ CÁT · Quý Nhân (Tự Tại)` hoặc `✕ HUNG · Hiểm Họa (Tán Tài)`) giúp người dùng nhìn lướt là biết ngay cát/hung mà không cần nheo mắt đọc thước.
+  4. **Tích hợp cảm ứng kéo rê đa điểm (Mouse Drag & Touch Swipe):**
+     - Cho phép người dùng bấm giữ chuột hoặc vuốt ngón tay trực tiếp trên sân khấu Thước Lỗ Ban để cuộn thước mượt mà theo thời gian thực (tự động đồng bộ với ô nhập số, thanh slider và bảng chẩn đoán).
+  5. Nâng tham số cache-busting lên `?v=9.4` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

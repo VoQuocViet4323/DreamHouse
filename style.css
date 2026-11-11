@@ -11593,99 +11593,192 @@ body:not(.dark-theme) .fs-chip:hover {
 /* Sân Khấu 3 Thước Lỗ Ban Chạy Song Song */
 .luban-rulers-stage {
   position: relative;
-  padding: 18px 0;
+  padding: 34px 0 20px 0;
   border-radius: 18px;
-  background: #06080d;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   margin-bottom: 22px;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 3px 14px rgba(0, 0, 0, 0.7);
+  cursor: grab;
+  user-select: none;
+}
+
+.luban-rulers-stage.is-dragging {
+  cursor: grabbing;
 }
 
 body:not(.dark-theme) .luban-rulers-stage {
-  background: #0f172a;
+  background: #0d1527;
   border-color: #334155;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 3px 14px rgba(0, 0, 0, 0.5);
 }
 
-/* Kim Chỉ Thị Trung Tâm */
+/* Kim Chỉ Thị Trung Tâm Chuẩn Xác Màu Gold Laser & Huy Hiệu Tọa Độ */
 .luban-center-hairline {
   position: absolute;
   left: 50%;
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #eab308;
-  box-shadow: 0 0 12px rgba(234, 179, 8, 0.9), 0 0 24px rgba(234, 179, 8, 0.5);
+  background: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.95), 0 0 22px rgba(245, 158, 11, 0.6);
   transform: translateX(-50%);
-  z-index: 20;
+  z-index: 30;
   pointer-events: none;
 }
 
-.luban-center-hairline::before,
+.hairline-coord-badge {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 10px rgba(245, 158, 11, 0.4);
+  border: 1px solid #fde047;
+}
+
+.hairline-coord-badge::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #d97706;
+}
+
 .luban-center-hairline::after {
   content: "";
   position: absolute;
+  bottom: 0;
   left: 50%;
   width: 0;
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
+  border-bottom: 8px solid #fbbf24;
   transform: translateX(-50%);
-}
-
-.luban-center-hairline::before {
-  top: 0;
-  border-top: 8px solid #eab308;
-}
-
-.luban-center-hairline::after {
-  bottom: 0;
-  border-bottom: 8px solid #eab308;
 }
 
 /* Khối từng thước đo */
 .ruler-block {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   padding: 0 16px;
 }
 
 .ruler-tagline {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ruler-tagline-left {
+  display: flex;
+  align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .ruler-badge {
-  padding: 2px 8px;
-  border-radius: 5px;
-  font-size: 0.7rem;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
-.badge-522 { background: #3b82f6; color: #ffffff; }
-.badge-429 { background: #10b981; color: #ffffff; }
-.badge-388 { background: #8b5cf6; color: #ffffff; }
+.badge-522 { background: #2563eb; color: #ffffff; }
+.badge-429 { background: #059669; color: #ffffff; }
+.badge-388 { background: #7c3aed; color: #ffffff; }
 
 .ruler-desc {
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   color: #94a3b8;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.ruler-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.ruler-live-pill.pill-good {
+  background: rgba(220, 38, 38, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+
+.ruler-live-pill.pill-good strong {
+  color: #ffffff;
+}
+
+.ruler-live-pill.pill-good .pill-icon {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.ruler-live-pill.pill-bad {
+  background: rgba(100, 116, 139, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #94a3b8;
+}
+
+.ruler-live-pill.pill-bad strong {
+  color: #e2e8f0;
+}
+
+.ruler-live-pill.pill-bad .pill-icon {
+  background: #475569;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+/* Thân Khung Thước (Ruler Tape Viewport) */
 .ruler-tape-viewport {
   position: relative;
-  height: 52px;
-  border-radius: 8px;
+  height: 88px;
+  border-radius: 10px;
   overflow: hidden;
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.08);
 }
 
 .ruler-tape-track {
@@ -11694,54 +11787,198 @@ body:not(.dark-theme) .luban-rulers-stage {
   left: 50%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   will-change: transform;
   transform: translateX(0);
 }
 
-.tape-cung {
+/* Tầng 1: Vạch Centimet & Milimet (Metric Scale) */
+.tape-metric-bar {
+  position: relative;
+  height: 22px;
+  background: #080d1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.metric-cm-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  pointer-events: none;
+}
+
+.metric-cm-val {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #cbd5e1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  line-height: 1.1;
+  margin-top: 1px;
+}
+
+.metric-tick {
+  position: absolute;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.metric-tick.tick-cm {
+  width: 1.5px;
+  height: 9px;
+  background: #fbbf24;
+}
+
+.metric-tick.tick-mid {
+  width: 1px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.metric-tick.tick-sub {
+  width: 1px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Tầng 2 & 3: Hàng Cung Lớn & Cung Nhỏ */
+.tape-cungs-row {
+  display: flex;
+  height: 66px;
+  box-sizing: border-box;
+}
+
+.tape-cung-block {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   flex-shrink: 0;
   box-sizing: border-box;
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0 4px;
-  text-align: center;
-  overflow: hidden;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.22);
   user-select: none;
+  overflow: hidden;
 }
 
-.tape-cung.cung-good {
-  background: rgba(239, 68, 68, 0.28);
-  color: #fca5a5;
-  border-top: 3px solid #ef4444;
+/* Cung Cát (Đỏ) */
+.tape-cung-block.cung-good {
+  background: linear-gradient(180deg, rgba(220, 38, 38, 0.88) 0%, rgba(153, 27, 27, 0.98) 100%);
+  border-top: 2px solid #ef4444;
 }
 
-.tape-cung.cung-bad {
-  background: rgba(15, 23, 42, 0.6);
-  color: #64748b;
-  border-top: 3px solid #475569;
+/* Cung Hung (Đen/Xám Than) */
+.tape-cung-block.cung-bad {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border-top: 2px solid #64748b;
+}
+
+/* Header Cung Lớn */
+.tape-major-header {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 4px;
+  box-sizing: border-box;
 }
 
 .tape-major-name {
-  font-size: 0.78rem;
-  font-weight: 800;
-  line-height: 1.1;
+  font-size: 0.86rem;
+  font-weight: 850;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-.tape-cung.cung-good .tape-major-name {
+.tape-cung-block.cung-good .tape-major-name {
   color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
 }
 
-.tape-minor-name {
-  font-size: 0.65rem;
+.tape-cung-block.cung-bad .tape-major-name {
+  color: #cbd5e1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.tape-cung-badge {
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+
+.tape-cung-block.cung-good .tape-cung-badge {
+  background: rgba(0, 0, 0, 0.35);
+  color: #fef08a;
+  border: 1px solid rgba(254, 240, 138, 0.4);
+}
+
+.tape-cung-block.cung-bad .tape-cung-badge {
+  background: rgba(0, 0, 0, 0.4);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* Hàng Cung Nhỏ */
+.tape-minor-row {
+  display: flex;
+  height: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  box-sizing: border-box;
+}
+
+.tape-minor-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.22);
+  padding: 1px 1px;
+  box-sizing: border-box;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tape-minor-cell:last-child {
+  border-right: none;
+}
+
+.tape-minor-cell .minor-w {
+  font-size: 8.5px;
   font-weight: 600;
-  opacity: 0.85;
-  margin-top: 2px;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.tape-cung-block.cung-good .tape-minor-cell .minor-w {
+  color: #fed7aa;
+}
+
+.tape-cung-block.cung-bad .tape-minor-cell .minor-w {
+  color: #94a3b8;
+}
+
+/* Cung Nhỏ Đang Được Chọn (Active) */
+.tape-minor-cell.is-active-minor {
+  background: rgba(234, 179, 8, 0.38) !important;
+  box-shadow: inset 0 0 0 1.5px #fbbf24;
+}
+
+.tape-minor-cell.is-active-minor .minor-w {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+  text-shadow: 0 0 4px rgba(251, 191, 36, 0.9);
 }
 
 /* Thẻ Đánh Giá Phân Tích (Diagnostic Card) */

@@ -4799,6 +4799,55 @@ class DreamHouseApp {
             });
         });
 
+        // Kéo thả thước tương tác trực tiếp trên sân khấu Thước Lỗ Ban
+        const stage = document.querySelector('.luban-rulers-stage');
+        if (stage) {
+            let isDragging = false;
+            let startX = 0;
+            let initialMm = 0;
+
+            const onPointerDown = (e) => {
+                isDragging = true;
+                startX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                initialMm = this._currentLubanMm || 2120;
+                stage.classList.add('is-dragging');
+            };
+
+            const onPointerMove = (e) => {
+                if (!isDragging) return;
+                const currentX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const deltaPx = currentX - startX;
+                // Kéo sang phải làm giảm mm, kéo sang trái làm tăng mm (1mm = 2px)
+                const deltaMm = Math.round(deltaPx / 2.0);
+                let newMm = initialMm - deltaMm;
+                newMm = Math.max(100, Math.min(8000, newMm));
+                this._currentLubanMm = newMm;
+
+                if (inputVal) {
+                    inputVal.value = this._lubanUnit === 'cm' ? (newMm / 10).toFixed(1) : newMm;
+                }
+                if (sliderVal) {
+                    sliderVal.value = Math.min(5000, Math.max(200, newMm));
+                }
+                this._updateLubanDisplay(newMm);
+            };
+
+            const onPointerUp = () => {
+                if (isDragging) {
+                    isDragging = false;
+                    stage.classList.remove('is-dragging');
+                }
+            };
+
+            stage.addEventListener('mousedown', onPointerDown);
+            window.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('mouseup', onPointerUp);
+
+            stage.addEventListener('touchstart', onPointerDown, { passive: true });
+            window.addEventListener('touchmove', onPointerMove, { passive: true });
+            window.addEventListener('touchend', onPointerUp);
+        }
+
         this._updateLubanDisplay(this._currentLubanMm);
     }
 
@@ -4809,8 +4858,11 @@ class DreamHouseApp {
         valMm = Math.round(valMm);
         const readout = document.getElementById('luban-readout');
         const diagDim = document.getElementById('diag-current-dim');
+        const coordBadge = document.getElementById('hairline-coord-badge');
+
         if (readout) readout.textContent = `${valMm} mm (${(valMm / 10).toFixed(1)} cm)`;
         if (diagDim) diagDim.textContent = `${valMm} mm`;
+        if (coordBadge) coordBadge.textContent = `${valMm} mm (${(valMm / 10).toFixed(1)} cm)`;
 
         // Render từng thước: 522, 429, 388
         const res522 = this._renderSingleRulerTape(522, valMm, 'tape-track-522');
@@ -4884,7 +4936,7 @@ class DreamHouseApp {
     }
 
     /**
-     * Render dải thước chuyển động theo tọa độ valMm
+     * Render dải thước chuyển động theo tọa độ valMm (Kiến trúc đa tầng 3-tier siêu nét)
      */
     _renderSingleRulerTape(rulerKey, valMm, trackElementId) {
         const track = document.getElementById(trackElementId);
@@ -4893,32 +4945,108 @@ class DreamHouseApp {
 
         const currentCung = this._evaluateCung(rulerKey, valMm);
 
-        // Render dải cung động: tạo đủ số lượng cung lân cận quanh điểm đo
-        // Ta dùng scale: 1mm = 0.5px trên màn hình
-        const pxPerMm = 0.55;
-        const cyclePx = table.cycle * pxPerMm;
+        // Quy chuẩn tỉ lệ kiến trúc: 1mm = 2.0px để các cung và vạch chia thoáng đãng, sắc nét
+        const pxPerMm = 2.0;
+        const spanMm = 450; // Quét vùng hiển thị 450mm mỗi bên tâm kim đo (tổng 900mm = 1800px)
+        const minMm = Math.max(0, valMm - spanMm);
+        const maxMm = valMm + spanMm;
 
-        // Sinh 3 chu kỳ lặp để cuộn mượt mà
-        let html = '';
-        for (let cycleIdx = 0; cycleIdx < 4; cycleIdx++) {
-            table.cungs.forEach((cung, idx) => {
-                const cungWidthPx = table.step * pxPerMm;
-                const goodClass = cung.isGood ? 'cung-good' : 'cung-bad';
-                html += `
-                    <div class="tape-cung ${goodClass}" style="width: ${cungWidthPx.toFixed(1)}px;">
-                        <span class="tape-major-name">${cung.name}</span>
-                        <span class="tape-minor-name">${cung.minors[0]}..</span>
+        const firstMajor = Math.floor(minMm / table.step);
+        const lastMajor = Math.ceil(maxMm / table.step);
+        const trackStartMm = firstMajor * table.step;
+
+        // 1. Sinh các khối Cung Lớn và phân chia Cung Nhỏ
+        let cungsHtml = '';
+        for (let k = firstMajor; k <= lastMajor; k++) {
+            const majorIdx = ((k % table.majorCount) + table.majorCount) % table.majorCount;
+            const cung = table.cungs[majorIdx];
+            const cungWidthPx = table.step * pxPerMm;
+            const isGood = cung.isGood;
+            const cungClass = isGood ? 'cung-good' : 'cung-bad';
+            const cungBadgeText = isGood ? 'CÁT' : 'HUNG';
+
+            // Sinh các ô Cung Nhỏ bên dưới
+            const numMinors = cung.minors.length;
+            const minorWidthPx = cungWidthPx / numMinors;
+            let minorsHtml = '';
+            for (let m = 0; m < numMinors; m++) {
+                const minorStartMm = (k * table.step) + (m * (table.step / numMinors));
+                const minorEndMm = minorStartMm + (table.step / numMinors);
+                const isActive = (valMm >= minorStartMm && valMm < minorEndMm);
+                const activeClass = isActive ? 'is-active-minor' : '';
+                const minorName = cung.minors[m];
+
+                // Tách 2 từ của tên cung nhỏ để hiển thị dạng 2 dòng cân đối, rõ ràng
+                const words = minorName.split(' ');
+                const labelHtml = words.length === 2
+                    ? `<span class="minor-w">${words[0]}</span><span class="minor-w">${words[1]}</span>`
+                    : `<span class="minor-w">${minorName}</span>`;
+
+                minorsHtml += `
+                    <div class="tape-minor-cell ${activeClass}" style="width: ${minorWidthPx.toFixed(1)}px;" title="${cung.name} - ${minorName}">
+                        ${labelHtml}
                     </div>
                 `;
-            });
-        }
-        track.innerHTML = html;
+            }
 
-        // Dịch chuyển track sao cho điểm valMm nằm chính giữa trung tâm
-        const offsetInCycleMm = valMm % table.cycle;
-        // Chu kỳ thứ 2 (chính giữa) làm mốc
-        const targetOffsetPx = -((1 * table.cycle + offsetInCycleMm) * pxPerMm);
+            cungsHtml += `
+                <div class="tape-cung-block ${cungClass}" style="width: ${cungWidthPx.toFixed(1)}px;">
+                    <div class="tape-major-header">
+                        <span class="tape-major-name">${cung.name}</span>
+                        <span class="tape-cung-badge">${cungBadgeText}</span>
+                    </div>
+                    <div class="tape-minor-row">
+                        ${minorsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. Sinh dải vạch Centimet & Milimet trên đầu thước
+        const startCm = Math.floor(trackStartMm / 10);
+        const endCm = Math.ceil(((lastMajor + 1) * table.step) / 10);
+        let metricTicksHtml = '';
+        for (let c = startCm; c <= endCm; c++) {
+            const cmMm = c * 10;
+            const posPx = (cmMm - trackStartMm) * pxPerMm;
+            // Vạch cm chính và số cm
+            metricTicksHtml += `
+                <div class="metric-cm-mark" style="left: ${posPx.toFixed(1)}px;">
+                    <span class="metric-cm-val">${c}</span>
+                    <div class="metric-tick tick-cm"></div>
+                </div>
+            `;
+            // Vạch 5mm (giữa 2 số cm)
+            const midMm = cmMm + 5;
+            const midPx = (midMm - trackStartMm) * pxPerMm;
+            metricTicksHtml += `
+                <div class="metric-tick tick-mid" style="left: ${midPx.toFixed(1)}px;"></div>
+            `;
+        }
+
+        const totalWidthPx = ((lastMajor + 1) * table.step - trackStartMm) * pxPerMm;
+
+        track.innerHTML = `
+            <div class="tape-metric-bar" style="width: ${totalWidthPx.toFixed(1)}px;">
+                ${metricTicksHtml}
+            </div>
+            <div class="tape-cungs-row" style="width: ${totalWidthPx.toFixed(1)}px;">
+                ${cungsHtml}
+            </div>
+        `;
+
+        // 3. Căn chỉnh dịch chuyển track sao cho tọa độ valMm khớp chuẩn xác tuyệt đối với kim đo (50%)
+        const targetOffsetPx = -((valMm - trackStartMm) * pxPerMm);
         track.style.transform = `translateX(${targetOffsetPx.toFixed(1)}px)`;
+
+        // 4. Cập nhật thẻ trạng thái trực tiếp trên header của thước
+        const livePill = document.getElementById(`ruler-live-pill-${rulerKey}`);
+        if (livePill) {
+            livePill.className = `ruler-live-pill ${currentCung.isGood ? 'pill-good' : 'pill-bad'}`;
+            livePill.innerHTML = currentCung.isGood
+                ? `<span class="pill-icon">✓ CÁT</span> <strong>${currentCung.cungName}</strong> · ${currentCung.minorName}`
+                : `<span class="pill-icon">✕ HUNG</span> <strong>${currentCung.cungName}</strong> · ${currentCung.minorName}`;
+        }
 
         return currentCung;
     }

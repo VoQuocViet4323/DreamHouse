@@ -1246,6 +1246,25 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.3`** trên `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 61** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 78: Đại Tu Giao Diện Thước Lỗ Ban Siêu Rõ Nét Chuẩn Thước Cuộn Kiến Trúc (Architecture-Grade Lu Ban Rulers UI Redesign v9.4)
+- [x] **Giải quyết triệt để phản hồi "khó nhìn quá, làm lại UI đi" (Thước Lỗ Ban 3 dải đo):**
+  - **Mở rộng tỉ lệ hiển thị `pxPerMm` lên `2.0` (tăng gần 4 lần so với `0.55` cũ):**
+    - Thước 52.2 cm (Thông Thủy): Mỗi Cung lớn rộng **130.5px**; mỗi Cung nhỏ rộng **26.1px**.
+    - Thước 42.9 cm (Dương Trạch): Mỗi Cung lớn rộng **107.25px**; mỗi Cung nhỏ rộng **26.8px**.
+    - Thước 38.8 cm (Âm Phần): Mỗi Cung lớn rộng **77.6px**; mỗi Cung nhỏ rộng **19.4px**.
+    - Chấm dứt 100% tình trạng chữ bị đè nát, chồng chéo hoặc cắt cụt bằng dấu "..." (`Tán..`, `Thoát..`).
+  - **Tái thiết kế Kiến trúc Thước 3 Tầng Đa Lớp (Chiều cao viewport nâng từ 52px lên 88px):**
+    - **Tầng 1 (22px) - Thước Centimet & Milimet Thực Tế:** Hiển thị vạch chia mm, vạch 5mm và in số centimet thực tế (`208`, `209`, `210`, `211`, `212`...) chạy đồng bộ với kích thước thực.
+    - **Tầng 2 (36px) - Hàng Cung Lớn Phong Thủy:** Tên Cung lớn viết hoa to đậm kèm huy hiệu `[CÁT]` hoặc `[HUNG]`. Màu Đỏ Cát dùng gradient son vermilion `#dc2626` sang `#991b1b`, màu Hung dùng gradient than kỹ thuật `#1e293b` sang `#0f172a`.
+    - **Tầng 3 (30px) - Hàng Cung Nhỏ Chi Tiết:** Tách riêng từng ô cung nhỏ với đường phân cách viền mờ. Tên 2 từ tiếng Việt được xếp 2 dòng gọn gàng. Ô cung nhỏ đang trúng tâm kim đo tự động kích hoạt hiệu ứng phát sáng vàng kim hoàng gia `is-active-minor` (`box-shadow: inset 0 0 0 1.5px #fbbf24`).
+  - **Nâng cấp Kim Chỉ Thị Laser Vàng Gold & Huy hiệu Tọa độ:**
+    - Đầu kim chỉ thị có huy hiệu tọa độ `hairline-coord-badge` hiển thị trực tiếp giá trị đo dạng `2120 mm (212.0 cm)` kèm mũi tên trỏ chuẩn xác.
+    - Tiêu đề từng thước có thanh trạng thái tức thì `ruler-live-pill` (ví dụ: `✓ CÁT · Quý Nhân (Tự Tại)` hoặc `✕ HUNG · Hiểm Họa (Tán Tài)`) giúp nhận biết cát/hung tức thì mà không cần nheo mắt đọc thước.
+  - **Tích hợp cảm ứng kéo rê đa điểm (Mouse Drag & Touch Swipe):**
+    - Cho phép bấm giữ chuột hoặc vuốt ngón tay trực tiếp trên sân khấu Thước Lỗ Ban để cuộn thước mượt mà theo thời gian thực (tự động đồng bộ với ô nhập số, thanh slider và bảng chẩn đoán).
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.4`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 62** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

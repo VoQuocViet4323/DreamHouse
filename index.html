@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9.3" />
+    <link rel="stylesheet" href="style.css?v=9.4" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=9.3"></script>
-    <script src="js/i18n.js?v=9.3"></script>
-    <script src="js/toast.js?v=9.3"></script>
-    <script src="js/viewer3d.js?v=9.3"></script>
-    <script src="js/app.js?v=9.3" defer></script>
+    <script src="js/config.js?v=9.4"></script>
+    <script src="js/i18n.js?v=9.4"></script>
+    <script src="js/toast.js?v=9.4"></script>
+    <script src="js/viewer3d.js?v=9.4"></script>
+    <script src="js/app.js?v=9.4" defer></script>
 
     <!-- Bảo đảm khi tải lại trang luôn hiển thị tại đầu mục (Scroll to Top on Load/Reload) -->
     <script>
@@ -2276,15 +2276,20 @@
                 </div>
 
                 <!-- SÂN KHẤU TRỰC QUAN 3 THƯỚC LỖ BAN CHẠY SONG SONG -->
-                <div class="luban-rulers-stage">
-                    <!-- Kim chỉ thị trung tâm chuẩn xác màu Gold -->
-                    <div class="luban-center-hairline" title="Tọa độ điểm đo"></div>
+                <div class="luban-rulers-stage" aria-label="Sân khấu trực quan 3 Thước Lỗ Ban kéo thả tương tác">
+                    <!-- Kim chỉ thị trung tâm chuẩn xác màu Gold Laser & Huy hiệu tọa độ -->
+                    <div class="luban-center-hairline" title="Tọa độ điểm đo">
+                        <div class="hairline-coord-badge" id="hairline-coord-badge">2120 mm</div>
+                    </div>
 
                     <!-- THƯỚC 1: 52.2 cm (Thông Thủy) -->
                     <div class="ruler-block" id="ruler-block-522">
                         <div class="ruler-tagline">
-                            <span class="ruler-badge badge-522">52.2 cm</span>
-                            <span class="ruler-desc" data-i18n="luban_ruler_522">Thước 52.2 cm: Thông Thủy (Cửa chính, Cửa sổ, Chiều cao lọt lòng phòng)</span>
+                            <div class="ruler-tagline-left">
+                                <span class="ruler-badge badge-522">52.2 cm</span>
+                                <span class="ruler-desc" data-i18n="luban_ruler_522">Thước 52.2 cm: Thông Thủy (Cửa chính, Cửa sổ, Chiều cao lọt lòng phòng)</span>
+                            </div>
+                            <span class="ruler-live-pill" id="ruler-live-pill-522"></span>
                         </div>
                         <div class="ruler-tape-viewport" id="tape-viewport-522">
                             <div class="ruler-tape-track" id="tape-track-522">
@@ -2296,8 +2301,11 @@
                     <!-- THƯỚC 2: 42.9 cm (Dương Trạch) -->
                     <div class="ruler-block" id="ruler-block-429">
                         <div class="ruler-tagline">
-                            <span class="ruler-badge badge-429">42.9 cm</span>
-                            <span class="ruler-desc" data-i18n="luban_ruler_429">Thước 42.9 cm: Dương Trạch (Bệ bếp, Bậc cầu thang, Giường, Khuôn cửa)</span>
+                            <div class="ruler-tagline-left">
+                                <span class="ruler-badge badge-429">42.9 cm</span>
+                                <span class="ruler-desc" data-i18n="luban_ruler_429">Thước 42.9 cm: Dương Trạch (Bệ bếp, Bậc cầu thang, Giường, Khuôn cửa)</span>
+                            </div>
+                            <span class="ruler-live-pill" id="ruler-live-pill-429"></span>
                         </div>
                         <div class="ruler-tape-viewport" id="tape-viewport-429">
                             <div class="ruler-tape-track" id="tape-track-429">
@@ -2309,8 +2317,11 @@
                     <!-- THƯỚC 3: 38.8 cm (Âm Phần / Bàn Thờ) -->
                     <div class="ruler-block" id="ruler-block-388">
                         <div class="ruler-tagline">
-                            <span class="ruler-badge badge-388">38.8 cm</span>
-                            <span class="ruler-desc" data-i18n="luban_ruler_388">Thước 38.8 cm: Âm Phần & Bàn Thờ (Bàn thờ gia tiên, Tủ thờ, Khánh thờ)</span>
+                            <div class="ruler-tagline-left">
+                                <span class="ruler-badge badge-388">38.8 cm</span>
+                                <span class="ruler-desc" data-i18n="luban_ruler_388">Thước 38.8 cm: Âm Phần & Bàn Thờ (Bàn thờ gia tiên, Tủ thờ, Khánh thờ)</span>
+                            </div>
+                            <span class="ruler-live-pill" id="ruler-live-pill-388"></span>
                         </div>
                         <div class="ruler-tape-viewport" id="tape-viewport-388">
                             <div class="ruler-tape-track" id="tape-track-388">
