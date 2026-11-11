@@ -98,6 +98,11 @@
     - **Cảm Nhận Gia Chủ Thực Tế (`#testimonials-section`):** Lời chứng thực 5 sao `★★★★★` chân thực từ các gia chủ tại Hà Nội, TP.HCM và Đà Nẵng.
     - **Chân Trang 4 Cột Đẳng Cấp (Signature 4-Column Footer):** Nhận diện thương hiệu, điều hướng nhanh, năng lực công nghệ và kênh liên lạc trực tiếp KTS.
 
+15. **Hệ Thống Động Cột Trái Hero (Dynamic Hero Left Engine - v9.0):**
+    - **Từ khóa lật xoay động trong tiêu đề:** Tự động chuyển đổi lật 3D giữa các phong cách sống (*lý tưởng ➔ thượng lưu ➔ chuẩn phong thủy ➔ đậm bản sắc ➔ bền vững*).
+    - **Bộ đếm số chạy cuộn mượt mà (Rolling Counter Odometer):** Hiệu ứng cuộn số mượt mà từ 0 lên 150+ đồ án, 100% CAD, 4.9★ uy tín.
+    - **Vi tương tác nút bấm:** Mũi tên nhún nảy lơ lửng, tia sét phát quang, la bàn tự động xoay và vệt sáng kim loại quét ngang sang trọng.
+
 ---
 
 ## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)

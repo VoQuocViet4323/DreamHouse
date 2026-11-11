@@ -20,6 +20,9 @@ class DreamHouseApp {
         this.heroShowcaseIndex = 0;
         this.heroShowcaseTimer = null;
         this.featuredShowcaseTemplates = [];
+        this.heroWordIndex = 0;
+        this.heroWordTimer = null;
+        this.heroCountersRun = false;
 
         this.init();
     }
@@ -70,6 +73,8 @@ class DreamHouseApp {
         await this.loadTemplates();
         this.renderGallery();
         this.initHeroShowcase();
+        this.initHeroRotatingWords();
+        this.initHeroCounterRoll();
 
         // Khởi tạo 3D viewer khi DOM sẵn sàng
         setTimeout(() => {
@@ -82,6 +87,7 @@ class DreamHouseApp {
         window.addEventListener('languageChanged', () => {
             this.renderGallery();
             this.updateHeroShowcase(true);
+            this.updateHeroRotatingWordLang();
             if (this.currentTemplate) {
                 this.updateDetailPanelContent(this.currentTemplate);
             }
@@ -6279,6 +6285,120 @@ class DreamHouseApp {
             dot.classList.toggle('active', isActive);
             dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
         });
+    }
+
+    /**
+     * Khởi tạo hiệu ứng chữ động xoay chuyển (Dynamic Rotating Keyword)
+     */
+    initHeroRotatingWords() {
+        const wordEl = document.getElementById('hero-rotating-word');
+        if (!wordEl) return;
+
+        const wordsVi = ['lý tưởng', 'thượng lưu', 'chuẩn phong thủy', 'đậm bản sắc', 'bền vững'];
+        const wordsEn = ['of your dreams', 'of true luxury', 'in Feng Shui harmony', 'of unique identity', 'built to endure'];
+
+        this.heroWordIndex = 0;
+
+        if (this.heroWordTimer) {
+            clearInterval(this.heroWordTimer);
+        }
+
+        const headlineEl = document.getElementById('hero-headline');
+        let isPaused = false;
+        if (headlineEl) {
+            headlineEl.addEventListener('mouseenter', () => { isPaused = true; });
+            headlineEl.addEventListener('mouseleave', () => { isPaused = false; });
+        }
+
+        this.heroWordTimer = setInterval(() => {
+            if (isPaused) return;
+            const isVi = (window.i18n ? window.i18n.getLang() : 'vi') === 'vi';
+            const list = isVi ? wordsVi : wordsEn;
+
+            this.heroWordIndex = (this.heroWordIndex + 1) % list.length;
+            const nextWord = list[this.heroWordIndex];
+
+            // Animation: Slide out upwards
+            wordEl.classList.remove('slide-in', 'slide-in-prepare');
+            wordEl.classList.add('slide-out');
+
+            setTimeout(() => {
+                wordEl.textContent = nextWord;
+                wordEl.classList.remove('slide-out');
+                wordEl.classList.add('slide-in-prepare');
+                void wordEl.offsetWidth; // Force reflow
+                wordEl.classList.remove('slide-in-prepare');
+                wordEl.classList.add('slide-in');
+            }, 300);
+        }, 3200);
+    }
+
+    updateHeroRotatingWordLang() {
+        const wordEl = document.getElementById('hero-rotating-word');
+        if (!wordEl) return;
+        const wordsVi = ['lý tưởng', 'thượng lưu', 'chuẩn phong thủy', 'đậm bản sắc', 'bền vững'];
+        const wordsEn = ['of your dreams', 'of true luxury', 'in Feng Shui harmony', 'of unique identity', 'built to endure'];
+        const isVi = (window.i18n ? window.i18n.getLang() : 'vi') === 'vi';
+        const list = isVi ? wordsVi : wordsEn;
+        wordEl.textContent = list[this.heroWordIndex % list.length];
+    }
+
+    /**
+     * Khởi tạo hiệu ứng cuộn số mượt mà (Animated Rolling Counters)
+     */
+    initHeroCounterRoll() {
+        const pEl = document.getElementById('hero-counter-projects');
+        const cEl = document.getElementById('hero-counter-cad');
+        const rEl = document.getElementById('hero-counter-rating');
+        if (!pEl && !cEl && !rEl) return;
+
+        const animateCounter = (el, target, isDecimal = false, duration = 1800) => {
+            if (!el) return;
+            const startTime = performance.now();
+            const startVal = 0;
+
+            const step = (now) => {
+                const progress = Math.min((now - startTime) / duration, 1);
+                // Easing out cubic: 1 - pow(1 - progress, 3)
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const currentVal = startVal + (target - startVal) * easeProgress;
+
+                if (isDecimal) {
+                    el.textContent = currentVal.toFixed(1);
+                } else {
+                    el.textContent = Math.round(currentVal);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = isDecimal ? target.toFixed(1) : target;
+                }
+            };
+
+            requestAnimationFrame(step);
+        };
+
+        const runCounters = () => {
+            if (this.heroCountersRun) return;
+            this.heroCountersRun = true;
+            if (pEl) animateCounter(pEl, 150, false, 1800);
+            if (cEl) animateCounter(cEl, 100, false, 1800);
+            if (rEl) animateCounter(rEl, 4.9, true, 1800);
+        };
+
+        const metricsSection = document.getElementById('hero-trust-metrics');
+        if ('IntersectionObserver' in window && metricsSection) {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    runCounters();
+                    observer.disconnect();
+                }
+            }, { threshold: 0.2 });
+            observer.observe(metricsSection);
+        } else {
+            setTimeout(runCounters, 400);
+        }
     }
 }
 

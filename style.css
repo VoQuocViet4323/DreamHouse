@@ -337,7 +337,7 @@ body:not(.dark-theme) .hero-ambient-aura {
 .hero-headline {
   font-family: var(--font-serif);
   font-size: clamp(2.4rem, 4.4vw, 3.8rem);
-  line-height: 1.14;
+  line-height: 1.16;
   font-weight: 700;
   margin: 0 0 20px 0;
   letter-spacing: -0.03em;
@@ -354,6 +354,43 @@ body:not(.dark-theme) .hero-headline {
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* TỪ KHÓA XOAY CHUYỂN ĐỘNG TRONG TIÊU ĐỀ (DYNAMIC ROTATING WORD) */
+.hero-rotating-slot {
+  display: inline-block;
+  vertical-align: baseline;
+  position: relative;
+  overflow: hidden;
+  padding: 0 4px;
+}
+
+.hero-rotating-word {
+  display: inline-block;
+  color: var(--color-accent);
+  background: linear-gradient(135deg, #ffd77a 0%, #c49a45 50%, #e5b95d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+  border-bottom: 2px solid rgba(196, 154, 69, 0.4);
+  padding-bottom: 2px;
+}
+
+.hero-rotating-word.slide-out {
+  transform: translateY(-115%);
+  opacity: 0;
+}
+
+.hero-rotating-word.slide-in-prepare {
+  transform: translateY(115%);
+  opacity: 0;
+  transition: none;
+}
+
+.hero-rotating-word.slide-in {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 @keyframes shineGradient {
@@ -381,6 +418,77 @@ body:not(.dark-theme) .hero-headline {
   gap: 14px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* MICRO-INTERACTIONS CHO CÁC NÚT HERO */
+.btn-arrow-down {
+  display: inline-block;
+  transition: transform 0.25s ease;
+  animation: arrowFloat 2.2s ease-in-out infinite;
+}
+
+@keyframes arrowFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+.icon-lightning {
+  display: inline-block;
+  animation: boltGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes boltGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(234, 179, 8, 0.4));
+  }
+  50% {
+    transform: scale(1.22) rotate(-8deg);
+    filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.9));
+  }
+}
+
+.icon-compass {
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-fengshui-trigger:hover .icon-compass {
+  transform: rotate(180deg) scale(1.15);
+}
+
+/* Vệt sáng lướt qua các nút bấm (Shimmer Sweep) */
+.btn-primary,
+.btn-secondary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after,
+.btn-secondary::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: btnShimmerSweep 5s infinite;
+}
+
+@keyframes btnShimmerSweep {
+  0%, 70% {
+    left: -60%;
+  }
+  100% {
+    left: 160%;
+  }
 }
 
 /* HÀNG CHỈ SỐ BẢO CHỨNG NĂNG LỰC (TRUST METRICS) */

@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.9" />
+    <link rel="stylesheet" href="style.css?v=9.0" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.9"></script>
-    <script src="js/i18n.js?v=8.9"></script>
-    <script src="js/toast.js?v=8.9"></script>
-    <script src="js/viewer3d.js?v=8.9"></script>
-    <script src="js/app.js?v=8.9" defer></script>
+    <script src="js/config.js?v=9.0"></script>
+    <script src="js/i18n.js?v=9.0"></script>
+    <script src="js/toast.js?v=9.0"></script>
+    <script src="js/viewer3d.js?v=9.0"></script>
+    <script src="js/app.js?v=9.0" defer></script>
 </head>
 
 <body>
@@ -292,43 +292,52 @@
         <div class="hero-ambient-aura" aria-hidden="true"></div>
 
         <div class="container hero-split-grid">
-            <!-- CỘT TRÁI: THÔNG ĐIỆP BIÊN TẬP & BẢO CHỨNG -->
+            <!-- CỘT TRÁI: THÔNG ĐIỆP BIÊN TẬP & BẢO CHỨNG ĐỘNG -->
             <div class="hero-left-col">
                 <div class="hero-badge-pill">
                     <span class="hero-pulse-dot" aria-hidden="true"></span>
                     <span class="hero-tagline" data-i18n="tagline">Kiến trúc tinh hoa - Xây dựng tổ ấm hoàn mỹ</span>
                 </div>
-                <h1 class="hero-headline" data-i18n="hero_title">Không gian sống lý tưởng trong tầm tay bạn</h1>
+                <h1 class="hero-headline" id="hero-headline">
+                    <span class="hero-headline-static" data-i18n="hero_title_prefix">Không gian sống</span>
+                    <span class="hero-rotating-slot">
+                        <span class="hero-rotating-word" id="hero-rotating-word">lý tưởng</span>
+                    </span>
+                    <span class="hero-headline-suffix" data-i18n="hero_title_suffix">trong tầm tay bạn</span>
+                </h1>
                 <p class="hero-description" data-i18n="hero_sub">
                     Khám phá bộ sưu tập mẫu nhà phố, biệt thự và nhà cấp 4 hiện đại cùng mô hình 3D tương tác thực tế.
                 </p>
                 <div class="hero-cta-group">
-                    <a href="#gallery-section" class="btn-primary" data-i18n="hero_cta">Khám phá mẫu nhà ↓</a>
+                    <a href="#gallery-section" class="btn-primary" data-i18n="hero_cta">
+                        <span>Khám phá mẫu nhà</span>
+                        <span class="btn-arrow-down" aria-hidden="true">↓</span>
+                    </a>
                     <button type="button" class="btn-secondary hero-calc-trigger" id="hero-calc-btn">
-                        <span class="hero-calc-icon">⚡</span>
+                        <span class="hero-calc-icon icon-lightning">⚡</span>
                         <span data-i18n="hero_btn_calc">Dự toán chi phí</span>
                     </button>
                     <button type="button" class="btn-secondary hero-fengshui-trigger" id="hero-fengshui-btn">
-                        <span class="hero-calc-icon">🧭</span>
+                        <span class="hero-calc-icon icon-compass">🧭</span>
                         <span data-i18n="hero_btn_fengshui">Tra cứu phong thủy</span>
                     </button>
                     <a href="#contact-section" class="btn-secondary" data-i18n="nav_contact">Nhận tư vấn ngay</a>
                 </div>
 
-                <!-- HÀNG CHỈ SỐ BẢO CHỨNG KIẾN TRÚC (TRUST METRICS) -->
-                <div class="hero-trust-metrics" aria-label="Chỉ số năng lực kiến trúc">
+                <!-- HÀNG CHỈ SỐ BẢO CHỨNG KIẾN TRÚC CUỘN SỐ ĐỘNG (ANIMATED TRUST METRICS) -->
+                <div class="hero-trust-metrics" id="hero-trust-metrics" aria-label="Chỉ số năng lực kiến trúc">
                     <div class="trust-metric-item">
-                        <span class="trust-metric-num" data-i18n="hero_stat_projects_num">150+</span>
+                        <span class="trust-metric-num"><span id="hero-counter-projects" data-target="150">150</span><span class="metric-symbol">+</span></span>
                         <span class="trust-metric-label" data-i18n="hero_stat_projects_label">Đồ án thực tế</span>
                     </div>
                     <div class="trust-metric-divider" aria-hidden="true"></div>
                     <div class="trust-metric-item">
-                        <span class="trust-metric-num" data-i18n="hero_stat_cad_num">100%</span>
+                        <span class="trust-metric-num"><span id="hero-counter-cad" data-target="100">100</span><span class="metric-symbol">%</span></span>
                         <span class="trust-metric-label" data-i18n="hero_stat_cad_label">Bản vẽ CAD Vector</span>
                     </div>
                     <div class="trust-metric-divider" aria-hidden="true"></div>
                     <div class="trust-metric-item">
-                        <span class="trust-metric-num" data-i18n="hero_stat_rating_num">4.9★</span>
+                        <span class="trust-metric-num"><span id="hero-counter-rating" data-target="4.9">4.9</span><span class="metric-symbol">★</span></span>
                         <span class="trust-metric-label" data-i18n="hero_stat_rating_label">Gia chủ tin cậy</span>
                     </div>
                 </div>

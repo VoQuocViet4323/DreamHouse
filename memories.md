@@ -1169,6 +1169,26 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Bổ sung 27 khóa từ điển song ngữ VI/EN trong `js/i18n.js`.
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.9`** trên `index.html` và `admin.html`.
 
+### Giai đoạn 74: Nâng Cấp Hệ Thống Động Toàn Diện Cho Cột Trái Hero - Từ Khóa Lật Xoay Chuyển Động, Cuộn Số Mượt Mà & Vi Tương Tác Nút Bấm (Dynamic Hero Left Engine v9.0)
+- [x] **Giải quyết yêu cầu "phần này để động" từ hình ảnh người dùng phản hồi:**
+  - **Từ khóa lật xoay chuyển động (Rotating Dynamic Keyword Slot):**
+    - Tiêu đề Hero tích hợp từ khóa lật xoay mượt mà: *"Không gian sống [lý tưởng ➔ thượng lưu ➔ chuẩn phong thủy ➔ đậm bản sắc ➔ bền vững] trong tầm tay bạn"*.
+    - Hiệu ứng slide-out lên trên và slide-in từ dưới lên với độ mờ và bóng phản chiếu ánh kim vàng, chu kỳ 3.2s, tự động tạm dừng khi di chuột vào.
+    - Hỗ trợ đổi từ khóa song ngữ Anh/Việt tương ứng: *['of your dreams', 'of true luxury', 'in Feng Shui harmony', 'of unique identity', 'built to endure']*.
+  - **Hiệu ứng cuộn số mượt mà (Animated Rolling Counter - Odometer Engine):**
+    - Hàng 3 chỉ số năng lực bảo chứng tự động chạy cuộn số từ 0 lên giá trị đích khi xuất hiện trong viewport:
+      - `0 ➔ 150+` Đồ án thực tế
+      - `0% ➔ 100%` Bản vẽ CAD Vector
+      - `0.0 ➔ 4.9★` Gia chủ tin cậy
+    - Tích hợp `IntersectionObserver` và hàm nội suy gia tốc `cubic-bezier` mượt mà trong 1.8s.
+  - **Vi tương tác nút bấm chuyển động sinh động (Micro-interactions & Light Sweep):**
+    - Nút *"Khám phá mẫu nhà"*: Mũi tên `↓` khẽ nhún nảy lơ lửng (`arrowFloat`).
+    - Nút *"Dự toán chi phí"*: Icon tia sét `⚡` nhấp nháy phát quang năng lượng (`boltGlow`).
+    - Nút *"Tra cứu phong thủy"*: Kim la bàn `🧭` xoay 180° và phóng to khi rê chuột vào (`rotate180`).
+    - Vệt ánh sáng kim loại quét qua nút bấm (Shimmer Light Sweep `btnShimmerSweep`) mỗi 5s.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.0`** trên `index.html` và `admin.html`.
+
+
 
 
 

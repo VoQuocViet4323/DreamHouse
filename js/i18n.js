@@ -384,6 +384,8 @@ const I18N = {
 
         // Hero Redesign & Ticker v8.8
         hero_badge_pill: "Đồ án kiến trúc & Khái toán 2026",
+        hero_title_prefix: "Không gian sống",
+        hero_title_suffix: "trong tầm tay bạn",
         hero_stat_projects_num: "150+",
         hero_stat_projects_label: "Đồ án thực tế",
         hero_stat_cad_num: "100%",
@@ -839,6 +841,8 @@ const I18N = {
 
         // Hero Redesign & Ticker v8.8
         hero_badge_pill: "Architectural Dossiers & 2026 Estimates",
+        hero_title_prefix: "Living space",
+        hero_title_suffix: "within your reach",
         hero_stat_projects_num: "150+",
         hero_stat_projects_label: "Real Projects",
         hero_stat_cad_num: "100%",
