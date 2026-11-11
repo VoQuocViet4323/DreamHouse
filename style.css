@@ -89,7 +89,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* 1. ANIMATE-UI BACKGROUND: SUBTLE GRID & GLOWING MESH */

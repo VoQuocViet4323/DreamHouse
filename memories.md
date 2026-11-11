@@ -1225,6 +1225,27 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.2`** trên `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 60** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 77: Luôn Hiển Thị Tại Đầu Mục (Scroll to Top on Load/Reload) - Vô Hiệu Hóa Scroll Restoration Tự Động & Đóng Đinh Vị Trí Đỉnh Trang (Page Initialization Scroll Reset v9.3)
+- [x] **Giải quyết triệt để yêu cầu "khi load lại trang thì sẽ hiển thị tại đầu mục":**
+  - **Khóa tính năng tự động ghi nhớ vị trí cuộn của trình duyệt:**
+    - Bổ sung script thực thi ngay từ `<head>` của `index.html` và `admin.html`:
+      ```javascript
+      if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+      }
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, 0);
+      ```
+    - Ngăn chặn triệt để hành vi mặc định của Chrome, Edge, Safari, Firefox tự ý cuộn dở dang trang khi F5 / Reload.
+  - **Đồng bộ đa tầng sự kiện vòng đời trang (Multi-lifecycle Scroll Reset):**
+    - `DOMContentLoaded`, `init()`, `hideSitePreloader()` và `pageshow` đều lập tức gọi `window.scrollTo({ top: 0, left: 0, behavior: 'instant' })`.
+    - Lắng nghe `beforeunload` để đưa scroll về $(0, 0)$ trước khi trang đóng hoặc reload.
+    - Tự động xóa các hash cuộn neo tạm thời trên URL (`window.location.hash`) khi reload (vẫn bảo tồn hash modal `#login` và `#register`).
+  - **Tối ưu CSS chống tràn mà không phá vỡ Sticky:**
+    - Đổi `body { overflow-x: hidden; }` sang `body { overflow-x: clip; }` bảo đảm thanh Navbar `.site-header` luôn bám dính chắc chắn ở `top: 0` mà không bao giờ bị trôi khỏi màn hình.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.3`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 61** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

@@ -1147,6 +1147,23 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   3. **Đồng bộ trên Mobile (`max-width: 768px`):** Tọa độ `top: 10px; width: 40px; height: 40px; min-width: 40px; min-height: 40px;` - chuẩn công thái học chạm ngón tay cái một chạm.
   4. Nâng tham số cache-busting lên `?v=9.2` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 61: Trang web không quay về đầu trang khi người dùng F5 / Reload lại trang, làm mất thanh điều hướng Navbar
+- **Hiện tượng:** Khi người dùng đang duyệt web ở vị trí lưng chừng hoặc đã cuộn xuống xem các phần nội dung bên dưới, nếu bấm F5 / Reload / Tải lại trang thì trang web hiển thị ngay tại vị trí đã cuộn trước đó (như hình ảnh phản ánh: trang web bắt đầu ngay tại thẻ tiêu đề Hero, toàn bộ thanh Navbar thương hiệu phía trên bị trôi mất khỏi màn hình). Người dùng phải tự lăn chuột ngược lên trên mới thấy được logo, menu điều hướng và nút chuyển Dark/Light mode.
+- **Nguyên nhân cốt lõi:**
+  1. **Cơ chế khôi phục vị trí cuộn mặc định của trình duyệt (`history.scrollRestoration = 'auto'`):** Các trình duyệt hiện đại (Chrome, Edge, Firefox, Safari) tự động ghi nhớ tọa độ cuộn (scroll offset) của phiên trước. Khi người dùng tải lại trang, trình duyệt tự ý can thiệp đẩy trang về đúng vị trí cũ thay vì bắt đầu từ đầu trang.
+  2. **Hash anchor lưu trên URL:** Khi người dùng bấm vào các liên kết điều hướng (`#gallery-section`, `#about-section`...), hàm `pushState` lưu hash trên URL. Khi reload, trình duyệt lại nhảy thẳng đến phần tử có ID đó.
+  3. **Thuộc tính `overflow-x: hidden` trên thẻ `body`:** Trong một số phiên bản Chromium, thuộc tính này có thể tạo một bối cảnh phụ khiến thanh navbar sticky bị trôi ra khỏi tầm nhìn khi trang nạp dở dang.
+- **Cách khắc phục dứt điểm:**
+  1. **Khóa cứng tính năng tự phục hồi vị trí cuộn:**
+     - Thiết lập `if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }` ngay trong thẻ `<head>` của `index.html` và `admin.html` trước khi DOM kịp render, ngăn chặn 100% việc trình duyệt tự ý cuộn dở dang.
+     - Tắt tạm thời `scroll-behavior: smooth` lúc tải trang (`document.documentElement.style.scrollBehavior = 'auto'`) và lập tức gọi `window.scrollTo(0, 0)` để trang đóng đinh ở đỉnh ngay từ millisecond đầu tiên, không bị hiện tượng trượt cuộn chậm chạp.
+  2. **Đồng bộ đa tầng sự kiện vòng đời trang (Multi-lifecycle Scroll Reset):**
+     - Bổ sung `window.scrollTo({ top: 0, left: 0, behavior: 'instant' })` trong `DOMContentLoaded`, `init()`, `pageshow` (kể cả khi nạp lại từ BFCache) và khi màn hình tải `hideSitePreloader()` kết thúc.
+     - Lắng nghe `beforeunload` để đưa scroll về $(0, 0)$ trước khi trang đóng hoặc reload.
+     - Tự động xóa các hash cuộn neo tạm thời trên URL (`window.location.hash`) khi reload (vẫn bảo tồn hash modal `#login` và `#register`).
+  3. **Tối ưu CSS cho `body`:** Chuyển `overflow-x: hidden` sang `overflow-x: clip;` trên thẻ `body` để chống tràn ngang hoàn hảo mà không can thiệp hay phá vỡ `position: sticky` của thanh `.site-header`.
+  4. Nâng tham số cache-busting lên `?v=9.3` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

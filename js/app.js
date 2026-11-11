@@ -48,6 +48,20 @@ class DreamHouseApp {
     }
 
     async init() {
+        // 0. Luôn đảm bảo khi mở/tải lại trang thì hiển thị tại đầu mục (Scroll to Top on Load/Reload)
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+        // Nếu URL có hash anchor thông thường (không phải modal #login / #register) thì xóa và cuộn lên đỉnh
+        if (window.location.hash && !['#login', '#register'].includes(window.location.hash)) {
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }
+
         const startTime = Date.now();
         // Fallback tối đa 2.5s đảm bảo người dùng luôn vào được web ngay cả khi mạng lag
         const fallbackTimer = setTimeout(() => {
@@ -110,10 +124,12 @@ class DreamHouseApp {
         const preloader = document.getElementById('site-preloader');
         if (preloader && !preloader.classList.contains('preloader-hidden')) {
             preloader.classList.add('preloader-hidden');
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             setTimeout(() => {
                 if (preloader && preloader.parentNode) {
                     preloader.parentNode.removeChild(preloader);
                 }
+                document.documentElement.style.scrollBehavior = '';
             }, 600);
         }
     }
@@ -6404,8 +6420,23 @@ class DreamHouseApp {
 
 // Khởi chạy ứng dụng
 document.addEventListener('DOMContentLoaded', () => {
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     window.app = new DreamHouseApp();
     // Đồng bộ ngôn ngữ lần đầu
     window.i18n.updateDOM();
+});
+
+// Luôn đảm bảo khi F5 / Reload hoặc Back-Forward Cache thì hiển thị tại đầu mục
+window.addEventListener('beforeunload', () => {
+    window.scrollTo(0, 0);
+});
+window.addEventListener('pageshow', () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+});
+window.addEventListener('load', () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 });
 
