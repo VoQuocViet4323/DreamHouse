@@ -11517,3 +11517,742 @@ body:not(.dark-theme) .rule-row strong {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   FEATURE 4: CÔNG CỤ SO SÁNH MẪU NHÀ ĐỐI ĐẦU (SIDE-BY-SIDE COMPARE ENGINE)
+   ========================================================================== */
+
+/* 1. Nút thêm so sánh trong Modal Chi Tiết (.detail-secondary-actions) */
+.detail-secondary-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.btn-outline-compare {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 650;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.22s ease;
+}
+
+.btn-outline-compare:hover {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: #eab308;
+  color: #eab308;
+  transform: translateY(-1px);
+}
+
+.btn-outline-compare.active {
+  background: #eab308;
+  border-color: #eab308;
+  color: #000000;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.35);
+}
+
+body:not(.dark-theme) .btn-outline-compare {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+body:not(.dark-theme) .btn-outline-compare:hover {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #854d0e;
+}
+
+body:not(.dark-theme) .btn-outline-compare.active {
+  background: #eab308;
+  color: #000000;
+}
+
+/* 2. Nút So Sánh Nổi Trên Thẻ Mẫu Nhà (Gallery Card Compare Button) */
+.card-compare-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 8;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.card-compare-btn:hover {
+  background: #eab308;
+  border-color: #eab308;
+  color: #000000;
+  transform: scale(1.04);
+}
+
+.card-compare-btn.active {
+  background: #eab308;
+  border-color: #eab308;
+  color: #000000;
+  box-shadow: 0 2px 10px rgba(234, 179, 8, 0.4);
+}
+
+/* 3. Khay So Sánh Nổi Dưới Màn Hình (.compare-floating-dock) */
+.compare-floating-dock {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  z-index: 990;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  width: auto;
+  max-width: 95vw;
+}
+
+.compare-floating-dock.hidden {
+  transform: translateX(-50%) translateY(140%);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.dock-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 14px 8px 18px;
+  border-radius: 999px;
+  background: rgba(11, 13, 20, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(234, 179, 8, 0.2);
+}
+
+body:not(.dark-theme) .dock-container {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: #cbd5e1;
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(234, 179, 8, 0.3);
+}
+
+.dock-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dock-icon {
+  font-size: 1.25rem;
+}
+
+.dock-text-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dock-title {
+  font-size: 0.86rem;
+  font-weight: 750;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+body:not(.dark-theme) .dock-title {
+  color: #0f172a;
+}
+
+.dock-count-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.2);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  color: #eab308;
+  font-size: 0.74rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+body:not(.dark-theme) .dock-count-badge {
+  background: #fef08a;
+  border-color: #fde047;
+  color: #854d0e;
+}
+
+/* Các Slot Mẫu Nhà Đã Chọn */
+.dock-slots-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dock-slot-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  max-width: 170px;
+  animation: slotPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body:not(.dark-theme) .dock-slot-item {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+@keyframes slotPop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.dock-slot-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dock-slot-name {
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body:not(.dark-theme) .dock-slot-name {
+  color: #0f172a;
+}
+
+.dock-slot-remove {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 0.85rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.dock-slot-remove:hover {
+  color: #ef4444;
+  transform: scale(1.15);
+}
+
+/* Các Nút Thao Tác Trong Khay */
+.dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dock-compare-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.dock-compare-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.dock-clear-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.dock-clear-btn:hover {
+  color: #ef4444;
+  text-decoration: underline;
+}
+
+body:not(.dark-theme) .dock-clear-btn {
+  color: #64748b;
+}
+
+/* 4. Cửa Sổ Modal So Sánh Đối Đầu (.compare-modal-window) */
+.compare-modal-window {
+  max-width: 1120px;
+  width: 96vw;
+  max-height: 94vh;
+  padding: 28px 24px 24px;
+  border-radius: 24px;
+  background: #0b0d14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body:not(.dark-theme) .compare-modal-window {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2);
+}
+
+.compare-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+body:not(.dark-theme) .compare-header {
+  border-bottom-color: #f1f5f9;
+}
+
+.compare-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.compare-badge {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #eab308;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body:not(.dark-theme) .compare-badge {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #a16207;
+}
+
+.compare-heading {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+body:not(.dark-theme) .compare-heading {
+  color: #0f172a;
+}
+
+.compare-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+body:not(.dark-theme) .compare-sub {
+  color: #64748b;
+}
+
+/* Công Tắc "Chỉ Hiện Điểm Khác Biệt" */
+.compare-toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.compare-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.compare-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.compare-toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
+}
+
+.compare-toggle-slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.25s ease;
+}
+
+.compare-toggle-input:checked + .compare-toggle-slider {
+  background: #eab308;
+}
+
+.compare-toggle-input:checked + .compare-toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.compare-toggle-text {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: #cbd5e1;
+}
+
+body:not(.dark-theme) .compare-toggle-text {
+  color: #334155;
+}
+
+/* 5. Bảng So Sánh Đối Đầu (.compare-table-responsive) */
+.compare-table-responsive {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+body:not(.dark-theme) .compare-table-responsive {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.compare-grid-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Hàng Thẻ Header Mẫu Nhà (Sticky Top) */
+.compare-head-cell {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: #0f121b;
+  padding: 16px 14px;
+  border-bottom: 2px solid rgba(234, 179, 8, 0.35);
+  vertical-align: top;
+  text-align: left;
+}
+
+body:not(.dark-theme) .compare-head-cell {
+  background: #f8fafc;
+  border-bottom-color: #fde047;
+}
+
+.compare-head-cell.metric-col-head {
+  width: 220px;
+  background: #0b0d14;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body:not(.dark-theme) .compare-head-cell.metric-col-head {
+  background: #f1f5f9;
+  border-right-color: #e2e8f0;
+}
+
+.card-preview-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compare-card-thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1e293b;
+}
+
+.compare-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.compare-card-thumb-wrap:hover .compare-card-thumb {
+  transform: scale(1.05);
+}
+
+.compare-card-type-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #eab308;
+  font-size: 0.68rem;
+  font-weight: 750;
+  backdrop-filter: blur(4px);
+}
+
+.compare-card-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: #f8fafc;
+  line-height: 1.3;
+}
+
+body:not(.dark-theme) .compare-card-title {
+  color: #0f172a;
+}
+
+.compare-card-price-badge {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #eab308;
+  font-variant-numeric: tabular-nums;
+}
+
+body:not(.dark-theme) .compare-card-price-badge {
+  color: #b45309;
+}
+
+/* Tiêu Đề Từng Phần (Section Header Row) */
+.compare-section-row td {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #eab308;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body:not(.dark-theme) .compare-section-row td {
+  background: #f8fafc;
+  border-top-color: #e2e8f0;
+  border-bottom-color: #e2e8f0;
+  color: #a16207;
+}
+
+/* Các Dòng Thông Số So Sánh */
+.compare-data-row {
+  transition: background-color 0.15s ease;
+}
+
+.compare-data-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+body:not(.dark-theme) .compare-data-row:hover {
+  background: #f8fafc;
+}
+
+/* Hiệu ứng khi hàng này có điểm khác biệt */
+.compare-data-row.is-diff {
+  background: rgba(234, 179, 8, 0.05);
+}
+
+body:not(.dark-theme) .compare-data-row.is-diff {
+  background: #fffbeb;
+}
+
+.compare-data-row.diff-hidden {
+  display: none !important;
+}
+
+.compare-label-cell {
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+body:not(.dark-theme) .compare-label-cell {
+  background: #f8fafc;
+  border-bottom-color: #f1f5f9;
+  border-right-color: #e2e8f0;
+  color: #64748b;
+}
+
+.compare-val-cell {
+  padding: 12px 14px;
+  font-size: 0.84rem;
+  color: #f8fafc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body:not(.dark-theme) .compare-val-cell {
+  color: #0f172a;
+  border-bottom-color: #f1f5f9;
+  border-right-color: #f1f5f9;
+}
+
+.compare-val-cell.val-highlight {
+  font-weight: 750;
+  color: #eab308;
+}
+
+body:not(.dark-theme) .compare-val-cell.val-highlight {
+  color: #b45309;
+}
+
+/* Hàng Nút Hành Động (Action Row) */
+.compare-action-cell {
+  padding: 16px 14px;
+  vertical-align: top;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body:not(.dark-theme) .compare-action-cell {
+  border-top-color: #e2e8f0;
+}
+
+.compare-action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-compare-view {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-compare-view:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #eab308;
+  color: #eab308;
+}
+
+body:not(.dark-theme) .btn-compare-view {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body:not(.dark-theme) .btn-compare-view:hover {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #854d0e;
+}
+
+.btn-compare-select {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+/* 6. Responsive Cho Feature 4 */
+@media (max-width: 768px) {
+  .compare-floating-dock {
+    bottom: 14px;
+    width: 96vw;
+  }
+
+  .dock-container {
+    padding: 6px 10px;
+    gap: 8px;
+    border-radius: 16px;
+    justify-content: space-between;
+  }
+
+  .dock-title {
+    display: none;
+  }
+
+  .dock-slot-item {
+    max-width: 90px;
+    padding: 3px 6px 3px 3px;
+  }
+
+  .dock-slot-name {
+    font-size: 0.68rem;
+  }
+
+  .compare-modal-window {
+    padding: 20px 14px 16px;
+    height: 96vh;
+  }
+
+  .compare-heading {
+    font-size: 1.25rem;
+  }
+
+  .compare-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .detail-secondary-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -63,6 +63,15 @@
    - **Bảng quy tắc bố trí công năng kiến trúc:** Hướng mở cửa chính, hướng ban thờ gia tiên (tọa cát hướng cát), bố trí bếp nấu chuẩn nguyên tắc "Tọa hung hướng cát", hướng giường ngủ đón vượng khí.
    - **Cầu nối tư vấn 1-chạm (1-Click Consultation Bridge):** Nút gửi thông số phong thủy tự động điền sẵn vào Form liên hệ KTS Võ Quốc Việt.
 
+11. **Công Cụ So Sánh Mẫu Nhà Đối Đầu (Side-by-Side Design Compare - v8.5):**
+   - **Khay so sánh nổi dưới màn hình (Floating Compare Dock):** Tự động hiển thị khi chọn từ 1 đến 3 mẫu nhà, chứa các slot thu nhỏ kèm thumbnail tròn, tên mẫu và nút xóa `✕` linh hoạt, lưu trữ danh sách qua `localStorage`.
+   - **Bảng ma trận đối chuẩn đa tiêu chí 2–3 cột:**
+     - Header cố định (Sticky Top) hiển thị ảnh phối cảnh, tên mẫu, phân loại và giá dự toán khi cuộn dọc.
+     - Cột tiêu chí bên trái cố định (Sticky Left) đảm bảo dễ theo dõi khi cuộn ngang trên điện thoại.
+     - Bóc tách 5 cụm tiêu chí: *Thông tin kiến trúc chung (kích thước, diện tích đất, $S_{xd}$); Quy mô & Kết cấu mái; Bố trí công năng phòng ốc; Dự toán chi phí 2026; Định hướng phong thủy hợp mệnh*.
+   - **Công tắc "Chỉ hiện điểm khác biệt" (Highlight Differences Only):** Tự động lọc và làm nổi bật các thông số khác nhau giữa các mẫu nhà đang so sánh, ẩn các thông số giống nhau giúp gia chủ ra quyết định nhanh chóng.
+   - **Cầu nối tư vấn 1-chạm (1-Click Consultation Bridge):** Nút *"Chọn mẫu này & Tư vấn"* tự động cuộn xuống Form liên hệ và điền toàn bộ thông số mẫu nhà đã chọn vào lời nhắn cho KTS Võ Quốc Việt.
+
 ---
 
 ## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)
@@ -74,7 +83,7 @@
 | **1** | **Bộ tính dự toán chi phí tương tác** *(Interactive Cost Calculator)* | Trước đây dự toán chỉ là một con số tĩnh (ví dụ: 4,8 tỷ), khách hàng không rõ gồm những hạng mục cụ thể nào. | Cho phép gia chủ trượt chọn gói vật tư (Tiêu chuẩn / Nâng cao / Cao cấp / Thô), chọn loại móng và kiểu mái; tự động bóc tách chi phí: Phần Thô, Hoàn Thiện, Thiết Bị ME, Quản Lý & Dự Phòng. | ✅ **Đã hoàn thành** *(v8.2)* |
 | **2** | **Bóc tách mặt bằng 2D/3D từng tầng** *(Floor-by-Floor Layer Explorer)* | Hiện chỉ xem được khối ngoại thất 3D, chưa thấy bố trí phòng ốc công năng bên trong từng tầng. | Thêm tab xem mặt bằng Tầng 1, Tầng 2, Tầng 3, Mái với diện tích từng phòng (Phòng khách, Bếp, PN Master, WC), tích hợp bản vẽ kỹ thuật CAD Vector chuẩn 1/100, tương tác 2 chiều và chế độ Mặt cắt 3D Top-Down. | ✅ **Đã hoàn thành** *(v8.3)* |
 | **3** | **Tiện ích Phong Thủy bản địa hóa** *(Thước Lỗ Ban & Hướng Nhà)* | 90% người Việt Nam khi làm nhà đều xem phong thủy (kích thước thông thủy cửa chính, cửa sổ, hướng bếp, hướng nhà hợp tuổi). | Tích hợp Thước Lỗ Ban trực tuyến đa dải đo (52.2cm Thông thủy, 42.9cm Dương trạch, 38.8cm Âm phần) và công cụ nhập năm sinh/giới tính tra cứu Bát Trạch, Cung Mệnh, hướng nhà cát hung chính xác, kèm quy tắc bố trí mặt bằng chuẩn KTS. | ✅ **Đã hoàn thành** *(v8.4)* |
-| **4** | **Công cụ So sánh mẫu nhà** *(Side-by-Side Compare)* | Khách hàng phân vân giữa 2–3 mẫu nhà nhưng phải mở đi mở lại các trang riêng lẻ khó đánh giá. | Chọn 2–3 mẫu và mở bảng so sánh đối đầu trực quan: Kích thước mặt tiền, chiều sâu, công năng số phòng ngủ, diện tích sàn quy đổi, đơn giá và tổng dự toán chi phí. | ⏳ *Kế hoạch tiếp theo* |
+| **4** | **Công cụ So sánh mẫu nhà** *(Side-by-Side Compare)* | Khách hàng phân vân giữa 2–3 mẫu nhà nhưng phải mở đi mở lại các trang riêng lẻ khó đánh giá. | Chọn 2–3 mẫu và mở bảng so sánh đối đầu trực quan: Kích thước mặt tiền, chiều sâu, công năng số phòng ngủ, diện tích sàn quy đổi, đơn giá và tổng dự toán chi phí, kèm công tắc lọc điểm khác biệt. | ✅ **Đã hoàn thành** *(v8.5)* |
 | **5** | **Xuất hồ sơ tóm tắt 1-Click** *(Download Concept PDF Brochure)* | Khách muốn mang bản vẽ sơ bộ, phối cảnh và bảng giá về bàn bạc cùng gia đình trước khi ký hợp đồng. | Bấm 1 nút tải ngay file PDF Concept chuyên nghiệp gồm ảnh phối cảnh, sơ đồ mặt bằng các tầng, bảng khái toán vật tư có sẵn logo Dream House và thông tin liên hệ Hotline/Zalo KTS Võ Quốc Việt. | ⏳ *Kế hoạch tiếp theo* |
 
 ---

@@ -62,6 +62,7 @@ class DreamHouseApp {
         this.initCostCalculator();
         this.initFloorplanExplorer();
         this.initFengShuiSuite();
+        this.initCompareEngine();
         await this.loadTemplates();
         this.renderGallery();
 
@@ -1068,6 +1069,7 @@ class DreamHouseApp {
             const displayBadge = this.getLocalizedStyle(item, lang);
             const costStr = window.i18n.formatCost(item.cost_estimate_vnd);
             const isFav = this.favorites.has(item.id);
+            const isCompared = (this.compareList || []).includes(item.id);
 
             return `
                 <article class="house-card" data-id="${item.id}" style="--card-index: ${index};">
@@ -1075,6 +1077,15 @@ class DreamHouseApp {
                         <img src="${item.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80'}" 
                              alt="${name}" loading="lazy" />
                         <span class="card-badge">${displayBadge}</span>
+                        <!-- Nút Thêm So Sánh Nổi (Feature 4) -->
+                        <button type="button" 
+                                class="card-compare-btn ${isCompared ? 'active' : ''}" 
+                                data-compare-id="${item.id}" 
+                                aria-label="${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}"
+                                title="${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}">
+                            <span>⚖️</span>
+                            <span>${window.i18n.t(isCompared ? 'compare_btn_added' : 'compare_btn_add')}</span>
+                        </button>
                         <div class="u022 card-fav-u022 ${isFav ? 'is-on' : ''}" data-fav-id="${item.id}">
                             <div class="u022-scaler">
                                 <button class="u022-btn card-fav-btn" 
@@ -1139,9 +1150,18 @@ class DreamHouseApp {
 
         gallery.querySelectorAll('.house-card').forEach(card => {
             card.addEventListener('click', (e) => {
-                if (e.target.closest('.card-fav-btn') || e.target.closest('.card-fav-u022')) return;
+                if (e.target.closest('.card-fav-btn') || e.target.closest('.card-fav-u022') || e.target.closest('.card-compare-btn')) return;
                 const id = card.getAttribute('data-id');
                 this.openDetailPanel(id);
+            });
+        });
+
+        // Gắn sự kiện nút so sánh nhanh trên từng thẻ mẫu nhà
+        gallery.querySelectorAll('.card-compare-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-compare-id');
+                this.toggleCompareItem(id);
             });
         });
 
@@ -1272,6 +1292,7 @@ class DreamHouseApp {
         this.updateDetailFloorplans(item);
         this.updateDetailFengShui(item);
         this.updateDetailFavButton();
+        this.updateDetailCompareButton();
     }
 
     updateDetailFavButton() {
@@ -1280,6 +1301,14 @@ class DreamHouseApp {
         const isFav = this.favorites.has(this.currentTemplate.id);
         btn.textContent = window.i18n.t(isFav ? 'btn_favorite_remove' : 'btn_favorite_add');
         btn.classList.toggle('active', isFav);
+    }
+
+    updateDetailCompareButton() {
+        const btn = document.getElementById('detail-compare-btn');
+        if (!btn || !this.currentTemplate) return;
+        const isCompared = (this.compareList || []).includes(this.currentTemplate.id);
+        btn.textContent = window.i18n.t(isCompared ? 'detail_btn_remove_compare' : 'detail_btn_add_compare');
+        btn.classList.toggle('active', isCompared);
     }
 
     // 8. ĐIỀU KHIỂN SỰ KIỆN GIAO DIỆN CHUNG
@@ -1376,6 +1405,13 @@ class DreamHouseApp {
         document.getElementById('detail-fav-btn')?.addEventListener('click', () => {
             if (this.currentTemplate) {
                 this.toggleFavorite(this.currentTemplate.id);
+            }
+        });
+
+        // Nút so sánh trong panel chi tiết (Feature 4)
+        document.getElementById('detail-compare-btn')?.addEventListener('click', () => {
+            if (this.currentTemplate) {
+                this.toggleCompareItem(this.currentTemplate.id);
             }
         });
 
@@ -5301,6 +5337,477 @@ class DreamHouseApp {
         if (altarEl) {
             altarEl.textContent = '1270 × 610 mm (Tiến Bảo - Hoạch Tài)';
         }
+    }
+
+    /**
+     * =========================================================================
+     * FEATURE 4: CÔNG CỤ SO SÁNH MẪU NHÀ ĐỐI ĐẦU (SIDE-BY-SIDE COMPARE ENGINE)
+     * Khay so sánh nổi (Dock) & Bảng ma trận đối chuẩn đa tiêu chí 2-3 cột
+     * =========================================================================
+     */
+    initCompareEngine() {
+        this.compareList = [];
+        try {
+            const saved = localStorage.getItem('dreamhouse_compare_list');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                    this.compareList = parsed.slice(0, 3);
+                }
+            }
+        } catch (e) {
+            this.compareList = [];
+        }
+
+        // 1. Lắng nghe các nút trong Khay So Sánh Nổi (Dock)
+        const dockCompareBtn = document.getElementById('btn-dock-compare');
+        const dockClearBtn = document.getElementById('btn-dock-clear');
+        const closeCompareBtn = document.getElementById('close-compare-modal');
+        const compareModal = document.getElementById('compare-modal');
+        const diffToggle = document.getElementById('compare-diff-toggle');
+
+        if (dockCompareBtn) {
+            dockCompareBtn.addEventListener('click', () => this.openCompareModal());
+        }
+
+        if (dockClearBtn) {
+            dockClearBtn.addEventListener('click', () => {
+                this.compareList = [];
+                this._saveCompareList();
+                this.updateCompareDock();
+                this.updateDetailCompareButton();
+                this.renderGallery();
+                if (window.toast) {
+                    window.toast.info(window.i18n.getLang() === 'vi' ? 'Đã xóa tất cả mẫu khỏi so sánh' : 'Cleared all compared designs');
+                }
+            });
+        }
+
+        if (closeCompareBtn) {
+            closeCompareBtn.addEventListener('click', () => this.closeCompareModal());
+        }
+
+        if (compareModal) {
+            compareModal.addEventListener('click', (e) => {
+                if (e.target === compareModal) this.closeCompareModal();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && compareModal && !compareModal.classList.contains('hidden')) {
+                this.closeCompareModal();
+            }
+        });
+
+        // 2. Lắng nghe công tắc "Chỉ hiện điểm khác biệt"
+        if (diffToggle) {
+            diffToggle.addEventListener('change', () => {
+                const isOnlyDiff = diffToggle.checked;
+                const rows = document.querySelectorAll('.compare-data-row');
+                rows.forEach(row => {
+                    if (isOnlyDiff) {
+                        row.classList.toggle('diff-hidden', !row.classList.contains('is-diff'));
+                    } else {
+                        row.classList.remove('diff-hidden');
+                    }
+                });
+            });
+        }
+
+        // Cập nhật khay so sánh ban đầu
+        this.updateCompareDock();
+    }
+
+    _saveCompareList() {
+        try {
+            localStorage.setItem('dreamhouse_compare_list', JSON.stringify(this.compareList));
+        } catch (e) {}
+    }
+
+    /**
+     * Bật/Tắt mẫu nhà trong danh sách so sánh
+     */
+    toggleCompareItem(templateId) {
+        if (!templateId) return;
+        const index = this.compareList.indexOf(templateId);
+        const lang = window.i18n.getLang();
+
+        if (index > -1) {
+            // Đã có -> Xóa khỏi danh sách
+            this.compareList.splice(index, 1);
+            if (window.toast) {
+                window.toast.info(lang === 'vi' ? 'Đã bỏ mẫu khỏi so sánh' : 'Removed from comparison');
+            }
+        } else {
+            // Chưa có -> Kiểm tra giới hạn 3 mẫu
+            if (this.compareList.length >= 3) {
+                if (window.toast) {
+                    window.toast.warning(window.i18n.t('compare_limit_reached'));
+                }
+                return;
+            }
+            this.compareList.push(templateId);
+            if (window.toast) {
+                window.toast.success(lang === 'vi' ? `Đã thêm vào so sánh (${this.compareList.length}/3)` : `Added to comparison (${this.compareList.length}/3)`);
+            }
+        }
+
+        this._saveCompareList();
+        this.updateCompareDock();
+        this.updateDetailCompareButton();
+        this.renderGallery();
+    }
+
+    /**
+     * Cập nhật giao diện Khay So Sánh Nổi (Dock)
+     */
+    updateCompareDock() {
+        const dock = document.getElementById('compare-floating-dock');
+        const countBadge = document.getElementById('compare-dock-count');
+        const slotsWrap = document.getElementById('compare-dock-slots');
+        const compareBtn = document.getElementById('btn-dock-compare');
+        const compareBtnText = document.getElementById('btn-dock-compare-text');
+
+        if (!dock) return;
+
+        const count = this.compareList.length;
+
+        if (count === 0) {
+            dock.classList.add('hidden');
+            if (compareBtn) compareBtn.disabled = true;
+            return;
+        }
+
+        dock.classList.remove('hidden');
+
+        if (countBadge) countBadge.textContent = `${count}/3`;
+
+        if (compareBtn) {
+            compareBtn.disabled = count < 2;
+        }
+
+        if (compareBtnText) {
+            compareBtnText.textContent = `${window.i18n.t('compare_btn_action')} (${count})`;
+        }
+
+        // Render các slot nhỏ
+        if (slotsWrap) {
+            const lang = window.i18n.getLang();
+            slotsWrap.innerHTML = this.compareList.map(id => {
+                const item = this.templates.find(t => t.id === id);
+                if (!item) return '';
+                const name = this.getLocalizedTemplateName(item, lang);
+                const thumb = item.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=150&q=80';
+                return `
+                    <div class="dock-slot-item">
+                        <img src="${thumb}" alt="${name}" class="dock-slot-thumb" />
+                        <span class="dock-slot-name" title="${name}">${name}</span>
+                        <button type="button" class="dock-slot-remove" data-remove-compare="${id}" title="Xóa mẫu này" aria-label="Xóa mẫu này">✕</button>
+                    </div>
+                `;
+            }).join('');
+
+            // Gắn sự kiện xóa từng slot
+            slotsWrap.querySelectorAll('[data-remove-compare]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const removeId = btn.getAttribute('data-remove-compare');
+                    this.toggleCompareItem(removeId);
+                });
+            });
+        }
+    }
+
+    /**
+     * Mở Modal So Sánh Đối Đầu
+     */
+    openCompareModal() {
+        if (this.compareList.length < 2) {
+            if (window.toast) {
+                window.toast.warning(window.i18n.t('compare_need_two'));
+            }
+            return;
+        }
+
+        const modal = document.getElementById('compare-modal');
+        if (!modal) return;
+
+        this.renderCompareTable();
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Đóng Modal So Sánh Đối Đầu
+     */
+    closeCompareModal() {
+        const modal = document.getElementById('compare-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    /**
+     * Render Bảng Ma Trận So Sánh Đối Đầu 2 - 3 Cột
+     */
+    renderCompareTable() {
+        const container = document.getElementById('compare-table-container');
+        if (!container) return;
+
+        const lang = window.i18n.getLang();
+        const items = this.compareList.map(id => this.templates.find(t => t.id === id)).filter(Boolean);
+
+        if (items.length < 2) return;
+
+        // Cấu hình các tiêu chí so sánh
+        const SECTIONS = [
+            {
+                title: window.i18n.t('compare_sec_general'),
+                rows: [
+                    {
+                        label: window.i18n.t('compare_row_type'),
+                        getValue: (t) => this.getLocalizedStyle(t, lang)
+                    },
+                    {
+                        label: window.i18n.t('compare_row_dims'),
+                        getValue: (t) => `${t.width_m || 5}m × ${t.depth_m || 15}m`
+                    },
+                    {
+                        label: window.i18n.t('compare_row_land_area'),
+                        getValue: (t) => `${(t.width_m || 5) * (t.depth_m || 15)} m²`
+                    },
+                    {
+                        label: window.i18n.t('compare_row_gfa'),
+                        getValue: (t) => `${t.gfa_m2 || 120} m²`,
+                        highlight: true
+                    }
+                ]
+            },
+            {
+                title: window.i18n.t('compare_sec_specs'),
+                rows: [
+                    {
+                        label: window.i18n.t('compare_row_floors'),
+                        getValue: (t) => `${t.floors || 1} ${lang === 'vi' ? 'tầng' : 'floors'}`
+                    },
+                    {
+                        label: window.i18n.t('compare_row_roof'),
+                        getValue: (t) => {
+                            if (t.type === 'nha-cap-4') return lang === 'vi' ? 'Mái Thái / Mái Nhật' : 'Thai / Japanese Pitch Roof';
+                            if (t.type === 'biet-thu') return lang === 'vi' ? 'Mái Mansard / Bê tông dán ngói' : 'Mansard / Tiled Concrete';
+                            return lang === 'vi' ? 'Mái bằng BTCT lấy sáng' : 'Reinforced Concrete Flat Roof';
+                        }
+                    }
+                ]
+            },
+            {
+                title: window.i18n.t('compare_sec_rooms'),
+                rows: [
+                    {
+                        label: window.i18n.t('compare_row_bedrooms'),
+                        getValue: (t) => `${t.bedrooms || (t.type === 'biet-thu' ? 4 : (t.floors > 2 ? 3 : 2))} ${lang === 'vi' ? 'phòng ngủ' : 'beds'}`
+                    },
+                    {
+                        label: window.i18n.t('compare_row_bathrooms'),
+                        getValue: (t) => `${t.bathrooms || (t.floors || 2)} ${lang === 'vi' ? 'phòng WC' : 'baths'}`
+                    },
+                    {
+                        label: window.i18n.t('compare_row_living'),
+                        getValue: (t) => lang === 'vi' ? 'Phòng khách đón gió liên thông' : 'Open-plan Living Hall'
+                    },
+                    {
+                        label: window.i18n.t('compare_row_kitchen'),
+                        getValue: (t) => lang === 'vi' ? 'Bếp & Bàn ăn thông thoáng' : 'Kitchen & Dining Suite'
+                    },
+                    {
+                        label: window.i18n.t('compare_row_balcony'),
+                        getValue: (t) => t.has_balcony ? (lang === 'vi' ? '✓ Có ban công' : '✓ Yes') : (lang === 'vi' ? '✗ Không' : '✗ None')
+                    },
+                    {
+                        label: window.i18n.t('compare_row_altar'),
+                        getValue: (t) => t.floors > 1 ? (lang === 'vi' ? '✓ Phòng thờ gia tiên riêng' : '✓ Dedicated Sacred Room') : (lang === 'vi' ? 'Không gian thờ trang trọng' : 'Altar Space in Parlor')
+                    },
+                    {
+                        label: window.i18n.t('compare_row_garage'),
+                        getValue: (t) => t.type === 'biet-thu' ? (lang === 'vi' ? '✓ Gara 2 ô tô trong nhà' : '✓ 2-Car Garage') : (lang === 'vi' ? 'Sân trước để xe ô tô / xe máy' : 'Front Parking Yard')
+                    },
+                    {
+                        label: window.i18n.t('compare_row_skylight'),
+                        getValue: (t) => t.type === 'nha-pho' ? (lang === 'vi' ? '✓ Giếng trời sảnh thang' : '✓ Stairwell Airwell') : (lang === 'vi' ? 'Sân vườn thông gió tự nhiên' : 'Garden Natural Vent')
+                    }
+                ]
+            },
+            {
+                title: window.i18n.t('compare_sec_cost'),
+                rows: [
+                    {
+                        label: window.i18n.t('compare_row_price'),
+                        getValue: (t) => window.i18n.formatCost(t.cost_estimate_vnd),
+                        highlight: true
+                    },
+                    {
+                        label: window.i18n.t('compare_row_unit_cost'),
+                        getValue: (t) => {
+                            const cost = t.cost_estimate_vnd || 1000000000;
+                            const gfa = t.gfa_m2 || 100;
+                            const unitM = (cost / gfa / 1000000).toFixed(1);
+                            return `≈ ${unitM} ${lang === 'vi' ? 'triệu/m²' : 'M VND/m²'}`;
+                        }
+                    }
+                ]
+            },
+            {
+                title: window.i18n.t('compare_sec_fengshui'),
+                rows: [
+                    {
+                        label: window.i18n.t('compare_row_direction'),
+                        getValue: (t) => {
+                            if (t.type === 'nha-pho') return lang === 'vi' ? 'Nam, Đông Nam, Bắc (Đón gió mát)' : 'South, SE, North (Cool Breeze)';
+                            if (t.type === 'biet-thu') return lang === 'vi' ? 'Đông Nam, Đông, Tây Bắc' : 'South-East, East, NW';
+                            return lang === 'vi' ? 'Nam, Đông Nam' : 'South, South-East';
+                        }
+                    },
+                    {
+                        label: window.i18n.t('compare_row_kua'),
+                        getValue: (t) => {
+                            if (t.type === 'biet-thu') return lang === 'vi' ? 'Tây Tứ Mệnh / Đông Tứ Mệnh' : 'West Kua / East Kua';
+                            return lang === 'vi' ? 'Đông Tứ Mệnh (Khảm, Ly, Chấn, Tốn)' : 'East Kua (Kan, Li, Zhen, Xun)';
+                        }
+                    }
+                ]
+            }
+        ];
+
+        // 1. Dựng Hàng Header
+        let tableHtml = `
+            <table class="compare-grid-table">
+                <thead>
+                    <tr>
+                        <th class="compare-head-cell metric-col-head">
+                            <span class="presets-label" style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; color: #94a3b8;">
+                                ${lang === 'vi' ? 'TIÊU CHÍ SO SÁNH' : 'COMPARISON CRITERIA'}
+                            </span>
+                        </th>
+                        ${items.map(t => {
+                            const name = this.getLocalizedTemplateName(t, lang);
+                            const thumb = t.photo_path || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80';
+                            const styleBadge = this.getLocalizedStyle(t, lang);
+                            const price = window.i18n.formatCost(t.cost_estimate_vnd);
+                            return `
+                                <th class="compare-head-cell">
+                                    <div class="card-preview-box">
+                                        <div class="compare-card-thumb-wrap">
+                                            <img src="${thumb}" alt="${name}" class="compare-card-thumb" />
+                                            <span class="compare-card-type-tag">${styleBadge}</span>
+                                        </div>
+                                        <h4 class="compare-card-title">${name}</h4>
+                                        <div class="compare-card-price-badge">${price}</div>
+                                    </div>
+                                </th>
+                            `;
+                        }).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        // 2. Dựng các dòng tiêu chí
+        const isOnlyDiffActive = document.getElementById('compare-diff-toggle')?.checked || false;
+
+        SECTIONS.forEach(sec => {
+            tableHtml += `
+                <tr class="compare-section-row">
+                    <td colspan="${items.length + 1}">${sec.title}</td>
+                </tr>
+            `;
+
+            sec.rows.forEach(r => {
+                const values = items.map(t => r.getValue(t));
+                // Kiểm tra xem hàng này các giá trị có khác nhau không
+                const isDiff = values.some(v => v !== values[0]);
+                const diffClass = isDiff ? 'is-diff' : '';
+                const hiddenClass = (isOnlyDiffActive && !isDiff) ? 'diff-hidden' : '';
+
+                tableHtml += `
+                    <tr class="compare-data-row ${diffClass} ${hiddenClass}">
+                        <td class="compare-label-cell">${r.label}</td>
+                        ${values.map(val => `
+                            <td class="compare-val-cell ${r.highlight ? 'val-highlight' : ''}">
+                                ${val}
+                            </td>
+                        `).join('')}
+                    </tr>
+                `;
+            });
+        });
+
+        // 3. Dựng hàng nút hành động (Actions)
+        tableHtml += `
+            <tr class="compare-action-row">
+                <td class="compare-label-cell" style="vertical-align: middle;">
+                    <strong>${lang === 'vi' ? 'Hành động' : 'Actions'}</strong>
+                </td>
+                ${items.map(t => {
+                    const name = this.getLocalizedTemplateName(t, lang);
+                    return `
+                        <td class="compare-action-cell">
+                            <div class="compare-action-group">
+                                <button type="button" class="btn-compare-view" data-cmp-view="${t.id}">
+                                    ${window.i18n.t('compare_btn_view_detail')}
+                                </button>
+                                <button type="button" class="btn-primary btn-compare-select" data-cmp-select="${t.id}" data-cmp-name="${name}">
+                                    ${window.i18n.t('compare_btn_select_this')}
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                }).join('')}
+            </tr>
+        `;
+
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+
+        container.innerHTML = tableHtml;
+
+        // Gắn sự kiện các nút hành động trong bảng
+        container.querySelectorAll('[data-cmp-view]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-cmp-view');
+                this.closeCompareModal();
+                this.openDetailPanel(id);
+            });
+        });
+
+        container.querySelectorAll('[data-cmp-select]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-cmp-select');
+                const tName = btn.getAttribute('data-cmp-name');
+                const tObj = items.find(it => it.id === id);
+                this.closeCompareModal();
+                
+                // Cuộn xuống form liên hệ và điền nội dung
+                const contactSec = document.getElementById('contact-section');
+                if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                const noteInput = document.getElementById('inquiry-notes');
+                if (noteInput && tObj) {
+                    const priceStr = window.i18n.formatCost(tObj.cost_estimate_vnd);
+                    noteInput.value = `[CHỌN TỪ BẢNG SO SÁNH] Tôi quan tâm đến mẫu thiết kế: "${tName}" (Quy mô: ${tObj.width_m}×${tObj.depth_m}m, ${tObj.floors} tầng, dự toán tham khảo: ${priceStr}). Nhờ KTS Võ Quốc Việt tư vấn chi tiết phương án thi công.`;
+                    noteInput.focus();
+                }
+
+                if (window.toast) {
+                    window.toast.success(
+                        lang === 'vi' 
+                            ? `Đã chọn mẫu "${tName}"! Vui lòng để lại SĐT để KTS liên hệ.` 
+                            : `Selected "${tName}"! Please enter your phone number.`
+                    );
+                }
+            });
+        });
     }
 }
 

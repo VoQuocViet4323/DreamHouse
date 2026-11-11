@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.4" />
+    <link rel="stylesheet" href="style.css?v=8.5" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.4"></script>
-    <script src="js/i18n.js?v=8.4"></script>
-    <script src="js/toast.js?v=8.4"></script>
-    <script src="js/viewer3d.js?v=8.4"></script>
-    <script src="js/app.js?v=8.4" defer></script>
+    <script src="js/config.js?v=8.5"></script>
+    <script src="js/i18n.js?v=8.5"></script>
+    <script src="js/toast.js?v=8.5"></script>
+    <script src="js/viewer3d.js?v=8.5"></script>
+    <script src="js/app.js?v=8.5" defer></script>
 </head>
 
 <body>
@@ -742,9 +742,14 @@
                         <button id="detail-inquire-btn" class="btn-primary full-btn" data-i18n="btn_inquire_this">
                             Nhận báo giá mẫu này →
                         </button>
-                        <button id="detail-fav-btn" class="btn-outline-fav" data-i18n="btn_favorite_add">
-                            ♡ Lưu vào yêu thích
-                        </button>
+                        <div class="detail-secondary-actions">
+                            <button id="detail-fav-btn" class="btn-outline-fav" data-i18n="btn_favorite_add">
+                                ♡ Lưu vào yêu thích
+                            </button>
+                            <button id="detail-compare-btn" class="btn-outline-compare" data-i18n="detail_btn_add_compare">
+                                ⚖️ Thêm vào so sánh
+                            </button>
+                        </div>
                     </div>
 
                     <div class="detail-nav-footer">
@@ -2105,6 +2110,71 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. KHAY SO SÁNH NỔI DƯỚI MÀN HÌNH (FLOATING COMPARE DOCK - FEATURE 4) -->
+    <div id="compare-floating-dock" class="compare-floating-dock hidden" role="region" aria-label="Thanh so sánh mẫu nhà">
+        <div class="dock-container">
+            <div class="dock-info">
+                <span class="dock-icon">⚖️</span>
+                <div class="dock-text-group">
+                    <strong class="dock-title" data-i18n="compare_dock_title">So sánh mẫu nhà</strong>
+                    <span class="dock-count-badge" id="compare-dock-count">0/3</span>
+                </div>
+            </div>
+
+            <!-- Các thẻ mẫu nhà đã chọn trong khay -->
+            <div class="dock-slots-wrap" id="compare-dock-slots">
+                <!-- Dynamic Mini Slots 1, 2, 3 -->
+            </div>
+
+            <!-- Các nút thao tác -->
+            <div class="dock-actions">
+                <button type="button" class="btn-primary dock-compare-btn" id="btn-dock-compare" disabled>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+                    <span id="btn-dock-compare-text" data-i18n="compare_btn_action">So sánh ngay</span>
+                </button>
+                <button type="button" class="dock-clear-btn" id="btn-dock-clear" title="Xóa tất cả các mẫu đang chọn" data-i18n="compare_btn_clear">
+                    Xóa tất cả
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 12. MODAL BẢNG SO SÁNH MẪU NHÀ ĐỐI ĐẦU (SIDE-BY-SIDE COMPARE MODAL - FEATURE 4) -->
+    <div id="compare-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title">
+        <button type="button" id="close-compare-modal" class="modal-close" aria-label="Đóng bảng so sánh" title="Đóng bảng so sánh (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
+        <div class="modal-window compare-modal-window">
+            <!-- Header Modal So Sánh -->
+            <div class="compare-header">
+                <div class="compare-title-group">
+                    <span class="compare-badge">ĐỐI CHUẨN KIẾN TRÚC TOÀN DIỆN</span>
+                    <h2 id="compare-modal-title" class="compare-heading" data-i18n="compare_title">So Sánh Mẫu Nhà Đối Đầu</h2>
+                    <p class="compare-sub" data-i18n="compare_sub">Đối chiếu trực quan kích thước, công năng, kiến trúc và dự toán chi phí</p>
+                </div>
+
+                <!-- Công tắc lọc điểm khác biệt -->
+                <div class="compare-toolbar">
+                    <label class="compare-toggle-label" for="compare-diff-toggle">
+                        <input type="checkbox" id="compare-diff-toggle" class="compare-toggle-input" />
+                        <span class="compare-toggle-slider"></span>
+                        <span class="compare-toggle-text" data-i18n="compare_diff_toggle">Chỉ hiện điểm khác biệt</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Bảng Ma Trận So Sánh Đối Đầu -->
+            <div class="compare-table-responsive" id="compare-table-container">
+                <!-- Bảng so sánh 2 - 3 cột tự sinh qua JS -->
             </div>
         </div>
     </div>

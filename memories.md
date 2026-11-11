@@ -1068,6 +1068,35 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tương thích hoàn hảo Dark Mode & Light Mode, không vỡ layout trên màn hình điện thoại dưới 520px.
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.4`** trên `index.html` và `admin.html`.
 
+### Giai đoạn 69: Triển Khai Tính Năng 4 - Công Cụ So Sánh Mẫu Nhà Đối Đầu (Side-by-Side Architectural Template Compare v8.5)
+- [x] **Xây dựng Khay So Sánh Nổi Dưới Màn Hình (Floating Compare Dock `#compare-floating-dock`):**
+  - Thanh dock kính mờ bo tròn chuẩn cao cấp (Glassmorphic Dock) hiển thị khi gia chủ chọn 1 đến 3 mẫu nhà.
+  - Hiển thị badge số lượng đang chọn (`0/3` đến `3/3`), các slot thẻ thu nhỏ (thumbnail tròn, tên mẫu, nút xóa `✕` từng mẫu).
+  - Nút *"So sánh ngay"* tự động kích hoạt khi chọn từ 2 mẫu trở lên, kèm nút *"Xóa tất cả"*.
+  - Lưu trữ trạng thái so sánh vào `localStorage` (`dreamhouse_compare_list`) để không bị mất khi reload hoặc chuyển trang.
+- [x] **Tích hợp Điểm chạm Chọn So Sánh Trực Quan (Multi-entry Touchpoints):**
+  - Nút so sánh nổi trên từng thẻ mẫu nhà ở Thư viện (`.card-compare-btn`): Nằm ở góc trên cùng bên trái ảnh bìa với icon ⚖️ và nhãn trực quan, đổi trạng thái vàng sáng khi đã chọn.
+  - Nút thêm/bớt so sánh trong Modal Chi Tiết (`#detail-compare-btn`): Đặt song song cùng nút yêu thích tim trong cụm `.detail-secondary-actions`.
+- [x] **Xây dựng Bảng Ma Trận So Sánh Đối Đầu Đa Tiêu Chí (`#compare-modal`):**
+  - **Header ghim cố định (Sticky Header Top):** Ảnh bìa phối cảnh sắc nét, tên mẫu nhà, huy hiệu phong cách kiến trúc và mức giá dự toán luôn ghim trên cùng khi cuộn dọc xem thông số.
+  - **Cột tiêu chí bên trái ghim ngang (Sticky Column Left):** Giúp người xem không bị mất dấu tiêu chí khi cuộn ngang trên màn hình hẹp.
+  - **5 Cụm tiêu chí kiến trúc chuyên sâu:**
+    1. *Thông tin kiến trúc chung:* Loại hình nhà, Kích thước mặt tiền × chiều sâu, Diện tích đất, Tổng diện tích sàn quy đổi ($S_{xd}$).
+    2. *Kích thước & Quy mô:* Số tầng cao, Giải pháp kết cấu mái (Mái Thái / Nhật, Mái Mansard, Mái bằng BTCT).
+    3. *Bố trí công năng phòng ốc:* Số phòng ngủ, Số phòng WC, Phòng khách, Bếp & Bàn ăn, Ban công, Phòng thờ gia tiên, Gara ô tô, Giếng trời thông gió.
+    4. *Dự toán chi phí 2026:* Tổng mức đầu tư tham khảo, Đơn giá xây dựng bình quân / m².
+    5. *Định hướng phong thủy:* Hướng nhà thích hợp, Nhóm cung mệnh Bát Trạch tương thích.
+  - **Công tắc *"Chỉ hiện điểm khác biệt"* (`#compare-diff-toggle`):** Tự động phát hiện các dòng có sự khác biệt giữa các mẫu đang so sánh và ẩn các dòng giống nhau để gia chủ ra quyết định nhanh chóng.
+  - **Hàng hành động chuyển đổi cuối bảng:**
+    - Nút *"Xem chi tiết mẫu này"*: Đóng bảng so sánh và mở ngay modal chi tiết 3D của mẫu đó.
+    - Nút *"Chọn mẫu này & Tư vấn"* (1-Click Consultation Bridge): Đóng bảng so sánh, cuộn mượt xuống Form liên hệ và điền sẵn trọn vẹn thông số mẫu nhà đã chọn vào tin nhắn cho KTS Võ Quốc Việt.
+- [x] **Kiểm thử đối chiếu cẩm nang [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md):**
+  - Nút đóng (X) kính mờ chuẩn Design Tokens (Lỗi 51 & 53).
+  - Bảng cuộn ngang mượt mà, không làm vỡ layout trang web trên mobile (Lỗi 52).
+  - 100% Song ngữ Việt - Anh (VI / EN) với 38 từ khóa so sánh mới trong `js/i18n.js` (Lỗi 50).
+  - Độ tương phản cao, chữ rõ nét trên cả Dark Mode lẫn Light Mode (Lỗi 54 & 55).
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.5`** trên `index.html` và `admin.html`.
+
 
 
 
