@@ -1040,6 +1040,9 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Đảm bảo 100% song ngữ VI/EN với 27 từ khóa kiến trúc mới trong `js/i18n.js`.
   - Tương thích hoàn hảo Dark Mode & Light Mode, không vỡ layout trên màn hình điện thoại dưới 480px.
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.3`** trên `index.html` và `admin.html`.
+- [x] **Cập nhật tài liệu [`README.md`](file:///e:/Dream-house/README.md):**
+  - Tích hợp bảng lộ trình 5 tính năng đột phá giải quyết bài toán chuyển đổi khách hàng.
+  - Cập nhật đầy đủ chi tiết các tính năng mới nhất: Chuông thông báo phân quyền (v8.1), Bộ tính dự toán tương tác (v8.2), Bóc tách mặt bằng 2D/3D CAD Vector (v8.3).
 
 
 

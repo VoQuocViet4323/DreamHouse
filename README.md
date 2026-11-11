@@ -37,6 +37,41 @@
      - **Biểu đồ tròn Donut tự chia lại thị phần (Donut that re-splits):** Di chuột trượt lát cắt ra ngoài, click bật/tắt phân loại để tự động tính toán lại góc quay và cuộn tổng số lượt tương tác.
      - **Bảng xếp hạng hiệu suất chi tiết:** Xếp hạng mẫu thiết kế được xem nhiều nhất và thả tim yêu thích nhiều nhất.
 
+7. **Chuông Thông Báo Thông Minh Phân Quyền (Notification Bell Dropdown Lucian #074 - v8.1):**
+   - Đặt cạnh Avatar với hiệu ứng rung chuông (Bell Shake), nhảy số thông báo (Badge Pop), danh sách trượt mượt mà.
+   - **Phân quyền vai trò chuẩn xác (Role-Based Dispatching):**
+     - *Tài khoản Admin:* Nhận thông báo tức thì khi có khách hàng gửi yêu cầu tư vấn mới, kèm nút bấm mở Modal xem chi tiết hồ sơ khách hàng (Tên, SĐT, email, mẫu quan tâm, lời nhắn, nút gọi hotline / Zalo 1-chạm).
+     - *Tài khoản Khách hàng (User):* Chỉ nhận thông báo phản hồi từ KTS hoặc thông báo xác nhận khi đã gửi tư vấn thành công cho mẫu nhà đang xem.
+   - Hỗ trợ thao tác *"Đã đọc tất cả"* xóa mờ từng chấm xanh tuần tự, phím tắt `Esc` và nhấp ngoài để đóng linh hoạt.
+
+8. **Bộ Tính Dự Toán Chi Phí Xây Dựng Tương Tác (Interactive Cost Engine - v8.2):**
+   - **Chuẩn kỹ thuật xây dựng dân dụng 2026:** Bóc tách diện tích quy đổi $S_{xd}$ (Móng 25%–75%, Thân nhà 100%, Mái 35%–100%) nhân với 4 gói vật tư thi công (Thô 3.8tr/m², Tiêu chuẩn 5.8tr/m², Nâng cao 7.2tr/m², Luxury 9.5tr/m²).
+   - Tích hợp 2 cấp độ: Thẻ dự toán trực tiếp khi đang xoay 3D mẫu nhà và Modal dự toán toàn trang nhanh (`#quick-calc-modal`) có thanh trượt diện tích & tự động gợi ý mẫu nhà Dream House tương thích.
+   - **Cầu nối tư vấn 1-chạm (1-Click Consultation Bridge):** Tự động điền toàn bộ kết quả bóc tách và dự toán vào Form gửi KTS tư vấn chi tiết.
+
+9. **Bóc Tách Mặt Bằng 2D/3D Bố Trí Từng Tầng (Floor-by-Floor Layer Explorer & Vector CAD Engine - v8.3):**
+   - **Động cơ vẽ bản vẽ CAD SVG Vector siêu nét:** Tỉ lệ chuẩn 1/100 theo tiêu chuẩn TCXDVN 2026 với tường chịu lực 200mm, tường ngăn 100mm, cửa quét cung mở $90^\circ$, thang 21 bậc Lỗ Ban, giếng trời, kim chỉ hướng Bắc, đường gióng kích thước chuẩn xác.
+   - **Thanh điều hướng Visual Tabs 3 chế độ:** Phối cảnh (Photo) | 3D Tương tác (Viewer) | Mặt bằng tầng (Floorplan) kèm thanh chọn tầng trực quan (Tầng 1, Tầng 2, Tầng 3, Mái).
+   - **Tương tác hai chiều (Bidirectional Real-Time Highlight):** Rê chuột vào phòng trên bản vẽ thì thẻ mô tả công năng bên dưới nổi bật và ngược lại.
+   - **Nút Mặt cắt 3D (Isometric Top-Down 3D Cutaway):** Đưa camera 3D về góc nhìn bổ từ trên xuống, đối chiếu trực tiếp giữa bản vẽ phẳng 2D và không gian 3 chiều.
+   - **Phóng to toàn màn hình (Fullscreen Lightbox Modal):** Trải nghiệm xem bản vẽ chi tiết khổ lớn trên mọi thiết bị.
+
+---
+
+## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)
+
+Để đưa nền tảng Dream House vươn tầm các dịch vụ thiết kế kiến trúc chuẩn quốc tế và tạo ra trải nghiệm chuyển đổi khách hàng vượt trội, dự án xác lập lộ trình triển khai 5 tính năng trọng tâm sau:
+
+| # | Tính năng đề xuất | Giải quyết vấn đề gì? | Lợi ích cho khách hàng & Chuyển đổi | Trạng thái |
+|---|---|---|---|:---:|
+| **1** | **Bộ tính dự toán chi phí tương tác** *(Interactive Cost Calculator)* | Trước đây dự toán chỉ là một con số tĩnh (ví dụ: 4,8 tỷ), khách hàng không rõ gồm những hạng mục cụ thể nào. | Cho phép gia chủ trượt chọn gói vật tư (Tiêu chuẩn / Nâng cao / Cao cấp / Thô), chọn loại móng và kiểu mái; tự động bóc tách chi phí: Phần Thô, Hoàn Thiện, Thiết Bị ME, Quản Lý & Dự Phòng. | ✅ **Đã hoàn thành** *(v8.2)* |
+| **2** | **Bóc tách mặt bằng 2D/3D từng tầng** *(Floor-by-Floor Layer Explorer)* | Hiện chỉ xem được khối ngoại thất 3D, chưa thấy bố trí phòng ốc công năng bên trong từng tầng. | Thêm tab xem mặt bằng Tầng 1, Tầng 2, Tầng 3, Mái với diện tích từng phòng (Phòng khách, Bếp, PN Master, WC), tích hợp bản vẽ kỹ thuật CAD Vector chuẩn 1/100, tương tác 2 chiều và chế độ Mặt cắt 3D Top-Down. | ✅ **Đã hoàn thành** *(v8.3)* |
+| **3** | **Tiện ích Phong Thủy bản địa hóa** *(Thước Lỗ Ban & Hướng Nhà)* | 90% người Việt Nam khi làm nhà đều xem phong thủy (kích thước thông thủy cửa chính, cửa sổ, hướng bếp, hướng nhà hợp tuổi). | Tích hợp Thước Lỗ Ban trực tuyến đa dải đo (52.2cm Thông thủy, 42.9cm Dương trạch, 38.8cm Âm phần) và công cụ nhập năm sinh/giới tính tra cứu Bát Trạch, Cung Mệnh, hướng nhà cát hung chính xác. | ⏳ *Kế hoạch tiếp theo* |
+| **4** | **Công cụ So sánh mẫu nhà** *(Side-by-Side Compare)* | Khách hàng phân vân giữa 2–3 mẫu nhà nhưng phải mở đi mở lại các trang riêng lẻ khó đánh giá. | Chọn 2–3 mẫu và mở bảng so sánh đối đầu trực quan: Kích thước mặt tiền, chiều sâu, công năng số phòng ngủ, diện tích sàn quy đổi, đơn giá và tổng dự toán chi phí. | ⏳ *Kế hoạch tiếp theo* |
+| **5** | **Xuất hồ sơ tóm tắt 1-Click** *(Download Concept PDF Brochure)* | Khách muốn mang bản vẽ sơ bộ, phối cảnh và bảng giá về bàn bạc cùng gia đình trước khi ký hợp đồng. | Bấm 1 nút tải ngay file PDF Concept chuyên nghiệp gồm ảnh phối cảnh, sơ đồ mặt bằng các tầng, bảng khái toán vật tư có sẵn logo Dream House và thông tin liên hệ Hotline/Zalo KTS Võ Quốc Việt. | ⏳ *Kế hoạch tiếp theo* |
+
+---
+
 ---
 
 ## 📂 CẤU TRÚC THƯ MỤC DỰ ÁN
