@@ -1265,6 +1265,22 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.4`** trên `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 62** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 79: Thay Ảnh Chân Dung KTS Võ Quốc Việt & Khắc Phục Triệt Để Lỗi Che Khuất Khuôn Mặt (Architect Lead Portrait Framing Fix v9.5)
+- [x] **Giải quyết triệt để yêu cầu "ảnh đang bị khuất chưa nhìn thấy toàn diện khuôn mặt rồi, fix lại và thay file ảnh của tôi vào":**
+  - **Tích hợp ảnh chân dung thực tế của KTS. Võ Quốc Việt:**
+    - Cắt chỉnh khung hình Bust Portrait nghệ thuật chuẩn tỉ lệ vàng: làm nổi bật diện mạo gương mặt tự tin, đeo kính tri thức, nụ cười hòa nhã cùng hàng cột kiến trúc công trình bề thế phía sau.
+    - Lưu trữ trực tiếp tại `images/kts-vo-quoc-viet.jpg` (bảo lưu ảnh gốc toàn cảnh tại `images/kts-vo-quoc-viet-full.jpg`).
+  - **Mở rộng chiều cao khung ảnh `.portrait-media-wrap`:**
+    - Nâng từ 280px lên **380px** trên Desktop (và từ 220px lên **320px** trên Mobile) giúp bố cục chân dung thoáng đãng, sang trọng.
+  - **Tối ưu vị trí `object-position: center 20%`:**
+    - Định vị khuôn mặt ở 1/3 trên cùng khung nhìn, không bị cắt mất cằm, trán hay tóc trên bất kỳ thiết bị nào.
+  - **Thu gọn lớp phủ gradient mờ tối `.portrait-overlay`:**
+    - Thay đổi điểm bắt đầu mờ từ `40%` xuống `70%`, bảo đảm khuôn mặt và thân trên luôn sáng rõ, tươi tắn, không bị bóng đen nuốt chửng.
+  - **Dời vị trí huy hiệu kinh nghiệm `.portrait-badge` ("✦ 10+ Năm Kinh Nghiệm"):**
+    - Chuyển từ góc dưới (`bottom: 14px; left: 14px;`) lên góc trên bên phải (`top: 14px; right: 14px;`), tạo thành huy hiệu chứng nhận VIP danh giá mà tuyệt đối không che khuất khuôn mặt KTS.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.5`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 63** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

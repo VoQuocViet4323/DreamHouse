@@ -1188,6 +1188,21 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Cho phép người dùng bấm giữ chuột hoặc vuốt ngón tay trực tiếp trên sân khấu Thước Lỗ Ban để cuộn thước mượt mà theo thời gian thực (tự động đồng bộ với ô nhập số, thanh slider và bảng chẩn đoán).
   5. Nâng tham số cache-busting lên `?v=9.4` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 63: Ảnh chân dung KTS bị cắt mất khuôn mặt (chỉ thấy tóc và trán) do khung ảnh quá thấp, lớp phủ gradient đen và huy hiệu che khuất
+- **Hiện tượng:** Trong phần Giới thiệu KTS & Triết lý thiết kế (`#about-section`), ảnh chân dung của KTS. Võ Quốc Việt bị khuất nghiêm trọng: chỉ nhìn thấy phần tóc và một góc trán, toàn bộ mắt, mũi, miệng và khuôn mặt bị chìm xuống dưới mép khung, đồng thời bị lớp phủ gradient tối và huy hiệu "10+ Năm Kinh Nghiệm" đè lên che khuất hoàn toàn.
+- **Nguyên nhân cốt lõi:**
+  1. **Chiều cao khung `.portrait-media-wrap` quá hẹp (280px trên PC, 220px trên mobile):** Khi thẻ card chân dung co giãn theo layout grid, ảnh bị zoom quá mức vào phần đỉnh đầu.
+  2. **Thuộc tính `object-position: center top`:** Ép phần đỉnh ảnh (khoảng trời hoặc đỉnh đầu) nằm cố định ở trên, đẩy toàn bộ khuôn mặt xuống nửa dưới khung hình.
+  3. **Lớp phủ gradient `.portrait-overlay` quá rộng và đen:** Bắt đầu phủ tối từ vị trí `40%` xuống chân ảnh (`linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(9, 9, 11, 0.85) 100%)`), nuốt trọn toàn bộ khuôn mặt vào bóng tối.
+  4. **Huy hiệu `.portrait-badge` ghim ở góc dưới (`bottom: 14px; left: 14px;`):** Nằm trực tiếp ngang tầm cằm và miệng, biến thành một vật cản che mất mặt KTS.
+- **Cách khắc phục dứt điểm:**
+  1. **Thay ảnh chính chủ của KTS. Võ Quốc Việt:** Sử dụng file ảnh thực tế của người dùng, tiến hành căn chỉnh khung hình chân dung nghệ thuật (Bust Portrait) chuẩn tỉ lệ vàng: lấy trọn vẹn toàn bộ khuôn mặt rạng rỡ, kính mắt, nụ cười, trang phục chỉn chu cùng hàng cột kiến trúc bê tông đồ sộ phía sau. Lưu trữ tại `images/kts-vo-quoc-viet.jpg`.
+  2. **Nâng chiều cao khung ảnh `.portrait-media-wrap`:** Tăng từ 280px lên **380px** trên PC (và từ 220px lên **320px** trên mobile) để ảnh có đủ không gian thoáng đãng theo đúng chuẩn chân dung chuyên nghiệp.
+  3. **Tối ưu vị trí ảnh `object-position: center 20%`:** Đưa khuôn mặt vào đúng 1/3 phía trên khung nhìn, đảm bảo 100% diện mạo khuôn mặt luôn hiển thị trọn vẹn ở mọi kích thước màn hình.
+  4. **Thu gọn lớp phủ gradient:** Đẩy điểm bắt đầu mờ tối xuống `70%` (`background: linear-gradient(180deg, rgba(0, 0, 0, 0) 70%, rgba(9, 9, 11, 0.75) 100%)`), giữ cho toàn bộ khuôn mặt và thân trên luôn sáng rõ, tươi tắn.
+  5. **Dời huy hiệu kinh nghiệm lên góc trên bên phải (`top: 14px; right: 14px;`):** Trở thành huy hiệu chứng nhận VIP sang trọng gắn ở góc ảnh kiến trúc, tuyệt đối không còn che khuất bất kỳ chi tiết nào trên người KTS.
+  6. Nâng tham số cache-busting lên `?v=9.5` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
