@@ -1088,6 +1088,29 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   4. Đảm bảo co giãn 1 cột hoàn hảo trên Mobile/Tablet (`< 992px` và `< 768px`) và tương thích 100% cả Light Mode lẫn Dark Mode.
   5. Tăng tham số cache-busting lên `?v=8.8` trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 59: Nút Đóng Modal (X) bị mất, che khuất hoặc văng ra ngoài khung hình do đặt sai cấp bậc DOM (DOM Hierarchy)
+- **Hiện tượng:** Khi người dùng mở Modal Bảng Tính Dự Toán Nhanh (`#quick-calc-modal`), trên khung cửa sổ modal không nhìn thấy bất kỳ nút Đóng `✕` nào (như đã ghi nhận trong ảnh phản ánh thực tế). Người dùng không có cách bấm đóng modal trực quan trên màn hình ngoài việc nhấn phím `Esc` hoặc bấm ra ngoài màn mờ backdrop. Các modal khác (`#fengshui-modal`, `#compare-modal`, `#brochure-modal`, `#floorplan-lightbox-modal`) cũng gặp nguy cơ tương tự.
+- **Nguyên nhân cốt lõi:**
+  1. **Đặt nút ngoài khung cửa sổ modal:** Trong cấu trúc HTML cũ, `<button id="close-quick-calc-modal" class="modal-close">` được đặt làm con trực tiếp của `#quick-calc-modal` (lớp phủ `.modal-overlay`), là anh em ngang hàng bên ngoài `<div class="modal-window quick-calc-window">`.
+  2. **Lỗi định vị tương đối theo Viewport:** CSS `.modal-close` sử dụng `position: absolute; top: 16px; right: 18px;`. Khi đặt trong `.modal-overlay` (có kích thước bằng toàn bộ màn hình 100vw, ví dụ màn hình 1920px), nút bị dạt ra sát rìa phải của màn hình máy tính (cách khung modal tới hơn $410\text{px}$), hoàn toàn tách rời khỏi thẻ modal ở giữa. Khi người dùng nhìn vào khung tính toán thì thấy không có nút `✕`.
+  3. **Lỗi tương phản và z-index thấp:** `z-index: 25` của `.modal-close` trước đây có nguy cơ bị che khuất bởi các phần tử con có `z-index` cao hơn, đồng thời không có quy chuẩn riêng cho kích thước cảm ứng ngón tay trên Mobile ($40\text{px} \times 40\text{px}$).
+- **Cách khắc phục dứt điểm:**
+  1. **Đưa nút đóng vào bên trong `<div class="modal-window ...">`:** Đồng bộ đưa nút đóng `✕` làm phần tử con đầu tiên bên trong toàn bộ các Modal:
+     - `#quick-calc-modal` -> `#close-quick-calc-modal` nằm trong `.quick-calc-window`.
+     - `#floorplan-lightbox-modal` -> `#close-floorplan-lightbox` nằm trong `.floorplan-lightbox-window`.
+     - `#fengshui-modal` -> `#close-fengshui-modal` nằm trong `.fengshui-modal-window`.
+     - `#compare-modal` -> `#close-compare-modal` nằm trong `.compare-modal-window`.
+     - `#brochure-modal` -> `#close-brochure-modal` nằm trong `.brochure-modal-window`.
+  2. **Chuẩn hóa CSS Luxury Glassmorphic Nút Đóng cho cả PC & Mobile:**
+     - **Trên Desktop/PC:** `position: absolute; top: 20px; right: 22px; width: 40px; height: 40px; border-radius: 50%; z-index: 70;` cố định chắc chắn tại góc trên bên phải của khung cửa sổ modal.
+     - **Trên Mobile (`max-width: 768px`):** Tọa độ co về `top: 14px; right: 14px; width: 40px; height: 40px; min-width: 40px; min-height: 40px;` - đạt chuẩn công thái học Human Interface Guidelines (vùng chạm an toàn $\ge 40\text{px}$).
+     - **Độ tương phản Light / Dark Mode:** Sử dụng design tokens chuẩn:
+       + Light Mode: Nền `rgba(15, 23, 42, 0.06)`, viền `1px solid rgba(15, 23, 42, 0.14)`, icon `#1e293b`.
+       + Dark Mode: Nền `rgba(255, 255, 255, 0.08)`, viền `1px solid rgba(255, 255, 255, 0.22)`, icon `#f8fafc`, bóng đổ sâu `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35)`.
+       + Hover: Xoay mượt mà $90^\circ$ và phóng to nhẹ `scale(1.08)` với hiệu ứng viền đỏ cảnh báo dịu nhẹ `rgba(239, 68, 68, 0.14)`.
+  3. **Tạo khoảng đệm an toàn trên Header Modal:** Bổ sung `padding-right: 48px - 52px;` cho toàn bộ header của các modal (`.quick-calc-header`, `.fengshui-header`, `.compare-header`, `.brochure-toolbar-wrap`, `.lightbox-header`) để tuyệt đối không bị chữ hoặc badge đè lên nút đóng.
+  4. Nâng tham số cache-busting lên `?v=9.1` trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

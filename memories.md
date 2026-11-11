@@ -1188,6 +1188,28 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     - Vệt ánh sáng kim loại quét qua nút bấm (Shimmer Light Sweep `btnShimmerSweep`) mỗi 5s.
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.0`** trên `index.html` và `admin.html`.
 
+### Giai đoạn 75: Khắc Phục Triệt Để Lỗi Mất Nút Đóng (X) Trên Toàn Bộ Modal - Chuẩn Hóa Bố Cục DOM & Thiết Kế Glassmorphic Cho Cả PC & Mobile (Universal Modal Close Button Standardization v9.1)
+- [x] **Giải quyết dứt điểm lỗi mất nút X trên Bảng Tính Dự Toán Nhanh và nguy cơ tương tự trên các modal khác:**
+  - **Khắc phục gốc rễ cấp bậc DOM (DOM Hierarchy):**
+    - Di chuyển nút đóng `✕` từ lớp phủ toàn màn hình (`.modal-overlay`) vào làm phần tử con đầu tiên trực tiếp bên trong thẻ cửa sổ (`.modal-window`):
+      - `#quick-calc-modal` -> `#close-quick-calc-modal` được đưa vào trong `.quick-calc-window`.
+      - `#floorplan-lightbox-modal` -> `#close-floorplan-lightbox` được đưa vào trong `.floorplan-lightbox-window`.
+      - `#fengshui-modal` -> `#close-fengshui-modal` được đưa vào trong `.fengshui-modal-window`.
+      - `#compare-modal` -> `#close-compare-modal` được đưa vào trong `.compare-modal-window`.
+      - `#brochure-modal` -> `#close-brochure-modal` được đưa vào trong `.brochure-modal-window`.
+    - Đảm bảo các modal còn lại (`#detail-modal`, `#profile-modal`, `#inquiry-detail-modal`, `#template-modal`) đều có nút đóng hiển thị chính xác 100%.
+  - **Tối ưu hóa thiết kế nút đóng cho cả PC và Mobile:**
+    - **Trên Desktop/PC:** Định vị `position: absolute; top: 20px; right: 22px; width: 40px; height: 40px; border-radius: 50%; z-index: 70;` cố định chắc chắn ngay góc trên bên phải của khung cửa sổ, không bao giờ bị văng xa ra ngoài mép màn hình.
+    - **Trên Mobile (`max-width: 768px`):** Tọa độ co về `top: 14px; right: 14px; width: 40px; height: 40px; min-width: 40px; min-height: 40px;` - đạt chuẩn công thái học Human Interface Guidelines (vùng chạm an toàn $\ge 40\text{px}$).
+    - **Độ tương phản cao trên Light & Dark Mode:**
+      - Light Mode: Nền kính mờ trong suốt `rgba(15, 23, 42, 0.06)`, viền mỏng hairline `rgba(15, 23, 42, 0.14)`, icon `#1e293b`.
+      - Dark Mode: Nền `rgba(255, 255, 255, 0.08)`, viền sáng `rgba(255, 255, 255, 0.22)`, icon `#f8fafc`, bóng đổ sâu `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35)`.
+      - Hover & Focus: Hiệu ứng xoay $90^\circ$, phóng to nhẹ `scale(1.08)` với quầng sáng cảnh báo đỏ hồng tinh tế (`rgba(239, 68, 68, 0.14)` / `rgba(239, 68, 68, 0.24)`).
+  - **Khoảng cách an toàn tiêu đề Modal:**
+    - Bổ sung `padding-right: 48px - 52px;` cho toàn bộ header (`.quick-calc-header`, `.fengshui-header`, `.compare-header`, `.brochure-toolbar-wrap`, `.lightbox-header`) bảo đảm tiêu đề và nút chức năng không bao giờ chạm hoặc đè lên nút đóng.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.1`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 59** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

@@ -2023,35 +2023,44 @@ body.dark-theme {
   }
 }
 
-/* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website - Luxury Glassmorphic Design */
+/* Chuẩn hóa đồng bộ tất cả nút Đóng (X) trên toàn bộ website - Luxury Glassmorphic Design (PC & Mobile) */
 .modal-close,
 .profile-close-btn,
-[id^="close-"][id$="-modal"] {
+[id^="close-"][id$="-modal"],
+[id^="close-"][id$="-lightbox"],
+.modal-window > .modal-close {
   position: absolute;
-  top: 16px;
-  right: 18px;
-  width: 36px;
-  height: 36px;
+  top: 20px;
+  right: 22px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: var(--radius-full);
-  background: var(--btn-close-bg) !important;
-  border: 1px solid var(--btn-close-border) !important;
-  color: var(--btn-close-color) !important;
+  background: var(--btn-close-bg, rgba(15, 23, 42, 0.06)) !important;
+  border: 1px solid var(--btn-close-border, rgba(15, 23, 42, 0.14)) !important;
+  color: var(--btn-close-color, #1e293b) !important;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   cursor: pointer;
-  z-index: 25;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  z-index: 70;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   transition: all 0.25s var(--ease-spring);
 }
 
 .modal-close svg,
 .profile-close-btn svg,
-[id^="close-"][id$="-modal"] svg {
+[id^="close-"][id$="-modal"] svg,
+[id^="close-"][id$="-lightbox"] svg,
+.modal-window > .modal-close svg {
+  width: 18px;
+  height: 18px;
   stroke: currentColor;
+  stroke-width: 2.5;
   flex-shrink: 0;
   pointer-events: none;
   transition: transform 0.25s var(--ease-spring);
@@ -2059,11 +2068,18 @@ body.dark-theme {
 
 .modal-close:hover,
 .profile-close-btn:hover,
-[id^="close-"][id$="-modal"]:hover {
-  background: var(--btn-close-hover-bg) !important;
-  border-color: var(--btn-close-hover-border) !important;
-  color: var(--btn-close-hover-color) !important;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.22);
+[id^="close-"][id$="-modal"]:hover,
+[id^="close-"][id$="-lightbox"]:hover,
+.modal-window > .modal-close:hover,
+.modal-close:focus-visible,
+.profile-close-btn:focus-visible,
+[id^="close-"][id$="-modal"]:focus-visible,
+[id^="close-"][id$="-lightbox"]:focus-visible,
+.modal-window > .modal-close:focus-visible {
+  background: var(--btn-close-hover-bg, rgba(239, 68, 68, 0.14)) !important;
+  border-color: var(--btn-close-hover-border, rgba(239, 68, 68, 0.45)) !important;
+  color: var(--btn-close-hover-color, #ef4444) !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
   transform: rotate(90deg) scale(1.08);
 }
 
@@ -2072,7 +2088,9 @@ body.dark-theme {
 .profile-close-btn:active,
 .profile-close-btn.is-active,
 [id^="close-"][id$="-modal"]:active,
-[id^="close-"][id$="-modal"].is-active {
+[id^="close-"][id$="-modal"].is-active,
+[id^="close-"][id$="-lightbox"]:active,
+.modal-window > .modal-close:active {
   transform: rotate(90deg) scale(0.92) !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15) !important;
 }
@@ -3900,12 +3918,18 @@ body:not(.dark-theme) .site-footer {
     box-sizing: border-box !important;
   }
 
-  .modal-close {
-    top: 14px;
-    right: 14px;
-    width: 38px;
-    height: 38px;
-    z-index: 60;
+  .modal-close,
+  .profile-close-btn,
+  [id^="close-"][id$="-modal"],
+  [id^="close-"][id$="-lightbox"],
+  .modal-window > .modal-close {
+    top: 14px !important;
+    right: 14px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    z-index: 70 !important;
   }
 
   #detail-modal .modal-close,
@@ -4339,11 +4363,31 @@ body.dark-theme {
 }
 
 :root[data-theme="dark"] .modal-close,
-body.dark-theme .modal-close {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #cbd5e1;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+body.dark-theme .modal-close,
+:root[data-theme="dark"] .modal-window > .modal-close,
+body.dark-theme .modal-window > .modal-close,
+:root[data-theme="dark"] [id^="close-"][id$="-modal"],
+body.dark-theme [id^="close-"][id$="-modal"],
+:root[data-theme="dark"] [id^="close-"][id$="-lightbox"],
+body.dark-theme [id^="close-"][id$="-lightbox"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+:root[data-theme="dark"] .modal-close:hover,
+body.dark-theme .modal-close:hover,
+:root[data-theme="dark"] .modal-window > .modal-close:hover,
+body.dark-theme .modal-window > .modal-close:hover,
+:root[data-theme="dark"] [id^="close-"][id$="-modal"]:hover,
+body.dark-theme [id^="close-"][id$="-modal"]:hover,
+:root[data-theme="dark"] [id^="close-"][id$="-lightbox"]:hover,
+body.dark-theme [id^="close-"][id$="-lightbox"]:hover {
+  background: rgba(239, 68, 68, 0.24) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  color: #fca5a5 !important;
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35) !important;
 }
 
 /* Bảo đảm nút đóng của Detail Modal luôn dùng Dark Glass độ tương phản cao kể cả trong Dark Mode */
@@ -10058,9 +10102,10 @@ body.dark-theme .quick-calc-window {
 }
 
 .quick-calc-header {
+  position: relative;
   text-align: center;
   margin-bottom: 28px;
-  padding-bottom: 20px;
+  padding: 0 48px 20px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -10539,6 +10584,10 @@ body.dark-theme .qc-summary-box {
     padding: 24px 16px 20px;
   }
 
+  .quick-calc-header {
+    padding: 0 40px 16px;
+  }
+
   .quick-calc-heading {
     font-size: 1.45rem;
   }
@@ -10930,12 +10979,14 @@ body:not(.dark-theme) .floorplan-lightbox-window {
 }
 
 .lightbox-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
   padding-bottom: 16px;
+  padding-right: 52px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
 }
@@ -11207,11 +11258,13 @@ body:not(.dark-theme) .fengshui-modal-window {
 }
 
 .fengshui-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-bottom: 22px;
   padding-bottom: 18px;
+  padding-right: 50px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -12663,12 +12716,14 @@ body:not(.dark-theme) .compare-modal-window {
 }
 
 .compare-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 16px;
   margin-bottom: 18px;
   padding-bottom: 16px;
+  padding-right: 50px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
@@ -13116,6 +13171,7 @@ body:not(.dark-theme) .brochure-modal-window {
 
 /* 2. Thanh Công Cụ Hồ Sơ (.brochure-toolbar-wrap) */
 .brochure-toolbar-wrap {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13123,6 +13179,7 @@ body:not(.dark-theme) .brochure-modal-window {
   gap: 14px;
   margin-bottom: 18px;
   padding-bottom: 16px;
+  padding-right: 52px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
