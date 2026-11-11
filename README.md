@@ -56,6 +56,13 @@
    - **Nút Mặt cắt 3D (Isometric Top-Down 3D Cutaway):** Đưa camera 3D về góc nhìn bổ từ trên xuống, đối chiếu trực tiếp giữa bản vẽ phẳng 2D và không gian 3 chiều.
    - **Phóng to toàn màn hình (Fullscreen Lightbox Modal):** Trải nghiệm xem bản vẽ chi tiết khổ lớn trên mọi thiết bị.
 
+10. **Tiện Ích Phong Thủy Bản Địa Hóa (Thước Lỗ Ban & Tra Cứu Bát Trạch Hướng Nhà - v8.4):**
+   - **Thước Lỗ Ban trực tuyến 3 dải đo chạy song song:** 52.2cm Thông Thủy (cửa chính, cửa sổ, chiều cao trần); 42.9cm Dương Trạch (bệ bếp, bậc cầu thang, khuôn cửa, nội thất); 38.8cm Âm Phần (bàn thờ gia tiên).
+   - **Trực quan sinh động & Chẩn đoán đa tầng:** Kim chỉ thị trung tâm màu vàng gold ánh kim, vạch đo trượt mượt mà theo tọa độ, phân tích rõ cung Đỏ (Cát) / cung Đen (Hung), ý nghĩa phong thủy và thuật toán tự động gợi ý tăng/giảm kích thước gần nhất để hóa giải cung xấu.
+   - **Động cơ Bát Trạch & La Bàn 8 Hướng Hợp Tuổi:** Tính toán chính xác Can Chi, Ngũ Hành Niên Mệnh, Quẻ Cung Phi (Nam/Nữ) theo chuẩn phong thủy; hiển thị La Bàn Bát Quái Vector SVG 8 hướng phân chia rõ ràng 4 hướng Tốt (Sinh Khí, Thiên Y, Diên Niên, Phục Vị) và 4 hướng Xấu (Tuyệt Mệnh, Ngũ Quỷ, Lục Sát, Họa Hại).
+   - **Bảng quy tắc bố trí công năng kiến trúc:** Hướng mở cửa chính, hướng ban thờ gia tiên (tọa cát hướng cát), bố trí bếp nấu chuẩn nguyên tắc "Tọa hung hướng cát", hướng giường ngủ đón vượng khí.
+   - **Cầu nối tư vấn 1-chạm (1-Click Consultation Bridge):** Nút gửi thông số phong thủy tự động điền sẵn vào Form liên hệ KTS Võ Quốc Việt.
+
 ---
 
 ## 🗺️ LỘ TRÌNH ĐỐI CHUẨN & NÂNG CẤP TÍNH NĂNG ĐỘT PHÁ (FEATURE ROADMAP)
@@ -66,7 +73,7 @@
 |---|---|---|---|:---:|
 | **1** | **Bộ tính dự toán chi phí tương tác** *(Interactive Cost Calculator)* | Trước đây dự toán chỉ là một con số tĩnh (ví dụ: 4,8 tỷ), khách hàng không rõ gồm những hạng mục cụ thể nào. | Cho phép gia chủ trượt chọn gói vật tư (Tiêu chuẩn / Nâng cao / Cao cấp / Thô), chọn loại móng và kiểu mái; tự động bóc tách chi phí: Phần Thô, Hoàn Thiện, Thiết Bị ME, Quản Lý & Dự Phòng. | ✅ **Đã hoàn thành** *(v8.2)* |
 | **2** | **Bóc tách mặt bằng 2D/3D từng tầng** *(Floor-by-Floor Layer Explorer)* | Hiện chỉ xem được khối ngoại thất 3D, chưa thấy bố trí phòng ốc công năng bên trong từng tầng. | Thêm tab xem mặt bằng Tầng 1, Tầng 2, Tầng 3, Mái với diện tích từng phòng (Phòng khách, Bếp, PN Master, WC), tích hợp bản vẽ kỹ thuật CAD Vector chuẩn 1/100, tương tác 2 chiều và chế độ Mặt cắt 3D Top-Down. | ✅ **Đã hoàn thành** *(v8.3)* |
-| **3** | **Tiện ích Phong Thủy bản địa hóa** *(Thước Lỗ Ban & Hướng Nhà)* | 90% người Việt Nam khi làm nhà đều xem phong thủy (kích thước thông thủy cửa chính, cửa sổ, hướng bếp, hướng nhà hợp tuổi). | Tích hợp Thước Lỗ Ban trực tuyến đa dải đo (52.2cm Thông thủy, 42.9cm Dương trạch, 38.8cm Âm phần) và công cụ nhập năm sinh/giới tính tra cứu Bát Trạch, Cung Mệnh, hướng nhà cát hung chính xác. | ⏳ *Kế hoạch tiếp theo* |
+| **3** | **Tiện ích Phong Thủy bản địa hóa** *(Thước Lỗ Ban & Hướng Nhà)* | 90% người Việt Nam khi làm nhà đều xem phong thủy (kích thước thông thủy cửa chính, cửa sổ, hướng bếp, hướng nhà hợp tuổi). | Tích hợp Thước Lỗ Ban trực tuyến đa dải đo (52.2cm Thông thủy, 42.9cm Dương trạch, 38.8cm Âm phần) và công cụ nhập năm sinh/giới tính tra cứu Bát Trạch, Cung Mệnh, hướng nhà cát hung chính xác, kèm quy tắc bố trí mặt bằng chuẩn KTS. | ✅ **Đã hoàn thành** *(v8.4)* |
 | **4** | **Công cụ So sánh mẫu nhà** *(Side-by-Side Compare)* | Khách hàng phân vân giữa 2–3 mẫu nhà nhưng phải mở đi mở lại các trang riêng lẻ khó đánh giá. | Chọn 2–3 mẫu và mở bảng so sánh đối đầu trực quan: Kích thước mặt tiền, chiều sâu, công năng số phòng ngủ, diện tích sàn quy đổi, đơn giá và tổng dự toán chi phí. | ⏳ *Kế hoạch tiếp theo* |
 | **5** | **Xuất hồ sơ tóm tắt 1-Click** *(Download Concept PDF Brochure)* | Khách muốn mang bản vẽ sơ bộ, phối cảnh và bảng giá về bàn bạc cùng gia đình trước khi ký hợp đồng. | Bấm 1 nút tải ngay file PDF Concept chuyên nghiệp gồm ảnh phối cảnh, sơ đồ mặt bằng các tầng, bảng khái toán vật tư có sẵn logo Dream House và thông tin liên hệ Hotline/Zalo KTS Võ Quốc Việt. | ⏳ *Kế hoạch tiếp theo* |
 

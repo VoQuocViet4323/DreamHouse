@@ -13,7 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8.3" />
+    <link rel="stylesheet" href="style.css?v=8.4" />
 
     <!-- Supabase JS Client & Three.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,11 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 
     <!-- Các module JavaScript -->
-    <script src="js/config.js?v=8.3"></script>
-    <script src="js/i18n.js?v=8.3"></script>
-    <script src="js/toast.js?v=8.3"></script>
-    <script src="js/viewer3d.js?v=8.3"></script>
-    <script src="js/app.js?v=8.3" defer></script>
+    <script src="js/config.js?v=8.4"></script>
+    <script src="js/i18n.js?v=8.4"></script>
+    <script src="js/toast.js?v=8.4"></script>
+    <script src="js/viewer3d.js?v=8.4"></script>
+    <script src="js/app.js?v=8.4" defer></script>
 </head>
 
 <body>
@@ -52,6 +52,7 @@
             <nav class="main-nav">
                 <a href="#gallery-section" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
                 <button type="button" class="nav-link btn-nav-link" id="nav-open-calc" data-i18n="nav_calculator">Tính dự toán</button>
+                <button type="button" class="nav-link btn-nav-link" id="nav-open-fengshui" data-i18n="nav_fengshui">Phong thủy</button>
                 <a href="#contact-section" class="nav-link" data-i18n="nav_contact">Liên hệ</a>
             </nav>
 
@@ -296,6 +297,10 @@
                 <button type="button" class="btn-secondary hero-calc-trigger" id="hero-calc-btn">
                     <span class="hero-calc-icon">⚡</span>
                     <span data-i18n="hero_btn_calc">Dự toán chi phí</span>
+                </button>
+                <button type="button" class="btn-secondary hero-fengshui-trigger" id="hero-fengshui-btn">
+                    <span class="hero-calc-icon">🧭</span>
+                    <span data-i18n="hero_btn_fengshui">Tra cứu phong thủy</span>
                 </button>
                 <a href="#contact-section" class="btn-secondary" data-i18n="nav_contact">Nhận tư vấn ngay</a>
             </div>
@@ -707,6 +712,30 @@
 
                     <div class="detail-desc-block">
                         <p id="detail-desc" class="desc-text"></p>
+                    </div>
+
+                    <!-- KHỐI TƯ VẤN PHONG THỦY & THƯỚC LỖ BAN CHO MẪU NHÀ (FEATURE 3) -->
+                    <div class="detail-fengshui-card" id="detail-fengshui-card">
+                        <div class="detail-fs-header">
+                            <span class="detail-fs-icon">🧭</span>
+                            <div class="detail-fs-info">
+                                <h4 class="detail-fs-title" data-i18n="detail_fengshui_title">Tư Vấn Phong Thủy & Kích Thước Lỗ Ban</h4>
+                                <p class="detail-fs-desc" data-i18n="detail_fengshui_desc">Đồ án được thiết kế đồng bộ theo kích thước thước Lỗ Ban cung Tài Lộc và tương thích Bát Trạch.</p>
+                            </div>
+                        </div>
+                        <div class="detail-fs-metrics">
+                            <div class="fs-metric-item">
+                                <span class="fs-metric-label">Cửa chính (Lỗ Ban 52.2):</span>
+                                <span class="fs-metric-val val-auspicious" id="detail-fs-door">810 × 2120 mm (Tài Chí)</span>
+                            </div>
+                            <div class="fs-metric-item">
+                                <span class="fs-metric-label">Bàn thờ (Lỗ Ban 38.8):</span>
+                                <span class="fs-metric-val val-auspicious" id="detail-fs-altar">1270 × 610 mm (Tiến Bảo)</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-subtle-fs" id="detail-btn-open-fs" data-i18n="detail_btn_open_fengshui">
+                            Mở công cụ tra cứu phong thủy →
+                        </button>
                     </div>
 
                     <div class="detail-actions">
@@ -1814,6 +1843,268 @@
 
             <div class="lightbox-footer">
                 <span class="lightbox-hint" data-i18n="floor_lightbox_hint">Bấm ra ngoài hoặc phím Esc để đóng bản vẽ</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. MODAL TIỆN ÍCH PHONG THỦY & THƯỚC LỖ BAN (FEATURE 3) -->
+    <div id="fengshui-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="fengshui-modal-title">
+        <button type="button" id="close-fengshui-modal" class="modal-close" aria-label="Đóng tiện ích phong thủy" title="Đóng tiện ích phong thủy (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+
+        <div class="modal-window fengshui-modal-window">
+            <!-- Header Modal Phong Thủy -->
+            <div class="fengshui-header">
+                <div class="fengshui-title-group">
+                    <span class="fengshui-badge">TIỆN ÍCH PHONG THỦY BẢN ĐỊA HÓA</span>
+                    <h2 id="fengshui-modal-title" class="fengshui-heading" data-i18n="fengshui_title">Tiện Ích Phong Thủy & Thước Lỗ Ban</h2>
+                    <p class="fengshui-sub" data-i18n="fengshui_sub">Bản địa hóa theo quy chuẩn phong thủy xây dựng nhà ở dân dụng Việt Nam</p>
+                </div>
+
+                <!-- Navigation Tabs: Thước Lỗ Ban vs Bát Trạch -->
+                <div class="fengshui-nav-pills" role="tablist">
+                    <button type="button" class="fs-nav-pill active" id="fs-tab-luban" role="tab" aria-selected="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="10" rx="2"/><line x1="6" y1="7" x2="6" y2="12"/><line x1="10" y1="7" x2="10" y2="10"/><line x1="14" y1="7" x2="14" y2="12"/><line x1="18" y1="7" x2="18" y2="10"/></svg>
+                        <span data-i18n="fengshui_tab_luban">Thước Lỗ Ban Trực Tuyến</span>
+                    </button>
+                    <button type="button" class="fs-nav-pill" id="fs-tab-battrach" role="tab" aria-selected="false">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="12 2 15 9 12 11 9 9 12 2"/><polygon points="12 22 9 15 12 13 15 15 12 22"/></svg>
+                        <span data-i18n="fengshui_tab_battrach">Bát Trạch & Hướng Nhà</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 1: THƯỚC LỖ BAN TRỰC TUYẾN -->
+            <div class="fs-tab-content active" id="fs-panel-luban" role="tabpanel">
+                <!-- Thanh công cụ nhập kích thước & Kéo thước -->
+                <div class="luban-control-bar">
+                    <div class="luban-input-wrapper">
+                        <label for="luban-input-value" class="luban-label" data-i18n="luban_input_placeholder">Nhập kích thước đo:</label>
+                        <div class="luban-input-group">
+                            <input type="number" id="luban-input-value" class="luban-number-input" value="2120" min="100" max="8000" step="5" />
+                            <div class="luban-unit-toggle">
+                                <button type="button" class="unit-btn active" data-unit="mm">mm</button>
+                                <button type="button" class="unit-btn" data-unit="cm">cm</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slider kéo trượt -->
+                    <div class="luban-slider-wrapper">
+                        <div class="luban-slider-header">
+                            <span class="slider-hint">Kéo thanh trượt để rê thước đo:</span>
+                            <strong class="slider-readout" id="luban-readout">2120 mm (212 cm)</strong>
+                        </div>
+                        <input type="range" id="luban-range-slider" min="200" max="5000" value="2120" step="5" class="luban-range" />
+                    </div>
+                </div>
+
+                <!-- Kích thước phong thủy chuẩn thông dụng (Presets) -->
+                <div class="luban-presets-container">
+                    <span class="presets-label" data-i18n="luban_presets_title">Kích thước phong thủy chuẩn thông dụng:</span>
+                    <div class="presets-chips">
+                        <button type="button" class="fs-chip" data-val="810" data-i18n="luban_preset_door1">Cửa 1 cánh (810 × 2120 mm)</button>
+                        <button type="button" class="fs-chip" data-val="1330" data-i18n="luban_preset_door2">Cửa 2 cánh (1330 × 2120 mm)</button>
+                        <button type="button" class="fs-chip" data-val="2550" data-i18n="luban_preset_door4">Cửa 4 cánh (2550 × 2620 mm)</button>
+                        <button type="button" class="fs-chip" data-val="1270" data-i18n="luban_preset_altar">Bàn thờ (1270 × 610 mm)</button>
+                        <button type="button" class="fs-chip" data-val="3600" data-i18n="luban_preset_height">Chiều cao tầng trệt (3600 mm)</button>
+                    </div>
+                </div>
+
+                <!-- SÂN KHẤU TRỰC QUAN 3 THƯỚC LỖ BAN CHẠY SONG SONG -->
+                <div class="luban-rulers-stage">
+                    <!-- Kim chỉ thị trung tâm chuẩn xác màu Gold -->
+                    <div class="luban-center-hairline" title="Tọa độ điểm đo"></div>
+
+                    <!-- THƯỚC 1: 52.2 cm (Thông Thủy) -->
+                    <div class="ruler-block" id="ruler-block-522">
+                        <div class="ruler-tagline">
+                            <span class="ruler-badge badge-522">52.2 cm</span>
+                            <span class="ruler-desc" data-i18n="luban_ruler_522">Thước 52.2 cm: Thông Thủy (Cửa chính, Cửa sổ, Chiều cao lọt lòng phòng)</span>
+                        </div>
+                        <div class="ruler-tape-viewport" id="tape-viewport-522">
+                            <div class="ruler-tape-track" id="tape-track-522">
+                                <!-- Vạch thước & Cung động qua JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THƯỚC 2: 42.9 cm (Dương Trạch) -->
+                    <div class="ruler-block" id="ruler-block-429">
+                        <div class="ruler-tagline">
+                            <span class="ruler-badge badge-429">42.9 cm</span>
+                            <span class="ruler-desc" data-i18n="luban_ruler_429">Thước 42.9 cm: Dương Trạch (Bệ bếp, Bậc cầu thang, Giường, Khuôn cửa)</span>
+                        </div>
+                        <div class="ruler-tape-viewport" id="tape-viewport-429">
+                            <div class="ruler-tape-track" id="tape-track-429">
+                                <!-- Vạch thước & Cung động qua JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THƯỚC 3: 38.8 cm (Âm Phần / Bàn Thờ) -->
+                    <div class="ruler-block" id="ruler-block-388">
+                        <div class="ruler-tagline">
+                            <span class="ruler-badge badge-388">38.8 cm</span>
+                            <span class="ruler-desc" data-i18n="luban_ruler_388">Thước 38.8 cm: Âm Phần & Bàn Thờ (Bàn thờ gia tiên, Tủ thờ, Khánh thờ)</span>
+                        </div>
+                        <div class="ruler-tape-viewport" id="tape-viewport-388">
+                            <div class="ruler-tape-track" id="tape-track-388">
+                                <!-- Vạch thước & Cung động qua JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BẢNG ĐÁNH GIÁ PHÂN TÍCH KẾT QUẢ KÍCH THƯỚC (DIAGNOSTIC CARD) -->
+                <div class="luban-diagnosis-card">
+                    <div class="diag-header">
+                        <h4 class="diag-title" data-i18n="luban_result_title">Kết quả phân tích kích thước phong thủy:</h4>
+                        <span class="diag-dimension-badge" id="diag-current-dim">2120 mm</span>
+                    </div>
+
+                    <div class="diag-grid">
+                        <!-- Card Thước 52.2 -->
+                        <div class="diag-item-card" id="diag-card-522">
+                            <div class="diag-item-top">
+                                <span class="diag-ruler-name">Thước 52.2 cm (Thông Thủy)</span>
+                                <span class="diag-status-pill status-good" id="diag-status-522">Cát (Tốt)</span>
+                            </div>
+                            <div class="diag-cung-title" id="diag-cung-522">Cung Quý Nhân (Cung nhỏ: Quyền Lộc)</div>
+                            <p class="diag-cung-meaning" id="diag-meaning-522">Gia chủ gặp quý nhân phù trợ, sự nghiệp hanh thông, con cháu hiếu thuận vinh hiển.</p>
+                        </div>
+
+                        <!-- Card Thước 42.9 -->
+                        <div class="diag-item-card" id="diag-card-429">
+                            <div class="diag-item-top">
+                                <span class="diag-ruler-name">Thước 42.9 cm (Dương Trạch)</span>
+                                <span class="diag-status-pill status-good" id="diag-status-429">Cát (Tốt)</span>
+                            </div>
+                            <div class="diag-cung-title" id="diag-cung-429">Cung Tài (Cung nhỏ: Tiến Bảo)</div>
+                            <p class="diag-cung-meaning" id="diag-meaning-429">Tài lộc đắc lợi, tiền của vào nhà dồi dào, kinh doanh hưng thịnh phát đạt.</p>
+                        </div>
+
+                        <!-- Card Thước 38.8 -->
+                        <div class="diag-item-card" id="diag-card-388">
+                            <div class="diag-item-top">
+                                <span class="diag-ruler-name">Thước 38.8 cm (Bàn Thờ)</span>
+                                <span class="diag-status-pill status-good" id="diag-status-388">Cát (Tốt)</span>
+                            </div>
+                            <div class="diag-cung-title" id="diag-cung-388">Cung Đinh (Cung nhỏ: Phúc Tinh)</div>
+                            <p class="diag-cung-meaning" id="diag-meaning-388">Sao phúc chiếu rọi, gia đạo êm ấm bình an, thêm đinh vượng khí tổ tông.</p>
+                        </div>
+                    </div>
+
+                    <!-- Gợi ý điều chỉnh kích thước nếu dính cung xấu -->
+                    <div class="diag-advice-box" id="diag-advice-box">
+                        <span class="advice-icon">💡</span>
+                        <div class="advice-content" id="diag-advice-text">
+                            Kích thước <strong>2120 mm</strong> là kích thước phong thủy cực đẹp, đỏ cả 3 thước Lỗ Ban! Thích hợp hoàn hảo cho chiều cao thông thủy cửa chính và cửa phòng ngủ.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: BÁT TRẠCH & HƯỚNG NHÀ HỢP TUỔI -->
+            <div class="fs-tab-content" id="fs-panel-battrach" role="tabpanel">
+                <!-- Bộ lọc nhập thông tin gia chủ -->
+                <div class="battrach-query-bar">
+                    <div class="battrach-field">
+                        <label for="battrach-birth-select" class="battrach-label" data-i18n="battrach_birth_year">Năm sinh gia chủ (Dương lịch):</label>
+                        <select id="battrach-birth-select" class="battrach-select">
+                            <!-- Dynamic years from 1950 to 2026 -->
+                        </select>
+                    </div>
+
+                    <div class="battrach-field">
+                        <label class="battrach-label" data-i18n="battrach_gender">Giới tính gia chủ:</label>
+                        <div class="battrach-gender-pills">
+                            <button type="button" class="gender-pill active" data-gender="male" data-i18n="battrach_gender_male">Nam (Gia chủ)</button>
+                            <button type="button" class="gender-pill" data-gender="female" data-i18n="battrach_gender_female">Nữ (Gia chủ)</button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-primary battrach-submit-btn" id="btn-calc-battrach" data-i18n="battrach_btn_calc">
+                        Tra cứu phong thủy
+                    </button>
+                </div>
+
+                <!-- KẾT QUẢ PHÂN TÍCH BÁT TRẠCH -->
+                <div class="battrach-summary-banner">
+                    <div class="summary-badge-group">
+                        <span class="summary-kua-badge" id="battrach-kua-badge">Cung Khảm (Thủy)</span>
+                        <span class="summary-group-badge" id="battrach-group-badge">Đông Tứ Mệnh</span>
+                    </div>
+                    <h3 class="summary-name" id="battrach-zodiac-title">Gia chủ sinh năm 1990: Canh Ngọ (Lộ Bàng Thổ)</h3>
+                    <p class="summary-compat-dirs" id="battrach-compat-text">Các hướng vượng tài lộc hợp mệnh: Đông, Đông Nam, Nam, Bắc.</p>
+                </div>
+
+                <div class="battrach-dashboard-grid">
+                    <!-- Cột trái: La Bàn Bát Trạch 8 Hướng Trực Quan -->
+                    <div class="battrach-compass-col">
+                        <div class="compass-wrap">
+                            <div class="compass-stage" id="battrach-compass-stage">
+                                <!-- Bát quái SVG Vector tự vẽ qua JS -->
+                            </div>
+                        </div>
+                        <div class="compass-legend">
+                            <span class="legend-chip good"><span class="chip-dot"></span> 4 Hướng Tốt (Sinh Khí, Thiên Y, Diên Niên, Phục Vị)</span>
+                            <span class="legend-chip bad"><span class="chip-dot"></span> 4 Hướng Xấu (Tuyệt Mệnh, Ngũ Quỷ, Lục Sát, Họa Hại)</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột phải: Bảng chi tiết 8 Hướng & Tư Vấn Bố Trí Công Năng -->
+                    <div class="battrach-details-col">
+                        <!-- Danh sách 4 hướng Tốt -->
+                        <div class="direction-group group-good">
+                            <h4 class="direction-group-title" data-i18n="battrach_good_dirs">4 Hướng Tốt (Đón Vượng Khí & Tài Lộc):</h4>
+                            <div class="direction-items-grid" id="battrach-good-list">
+                                <!-- Render qua JS: Sinh Khí, Thiên Y, Diên Niên, Phục Vị -->
+                            </div>
+                        </div>
+
+                        <!-- Danh sách 4 hướng Xấu -->
+                        <div class="direction-group group-bad">
+                            <h4 class="direction-group-title" data-i18n="battrach_bad_dirs">4 Hướng Xấu (Cần Tránh Hoặc Hóa Giải):</h4>
+                            <div class="direction-items-grid" id="battrach-bad-list">
+                                <!-- Render qua JS: Tuyệt Mệnh, Ngũ Quỷ, Lục Sát, Họa Hại -->
+                            </div>
+                        </div>
+
+                        <!-- Bảng quy tắc bố trí công năng kiến trúc -->
+                        <div class="architecture-rules-card">
+                            <h4 class="rules-card-title">Nguyên Tắc Bố Trí Mặt Bằng Công Năng:</h4>
+                            <div class="rules-list">
+                                <div class="rule-row">
+                                    <strong data-i18n="battrach_rule_door">Hướng cửa chính & Ban công:</strong>
+                                    <span id="rule-door-text">Mở về các hướng Đông Nam (Sinh Khí) hoặc Đông (Thiên Y).</span>
+                                </div>
+                                <div class="rule-row">
+                                    <strong data-i18n="battrach_rule_altar">Hướng ban thờ gia tiên:</strong>
+                                    <span id="rule-altar-text">Tọa cát hướng cát, nhìn về hướng Nam (Diên Niên).</span>
+                                </div>
+                                <div class="rule-row">
+                                    <strong data-i18n="battrach_rule_kitchen">Bố trí bếp nấu (Tọa hung hướng cát):</strong>
+                                    <span id="rule-kitchen-text">Đặt tại Tây Nam (Tuyệt Mệnh) để thiêu đốt hung khí, mặt bếp hướng Đông Nam.</span>
+                                </div>
+                                <div class="rule-row">
+                                    <strong data-i18n="battrach_rule_bed">Hướng kê giường ngủ:</strong>
+                                    <span id="rule-bed-text">Đầu giường quay về hướng Bắc (Phục Vị) đón giấc ngủ an lành.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cầu nối tư vấn phong thủy 1-chạm -->
+                        <button type="button" class="btn-primary full-btn fs-consult-bridge-btn" id="btn-fs-send-consult" data-i18n="battrach_btn_send_consult">
+                            Gửi thông tin phong thủy này để KTS tư vấn mặt bằng →
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

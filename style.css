@@ -10263,3 +10263,1257 @@ body:not(.dark-theme) .lightbox-footer {
     font-size: 1.15rem;
   }
 }
+
+/* ==========================================================================
+   FEATURE 3: TIỆN ÍCH PHONG THỦY & THƯỚC LỖ BAN (LOCALIZED FENG SHUI SUITE)
+   ========================================================================== */
+
+/* 1. Nút Phong Thủy trên Header & Hero */
+.btn-nav-link {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hero-fengshui-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #eab308;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.hero-fengshui-trigger:hover {
+  background: rgba(234, 179, 8, 0.18);
+  border-color: #eab308;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -4px rgba(234, 179, 8, 0.3);
+}
+
+body:not(.dark-theme) .hero-fengshui-trigger {
+  background: #fefce8;
+  border-color: #fde047;
+  color: #a16207;
+}
+
+body:not(.dark-theme) .hero-fengshui-trigger:hover {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+/* 2. Thẻ Phong Thủy trong Modal Chi Tiết Mẫu Nhà (.detail-fengshui-card) */
+.detail-fengshui-card {
+  margin: 18px 0 20px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.06), rgba(245, 158, 11, 0.02));
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+body:not(.dark-theme) .detail-fengshui-card {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.detail-fs-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.detail-fs-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.detail-fs-info {
+  flex: 1;
+}
+
+.detail-fs-title {
+  margin: 0 0 3px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #eab308;
+  letter-spacing: -0.01em;
+}
+
+body:not(.dark-theme) .detail-fs-title {
+  color: #b45309;
+}
+
+.detail-fs-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+body:not(.dark-theme) .detail-fs-desc {
+  color: #64748b;
+}
+
+.detail-fs-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+body:not(.dark-theme) .detail-fs-metrics {
+  background: #ffffff;
+  border-color: #fef3c7;
+}
+
+.fs-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fs-metric-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body:not(.dark-theme) .fs-metric-label {
+  color: #78716c;
+}
+
+.fs-metric-val {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.fs-metric-val.val-auspicious {
+  color: #ef4444;
+}
+
+body:not(.dark-theme) .fs-metric-val.val-auspicious {
+  color: #dc2626;
+}
+
+.btn-subtle-fs {
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #eab308;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-subtle-fs:hover {
+  background: rgba(234, 179, 8, 0.25);
+  transform: translateX(3px);
+}
+
+body:not(.dark-theme) .btn-subtle-fs {
+  background: #fef08a;
+  border-color: #fde047;
+  color: #92400e;
+}
+
+/* 3. Cửa Sổ Modal Phong Thủy (.fengshui-modal-window) */
+.fengshui-modal-window {
+  max-width: 960px;
+  width: 95vw;
+  max-height: 92vh;
+  padding: 28px 28px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 24px;
+  background: #0b0d14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+}
+
+body:not(.dark-theme) .fengshui-modal-window {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2);
+}
+
+.fengshui-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body:not(.dark-theme) .fengshui-header {
+  border-bottom-color: #f1f5f9;
+}
+
+.fengshui-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fengshui-badge {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #eab308;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body:not(.dark-theme) .fengshui-badge {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #a16207;
+}
+
+.fengshui-heading {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+body:not(.dark-theme) .fengshui-heading {
+  color: #0f172a;
+}
+
+.fengshui-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+body:not(.dark-theme) .fengshui-sub {
+  color: #64748b;
+}
+
+/* 4. Tab Navigation Pills (.fengshui-nav-pills) */
+.fengshui-nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  width: fit-content;
+}
+
+body:not(.dark-theme) .fengshui-nav-pills {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.fs-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.fs-nav-pill:hover {
+  color: #f8fafc;
+}
+
+body:not(.dark-theme) .fs-nav-pill:hover {
+  color: #0f172a;
+}
+
+.fs-nav-pill.active {
+  background: #eab308;
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.35);
+}
+
+.fs-tab-content {
+  display: none;
+}
+
+.fs-tab-content.active {
+  display: block;
+  animation: fadeInModal 0.25s ease-out;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. TAB 1: THƯỚC LỖ BAN STYLES */
+.luban-control-bar {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 16px;
+}
+
+body:not(.dark-theme) .luban-control-bar {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.luban-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.luban-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body:not(.dark-theme) .luban-label {
+  color: #64748b;
+}
+
+.luban-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.luban-number-input {
+  flex: 1;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  color: #f8fafc;
+  font-size: 1.1rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.luban-number-input:focus {
+  border-color: #eab308;
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
+}
+
+body:not(.dark-theme) .luban-number-input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.luban-unit-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body:not(.dark-theme) .luban-unit-toggle {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.unit-btn {
+  padding: 5px 9px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unit-btn.active {
+  background: #eab308;
+  color: #000000;
+}
+
+.luban-slider-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.luban-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slider-hint {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+body:not(.dark-theme) .slider-hint {
+  color: #64748b;
+}
+
+.slider-readout {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: #eab308;
+  font-variant-numeric: tabular-nums;
+}
+
+body:not(.dark-theme) .slider-readout {
+  color: #a16207;
+}
+
+.luban-range {
+  width: 100%;
+  accent-color: #eab308;
+  cursor: pointer;
+}
+
+/* Presets Chips */
+.luban-presets-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.presets-label {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+body:not(.dark-theme) .presets-label {
+  color: #64748b;
+}
+
+.presets-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.fs-chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fs-chip:hover {
+  border-color: #eab308;
+  color: #eab308;
+  background: rgba(234, 179, 8, 0.08);
+  transform: translateY(-1px);
+}
+
+body:not(.dark-theme) .fs-chip {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+body:not(.dark-theme) .fs-chip:hover {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #854d0e;
+}
+
+/* Sân Khấu 3 Thước Lỗ Ban Chạy Song Song */
+.luban-rulers-stage {
+  position: relative;
+  padding: 18px 0;
+  border-radius: 18px;
+  background: #06080d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+body:not(.dark-theme) .luban-rulers-stage {
+  background: #0f172a;
+  border-color: #334155;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Kim Chỉ Thị Trung Tâm */
+.luban-center-hairline {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #eab308;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.9), 0 0 24px rgba(234, 179, 8, 0.5);
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.luban-center-hairline::before,
+.luban-center-hairline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  transform: translateX(-50%);
+}
+
+.luban-center-hairline::before {
+  top: 0;
+  border-top: 8px solid #eab308;
+}
+
+.luban-center-hairline::after {
+  bottom: 0;
+  border-bottom: 8px solid #eab308;
+}
+
+/* Khối từng thước đo */
+.ruler-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 16px;
+}
+
+.ruler-tagline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ruler-badge {
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.badge-522 { background: #3b82f6; color: #ffffff; }
+.badge-429 { background: #10b981; color: #ffffff; }
+.badge-388 { background: #8b5cf6; color: #ffffff; }
+
+.ruler-desc {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.ruler-tape-viewport {
+  position: relative;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ruler-tape-track {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  display: flex;
+  will-change: transform;
+  transform: translateX(0);
+}
+
+.tape-cung {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0 4px;
+  text-align: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+.tape-cung.cung-good {
+  background: rgba(239, 68, 68, 0.28);
+  color: #fca5a5;
+  border-top: 3px solid #ef4444;
+}
+
+.tape-cung.cung-bad {
+  background: rgba(15, 23, 42, 0.6);
+  color: #64748b;
+  border-top: 3px solid #475569;
+}
+
+.tape-major-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.tape-cung.cung-good .tape-major-name {
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.tape-minor-name {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* Thẻ Đánh Giá Phân Tích (Diagnostic Card) */
+.luban-diagnosis-card {
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+body:not(.dark-theme) .luban-diagnosis-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.diag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diag-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+body:not(.dark-theme) .diag-title {
+  color: #0f172a;
+}
+
+.diag-dimension-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #eab308;
+  font-size: 0.85rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+body:not(.dark-theme) .diag-dimension-badge {
+  background: #fef08a;
+  border-color: #fde047;
+  color: #854d0e;
+}
+
+.diag-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.diag-item-card {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body:not(.dark-theme) .diag-item-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.diag-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diag-ruler-name {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+body:not(.dark-theme) .diag-ruler-name {
+  color: #64748b;
+}
+
+.diag-status-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.diag-status-pill.status-good {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #ef4444;
+}
+
+body:not(.dark-theme) .diag-status-pill.status-good {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.diag-status-pill.status-bad {
+  background: rgba(100, 116, 139, 0.18);
+  border: 1px solid rgba(100, 116, 139, 0.3);
+  color: #94a3b8;
+}
+
+body:not(.dark-theme) .diag-status-pill.status-bad {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+.diag-cung-title {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: #f8fafc;
+}
+
+body:not(.dark-theme) .diag-cung-title {
+  color: #0f172a;
+}
+
+.diag-item-card.is-good .diag-cung-title {
+  color: #ef4444;
+}
+
+body:not(.dark-theme) .diag-item-card.is-good .diag-cung-title {
+  color: #dc2626;
+}
+
+.diag-cung-meaning {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+body:not(.dark-theme) .diag-cung-meaning {
+  color: #64748b;
+}
+
+.diag-advice-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.25);
+}
+
+body:not(.dark-theme) .diag-advice-box {
+  background: #fefce8;
+  border-color: #fef08a;
+}
+
+.advice-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.advice-content {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+body:not(.dark-theme) .advice-content {
+  color: #713f12;
+}
+
+/* 6. TAB 2: BÁT TRẠCH & HƯỚNG NHÀ STYLES */
+.battrach-query-bar {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+}
+
+body:not(.dark-theme) .battrach-query-bar {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.battrach-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.battrach-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body:not(.dark-theme) .battrach-label {
+  color: #64748b;
+}
+
+.battrach-select {
+  height: 42px;
+  min-width: 170px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  font-weight: 650;
+  outline: none;
+}
+
+body:not(.dark-theme) .battrach-select {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.battrach-gender-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.gender-pill {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gender-pill.active {
+  background: #eab308;
+  border-color: #eab308;
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
+}
+
+.battrach-submit-btn {
+  height: 42px;
+  padding: 0 20px;
+}
+
+/* Banner Tóm Tắt Mệnh */
+.battrach-summary-banner {
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.12), rgba(16, 185, 129, 0.06));
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  margin-bottom: 22px;
+}
+
+body:not(.dark-theme) .battrach-summary-banner {
+  background: linear-gradient(135deg, #fef9c3, #ecfdf5);
+  border-color: #fde047;
+}
+
+.summary-badge-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.summary-kua-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.summary-group-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.summary-name {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+  font-weight: 750;
+  color: #f8fafc;
+}
+
+body:not(.dark-theme) .summary-name {
+  color: #0f172a;
+}
+
+.summary-compat-dirs {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #94a3b8;
+}
+
+body:not(.dark-theme) .summary-compat-dirs {
+  color: #475569;
+}
+
+/* Dashboard Grid Bát Trạch */
+.battrach-dashboard-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.battrach-compass-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.compass-wrap {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1;
+  position: relative;
+  border-radius: 50%;
+  background: #06080d;
+  border: 2px solid rgba(234, 179, 8, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body:not(.dark-theme) .compass-wrap {
+  background: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.compass-stage {
+  width: 100%;
+  height: 100%;
+}
+
+.compass-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.legend-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: #94a3b8;
+}
+
+body:not(.dark-theme) .legend-chip {
+  color: #64748b;
+}
+
+.legend-chip .chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-chip.good .chip-dot { background: #10b981; }
+.legend-chip.bad .chip-dot { background: #ef4444; }
+
+/* Chi tiết 4 hướng tốt / 4 hướng xấu */
+.battrach-details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.direction-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.direction-group-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.group-good .direction-group-title { color: #10b981; }
+.group-bad .direction-group-title { color: #ef4444; }
+
+.direction-items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.dir-card {
+  padding: 12px 14px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.2s ease;
+}
+
+.dir-card:hover {
+  transform: translateY(-2px);
+}
+
+.dir-card.card-good {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+body:not(.dark-theme) .dir-card.card-good {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.dir-card.card-bad {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+body:not(.dark-theme) .dir-card.card-bad {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.dir-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dir-star-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.card-good .dir-star-name { color: #10b981; }
+body:not(.dark-theme) .card-good .dir-star-name { color: #047857; }
+
+.card-bad .dir-star-name { color: #ef4444; }
+body:not(.dark-theme) .card-bad .dir-star-name { color: #b91c1c; }
+
+.dir-card-heading {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  font-weight: 650;
+}
+
+body:not(.dark-theme) .dir-card-heading {
+  color: #64748b;
+}
+
+.dir-meaning {
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+body:not(.dark-theme) .dir-meaning {
+  color: #475569;
+}
+
+/* Quy Tắc Bố Trí Công Năng Kiến Trúc */
+.architecture-rules-card {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+body:not(.dark-theme) .architecture-rules-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.rules-card-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: #eab308;
+}
+
+body:not(.dark-theme) .rules-card-title {
+  color: #a16207;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #cbd5e1;
+}
+
+body:not(.dark-theme) .rule-row {
+  color: #334155;
+}
+
+.rule-row strong {
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+body:not(.dark-theme) .rule-row strong {
+  color: #0f172a;
+}
+
+.fs-consult-bridge-btn {
+  margin-top: 6px;
+}
+
+/* Responsive Cho Feature 3 */
+@media (max-width: 860px) {
+  .luban-control-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .diag-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .battrach-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .battrach-compass-col {
+    margin: 0 auto;
+  }
+
+  .direction-items-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .fengshui-modal-window {
+    padding: 20px 14px 18px;
+  }
+
+  .fengshui-heading {
+    font-size: 1.3rem;
+  }
+
+  .fengshui-nav-pills {
+    width: 100%;
+  }
+
+  .fs-nav-pill {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  .detail-fs-metrics {
+    grid-template-columns: 1fr;
+  }
+}

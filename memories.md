@@ -1044,6 +1044,30 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
   - Tích hợp bảng lộ trình 5 tính năng đột phá giải quyết bài toán chuyển đổi khách hàng.
   - Cập nhật đầy đủ chi tiết các tính năng mới nhất: Chuông thông báo phân quyền (v8.1), Bộ tính dự toán tương tác (v8.2), Bóc tách mặt bằng 2D/3D CAD Vector (v8.3).
 
+### Giai đoạn 68: Triển Khai Tính Năng 3 - Tiện Ích Phong Thủy Bản Địa Hóa (Thước Lỗ Ban 3 Dải Đo & Tra Cứu Bát Trạch Hướng Nhà v8.4)
+- [x] **Xây dựng Động cơ Thước Lỗ Ban Điện Tử Trực Tuyến 3 Dải Đo Chạy Song Song:**
+  - **3 Quy chuẩn dải đo Lỗ Ban trong kiến trúc dân dụng Việt Nam:**
+    1. *Thước 52.2 cm (Thông Thủy / Khối rỗng):* Đo kích thước lọt lòng cửa chính, cửa thông phòng, cửa sổ, chiều cao tầng nhà. Chia làm 8 cung chính (Quý Nhân, Hiểm Họa, Thiên Tai, Thiên Tài, Phúc Lộc, Cô Độc, Thiên Tặc, Tể Tướng), mỗi cung có 5 cung nhỏ.
+    2. *Thước 42.9 cm (Dương Trạch / Khối đặc):* Đo kích thước bệ bếp, bậc cầu thang, giường ngủ, bàn ghế nội thất, khuôn cửa gỗ. Chia làm 8 cung chính (Tài, Bệnh, Ly, Nghĩa, Quan, Kiếp, Hại, Bản), mỗi cung có 4 cung nhỏ.
+    3. *Thước 38.8 cm (Âm Phần & Bàn Thờ):* Đo kích thước bàn thờ gia tiên, tủ thờ, khánh thờ. Chia làm 10 cung chính (Đinh, Hại, Vượng, Khổ, Nghĩa, Quan, Tử, Hưng, Thất, Tài), mỗi cung có 4 cung nhỏ.
+  - **Sân khấu trực quan động:** Kim chỉ thị trung tâm màu vàng gold ánh kim, vạch đo chuyển động trượt mượt mà theo tọa độ người dùng kéo hoặc nhập số.
+  - **Thẻ chẩn đoán đa tầng (Diagnostic Cards):** Bóc tách phân tích chi tiết kích thước hiện tại rơi vào cung nào trên cả 3 thước, trạng thái Cát (Đỏ) / Hung (Đen), ý nghĩa phong thủy và thuật toán tự động gợi ý tăng/giảm kích thước gần nhất để hóa giải cung xấu.
+  - **Kích thước mẫu một chạm (Presets):** Cửa 1 cánh (810 × 2120 mm), Cửa 2 cánh (1330 × 2120 mm), Cửa 4 cánh (2550 × 2620 mm), Bàn thờ (1270 × 610 mm), Chiều cao tầng (3600 mm).
+- [x] **Xây dựng Động cơ Bát Trạch & La Bàn 8 Hướng Hợp Tuổi:**
+  - **Thuật toán Can Chi & Niên Mệnh:** Tính toán chính xác Can Chi và Ngũ Hành nạp âm từ năm 1950 đến 2026.
+  - **Thuật toán Quẻ Cung Phi (Nam vs Nữ):** Tính toán quái số chuẩn phong thủy (rút gọn tổng số cuối, hoán vị số 5 thành Khôn đối với Nam, Cấn đối với Nữ), phân nhóm **Đông Tứ Mệnh** (Khảm, Ly, Chấn, Tốn) và **Tây Tứ Mệnh** (Càn, Khôn, Cấn, Đoài).
+  - **La bàn Bát Quái Vector SVG 8 Hướng Trực Quan:** Vẽ 8 cung quạt phân màu xanh lá (4 Hướng Tốt: Sinh Khí, Thiên Y, Diên Niên, Phục Vị) và màu đỏ cam (4 Hướng Xấu: Tuyệt Mệnh, Ngũ Quỷ, Lục Sát, Họa Hại), tâm Thái Cực Âm Dương xoay chuẩn độ.
+  - **Bảng quy tắc công năng kiến trúc:** Hướng mở cửa chính & ban công, hướng đặt ban thờ tọa cát hướng cát, nguyên tắc vàng đặt bếp "Tọa hung hướng cát" thiêu đốt điềm gở, hướng kê đầu giường ngủ đón sinh khí.
+- [x] **Liên kết chuyển đổi & Điểm chạm trải nghiệm người dùng (UX Touchpoints):**
+  - Nút mở trên Thanh điều hướng Navbar (`#nav-open-fengshui`).
+  - Nút mở trên Hero Banner (`#hero-fengshui-btn`).
+  - Thẻ thông số phong thủy gợi ý trong Modal chi tiết mẫu nhà (`#detail-fengshui-card`).
+  - **Cầu nối tư vấn phong thủy 1-chạm (`#btn-fs-send-consult`):** Tự động đóng modal, cuộn mượt xuống Form liên hệ và điền sẵn trọn vẹn thông số phong thủy tuổi gia chủ vào lời nhắn gửi KTS.
+- [x] **Kiểm thử đối chiếu cẩm nang [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md):**
+  - Đảm bảo 100% song ngữ VI/EN với 42 từ khóa phong thủy mới trong `js/i18n.js`.
+  - Tương thích hoàn hảo Dark Mode & Light Mode, không vỡ layout trên màn hình điện thoại dưới 520px.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=8.4`** trên `index.html` và `admin.html`.
+
 
 
 

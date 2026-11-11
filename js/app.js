@@ -61,6 +61,7 @@ class DreamHouseApp {
         this.initNotificationBell();
         this.initCostCalculator();
         this.initFloorplanExplorer();
+        this.initFengShuiSuite();
         await this.loadTemplates();
         this.renderGallery();
 
@@ -1269,6 +1270,7 @@ class DreamHouseApp {
 
         this.updateDetailCalculator(item);
         this.updateDetailFloorplans(item);
+        this.updateDetailFengShui(item);
         this.updateDetailFavButton();
     }
 
@@ -4492,6 +4494,812 @@ class DreamHouseApp {
         // Đồng bộ danh sách thông báo theo vai trò tài khoản (Admin xem lead khách hàng, User xem thông báo cá nhân)
         if (typeof this._renderNotificationList === 'function') {
             this._renderNotificationList();
+        }
+    }
+
+    /**
+     * =========================================================================
+     * FEATURE 3: TIỆN ÍCH PHONG THỦY BẢN ĐỊA HÓA (LOCALIZED FENG SHUI SUITE)
+     * Thước Lỗ Ban 3 Dải Đo (52.2cm, 42.9cm, 38.8cm) & Bát Trạch Tra Cứu Hướng Nhà
+     * =========================================================================
+     */
+    initFengShuiSuite() {
+        // 1. Mở / Đóng Modal Phong Thủy (#fengshui-modal)
+        const modal = document.getElementById('fengshui-modal');
+        const openBtns = [
+            document.getElementById('nav-open-fengshui'),
+            document.getElementById('hero-fengshui-btn'),
+            document.getElementById('detail-btn-open-fs')
+        ];
+        const closeBtn = document.getElementById('close-fengshui-modal');
+
+        const openModal = () => {
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            this._updateLubanDisplay(this._currentLubanMm || 2120);
+            this._recalcBatTrach();
+        };
+
+        const closeModal = () => {
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+
+        openBtns.forEach(btn => {
+            if (btn) btn.addEventListener('click', openModal);
+        });
+
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // 2. Chuyển đổi Tabs: Thước Lỗ Ban vs Bát Trạch
+        const tabLuban = document.getElementById('fs-tab-luban');
+        const tabBatTrach = document.getElementById('fs-tab-battrach');
+        const panelLuban = document.getElementById('fs-panel-luban');
+        const panelBatTrach = document.getElementById('fs-panel-battrach');
+
+        if (tabLuban && tabBatTrach && panelLuban && panelBatTrach) {
+            tabLuban.addEventListener('click', () => {
+                tabLuban.classList.add('active');
+                tabLuban.setAttribute('aria-selected', 'true');
+                tabBatTrach.classList.remove('active');
+                tabBatTrach.setAttribute('aria-selected', 'false');
+                panelLuban.classList.add('active');
+                panelBatTrach.classList.remove('active');
+                this._updateLubanDisplay(this._currentLubanMm || 2120);
+            });
+
+            tabBatTrach.addEventListener('click', () => {
+                tabBatTrach.classList.add('active');
+                tabBatTrach.setAttribute('aria-selected', 'true');
+                tabLuban.classList.remove('active');
+                tabLuban.setAttribute('aria-selected', 'false');
+                panelBatTrach.classList.add('active');
+                panelLuban.classList.remove('active');
+                this._recalcBatTrach();
+            });
+        }
+
+        // 3. Khởi tạo Động cơ Thước Lỗ Ban
+        this._initLubanEngine();
+
+        // 4. Khởi tạo Động cơ Bát Trạch & Hướng Nhà
+        this._initBatTrachEngine();
+
+        // 5. Cầu nối tư vấn Phong Thủy 1-Chạm
+        const bridgeBtn = document.getElementById('btn-fs-send-consult');
+        if (bridgeBtn) {
+            bridgeBtn.addEventListener('click', () => {
+                closeModal();
+                const contactSection = document.getElementById('contact-section');
+                if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                const noteInput = document.getElementById('inquiry-notes');
+                if (noteInput && this._lastBatTrachData) {
+                    const d = this._lastBatTrachData;
+                    noteInput.value = `[TƯ VẤN PHONG THỦY] Gia chủ sinh năm ${d.year} (${d.canChi} - Mệnh ${d.menh}), Cung Phi ${d.cungPhi} (${d.groupName}). Hướng hợp: ${d.goodDirsStr}. Nhờ KTS Võ Quốc Việt tư vấn phương án bố trí mặt bằng công năng và hướng nhà phù hợp phong thủy.`;
+                    noteInput.focus();
+                }
+                if (window.toast) {
+                    window.toast.success(
+                        window.i18n.getLang() === 'vi' 
+                            ? 'Đã chuyển thông số phong thủy vào lời nhắn! Vui lòng để lại số điện thoại để KTS liên hệ.' 
+                            : 'Feng Shui parameters attached! Please leave your phone number for Architect consultation.'
+                    );
+                }
+            });
+        }
+    }
+
+    /**
+     * Khởi tạo Động cơ Thước Lỗ Ban 3 dải đo
+     */
+    _initLubanEngine() {
+        this._currentLubanMm = 2120;
+        this._lubanUnit = 'mm';
+
+        // Bảng dữ liệu định nghĩa 3 thước Lỗ Ban
+        this.LUBAN_TABLES = {
+            // Thước 52.2 cm (522 mm) - 8 cung, mỗi cung 65.25mm
+            522: {
+                cycle: 522,
+                majorCount: 8,
+                step: 65.25,
+                cungs: [
+                    { name: 'Quý Nhân', isGood: true, meaning: 'Gia chủ gặp quý nhân phù trợ, sự nghiệp hanh thông, con cháu vinh hiển hiếu thuận.', minors: ['Quyền Lộc', 'Trung Tín', 'Tự Tại', 'Phúc Lộc', 'Quang Minh'] },
+                    { name: 'Hiểm Họa', isGood: false, meaning: 'Dễ gặp điều bất trắc, tán tài hao của, tinh thần bất an, gia sự bất ổn.', minors: ['Tán Tài', 'Hậu Họa', 'Dâm Dục', 'Lo Sợ', 'Tang Sự'] },
+                    { name: 'Thiên Tai', isGood: false, meaning: 'Đề phòng ốm đau bệnh tật triền miên, mất mát của cải, chia rẽ nội bộ.', minors: ['Thoát Tài', 'Mất Người', 'Mất Của', 'Lâm Bệnh', 'Chia Rẽ'] },
+                    { name: 'Thiên Tài', isGood: true, meaning: 'Tài lộc dồi dào, thêm đinh thêm quý, công danh đỗ đạt, gia đạo thịnh vượng.', minors: ['Thi Thơ', 'Thêm Đinh', 'Hưng Vượng', 'Đắc Tài', 'Lộc Tồn'] },
+                    { name: 'Phúc Lộc', isGood: true, meaning: 'Phúc đức tràn đầy, con cháu thành đạt, tài sản dồi dào, vạn sự hanh thông.', minors: ['Tử Tôn', 'Phú Quý', 'Tiến Bảo', 'Chiêu Tài', 'Thập Tài'] },
+                    { name: 'Cô Độc', isGood: false, meaning: 'Gia đạo bất hòa, tha hương ly tán, cô quạnh, khó giữ của cải.', minors: ['Tuyệt Mệnh', 'Tán Sản', 'Thiếu Người', 'Bạc Bẽo', 'Trục Trặc'] },
+                    { name: 'Thiên Tặc', isGood: false, meaning: 'Coi chừng trộm cướp, thị phi kiện tụng, tiền tài tiêu tán, tai ương khó lường.', minors: ['Phòng Bệnh', 'Chiêu Tai', 'Tù Ngục', 'Quan Tụng', 'Trộm Cướp'] },
+                    { name: 'Tể Tướng', isGood: true, meaning: 'Công danh hiển hách, thăng quan tiến chức, quý nhân nâng đỡ, gia sản vững bền.', minors: ['Đại Tài', 'Thi Cử', 'Hoạch Tài', 'Hiếu Thuận', 'Quý Nhân'] }
+                ]
+            },
+            // Thước 42.9 cm (429 mm) - 8 cung, mỗi cung 53.625mm
+            429: {
+                cycle: 429,
+                majorCount: 8,
+                step: 53.625,
+                cungs: [
+                    { name: 'Tài', isGood: true, meaning: 'Đón tài lộc cát tường, làm ăn phát đạt, tiền của vào nhà như nước.', minors: ['Tài Đức', 'Báo Khố', 'Lục Hợp', 'Nghênh Phúc'] },
+                    { name: 'Bệnh', isGood: false, meaning: 'Dễ vướng bệnh tật, hao tài tốn của, việc quan sự bất an phiền muộn.', minors: ['Thoát Tài', 'Công Sự', 'Lao Ngục', 'Cô Quả'] },
+                    { name: 'Ly', isGood: false, meaning: 'Gia đạo ly tán, thị phi khẩu thiệt, hao hụt tiền tài, công việc bế tắc.', minors: ['Trường Bệnh', 'Tụng Tụng', 'Kiếp Tài', 'Khổ Nạn'] },
+                    { name: 'Nghĩa', isGood: true, meaning: 'Thêm đinh quý tử, tình nghĩa thủy chung, làm ăn gặp may mắn đại cát.', minors: ['Thêm Đinh', 'Ích Lợi', 'Quý Tử', 'Đại Cát'] },
+                    { name: 'Quan', isGood: true, meaning: 'Thuận đường quan lộ, thi cử đỗ đạt cao, phú quý thịnh vượng nhiều đời.', minors: ['Thuận Khoa', 'Hoành Tài', 'Tiến Ích', 'Phú Quý'] },
+                    { name: 'Kiếp', isGood: false, meaning: 'Dễ bị lừa gạt, mất mát tài sản, ly hương bôn ba, tai ương rình rập.', minors: ['Tử Biệt', 'Thoái Khẩu', 'Ly Hương', 'Thất Tài'] },
+                    { name: 'Hại', isGood: false, meaning: 'Bệnh tật triền miên, khẩu thiệt thị phi, gia đạo trắc trở nhiều điều hại.', minors: ['Tai Bệnh', 'Tử Tuyệt', 'Khẩu Thiệt', 'Lâm Bệnh'] },
+                    { name: 'Bản', isGood: true, meaning: 'Bản mệnh hưng vượng, tài trí sáng suốt, tiến bảo sinh sôi nhiều của cải.', minors: ['Tài Chí', 'Đăng Khoa', 'Tiến Bảo', 'Hưng Vượng'] }
+                ]
+            },
+            // Thước 38.8 cm (388 mm) - 10 cung, mỗi cung 38.8mm
+            388: {
+                cycle: 388,
+                majorCount: 10,
+                step: 38.8,
+                cungs: [
+                    { name: 'Đinh', isGood: true, meaning: 'Sao phúc chiếu rọi, gia đạo bình an, thêm đinh vượng khí tổ tông.', minors: ['Phúc Tinh', 'Cập Đệ', 'Tài Vượng', 'Đăng Khoa'] },
+                    { name: 'Hại', isGood: false, meaning: 'Tránh khẩu thiệt thị phi, đề phòng bệnh tật hoặc tai nạn rủi ro.', minors: ['Khẩu Thiệt', 'Bệnh Lâm', 'Tử Tuyệt', 'Tai Họa'] },
+                    { name: 'Vượng', isGood: true, meaning: 'Hỷ sự lâm môn, tiến bảo phát tài, hưởng nhiều thiên đức cát khí.', minors: ['Thiên Đức', 'Hỷ Sự', 'Tiến Bảo', 'Thêm Phúc'] },
+                    { name: 'Khổ', isGood: false, meaning: 'Thất thoát tiền tài, việc quan sự trở ngại, tâm thần âu lo vất vả.', minors: ['Thất Thoát', 'Quan Quỷ', 'Kiếp Tài', 'Vô Tự'] },
+                    { name: 'Nghĩa', isGood: true, meaning: 'Đại cát đại lợi, phúc trạch sâu dày, được trời ban tài lộc hanh thông.', minors: ['Đại Cát', 'Tài Vượng', 'Ích Lợi', 'Thiên Phú'] },
+                    { name: 'Quan', isGood: true, meaning: 'Công danh hiển đạt, tiến bảo thăng hoa, buôn bán phát tài đắc lợi.', minors: ['Phú Quý', 'Tiến Bảo', 'Hoạnh Tài', 'Thuận Khoa'] },
+                    { name: 'Tử', isGood: false, meaning: 'Ly hương phiêu bạt, thất thoát con người, tiêu tán của cải gia đình.', minors: ['Ly Hương', 'Tử Biệt', 'Thoát Đinh', 'Thất Tài'] },
+                    { name: 'Hưng', isGood: true, meaning: 'Gia đình hưng thịnh, con cháu thông minh đỗ đạt, rạng rỡ dòng tộc.', minors: ['Đăng Khoa', 'Quý Tử', 'Thêm Đinh', 'Hưng Vượng'] },
+                    { name: 'Thất', isGood: false, meaning: 'Thoái tài hao của, cô quả trắc trở, kiện tụng khó yên.', minors: ['Cô Quả', 'Lao Ngục', 'Công Sự', 'Thoái Tài'] },
+                    { name: 'Tài', isGood: true, meaning: 'Nghênh đón phúc lộc, lục hợp viên mãn, tài đức vẹn toàn viên mãn.', minors: ['Nghinh Phúc', 'Lục Hợp', 'Tiến Bảo', 'Tài Đức'] }
+                ]
+            }
+        };
+
+        const inputVal = document.getElementById('luban-input-value');
+        const sliderVal = document.getElementById('luban-range-slider');
+        const unitBtns = document.querySelectorAll('.unit-btn');
+        const presetChips = document.querySelectorAll('.fs-chip');
+
+        // Lắng nghe Input số
+        if (inputVal) {
+            inputVal.addEventListener('input', () => {
+                let val = parseFloat(inputVal.value) || 0;
+                if (this._lubanUnit === 'cm') val = val * 10;
+                val = Math.max(100, Math.min(8000, val));
+                this._currentLubanMm = val;
+                if (sliderVal) sliderVal.value = Math.min(5000, Math.max(200, val));
+                this._updateLubanDisplay(val);
+            });
+        }
+
+        // Lắng nghe Slider
+        if (sliderVal) {
+            sliderVal.addEventListener('input', () => {
+                const val = parseFloat(sliderVal.value) || 2120;
+                this._currentLubanMm = val;
+                if (inputVal) {
+                    inputVal.value = this._lubanUnit === 'cm' ? (val / 10).toFixed(1) : val;
+                }
+                this._updateLubanDisplay(val);
+            });
+        }
+
+        // Lắng nghe Unit Toggle (mm / cm)
+        unitBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                unitBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this._lubanUnit = btn.dataset.unit || 'mm';
+                if (inputVal) {
+                    inputVal.value = this._lubanUnit === 'cm' ? (this._currentLubanMm / 10).toFixed(1) : this._currentLubanMm;
+                }
+            });
+        });
+
+        // Lắng nghe Preset Chips
+        presetChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const val = parseFloat(chip.dataset.val) || 2120;
+                this._currentLubanMm = val;
+                if (inputVal) {
+                    inputVal.value = this._lubanUnit === 'cm' ? (val / 10).toFixed(1) : val;
+                }
+                if (sliderVal) {
+                    sliderVal.value = Math.min(5000, Math.max(200, val));
+                }
+                this._updateLubanDisplay(val);
+            });
+        });
+
+        this._updateLubanDisplay(this._currentLubanMm);
+    }
+
+    /**
+     * Cập nhật hiển thị giao diện 3 Thước Lỗ Ban và Bảng chẩn đoán
+     */
+    _updateLubanDisplay(valMm) {
+        valMm = Math.round(valMm);
+        const readout = document.getElementById('luban-readout');
+        const diagDim = document.getElementById('diag-current-dim');
+        if (readout) readout.textContent = `${valMm} mm (${(valMm / 10).toFixed(1)} cm)`;
+        if (diagDim) diagDim.textContent = `${valMm} mm`;
+
+        // Render từng thước: 522, 429, 388
+        const res522 = this._renderSingleRulerTape(522, valMm, 'tape-track-522');
+        const res429 = this._renderSingleRulerTape(429, valMm, 'tape-track-429');
+        const res388 = this._renderSingleRulerTape(388, valMm, 'tape-track-388');
+
+        // Cập nhật thẻ chẩn đoán 52.2
+        this._updateDiagnosisCard('522', res522);
+        this._updateDiagnosisCard('429', res429);
+        this._updateDiagnosisCard('388', res388);
+
+        // Lời khuyên tổng hợp KTS
+        const adviceBox = document.getElementById('diag-advice-text');
+        if (adviceBox) {
+            const allGood = res522.isGood && res429.isGood && res388.isGood;
+            const openGood = res522.isGood; // Thông thủy quan trọng nhất cho cửa
+            if (allGood) {
+                adviceBox.innerHTML = `Kích thước <strong>${valMm} mm</strong> là kích thước phong thủy đại cát, <span style="color:#ef4444;font-weight:700">ĐỎ CẢ 3 THƯỚC</span>! Vô cùng cát lợi cho gia chủ làm cửa chính, phòng ngủ hoặc bàn thờ.`;
+            } else if (openGood) {
+                adviceBox.innerHTML = `Kích thước <strong>${valMm} mm</strong> đạt cung Đỏ <span style="color:#ef4444;font-weight:700">${res522.cungName} (${res522.minorName})</span> trên thước Thông Thủy 52.2cm. Rất thích hợp làm kích thước lọt lòng cửa chính, cửa thông phòng và chiều cao trần nhà.`;
+            } else {
+                // Gợi ý kích thước đỏ gần nhất
+                const cycle = 522;
+                const posInCycle = valMm % cycle;
+                let nearestGoodMm = valMm;
+                // Tìm cung tốt gần nhất của thước 522
+                for (let delta = 1; delta <= 120; delta++) {
+                    const testPlus = valMm + delta;
+                    const testMinus = valMm - delta;
+                    if (this._evaluateCung(522, testPlus).isGood) {
+                        nearestGoodMm = testPlus;
+                        break;
+                    }
+                    if (this._evaluateCung(522, testMinus).isGood) {
+                        nearestGoodMm = testMinus;
+                        break;
+                    }
+                }
+                const diff = nearestGoodMm - valMm;
+                const action = diff > 0 ? `tăng thêm ${diff} mm (lên ${nearestGoodMm} mm)` : `giảm bớt ${Math.abs(diff)} mm (xuống ${nearestGoodMm} mm)`;
+                adviceBox.innerHTML = `Kích thước <strong>${valMm} mm</strong> hiện rơi vào <span style="color:#ef4444;font-weight:700">${res522.cungName} (Cung Xấu)</span> trên thước Thông Thủy. KTS khuyên bạn nên <strong>${action}</strong> để đạt cung Cát Lộc may mắn!`;
+            }
+        }
+    }
+
+    /**
+     * Đánh giá một giá trị mm rơi vào cung nào trên thước
+     */
+    _evaluateCung(rulerKey, valMm) {
+        const table = this.LUBAN_TABLES[rulerKey];
+        if (!table) return { cungName: '', isGood: false, meaning: '', minorName: '' };
+
+        const pos = valMm % table.cycle;
+        const majorIndex = Math.floor(pos / table.step) % table.majorCount;
+        const cung = table.cungs[majorIndex];
+
+        // Tính cung nhỏ
+        const posInMajor = pos - (majorIndex * table.step);
+        const minorStep = table.step / cung.minors.length;
+        const minorIndex = Math.min(cung.minors.length - 1, Math.floor(posInMajor / minorStep));
+        const minorName = cung.minors[minorIndex];
+
+        return {
+            majorIndex,
+            cungName: cung.name,
+            isGood: cung.isGood,
+            meaning: cung.meaning,
+            minorName,
+            posInCycle: pos
+        };
+    }
+
+    /**
+     * Render dải thước chuyển động theo tọa độ valMm
+     */
+    _renderSingleRulerTape(rulerKey, valMm, trackElementId) {
+        const track = document.getElementById(trackElementId);
+        const table = this.LUBAN_TABLES[rulerKey];
+        if (!track || !table) return this._evaluateCung(rulerKey, valMm);
+
+        const currentCung = this._evaluateCung(rulerKey, valMm);
+
+        // Render dải cung động: tạo đủ số lượng cung lân cận quanh điểm đo
+        // Ta dùng scale: 1mm = 0.5px trên màn hình
+        const pxPerMm = 0.55;
+        const cyclePx = table.cycle * pxPerMm;
+
+        // Sinh 3 chu kỳ lặp để cuộn mượt mà
+        let html = '';
+        for (let cycleIdx = 0; cycleIdx < 4; cycleIdx++) {
+            table.cungs.forEach((cung, idx) => {
+                const cungWidthPx = table.step * pxPerMm;
+                const goodClass = cung.isGood ? 'cung-good' : 'cung-bad';
+                html += `
+                    <div class="tape-cung ${goodClass}" style="width: ${cungWidthPx.toFixed(1)}px;">
+                        <span class="tape-major-name">${cung.name}</span>
+                        <span class="tape-minor-name">${cung.minors[0]}..</span>
+                    </div>
+                `;
+            });
+        }
+        track.innerHTML = html;
+
+        // Dịch chuyển track sao cho điểm valMm nằm chính giữa trung tâm
+        const offsetInCycleMm = valMm % table.cycle;
+        // Chu kỳ thứ 2 (chính giữa) làm mốc
+        const targetOffsetPx = -((1 * table.cycle + offsetInCycleMm) * pxPerMm);
+        track.style.transform = `translateX(${targetOffsetPx.toFixed(1)}px)`;
+
+        return currentCung;
+    }
+
+    /**
+     * Cập nhật thẻ kết quả chẩn đoán
+     */
+    _updateDiagnosisCard(rulerKey, res) {
+        const card = document.getElementById(`diag-card-${rulerKey}`);
+        const statusPill = document.getElementById(`diag-status-${rulerKey}`);
+        const titleEl = document.getElementById(`diag-cung-${rulerKey}`);
+        const meaningEl = document.getElementById(`diag-meaning-${rulerKey}`);
+
+        if (card) {
+            card.classList.toggle('is-good', res.isGood);
+            card.classList.toggle('is-bad', !res.isGood);
+        }
+
+        if (statusPill) {
+            statusPill.textContent = res.isGood ? 'Cát (Tốt)' : 'Hung (Xấu)';
+            statusPill.className = `diag-status-pill ${res.isGood ? 'status-good' : 'status-bad'}`;
+        }
+
+        if (titleEl) {
+            titleEl.textContent = `Cung ${res.cungName} (${res.minorName})`;
+        }
+
+        if (meaningEl) {
+            meaningEl.textContent = res.meaning;
+        }
+    }
+
+    /**
+     * Khởi tạo Động cơ Bát Trạch & Hướng Nhà Hợp Tuổi
+     */
+    _initBatTrachEngine() {
+        const yearSelect = document.getElementById('battrach-birth-select');
+        const genderPills = document.querySelectorAll('.gender-pill');
+        const calcBtn = document.getElementById('btn-calc-battrach');
+
+        this._batTrachGender = 'male';
+
+        // Nạp danh sách năm sinh từ 1950 đến 2026
+        if (yearSelect) {
+            let options = '';
+            for (let y = 2026; y >= 1950; y--) {
+                const selected = y === 1990 ? 'selected' : '';
+                options += `<option value="${y}" ${selected}>${y} (Năm sinh)</option>`;
+            }
+            yearSelect.innerHTML = options;
+            yearSelect.addEventListener('change', () => this._recalcBatTrach());
+        }
+
+        genderPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                genderPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                this._batTrachGender = pill.dataset.gender || 'male';
+                this._recalcBatTrach();
+            });
+        });
+
+        if (calcBtn) {
+            calcBtn.addEventListener('click', () => this._recalcBatTrach());
+        }
+
+        this._recalcBatTrach();
+    }
+
+    /**
+     * Tính toán Bát Trạch và hiển thị La Bàn 8 Hướng
+     */
+    _recalcBatTrach() {
+        const yearSelect = document.getElementById('battrach-birth-select');
+        const year = parseInt(yearSelect?.value) || 1990;
+        const gender = this._batTrachGender || 'male';
+
+        // 1. Tính Can Chi
+        const CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+        const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+        const canIndex = (year - 4) % 10;
+        const chiIndex = (year - 4) % 12;
+        const canChi = `${CAN[canIndex >= 0 ? canIndex : canIndex + 10]} ${CHI[chiIndex >= 0 ? chiIndex : chiIndex + 12]}`;
+
+        // 2. Mệnh Ngũ Hành Niên Mệnh (Tra cứu chu kỳ 60 hoa giáp)
+        const MENH_TABLE = {
+            'Hải Trung Kim': [1984, 1985, 1924, 1925],
+            'Lư Trung Hỏa': [1986, 1987, 1926, 1927],
+            'Đại Lâm Mộc': [1988, 1989, 1928, 1929],
+            'Lộ Bàng Thổ': [1990, 1991, 1930, 1931],
+            'Kiếm Phong Kim': [1992, 1993, 1932, 1933],
+            'Sơn Đầu Hỏa': [1994, 1995, 1934, 1935],
+            'Giản Hạ Thủy': [1996, 1997, 1936, 1937],
+            'Thành Đầu Thổ': [1998, 1999, 1938, 1939],
+            'Bạch Lạp Kim': [2000, 2001, 1940, 1941],
+            'Dương Liễu Mộc': [2002, 2003, 1942, 1943],
+            'Tuyền Trung Thủy': [2004, 2005, 1944, 1945],
+            'Ốc Thượng Thổ': [2006, 2007, 1946, 1947],
+            'Tích Lịch Hỏa': [2008, 2009, 1948, 1949],
+            'Tùng Bách Mộc': [2010, 2011, 1950, 1951],
+            'Trường Lưu Thủy': [2012, 2013, 1952, 1953],
+            'Sa Trung Kim': [2014, 2015, 1954, 1955],
+            'Sơn Hạ Hỏa': [2016, 2017, 1956, 1957],
+            'Bình Địa Mộc': [2018, 2019, 1958, 1959],
+            'Bích Thượng Thổ': [2020, 2021, 1960, 1961],
+            'Kim Bạch Kim': [2022, 2023, 1962, 1963],
+            'Phúc Đăng Hỏa': [2024, 2025, 1964, 1965],
+            'Thiên Hà Thủy': [2026, 2027, 1966, 1967]
+        };
+
+        let menhName = 'Lộ Bàng Thổ';
+        for (const [mName, years] of Object.entries(MENH_TABLE)) {
+            if (years.includes(year)) {
+                menhName = mName;
+                break;
+            }
+        }
+
+        // 3. Tính Quái Số Cung Phi Bát Trạch (Nam vs Nữ)
+        const lastTwoDigits = year % 100;
+        let sumDigits = Math.floor(lastTwoDigits / 10) + (lastTwoDigits % 10);
+        while (sumDigits > 9) {
+            sumDigits = Math.floor(sumDigits / 10) + (sumDigits % 10);
+        }
+
+        let quaiSo = 1;
+        if (year < 2000) {
+            quaiSo = gender === 'male' ? 10 - sumDigits : 5 + sumDigits;
+        } else {
+            quaiSo = gender === 'male' ? 9 - sumDigits : 6 + sumDigits;
+        }
+        while (quaiSo > 9) quaiSo -= 9;
+        if (quaiSo <= 0) quaiSo += 9;
+
+        // Số 5 hóa Khôn đối với Nam, Cấn đối với Nữ
+        if (quaiSo === 5) {
+            quaiSo = gender === 'male' ? 2 : 8;
+        }
+
+        // Bảng 8 Cung Bát Quái
+        const KUA_DATA = {
+            1: {
+                name: 'Khảm (Thủy)',
+                group: 'Đông Tứ Mệnh',
+                good: [
+                    { dir: 'Đông Nam', star: 'Sinh Khí', angle: 135, meaning: 'Thu hút tài lộc, danh tiếng thăng tiến, vượng khí dồi dào.' },
+                    { dir: 'Đông', star: 'Thiên Y', angle: 90, meaning: 'Cải thiện sức khỏe, trường thọ, gia đình bình an không bệnh tật.' },
+                    { dir: 'Nam', star: 'Diên Niên', angle: 180, meaning: 'Củng cố các mối quan hệ hòa thuận, gia đạo êm ấm vạn sự thành.' },
+                    { dir: 'Bắc', star: 'Phục Vị', angle: 0, meaning: 'Củng cố sức mạnh tinh thần, bản thân tiến bộ, may mắn trong thi cử.' }
+                ],
+                bad: [
+                    { dir: 'Tây Nam', star: 'Tuyệt Mệnh', angle: 225, meaning: 'Phá sản, bệnh tật chết người, tai ương nghiêm trọng cần tránh.' },
+                    { dir: 'Đông Bắc', star: 'Ngũ Quỷ', angle: 45, meaning: 'Mất nguồn thu nhập, mất việc làm, cãi lộn thị phi bất hòa.' },
+                    { dir: 'Tây Bắc', star: 'Lục Sát', angle: 315, meaning: 'Xáo trộn trong quan hệ tình cảm, thù hận, kiện tụng, tai nạn.' },
+                    { dir: 'Tây', star: 'Họa Hại', angle: 270, meaning: 'Không may mắn, thị phi, thất bại trong các dự định làm ăn.' }
+                ]
+            },
+            2: {
+                name: 'Khôn (Thổ)',
+                group: 'Tây Tứ Mệnh',
+                good: [
+                    { dir: 'Đông Bắc', star: 'Sinh Khí', angle: 45, meaning: 'Đại cát đại lợi, thu hút tài lộc vượng khí, kinh doanh phát đạt.' },
+                    { dir: 'Tây', star: 'Thiên Y', angle: 270, meaning: 'Sức khỏe dồi dào, tâm trí an lành, gia đạo phúc đức.' },
+                    { dir: 'Tây Bắc', star: 'Diên Niên', angle: 315, meaning: 'Gia đình gắn kết hòa thuận, sự nghiệp vững vàng lâu bền.' },
+                    { dir: 'Tây Nam', star: 'Phục Vị', angle: 225, meaning: 'Tăng cường sức mạnh nội tại, may mắn và bình an.' }
+                ],
+                bad: [
+                    { dir: 'Bắc', star: 'Tuyệt Mệnh', angle: 0, meaning: 'Đại hung hiểm, hao tổn nhân đinh tài của, tuyệt đối tránh làm cửa chính.' },
+                    { dir: 'Đông Nam', star: 'Ngũ Quỷ', angle: 135, meaning: 'Thị phi rình rập, hao tổn tiền bạc, dễ gặp hỏa hoạn.' },
+                    { dir: 'Nam', star: 'Lục Sát', angle: 180, meaning: 'Gia đạo bất an, tai tiếng thị phi, kiện tụng khó yên.' },
+                    { dir: 'Đông', star: 'Họa Hại', angle: 90, meaning: 'Gặp nhiều trở ngại trắc trở, làm ăn thất bát.' }
+                ]
+            },
+            3: {
+                name: 'Chấn (Mộc)',
+                group: 'Đông Tứ Mệnh',
+                good: [
+                    { dir: 'Nam', star: 'Sinh Khí', angle: 180, meaning: 'Tài lộc tấn tới, vinh hoa phú quý, con cái học hành đỗ đạt cao.' },
+                    { dir: 'Bắc', star: 'Thiên Y', angle: 0, meaning: 'Bệnh tật tiêu trừ, quý nhân phù trợ trường thọ khỏe mạnh.' },
+                    { dir: 'Đông Nam', star: 'Diên Niên', angle: 135, meaning: 'Gia đạo êm đẹp hạnh phúc, bạn bè đối tác đồng lòng.' },
+                    { dir: 'Đông', star: 'Phục Vị', angle: 90, meaning: 'Bình an tĩnh tâm, thi cử may mắn đắc ý.' }
+                ],
+                bad: [
+                    { dir: 'Tây', star: 'Tuyệt Mệnh', angle: 270, meaning: 'Đại họa tai ương, hao tán tài sản gia phong.' },
+                    { dir: 'Tây Bắc', star: 'Ngũ Quỷ', angle: 315, meaning: 'Dễ gặp kẻ xấu hãm hại, mất cắp tiền tài.' },
+                    { dir: 'Đông Bắc', star: 'Lục Sát', angle: 45, meaning: 'Trục trặc tình cảm, tai bay vạ gió, thị phi quan sự.' },
+                    { dir: 'Tây Nam', star: 'Họa Hại', angle: 225, meaning: 'Khó khăn bất trắc, khẩu thiệt trong công việc.' }
+                ]
+            },
+            4: {
+                name: 'Tốn (Mộc)',
+                group: 'Đông Tứ Mệnh',
+                good: [
+                    { dir: 'Bắc', star: 'Sinh Khí', angle: 0, meaning: 'Tài vận hưng thịnh, công danh rộng mở, đắc lộc trời ban.' },
+                    { dir: 'Nam', star: 'Thiên Y', angle: 180, meaning: 'Sức khỏe dồi dào, trường thọ an khang thịnh vượng.' },
+                    { dir: 'Đông', star: 'Diên Niên', angle: 90, meaning: 'Gia đình hòa thuận keo sơn, nhân duyên bền chặt tốt đẹp.' },
+                    { dir: 'Đông Nam', star: 'Phục Vị', angle: 135, meaning: 'Gia tăng may mắn, tinh thần an lạc, vạn sự thuận hòa.' }
+                ],
+                bad: [
+                    { dir: 'Đông Bắc', star: 'Tuyệt Mệnh', angle: 45, meaning: 'Tuyệt mệnh nguy hại, đại kỵ hướng cửa và ban thờ.' },
+                    { dir: 'Tây Nam', star: 'Ngũ Quỷ', angle: 225, meaning: 'Gia đạo bất an, bệnh tật hao tốn, thị phi liên miên.' },
+                    { dir: 'Tây', star: 'Lục Sát', angle: 270, meaning: 'Mất mát của cải, tình duyên lận đận, kiện tụng.' },
+                    { dir: 'Tây Bắc', star: 'Họa Hại', angle: 315, meaning: 'Gặp sự cố không mong muốn, mưu sự khó thành.' }
+                ]
+            },
+            6: {
+                name: 'Càn (Kim)',
+                group: 'Tây Tứ Mệnh',
+                good: [
+                    { dir: 'Tây', star: 'Sinh Khí', angle: 270, meaning: 'Đón tài lộc dồi dào, thăng tiến sự nghiệp, gia môn hưng vượng.' },
+                    { dir: 'Đông Bắc', star: 'Thiên Y', angle: 45, meaning: 'Được trời che chở, sức khỏe khang kiện, tiêu trừ bệnh tật.' },
+                    { dir: 'Tây Nam', star: 'Diên Niên', angle: 225, meaning: 'Quan hệ gia đình và đối tác bền vững tốt đẹp.' },
+                    { dir: 'Tây Bắc', star: 'Phục Vị', angle: 315, meaning: 'Tăng cường ý chí, bình an may mắn thuận buồm xuôi gió.' }
+                ],
+                bad: [
+                    { dir: 'Nam', star: 'Tuyệt Mệnh', angle: 180, meaning: 'Hao tài phá sản, họa vô đơn chí cần tránh.' },
+                    { dir: 'Đông', star: 'Ngũ Quỷ', angle: 90, meaning: 'Bất hòa xích mích, hao tốn tiền của, kẻ xấu gièm pha.' },
+                    { dir: 'Bắc', star: 'Lục Sát', angle: 0, meaning: 'Tình duyên trắc trở, thị phi kiện tụng phiền toái.' },
+                    { dir: 'Đông Nam', star: 'Họa Hại', angle: 135, meaning: 'Làm ăn thất bại, tai ương rủi ro ngoài ý muốn.' }
+                ]
+            },
+            7: {
+                name: 'Đoài (Kim)',
+                group: 'Tây Tứ Mệnh',
+                good: [
+                    { dir: 'Tây Bắc', star: 'Sinh Khí', angle: 315, meaning: 'Thu hút tài lộc công danh, gia chủ đại phú đại quý.' },
+                    { dir: 'Tây Nam', star: 'Thiên Y', angle: 225, meaning: 'Thân tâm an lạc, trường thọ khỏe mạnh, quý nhân phù trợ.' },
+                    { dir: 'Đông Bắc', star: 'Diên Niên', angle: 45, meaning: 'Vợ chồng hòa hợp, con cái hiếu thuận vinh hiển.' },
+                    { dir: 'Tây', star: 'Phục Vị', angle: 270, meaning: 'Gia đạo yên vui, tâm trí minh mẫn, may mắn trường tồn.' }
+                ],
+                bad: [
+                    { dir: 'Đông', star: 'Tuyệt Mệnh', angle: 90, meaning: 'Đại kỵ hướng cửa, hao tổn đinh tài nặng nề.' },
+                    { dir: 'Nam', star: 'Ngũ Quỷ', angle: 180, meaning: 'Hao tiền tốn của, thị phi xích mích kiện cáo.' },
+                    { dir: 'Đông Nam', star: 'Lục Sát', angle: 135, meaning: 'Sự nghiệp lận đận, tinh thần bất an lo âu.' },
+                    { dir: 'Bắc', star: 'Họa Hại', angle: 0, meaning: 'Trở ngại liên miên, mưu sự khó thành công.' }
+                ]
+            },
+            8: {
+                name: 'Cấn (Thổ)',
+                group: 'Tây Tứ Mệnh',
+                good: [
+                    { dir: 'Tây Nam', star: 'Sinh Khí', angle: 225, meaning: 'Vượng khí ngút trời, tài lộc hanh thông, công thành danh toại.' },
+                    { dir: 'Tây Bắc', star: 'Thiên Y', angle: 315, meaning: 'Khỏe mạnh sống lâu, tâm tính an nhiên, đón nhận phúc ấm.' },
+                    { dir: 'Tây', star: 'Diên Niên', angle: 270, meaning: 'Gia đình gắn kết trên dưới thuận hòa, kinh doanh đắc lợi.' },
+                    { dir: 'Đông Bắc', star: 'Phục Vị', angle: 45, meaning: 'Bình an may mắn, thi cử học hành đỗ đạt.' }
+                ],
+                bad: [
+                    { dir: 'Đông Nam', star: 'Tuyệt Mệnh', angle: 135, meaning: 'Đại hung hiểm họa, hao tổn sinh mạng và tài sản.' },
+                    { dir: 'Bắc', star: 'Ngũ Quỷ', angle: 0, meaning: 'Dễ vướng hỏa hoạn, thị phi kiện tụng tiêu tán của.' },
+                    { dir: 'Đông', star: 'Lục Sát', angle: 90, meaning: 'Gia đạo xào xáo, thất thoát tiền tài, tai nạn.' },
+                    { dir: 'Nam', star: 'Họa Hại', angle: 180, meaning: 'Thất bại trắc trở trong cuộc sống và công việc.' }
+                ]
+            },
+            9: {
+                name: 'Ly (Hỏa)',
+                group: 'Đông Tứ Mệnh',
+                good: [
+                    { dir: 'Đông', star: 'Sinh Khí', angle: 90, meaning: 'Phát tài phát lộc, danh tiếng lẫy lừng, quan lộ thăng tiến.' },
+                    { dir: 'Đông Nam', star: 'Thiên Y', angle: 135, meaning: 'Trường thọ bình an, sức khỏe dẻo dai, quý nhân bảo hộ.' },
+                    { dir: 'Bắc', star: 'Diên Niên', angle: 0, meaning: 'Hòa khí sinh tài, gia đình hòa thuận, bạn bè quý mến.' },
+                    { dir: 'Nam', star: 'Phục Vị', angle: 180, meaning: 'Tinh thần minh mẫn, may mắn ngập tràn, vạn sự hanh thông.' }
+                ],
+                bad: [
+                    { dir: 'Tây Bắc', star: 'Tuyệt Mệnh', angle: 315, meaning: 'Hao tài phá sản, họa sát thân, tuyệt đối không mở cửa hướng này.' },
+                    { dir: 'Tây', star: 'Ngũ Quỷ', angle: 270, meaning: 'Mất mát của cải, tai bay vạ gió, khẩu thiệt thị phi.' },
+                    { dir: 'Tây Nam', star: 'Lục Sát', angle: 225, meaning: 'Tình cảm chia rẽ, thù hận, công việc bế tắc.' },
+                    { dir: 'Đông Bắc', star: 'Họa Hại', angle: 45, meaning: 'Gặp nhiều thất bại, không may mắn trong dự định.' }
+                ]
+            }
+        };
+
+        const currentKua = KUA_DATA[quaiSo] || KUA_DATA[1];
+
+        // Lưu thông số để dùng cho Consultation Bridge
+        const goodDirsArr = currentKua.good.map(g => `${g.dir} (${g.star})`);
+        this._lastBatTrachData = {
+            year,
+            gender,
+            canChi,
+            menh: menhName,
+            cungPhi: currentKua.name,
+            groupName: currentKua.group,
+            goodDirsStr: goodDirsArr.join(', ')
+        };
+
+        // 4. Cập nhật Banner Tóm Tắt
+        const kuaBadge = document.getElementById('battrach-kua-badge');
+        const groupBadge = document.getElementById('battrach-group-badge');
+        const titleEl = document.getElementById('battrach-zodiac-title');
+        const compatText = document.getElementById('battrach-compat-text');
+
+        if (kuaBadge) kuaBadge.textContent = `Cung ${currentKua.name}`;
+        if (groupBadge) groupBadge.textContent = currentKua.group;
+        if (titleEl) titleEl.textContent = `Gia chủ sinh năm ${year}: ${canChi} (${menhName})`;
+        if (compatText) {
+            const compats = currentKua.good.map(g => g.dir).join(', ');
+            compatText.textContent = `Các hướng vượng tài lộc hợp mệnh: ${compats}.`;
+        }
+
+        // 5. Vẽ La Bàn Bát Trạch SVG Trực Quan
+        this._renderBatTrachCompassSVG(currentKua);
+
+        // 6. Hiển thị danh sách 4 Hướng Tốt & 4 Hướng Xấu
+        const goodListEl = document.getElementById('battrach-good-list');
+        const badListEl = document.getElementById('battrach-bad-list');
+
+        if (goodListEl) {
+            goodListEl.innerHTML = currentKua.good.map(item => `
+                <div class="dir-card card-good">
+                    <div class="dir-card-header">
+                        <span class="dir-star-name">${item.star}</span>
+                        <span class="dir-card-heading">Hướng ${item.dir}</span>
+                    </div>
+                    <p class="dir-meaning">${item.meaning}</p>
+                </div>
+            `).join('');
+        }
+
+        if (badListEl) {
+            badListEl.innerHTML = currentKua.bad.map(item => `
+                <div class="dir-card card-bad">
+                    <div class="dir-card-header">
+                        <span class="dir-star-name">${item.star}</span>
+                        <span class="dir-card-heading">Hướng ${item.dir}</span>
+                    </div>
+                    <p class="dir-meaning">${item.meaning}</p>
+                </div>
+            `).join('');
+        }
+
+        // 7. Cập nhật Nguyên Tắc Bố Trí Mặt Bằng Công Năng
+        const sinhKhi = currentKua.good.find(g => g.star === 'Sinh Khí') || currentKua.good[0];
+        const thienY = currentKua.good.find(g => g.star === 'Thiên Y') || currentKua.good[1];
+        const dienNien = currentKua.good.find(g => g.star === 'Diên Niên') || currentKua.good[2];
+        const phucVi = currentKua.good.find(g => g.star === 'Phục Vị') || currentKua.good[3];
+        const tuyetMenh = currentKua.bad.find(b => b.star === 'Tuyệt Mệnh') || currentKua.bad[0];
+
+        const ruleDoor = document.getElementById('rule-door-text');
+        const ruleAltar = document.getElementById('rule-altar-text');
+        const ruleKitchen = document.getElementById('rule-kitchen-text');
+        const ruleBed = document.getElementById('rule-bed-text');
+
+        if (ruleDoor) ruleDoor.textContent = `Nên mở về hướng ${sinhKhi.dir} (${sinhKhi.star}) để đón tài khí hoặc ${thienY.dir} (${thienY.star}) đón sinh lực.`;
+        if (ruleAltar) ruleAltar.textContent = `Tọa cát hướng cát: Tọa tại cung ${dienNien.dir}, mặt ban thờ nhìn về hướng ${sinhKhi.dir} hoặc ${thienY.dir}.`;
+        if (ruleKitchen) ruleKitchen.textContent = `Tọa hung hướng cát: Đặt bếp tại cung xấu ${tuyetMenh.dir} (${tuyetMenh.star}) để thiêu đốt hung khí, cửa lò/núm bếp xoay về hướng ${sinhKhi.dir}.`;
+        if (ruleBed) ruleBed.textContent = `Đầu giường nên gối về hướng ${thienY.dir} (${thienY.star}) hoặc ${phucVi.dir} (${phucVi.star}) để có giấc ngủ sâu và bình an.`;
+    }
+
+    /**
+     * Vẽ La Bàn Bát Trạch SVG Vector
+     */
+    _renderBatTrachCompassSVG(currentKua) {
+        const stage = document.getElementById('battrach-compass-stage');
+        if (!stage) return;
+
+        // Vẽ vòng tròn la bàn bán kính R = 150 tại tâm (160, 160)
+        const cx = 160;
+        const cy = 160;
+        const rOuter = 145;
+        const rInner = 80;
+
+        // 8 Hướng chính và góc quay (Bắc = 0/360, Đông = 90, Nam = 180, Tây = 270)
+        const DIRECTIONS = [
+            { name: 'Bắc', angle: 0 },
+            { name: 'Đông Bắc', angle: 45 },
+            { name: 'Đông', angle: 90 },
+            { name: 'Đông Nam', angle: 135 },
+            { name: 'Nam', angle: 180 },
+            { name: 'Tây Nam', angle: 225 },
+            { name: 'Tây', angle: 270 },
+            { name: 'Tây Bắc', angle: 315 }
+        ];
+
+        let sectorsSvg = '';
+        DIRECTIONS.forEach(d => {
+            // Kiểm tra hướng này tốt hay xấu đối với cung hiện tại
+            const goodMatch = currentKua.good.find(g => g.dir === d.name);
+            const isGood = !!goodMatch;
+            const starName = isGood ? goodMatch.star : (currentKua.bad.find(b => b.dir === d.name)?.star || '');
+
+            const startAngle = (d.angle - 22.5 - 90) * (Math.PI / 180);
+            const endAngle = (d.angle + 22.5 - 90) * (Math.PI / 180);
+
+            const x1 = cx + rOuter * Math.cos(startAngle);
+            const y1 = cy + rOuter * Math.sin(startAngle);
+            const x2 = cx + rOuter * Math.cos(endAngle);
+            const y2 = cy + rOuter * Math.sin(endAngle);
+
+            const x3 = cx + rInner * Math.cos(endAngle);
+            const y3 = cy + rInner * Math.sin(endAngle);
+            const x4 = cx + rInner * Math.cos(startAngle);
+            const y4 = cy + rInner * Math.sin(startAngle);
+
+            const fill = isGood ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)';
+            const stroke = isGood ? '#10b981' : '#ef4444';
+
+            // Tọa độ đặt chữ text ở giữa cung
+            const midAngle = (d.angle - 90) * (Math.PI / 180);
+            const textR1 = 120;
+            const textR2 = 98;
+            const tx1 = cx + textR1 * Math.cos(midAngle);
+            const ty1 = cy + textR1 * Math.sin(midAngle);
+            const tx2 = cx + textR2 * Math.cos(midAngle);
+            const ty2 = cy + textR2 * Math.sin(midAngle);
+
+            sectorsSvg += `
+                <path d="M ${x1} ${y1} A ${rOuter} ${rOuter} 0 0 1 ${x2} ${y2} L ${x3} ${y3} A ${rInner} ${rInner} 0 0 0 ${x4} ${y4} Z"
+                      fill="${fill}" stroke="${stroke}" stroke-width="1.2" />
+                <text x="${tx1}" y="${ty1}" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-size="11" font-weight="700">${d.name}</text>
+                <text x="${tx2}" y="${ty2}" text-anchor="middle" dominant-baseline="central" fill="${isGood ? '#6ee7b7' : '#fca5a5'}" font-size="9" font-weight="750">${starName}</text>
+            `;
+        });
+
+        stage.innerHTML = `
+            <svg width="100%" height="100%" viewBox="0 0 320 320" style="display: block; margin: auto;">
+                <!-- Vòng tròn nền -->
+                <circle cx="${cx}" cy="${cy}" r="${rOuter}" fill="#0b0d14" stroke="rgba(234, 179, 8, 0.4)" stroke-width="2" />
+                
+                <!-- 8 Cung quạt Bát Trạch -->
+                ${sectorsSvg}
+
+                <!-- Vòng tròn tâm âm dương Thái Cực -->
+                <circle cx="${cx}" cy="${cy}" r="${rInner}" fill="#0f172a" stroke="#eab308" stroke-width="2" />
+                
+                <!-- Ký hiệu Thái cực (Yin-Yang) ở trung tâm -->
+                <path d="M ${cx} ${cy - 45} A 45 45 0 0 1 ${cx} ${cy + 45} A 22.5 22.5 0 0 1 ${cx} ${cy} A 22.5 22.5 0 0 0 ${cx} ${cy - 45} Z" fill="#ffffff" />
+                <path d="M ${cx} ${cy - 45} A 45 45 0 0 0 ${cx} ${cy + 45} A 22.5 22.5 0 0 1 ${cx} ${cy} A 22.5 22.5 0 0 0 ${cx} ${cy - 45} Z" fill="#000000" />
+                <circle cx="${cx}" cy="${cy - 22.5}" r="6" fill="#000000" />
+                <circle cx="${cx}" cy="${cy + 22.5}" r="6" fill="#ffffff" />
+
+                <!-- Chữ cung chính giữa -->
+                <circle cx="${cx}" cy="${cy}" r="16" fill="rgba(234, 179, 8, 0.95)" />
+                <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" fill="#000000" font-size="10" font-weight="900">${currentKua.name.split(' ')[0]}</text>
+            </svg>
+        `;
+    }
+
+    /**
+     * Cập nhật thông tin gợi ý phong thủy trong Modal Chi Tiết Mẫu Nhà
+     */
+    updateDetailFengShui(item) {
+        if (!item) return;
+        const doorEl = document.getElementById('detail-fs-door');
+        const altarEl = document.getElementById('detail-fs-altar');
+
+        if (doorEl) {
+            // Gợi ý cửa theo quy mô nhà
+            if (item.type === 'biet-thu') {
+                doorEl.textContent = '1330 × 2120 mm (Tài Vượng - Quý Nhân)';
+            } else if (item.type === 'nha-cap-4') {
+                doorEl.textContent = '2550 × 2620 mm (Phú Quý - Phúc Tinh)';
+            } else {
+                doorEl.textContent = '810 × 2120 mm (Tiến Bảo - Tài Chí)';
+            }
+        }
+
+        if (altarEl) {
+            altarEl.textContent = '1270 × 610 mm (Tiến Bảo - Hoạch Tài)';
         }
     }
 }
