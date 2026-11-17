@@ -1361,6 +1361,28 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=10.0`** trên `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 68** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 84: Tích Hợp Chế Độ Phóng To Toàn Màn Hình & Cụm Phím Tương Tác 3D Trực Quan (Fullscreen Immersive 3D & Floating Controls v10.1)
+- [x] **Giải quyết triệt để vấn đề mô hình 3D bị khuất và thiếu không gian tương tác:**
+  - **Vấn đề được báo cáo:** Khung hiển thị mô hình 3D Three.js trước đây chỉ cao 330px (240px trên di động), đối với các công trình nhiều tầng (3-5 tầng hoặc biệt thự đồ sộ), góc nhìn camera bị hẹp, mô hình bị cắt mất phần trên (chỉ thấy phần hiên/chân đế), người dùng khó xoay và phóng to/thu nhỏ để chiêm ngưỡng chi tiết kiến trúc.
+  - **Tái thiết kế & Cải tiến toàn diện:**
+    1. **Tăng kích thước mặc định khung 3D:**
+       - Tăng chiều cao khung canvas Three.js mặc định từ 330px lên **440px** trên PC và từ 240px lên **330px** trên Mobile trong `style.css`.
+    2. **Chế độ Phóng To Toàn Màn Hình (Fullscreen Immersive 3D Mode):**
+       - Thêm nút bấm **`⛶ Phóng to`** (kèm icon SVG chuẩn Design Token và nhãn đa ngôn ngữ `data-i18n="btn_fullscreen"`) ngay trên thanh tiêu đề của hộp 3D (`.viewer-header`).
+       - Khi kích hoạt, hộp 3D (`.media-box.viewer-box`) chuyển sang class `.is-fullscreen` với cơ chế `position: fixed; inset: 0; z-index: 10005`, phủ kín toàn bộ viewport với nền đen mờ sang trọng (`rgba(10, 12, 16, 0.95)`), backdrop-filter blur 16px.
+       - Tự động gọi `viewer3D.handleResize()` ngay lập tức để camera và WebGL renderer tính toán lại tỷ lệ `aspect ratio` và độ phân giải sắc nét 100% theo màn hình thực tế.
+       - Tự động chuyển nút thành **`✕ Thu nhỏ`** (`btn_exit_fullscreen`).
+       - Hỗ trợ phím tắt **`Escape` (Esc)** để thoát chế độ phóng to nhanh chóng và tiện lợi.
+    3. **Cụm Nút Điều Khiển Nổi Trực Tiếp Trên Canvas (Floating Touch/Mouse Controls):**
+       - Bổ sung cụm điều khiển nổi `.viewer-floating-controls` nằm ở góc dưới bên phải màn hình 3D gồm 3 nút thao tác nhanh:
+         - **`[+]` Phóng to góc nhìn:** Gọi `viewer3D.zoomCamera(-0.5)`.
+         - **`[-]` Thu nhỏ góc nhìn:** Gọi `viewer3D.zoomCamera(0.5)`.
+         - **`[↺]` Đặt lại góc nhìn gốc:** Đưa camera về tọa độ chuẩn ban đầu.
+       - Cung cấp phương thức `zoomCamera(delta)` trong `js/viewer3d.js` với thuật toán điều chỉnh bán kính `spherical.radius` mượt mà, giới hạn an toàn từ 0.1m đến 100m.
+       - Bổ sung từ khóa dịch thuật tiếng Việt và tiếng Anh (`btn_fullscreen`, `btn_exit_fullscreen`) trong `js/i18n.js`.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=10.1`** trên `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 69** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

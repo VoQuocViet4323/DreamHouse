@@ -1280,6 +1280,12 @@ class DreamHouseApp {
         if (!panel || panel.classList.contains('hidden')) return;
         if (panel.classList.contains('is-closing')) return;
 
+        // Tắt chế độ phóng to 3D nếu đang bật khi đóng modal
+        const viewerBox = document.getElementById('detail-viewer-box');
+        if (viewerBox && viewerBox.classList.contains('is-fullscreen')) {
+            this.toggleViewerFullscreen(false);
+        }
+
         // Khôi phục mô hình 3D nguyên vẹn khi đóng modal
         this.viewer3D?.clearClipping();
 
@@ -2492,7 +2498,23 @@ class DreamHouseApp {
             }
         });
 
-        // 4. Modal Lightbox đóng
+        // 4. Nút Phóng to 3D toàn màn hình (Fullscreen Immersive 3D Viewer)
+        document.getElementById('btn-viewer-fullscreen')?.addEventListener('click', () => {
+            this.toggleViewerFullscreen();
+        });
+
+        // 5. Các nút điều khiển nổi Zoom In/Out & Reset trực tiếp trên 3D Canvas
+        document.getElementById('btn-3d-zoom-in')?.addEventListener('click', () => {
+            this.viewer3D?.zoomCamera(-3);
+        });
+        document.getElementById('btn-3d-zoom-out')?.addEventListener('click', () => {
+            this.viewer3D?.zoomCamera(3);
+        });
+        document.getElementById('btn-3d-reset-cam')?.addEventListener('click', () => {
+            this.viewer3D?.setCameraPreset('reset');
+        });
+
+        // 6. Modal Lightbox đóng
         const lightboxModal = document.getElementById('floorplan-lightbox-modal');
         const closeLightboxBtn = document.getElementById('close-floorplan-lightbox');
 
@@ -2512,10 +2534,60 @@ class DreamHouseApp {
         });
 
         window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const viewerBox = document.getElementById('detail-viewer-box');
+                if (viewerBox && viewerBox.classList.contains('is-fullscreen')) {
+                    this.toggleViewerFullscreen(false);
+                    e.stopPropagation();
+                    return;
+                }
+            }
             if (e.key === 'Escape' && lightboxModal && !lightboxModal.classList.contains('hidden')) {
                 closeLightbox();
             }
         });
+    }
+
+    /**
+     * Bật/tắt chế độ Phóng to 3D Toàn màn hình (Fullscreen 3D Viewer)
+     */
+    toggleViewerFullscreen(forceState) {
+        const viewerBox = document.getElementById('detail-viewer-box');
+        const fsBtn = document.getElementById('btn-viewer-fullscreen');
+        if (!viewerBox) return;
+
+        const isCurrentlyFS = viewerBox.classList.contains('is-fullscreen');
+        const shouldBeFS = (forceState !== undefined) ? forceState : !isCurrentlyFS;
+
+        viewerBox.classList.toggle('is-fullscreen', shouldBeFS);
+
+        // Cập nhật icon & text nút bấm
+        const iconOpen = fsBtn?.querySelector('.fs-icon-open');
+        const iconClose = fsBtn?.querySelector('.fs-icon-close');
+        const fsText = fsBtn?.querySelector('.fs-text');
+        const isVi = window.i18n ? window.i18n.getLang() === 'vi' : true;
+
+        if (shouldBeFS) {
+            iconOpen?.classList.add('hidden');
+            iconClose?.classList.remove('hidden');
+            if (fsText) fsText.textContent = isVi ? 'Thu nhỏ (Esc)' : 'Exit (Esc)';
+            if (fsBtn) fsBtn.title = isVi ? 'Thu nhỏ góc nhìn 3D (Esc)' : 'Exit Fullscreen 3D (Esc)';
+            document.body.style.overflow = 'hidden';
+        } else {
+            iconOpen?.classList.remove('hidden');
+            iconClose?.classList.add('hidden');
+            if (fsText) fsText.textContent = isVi ? 'Phóng to' : 'Fullscreen';
+            if (fsBtn) fsBtn.title = isVi ? 'Phóng to 3D toàn màn hình (Esc để thu nhỏ)' : 'Fullscreen 3D view';
+            
+            const detailModal = document.getElementById('detail-modal');
+            if (!detailModal || detailModal.classList.contains('hidden')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Tự động căn chỉnh và làm nét lại khung vẽ Three.js
+        setTimeout(() => this.viewer3D?.handleResize(), 60);
+        setTimeout(() => this.viewer3D?.handleResize(), 260);
     }
 
     /**

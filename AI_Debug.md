@@ -1295,6 +1295,22 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   2. Toàn bộ logic cập nhật mặt bằng, số lượng tab tầng (`[Tầng 1] [Tầng 2]... [Mái]`), thước đo CAD và badge thông số tầng trên modal vẫn được tính toán và cập nhật chính xác 100% dưới nền một cách tĩnh lặng, thanh lịch (Silent Background Sync).
   3. Nâng tham số cache-busting toàn hệ thống lên **`?v=10.0`** trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 69: Khung xem mô hình 3D quá nhỏ (330px) làm khuất ngọn các tòa nhà cao tầng và thiếu nút phóng to tương tác chuyên sâu
+- **Hiện tượng:** Khi người dùng xem chi tiết các mẫu nhà (đặc biệt là các mẫu biệt thự 3-4 tầng), mô hình 3D bị giới hạn trong khung cao vỏn vẹn 330px (240px trên di động). Hệ quả là góc nhìn camera bị hẹp, mô hình chỉ hiển thị phần chân cổng và hiên nhà còn phần lầu và mái bị cắt khuất, người dùng không thể có không gian đủ rộng để xoay 360 độ hoặc bấm zoom cận cảnh từng chi tiết.
+- **Nguyên nhân cốt lõi:**
+  1. Chiều cao CSS của `.threejs-canvas` được cố định ở `height: 330px;` (mobile `240px`), chưa tối ưu cho các công trình cao tầng có tỷ lệ chiều cao lớn hơn chiều rộng.
+  2. Khung xem 3D trước đây chỉ có các nút chọn góc camera (`Mặt tiền`, `Góc bên`, `Trên cao`, `Gốc`) mà thiếu tính năng **Phóng to toàn màn hình (Fullscreen)** và các **nút phóng to/thu nhỏ nhanh dạng Floating Controls** cho người dùng dùng chuột/cảm ứng.
+- **Cách khắc phục dứt điểm:**
+  1. **Tăng kích thước mặc định khung 3D:** Điều chỉnh chiều cao canvas lên **440px** trên PC và **330px** trên thiết bị di động trong `style.css`.
+  2. **Thêm Chế độ Toàn Màn Hình (Fullscreen Immersive 3D):**
+     - Bổ sung nút **`⛶ Phóng to`** trên thanh tiêu đề `viewer-header` với token màu sắc tương phản hoàn hảo ở cả Light/Dark Mode.
+     - Khi kích hoạt, hộp 3D nhận class `.is-fullscreen` (`position: fixed; inset: 0; z-index: 10005`), mở rộng 100vw x 100vh với lớp nền mờ sang trọng, tự động trigger `viewer3D.handleResize()` để WebGL renderer cập nhật tức thì.
+     - Nút tự động chuyển thành **`✕ Thu nhỏ`** và hỗ trợ phím `Escape` để thoát nhanh.
+  3. **Tích hợp cụm nút điều khiển nổi (Floating Zoom Controls):**
+     - Đặt cụm nút `[+]` (Phóng to), `[-]` (Thu nhỏ), `[↺]` (Góc ban đầu) ngay trên canvas.
+     - Cung cấp hàm `zoomCamera(delta)` trong `viewer3d.js` với thuật toán điều chỉnh bán kính tọa độ cầu `spherical.radius` mượt mà, chống văng camera.
+  4. Nâng tham số cache-busting toàn hệ thống lên **`?v=10.1`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

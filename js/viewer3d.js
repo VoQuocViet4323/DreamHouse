@@ -159,6 +159,12 @@ class House3DViewer {
         this.updateCameraPosition();
     }
 
+    zoomCamera(delta) {
+        this.spherical.radius += delta;
+        this.spherical.radius = Math.max(0.1, Math.min(100, this.spherical.radius));
+        this.updateCameraPosition();
+    }
+
     setupInteractions() {
         const dom = this.renderer.domElement;
 

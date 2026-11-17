@@ -2232,12 +2232,137 @@ body.dark-theme {
 .threejs-canvas {
   width: 100%;
   max-width: 100%;
-  height: 330px;
+  height: 440px;
   background: #fdfdfd;
   cursor: grab;
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
+}
+
+.viewer-canvas-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Nút Phóng to 3D toàn màn hình */
+.btn-viewer-fs {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(229, 185, 93, 0.15) !important;
+  color: #e5b95d !important;
+  border: 1px solid rgba(229, 185, 93, 0.4) !important;
+  padding: 5px 10px !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-viewer-fs:hover {
+  background: #e5b95d !important;
+  color: #0b0d14 !important;
+  border-color: #e5b95d !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 185, 93, 0.35);
+}
+
+/* Nút điều khiển nổi Zoom & Reset góc nhìn trên 3D */
+.viewer-floating-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 15;
+  pointer-events: auto;
+}
+
+.btn-float-3d {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-float-3d:hover {
+  background: #e5b95d;
+  border-color: #e5b95d;
+  color: #0b0d14;
+  transform: scale(1.08);
+}
+
+.btn-float-3d:active {
+  transform: scale(0.95);
+}
+
+/* Chế độ Phóng to 3D Toàn Màn Hình (Fullscreen Immersive 3D Mode) */
+.media-box.viewer-box.is-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  z-index: 999999 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: #090b10 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  animation: fsFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fsFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.media-box.viewer-box.is-fullscreen .viewer-header {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 14px 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  z-index: 20;
+}
+
+.media-box.viewer-box.is-fullscreen .viewer-canvas-container {
+  flex: 1 1 auto !important;
+  height: calc(100vh - 110px) !important;
+  width: 100% !important;
+}
+
+.media-box.viewer-box.is-fullscreen .threejs-canvas {
+  height: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+}
+
+.media-box.viewer-box.is-fullscreen .viewer-footer {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 10px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
 .threejs-canvas canvas {
@@ -4038,7 +4163,7 @@ body:not(.dark-theme) .site-footer {
   .threejs-canvas {
     width: 100% !important;
     max-width: 100% !important;
-    height: 240px !important;
+    height: 330px !important;
     overflow: hidden !important;
     position: relative !important;
     box-sizing: border-box !important;

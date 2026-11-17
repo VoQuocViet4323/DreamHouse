@@ -12,7 +12,8 @@
 
 2. **Panel chi tiết kiến trúc chuyên sâu:**
    - **Ảnh thiết kế & phối cảnh thực tế:** Mặt đứng, ngoại thất sân vườn sắc nét.
-   - **Mô hình 3D tương tác thực tế:** Xoay 360 độ bằng chuột hoặc cảm ứng trên điện thoại, con lăn thu phóng, các nút chuyển nhanh góc máy (Mặt tiền, Góc bên hông, Từ trên cao, Góc chuẩn).
+   - **Mô hình 3D tương tác thực tế & Phóng to toàn màn hình (Fullscreen Immersive 3D - v10.1):** Chiều cao khung xem được mở rộng lên 440px trên PC, tích hợp chế độ toàn màn hình 100vw x 100vh nền kính mờ sang trọng, phím tắt `Esc` thoát nhanh.
+   - **Cụm điều khiển nổi trực quan (Floating Controls):** Các nút nổi trực tiếp trên canvas `[+]` Phóng to, `[-]` Thu nhỏ, `[↺]` Đặt lại góc máy, xoay 360 độ mượt mà bằng chuột hoặc cảm ứng di động.
    - **Cơ chế 3D kép thông minh:** Tự động nạp file `.glb` nếu có; nếu chưa có file 3D, hệ thống tự động sinh khối kiến trúc theo đúng số đo (rộng × sâu × số tầng × kiểu mái × ban công).
 
 3. **Song ngữ Việt - Anh (VI | EN):**
