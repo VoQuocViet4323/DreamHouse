@@ -10831,6 +10831,23 @@ body:not(.dark-theme) .floorplan-canvas-wrap {
   user-select: none;
 }
 
+/* CAD SVG Room Elements & Interactive Hover */
+.svg-room-block {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.svg-room-block:hover .cad-room-rect,
+.svg-room-block.is-active .cad-room-rect {
+  fill: rgba(229, 185, 93, 0.18) !important;
+  stroke: #e5b95d !important;
+  stroke-width: 1.8px !important;
+  filter: drop-shadow(0 0 6px rgba(229, 185, 93, 0.4));
+}
+
+.svg-room-block:hover .svg-room-title {
+  fill: #ffffff !important;
+}
+
 /* Floating Toolbar */
 .floorplan-toolbar {
   position: absolute;

@@ -24,6 +24,9 @@ class House3DViewer {
         this.target = new THREE.Vector3(0, 3, 0);
         this.initialTarget = new THREE.Vector3(0, 3, 0);
         this.initialRadius = 24;
+        this.floorClippingPlanes = [];
+        this.onModelParsed = null;
+        this.modelInfo = null;
 
         if (this.isSupported && this.container) {
             this.init();
@@ -60,6 +63,7 @@ class House3DViewer {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.localClippingEnabled = true;
 
         // Khóa cứng chiều rộng canvas để không bao giờ bung tràn trên thiết bị di động
         if (this.renderer.domElement) {
@@ -273,6 +277,10 @@ class House3DViewer {
                 this.spherical.theta = Math.PI / 4;
                 this.spherical.phi = 0.25;
                 break;
+            case 'iso-cut': // Phối cảnh mặt cắt 3D từ trên cao nhìn vào bên trong phòng
+                this.spherical.theta = Math.PI / 4;
+                this.spherical.phi = 0.52;
+                break;
             case 'reset':
             default: // Góc phối cảnh tiêu chuẩn
                 this.spherical.theta = Math.PI / 4;
@@ -390,6 +398,9 @@ class House3DViewer {
                 this.initialRadius = Math.max(10, maxDim * 1.8);
                 this.spherical.radius = this.initialRadius;
                 this.updateCameraPosition();
+
+                // 4. Tự động bóc tách kích thước thực & suy đoán số tầng từ mô hình 3D
+                this.analyzeAndEmitModelInfo(adjustedSize, adjustedBox, fallbackTemplate);
             },
             undefined,
             (err) => {
@@ -455,6 +466,9 @@ class House3DViewer {
                 this.initialRadius = Math.max(10, maxDim * 1.8);
                 this.spherical.radius = this.initialRadius;
                 this.updateCameraPosition();
+
+                // 4. Tự động bóc tách kích thước thực & suy đoán số tầng từ mô hình 3D
+                this.analyzeAndEmitModelInfo(adjustedSize, adjustedBox, fallbackTemplate);
             },
             undefined,
             (err) => {
@@ -463,6 +477,128 @@ class House3DViewer {
                 if (fallbackTemplate) this.buildProceduralHouse(fallbackTemplate);
             }
         );
+    }
+
+    /**
+     * Bóc tách thông số hình học (Rộng, Sâu, Cao, Số tầng) thực tế từ mô hình 3D
+     */
+    analyzeAndEmitModelInfo(adjustedSize, adjustedBox, fallbackTemplate) {
+        if (!adjustedSize) return;
+
+        const rawH = adjustedSize.y;
+        const rawW = Math.min(adjustedSize.x, adjustedSize.z);
+        const rawD = Math.max(adjustedSize.x, adjustedSize.z);
+
+        // Nhận diện số tầng thực tế dựa trên chiều cao công trình (TCXDVN: tầng dân dụng 3.3m - 3.8m)
+        let detectedFloors = 1;
+        if (rawH >= 14.5) {
+            detectedFloors = 4;
+        } else if (rawH >= 8.5) {
+            detectedFloors = 3;
+        } else if (rawH >= 5.0) {
+            detectedFloors = 2;
+        } else {
+            detectedFloors = 1;
+        }
+
+        // Nếu mô hình quá cao (ví dụ có mái Mansard / chóp tân cổ điển cao vút > 18m),
+        // ước tính số tầng sàn chức năng thực tế
+        if (rawH > 18.0) {
+            detectedFloors = 3; // Biệt thự tân cổ điển 3 tầng + mái mansard
+        }
+
+        // Lọc kích thước hợp lý cho mặt bằng bản vẽ kiến trúc (loại bỏ phần đường/vỉa hè bối cảnh nếu quá lớn)
+        let boundW = Number(rawW.toFixed(1));
+        let boundD = Number(rawD.toFixed(1));
+
+        // Nếu template đã có sẵn kích thước do KTS nhập hợp lý (ví dụ 10x16m hoặc 5x16m), tôn trọng tỉ lệ
+        if (fallbackTemplate && fallbackTemplate.width_m && fallbackTemplate.depth_m) {
+            const tW = parseFloat(fallbackTemplate.width_m);
+            const tD = parseFloat(fallbackTemplate.depth_m);
+            if (tW > 0 && tD > 0 && (rawW > 25 || rawD > 40)) {
+                boundW = tW;
+                boundD = tD;
+            }
+        }
+
+        this.modelInfo = {
+            width: boundW,
+            depth: boundD,
+            height: Number(rawH.toFixed(1)),
+            floors: detectedFloors,
+            box: adjustedBox,
+            size: adjustedSize
+        };
+
+        if (typeof this.onModelParsed === 'function') {
+            try {
+                this.onModelParsed(this.modelInfo);
+            } catch (e) {
+                console.warn('Lỗi trong callback onModelParsed:', e);
+            }
+        }
+    }
+
+    /**
+     * Cắt lát 3D theo tầng (3D Floor Section Slicing)
+     * Ẩn bỏ các tầng phía trên để nhìn thấu không gian nội thất của tầng đang chọn
+     * @param {number} floorIndex - Chỉ số tầng (0: Tầng 1, 1: Tầng 2, 2: Tầng 3...)
+     * @param {number} totalFloors - Tổng số tầng công trình
+     */
+    sliceFloor(floorIndex, totalFloors) {
+        if (!this.currentMeshGroup || !this.renderer) return;
+
+        // Nếu xem tầng Mái hoặc floorIndex >= totalFloors: mở trọn vẹn mô hình không cắt
+        if (floorIndex >= totalFloors || floorIndex < 0) {
+            this.clearClipping();
+            return;
+        }
+
+        const box = new THREE.Box3().setFromObject(this.currentMeshGroup);
+        const minY = box.min.y;
+        const totalH = box.max.y - minY;
+        const count = Math.max(1, totalFloors);
+
+        // Chiều cao hữu dụng dành 80% cho các tầng, 20% cho mái
+        const usableH = totalH * 0.80;
+        const floorH = usableH / count;
+
+        // Cắt ở cao độ trần của tầng được chọn (floorIndex = 0 là Tầng 1)
+        // Để nhìn thấy sàn và nội thất bên trong, mặt phẳng cắt đặt ở 95% chiều cao tầng đó
+        const cutY = minY + (floorIndex + 1) * floorH * 0.95;
+
+        // Vector pháp tuyến (0, -1, 0) nghĩa là cắt bỏ hoàn toàn phần có toạ độ y > cutY
+        const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), cutY);
+        this.floorClippingPlanes = [clipPlane];
+        this.renderer.localClippingEnabled = true;
+
+        this.currentMeshGroup.traverse((child) => {
+            if (child.isMesh && child.material) {
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach(m => {
+                    m.clippingPlanes = this.floorClippingPlanes;
+                    m.clipShadows = true;
+                    m.needsUpdate = true;
+                });
+            }
+        });
+    }
+
+    /**
+     * Huỷ bỏ mặt phẳng cắt lát, trả lại mô hình 3D nguyên vẹn 100%
+     */
+    clearClipping() {
+        if (!this.currentMeshGroup || !this.renderer) return;
+        this.floorClippingPlanes = [];
+        this.currentMeshGroup.traverse((child) => {
+            if (child.isMesh && child.material) {
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach(m => {
+                    m.clippingPlanes = [];
+                    m.needsUpdate = true;
+                });
+            }
+        });
     }
 
     // DỰNG KHỐI 3D THẬT THEO THÔNG SỐ (Rộng, Sâu, Số tầng, Kiểu mái, Ban công)

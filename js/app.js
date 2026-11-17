@@ -94,6 +94,9 @@ class DreamHouseApp {
         setTimeout(() => {
             if (document.getElementById('threejs-canvas-wrapper')) {
                 this.viewer3D = new House3DViewer('threejs-canvas-wrapper');
+                this.viewer3D.onModelParsed = (modelInfo) => {
+                    this.handle3DModelParsed(modelInfo);
+                };
             }
         }, 100);
 
@@ -1248,6 +1251,10 @@ class DreamHouseApp {
         if (!item) return;
 
         this.currentTemplate = item;
+        // Xóa thông số detected cũ khi mở mẫu mới
+        delete item._detectedFloors;
+        delete item._detectedWidth;
+        delete item._detectedDepth;
         // Ghi nhận lượt xem thời gian thực khi người dùng bấm vào xem mẫu
         this.recordTemplateView(item.id);
 
@@ -1272,6 +1279,9 @@ class DreamHouseApp {
         const panel = document.getElementById('detail-modal');
         if (!panel || panel.classList.contains('hidden')) return;
         if (panel.classList.contains('is-closing')) return;
+
+        // Khôi phục mô hình 3D nguyên vẹn khi đóng modal
+        this.viewer3D?.clearClipping();
 
         const closeBtn = document.getElementById('close-detail-modal');
         if (closeBtn) closeBtn.classList.add('is-active');
@@ -2471,11 +2481,14 @@ class DreamHouseApp {
             const viewerBtn = document.querySelector('.visual-nav-btn[data-visual-tab="viewer"]');
             if (viewerBtn) viewerBtn.click();
             if (this.viewer3D) {
-                this.viewer3D.setCameraPreset('top');
+                const totalFloors = Math.max(1, (this._currentFloorsData ? this._currentFloorsData.length - 1 : 1));
+                this.viewer3D.sliceFloor(this.currentFloorIndex, totalFloors);
+                this.viewer3D.setCameraPreset('iso-cut');
             }
             if (window.toast) {
                 const isVi = window.i18n.getLang() === 'vi';
-                window.toast.info(isVi ? 'Đang chuyển sang góc nhìn mặt cắt 3D từ trên cao' : 'Switching to 3D Top-Down Isometric view', 2200);
+                const curFloorName = this._currentFloorsData?.[this.currentFloorIndex]?.shortName || (isVi ? 'Tầng hiện tại' : 'current floor');
+                window.toast.info(isVi ? `✨ Đang hiển thị mặt cắt 3D bóc mái ${curFloorName}. Kéo chuột để xoay và khám phá không gian nội thất!` : `✨ 3D cutaway section activated for ${curFloorName}. Drag to rotate and explore!`, 3200);
             }
         });
 
@@ -2506,14 +2519,63 @@ class DreamHouseApp {
     }
 
     /**
+     * Tự động đồng bộ số tầng và kích thước mặt bằng khi mô hình 3D được tải lên và phân tích xong
+     */
+    handle3DModelParsed(info) {
+        if (!this.currentTemplate || !info) return;
+
+        let needsRefresh = false;
+        const currentFloors = parseInt(this.currentTemplate.floors, 10) || 1;
+
+        // Nếu mô hình 3D thực tế có số tầng khác (hoặc cao hơn)
+        if (info.floors && info.floors !== currentFloors) {
+            this.currentTemplate._detectedFloors = info.floors;
+            needsRefresh = true;
+        }
+
+        // Nếu mô hình có kích thước đo đạc hợp lý
+        if (info.width && Math.abs(info.width - (parseFloat(this.currentTemplate.width_m) || 5)) > 1.2) {
+            this.currentTemplate._detectedWidth = info.width;
+            needsRefresh = true;
+        }
+        if (info.depth && Math.abs(info.depth - (parseFloat(this.currentTemplate.depth_m) || 16)) > 2.0 && info.depth <= 35) {
+            this.currentTemplate._detectedDepth = info.depth;
+            needsRefresh = true;
+        }
+
+        if (needsRefresh) {
+            this.updateDetailFloorplans(this.currentTemplate);
+
+            // Cập nhật thông số badge tầng trên modal chi tiết
+            const floorsBadge = document.querySelector('#detail-modal .detail-meta-floors');
+            if (floorsBadge && this.currentTemplate._detectedFloors) {
+                floorsBadge.textContent = `${this.currentTemplate._detectedFloors} tầng`;
+            }
+
+            if (window.toast) {
+                const isVi = window.i18n.getLang() === 'vi';
+                const fCount = this.currentTemplate._detectedFloors || info.floors;
+                const dW = this.currentTemplate._detectedWidth || this.currentTemplate.width_m || info.width;
+                const dD = this.currentTemplate._detectedDepth || this.currentTemplate.depth_m || info.depth;
+                window.toast.success(
+                    isVi 
+                        ? `✨ Đã tự động đồng bộ mặt bằng ${fCount} tầng (${dW}m × ${dD}m) từ mô hình 3D!`
+                        : `✨ Automatically synced ${fCount} floors (${dW}m × ${dD}m) from 3D model!`,
+                    3200
+                );
+            }
+        }
+    }
+
+    /**
      * Sinh dữ liệu bóc tách mặt bằng kiến trúc chuẩn kỹ thuật cho từng tầng
      */
     generateFloorplanData(template) {
         if (!template) return [];
 
-        const floorsCount = Math.max(1, parseInt(template.floors, 10) || 1);
-        const w = template.width_m || 5.0;
-        const d = template.depth_m || 16.0;
+        const floorsCount = Math.max(1, parseInt(template._detectedFloors || template.floors, 10) || 1);
+        const w = parseFloat(template._detectedWidth || template.width_m) || 5.0;
+        const d = parseFloat(template._detectedDepth || template.depth_m) || 16.0;
         const groundArea = Math.round(w * d);
         const lang = window.i18n.getLang();
         const isVi = lang === 'vi';
@@ -2531,7 +2593,7 @@ class DreamHouseApp {
             f1Rooms.push({ id: 'r6', name: isVi ? 'Phòng ngủ 3' : 'Bedroom 3', area: 13, icon: '🛏️', desc: isVi ? 'Phòng trẻ em / khách' : 'Kids / Guest room' });
             f1Rooms.push({ id: 'r7', name: isVi ? 'Nhà vệ sinh chung (WC)' : 'Common Bathroom', area: 5, icon: '🚿', desc: isVi ? 'Phân khu khô ướt' : 'Wet & dry separation' });
             f1Rooms.push({ id: 'r8', name: isVi ? 'Sân ướt & Giặt phơi sau' : 'Service Yard', area: Math.max(6, Math.round(groundArea - 18 - 14 - 13 - 5 - (w * 4.5) - (w * 3.2))), icon: '🧺', desc: isVi ? 'Lối ra vườn sau' : 'Rear garden egress' });
-        } else if (template.type === 'biet-thu') {
+        } else if (template.type === 'biet-thu' || floorsCount >= 3) {
             f1Rooms.push({ id: 'r1', name: isVi ? 'Tiền sảnh & Sảnh đón VIP' : 'Grand Foyer & Porch', area: 18, icon: '🏛️', desc: isVi ? 'Cột Corinthian bề thế' : 'Stately grand entry' });
             f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách Tân cổ điển' : 'Grand Living Parlor', area: 38, icon: '🛋️', desc: isVi ? 'Trần cao 4.2m thông thoáng' : 'High ceiling 4.2m' });
             f1Rooms.push({ id: 'r3', name: isVi ? 'Khu bếp đảo Bar & Phòng ăn' : 'Island Kitchen & Banquet', area: 32, icon: '🍷', desc: isVi ? 'Bàn ăn 10-12 chỗ ngồi' : 'Seats 10-12 guests' });
@@ -2556,7 +2618,7 @@ class DreamHouseApp {
         // 2. TẦNG 2 (LẦU 1 - nếu có)
         if (floorsCount >= 2) {
             const f2Rooms = [];
-            if (template.type === 'biet-thu') {
+            if (template.type === 'biet-thu' || floorsCount >= 3) {
                 f2Rooms.push({ id: 'r2_1', name: isVi ? 'Phòng ngủ Master Hoàng gia' : 'Presidential Master Suite', area: 46, icon: '👑', desc: isVi ? 'Phòng thay đồ Walk-in & Bồn tắm Jacuzzi' : 'Walk-in closet & spa tub' });
                 f2Rooms.push({ id: 'r2_2', name: isVi ? 'Phòng sinh hoạt chung & Thư viện' : 'Family Lounge & Library', area: 26, icon: '📚', desc: isVi ? 'Không gian gắn kết gia đình' : 'Cozy family entertainment' });
                 f2Rooms.push({ id: 'r2_3', name: isVi ? 'Phòng ngủ VIP 2' : 'VIP Bedroom 2', area: 24, icon: '🛏️', desc: isVi ? 'WC riêng, ban công view hồ' : 'En-suite bath & balcony' });
@@ -2594,7 +2656,22 @@ class DreamHouseApp {
             });
         }
 
-        // 4. MẶT BẰNG MÁI
+        // 4. TẦNG 4 (LẦU 3 - nếu có >= 4 tầng)
+        if (floorsCount >= 4) {
+            const f4Rooms = [];
+            f4Rooms.push({ id: 'r4_1', name: isVi ? 'Phòng giải trí Karaoke VIP' : 'VIP Karaoke & Media Lounge', area: Math.round(w * 3.8), icon: '🎬', desc: isVi ? 'Cách âm tiêu chuẩn rạp phim' : 'Acoustic treatment' });
+            f4Rooms.push({ id: 'r4_2', name: isVi ? 'Phòng Gym & Yoga dưỡng sinh' : 'Gym & Yoga Studio', area: Math.round(w * 3.0), icon: '🧘', desc: isVi ? 'Sàn gỗ cao cấp đón ánh nắng' : 'Hardwood floor & daylight' });
+            f4Rooms.push({ id: 'r4_3', name: isVi ? 'Sky Bar & Vườn ngắm sao' : 'Sky Bar & Stargazing Lounge', area: Math.round(w * 4.0), icon: '🍸', desc: isVi ? 'View 360 độ ngắm cảnh trên cao' : '360 panoramic views' });
+            floors.push({
+                floorNum: 4,
+                title: isVi ? 'Mặt bằng Tầng 4 (Lầu 3)' : 'Floor 4 (Level 3)',
+                shortName: isVi ? 'Tầng 4' : 'Level 4',
+                usableArea: Math.round(groundArea * 0.75),
+                rooms: f4Rooms
+            });
+        }
+
+        // 5. MẶT BẰNG MÁI
         const roofRooms = [
             { id: 'rf_1', name: isVi ? 'Hệ khung vì kèo thép / Sàn BTCT' : 'Roof Framing / Concrete Slab', area: Math.round(groundArea * 0.7), icon: '🏠', desc: isVi ? 'Dốc thoát nước mưa chống đọng' : 'Rain drainage slope' },
             { id: 'rf_2', name: isVi ? 'Vị trí bồn nước Tân Á 1.500L' : 'Water Reservoir (1,500L)', area: 4, icon: '🚰', desc: isVi ? 'Chân giá đỡ thép chịu lực' : 'Reinforced steel base' },
@@ -2614,108 +2691,215 @@ class DreamHouseApp {
 
     /**
      * Tạo chuỗi SVG vector thể hiện bản vẽ mặt bằng kiến trúc CAD độ nét cao
+     * Bố cục Không gian 2D đa chiều (2-Bay Spatial Layout) - Triệt tiêu 100% tình trạng đè chữ
      */
     renderFloorplanSVG(floor, template, isLightbox = false) {
         if (!floor || !template) return '';
 
-        const w = template.width_m || 5.0;
-        const d = template.depth_m || 16.0;
+        const w = parseFloat(template._detectedWidth || template.width_m) || 5.0;
+        const d = parseFloat(template._detectedDepth || template.depth_m) || 16.0;
         const isVi = window.i18n.getLang() === 'vi';
 
         // Tọa độ CAD
-        const svgW = isLightbox ? 920 : 640;
-        const svgH = isLightbox ? 440 : 310;
-        const padX = isLightbox ? 75 : 55;
-        const padY = isLightbox ? 55 : 42;
-        const planW = svgW - padX * 2;
-        const planH = svgH - padY * 2;
+        const svgW = isLightbox ? 960 : 660;
+        const svgH = isLightbox ? 480 : 340;
+        const padLeft = isLightbox ? 70 : 54;
+        const padRight = isLightbox ? 45 : 35;
+        const padTop = isLightbox ? 52 : 42;
+        const padBottom = isLightbox ? 45 : 36;
+        const planW = svgW - padLeft - padRight;
+        const planH = svgH - padTop - padBottom;
 
         const rooms = floor.rooms || [];
         const roomsCount = Math.max(1, rooms.length);
 
-        // Sinh các khối phòng dọc theo chiều dài nhà
+        // Bố cục không gian 2D: Nếu >= 4 phòng, chia thành 2 dãy (Bay 1: Public & Bay 2: Private)
+        const useTwoBays = roomsCount >= 4;
+        const nTop = useTwoBays ? Math.ceil(roomsCount / 2) : roomsCount;
+        const nBottom = useTwoBays ? (roomsCount - nTop) : 0;
+        const hTop = useTwoBays ? Math.round(planH * 0.52) : planH;
+        const hBottom = useTwoBays ? (planH - hTop) : 0;
+
         let roomBlocksSVG = '';
-        let currentX = padX;
 
-        rooms.forEach((room, i) => {
-            // Tỷ lệ chiều ngang phòng theo số lượng hoặc diện tích
-            const ratio = room.area ? (room.area / floor.usableArea) : (1 / roomsCount);
-            // Giới hạn độ rộng tối thiểu để chữ không bị tràn
-            const blockW = Math.max(70, Math.min(planW - (roomsCount - i) * 60, Math.round(planW * Math.max(0.14, ratio))));
-            const actualW = (i === roomsCount - 1) ? (padX + planW - currentX) : Math.min(blockW, padX + planW - currentX - 10);
+        // Hàm ngắt dòng thông minh giúp chữ dài hiển thị hoàn hảo
+        const formatRoomTitle = (name, maxChars = 16) => {
+            if (!name) return { line1: '', line2: '' };
+            if (name.length <= maxChars) return { line1: name, line2: '' };
 
-            const rx = currentX;
-            const ry = padY;
-            const rw = Math.max(50, actualW);
-            const rh = planH;
+            const parenIdx = name.indexOf('(');
+            if (parenIdx > 4 && parenIdx < name.length - 2) {
+                return {
+                    line1: name.substring(0, parenIdx).trim(),
+                    line2: name.substring(parenIdx).trim()
+                };
+            }
 
-            const centerX = rx + rw / 2;
-            const centerY = ry + rh / 2;
+            const ampIdx = name.indexOf('&');
+            if (ampIdx > 4 && ampIdx < name.length - 4) {
+                return {
+                    line1: name.substring(0, ampIdx).trim(),
+                    line2: name.substring(ampIdx).trim()
+                };
+            }
 
-            // Ký hiệu cửa đi & mở cửa
-            const doorSVG = (i < roomsCount - 1) 
-                ? `<path d="M ${rx + rw} ${ry + rh * 0.65} A ${Math.min(24, rh * 0.2)} ${Math.min(24, rh * 0.2)} 0 0 1 ${rx + rw - Math.min(24, rh * 0.2)} ${ry + rh * 0.65 + Math.min(24, rh * 0.2)}" fill="none" stroke="#e5b95d" stroke-width="1.2" stroke-dasharray="2,2"/>
-                   <line x1="${rx + rw}" y1="${ry + rh * 0.65}" x2="${rx + rw}" y2="${ry + rh * 0.65 + Math.min(24, rh * 0.2)}" stroke="#e5b95d" stroke-width="1.8"/>`
-                : '';
+            const words = name.split(' ');
+            let l1 = '';
+            let l2 = '';
+            for (let i = 0; i < words.length; i++) {
+                if ((l1 + ' ' + words[i]).trim().length <= maxChars || i === 0) {
+                    l1 = (l1 + ' ' + words[i]).trim();
+                } else {
+                    l2 = words.slice(i).join(' ');
+                    break;
+                }
+            }
+            return { line1: l1, line2: l2 };
+        };
 
-            // Cửa sổ lấy sáng ở mép ngoài
-            const windowSVG = (i === 0 || i === roomsCount - 1)
-                ? `<line x1="${i === 0 ? rx : rx + rw}" y1="${ry + rh * 0.3}" x2="${i === 0 ? rx : rx + rw}" y2="${ry + rh * 0.7}" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round"/>`
+        // Sinh các khối phòng Dãy 1 (Dãy trên)
+        let curX = padLeft;
+        for (let i = 0; i < nTop; i++) {
+            const room = rooms[i];
+            const isLast = (i === nTop - 1);
+            const wBlock = Math.round(planW / nTop);
+            const rw = isLast ? (padLeft + planW - curX) : wBlock;
+            const rx = curX;
+            const ry = padTop;
+            const rh = hTop;
+
+            const cx = rx + rw / 2;
+            const cy = ry + rh / 2;
+            const { line1, line2 } = formatRoomTitle(room.name, isLightbox ? 20 : 15);
+
+            const doorRadius = Math.min(22, Math.min(rw, rh) * 0.25);
+            const doorSVG = `
+                <path d="M ${rx + rw} ${ry + rh - 6} A ${doorRadius} ${doorRadius} 0 0 1 ${rx + rw - doorRadius} ${ry + rh - 6 - doorRadius}" fill="none" stroke="#e5b95d" stroke-width="1.2" stroke-dasharray="2,2"/>
+                <line x1="${rx + rw}" y1="${ry + rh - 6}" x2="${rx + rw - doorRadius}" y2="${ry + rh - 6}" stroke="#e5b95d" stroke-width="1.8"/>
+            `;
+
+            const winSVG = (i === 0 || i === nTop - 1)
+                ? `<line x1="${i === 0 ? rx : rx + rw}" y1="${ry + 15}" x2="${i === 0 ? rx : rx + rw}" y2="${ry + rh - 15}" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>`
                 : '';
 
             roomBlocksSVG += `
                 <g class="svg-room-block" data-room-id="${room.id}" style="cursor: pointer;">
-                    <rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="rgba(229,185,93,0.06)" stroke="rgba(229,185,93,0.3)" stroke-width="1.2" rx="4" class="cad-room-rect"/>
+                    <rect x="${rx + 1}" y="${ry + 1}" width="${rw - 2}" height="${rh - 2}" fill="rgba(229,185,93,0.06)" stroke="rgba(229,185,93,0.25)" stroke-width="1.2" rx="4" class="cad-room-rect"/>
+                    ${winSVG}
                     ${doorSVG}
-                    ${windowSVG}
-                    <!-- Icon & Tên phòng -->
-                    <text x="${centerX}" y="${centerY - 10}" text-anchor="middle" font-size="${isLightbox ? 18 : 15}" class="svg-room-icon">${room.icon}</text>
-                    <text x="${centerX}" y="${centerY + 8}" text-anchor="middle" font-size="${isLightbox ? 11 : 9.5}" font-weight="700" fill="#f1f5f9" class="svg-room-title">${room.name}</text>
-                    <text x="${centerX}" y="${centerY + 24}" text-anchor="middle" font-size="${isLightbox ? 10 : 8.5}" font-weight="600" fill="#e5b95d" class="svg-room-area">${room.area} m²</text>
+                    <text x="${cx}" y="${line2 ? cy - 14 : cy - 8}" text-anchor="middle" font-size="${isLightbox ? 18 : 15}" class="svg-room-icon">${room.icon}</text>
+                    <text x="${cx}" y="${line2 ? cy + 4 : cy + 9}" text-anchor="middle" font-size="${isLightbox ? 11 : 9.5}" font-weight="700" fill="#f8fafc" class="svg-room-title">
+                        ${line1}
+                        ${line2 ? `<tspan x="${cx}" dy="13" font-size="${isLightbox ? 9.5 : 8.5}" font-weight="500" fill="#cbd5e1">${line2}</tspan>` : ''}
+                    </text>
+                    <g transform="translate(${cx - 28}, ${line2 ? cy + 28 : cy + 18})">
+                        <rect x="0" y="0" width="56" height="17" rx="8.5" fill="rgba(15,23,42,0.85)" stroke="#e5b95d" stroke-width="1"/>
+                        <text x="28" y="12" text-anchor="middle" font-size="${isLightbox ? 9.5 : 8.5}" font-weight="700" fill="#e5b95d">${room.area} m²</text>
+                    </g>
                 </g>
             `;
-            currentX += rw;
-        });
+            curX += rw;
+        }
+
+        // Sinh các khối phòng Dãy 2 (Dãy dưới)
+        if (useTwoBays && nBottom > 0) {
+            curX = padLeft;
+            for (let j = 0; j < nBottom; j++) {
+                const room = rooms[nTop + j];
+                const isLast = (j === nBottom - 1);
+                const wBlock = Math.round(planW / nBottom);
+                const rw = isLast ? (padLeft + planW - curX) : wBlock;
+                const rx = curX;
+                const ry = padTop + hTop;
+                const rh = hBottom;
+
+                const cx = rx + rw / 2;
+                const cy = ry + rh / 2;
+                const { line1, line2 } = formatRoomTitle(room.name, isLightbox ? 20 : 15);
+
+                const doorRadius = Math.min(22, Math.min(rw, rh) * 0.25);
+                const doorSVG = `
+                    <path d="M ${rx + rw} ${ry + 6} A ${doorRadius} ${doorRadius} 0 0 0 ${rx + rw - doorRadius} ${ry + 6 + doorRadius}" fill="none" stroke="#e5b95d" stroke-width="1.2" stroke-dasharray="2,2"/>
+                    <line x1="${rx + rw}" y1="${ry + 6}" x2="${rx + rw - doorRadius}" y2="${ry + 6}" stroke="#e5b95d" stroke-width="1.8"/>
+                `;
+
+                const winSVG = (j === 0 || j === nBottom - 1)
+                    ? `<line x1="${j === 0 ? rx : rx + rw}" y1="${ry + 15}" x2="${j === 0 ? rx : rx + rw}" y2="${ry + rh - 15}" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>`
+                    : '';
+
+                roomBlocksSVG += `
+                    <g class="svg-room-block" data-room-id="${room.id}" style="cursor: pointer;">
+                        <rect x="${rx + 1}" y="${ry + 1}" width="${rw - 2}" height="${rh - 2}" fill="rgba(229,185,93,0.04)" stroke="rgba(229,185,93,0.25)" stroke-width="1.2" rx="4" class="cad-room-rect"/>
+                        ${winSVG}
+                        ${doorSVG}
+                        <text x="${cx}" y="${line2 ? cy - 14 : cy - 8}" text-anchor="middle" font-size="${isLightbox ? 18 : 15}" class="svg-room-icon">${room.icon}</text>
+                        <text x="${cx}" y="${line2 ? cy + 4 : cy + 9}" text-anchor="middle" font-size="${isLightbox ? 11 : 9.5}" font-weight="700" fill="#f8fafc" class="svg-room-title">
+                            ${line1}
+                            ${line2 ? `<tspan x="${cx}" dy="13" font-size="${isLightbox ? 9.5 : 8.5}" font-weight="500" fill="#cbd5e1">${line2}</tspan>` : ''}
+                        </text>
+                        <g transform="translate(${cx - 28}, ${line2 ? cy + 28 : cy + 18})">
+                            <rect x="0" y="0" width="56" height="17" rx="8.5" fill="rgba(15,23,42,0.85)" stroke="#e5b95d" stroke-width="1"/>
+                            <text x="28" y="12" text-anchor="middle" font-size="${isLightbox ? 9.5 : 8.5}" font-weight="700" fill="#e5b95d">${room.area} m²</text>
+                        </g>
+                    </g>
+                `;
+                curX += rw;
+            }
+        }
 
         // Thước đo CAD (Top dimension & Left dimension)
-        const dimTopY = padY - 14;
-        const dimLeftX = padX - 16;
+        const dimTopY = padTop - 14;
+        const dimLeftX = padLeft - 16;
         const depthLabel = `${d.toFixed(1)}m (${(d * 1000).toLocaleString('vi-VN')}mm)`;
         const widthLabel = `${w.toFixed(1)}m (${(w * 1000).toLocaleString('vi-VN')}mm)`;
+
+        // Trục định vị kiến trúc (Grid Axis Bubbles)
+        const axisBubblesSVG = `
+            <g class="cad-grid-axes">
+                <circle cx="${padLeft}" cy="${padTop - 25}" r="7.5" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+                <text x="${padLeft}" y="${padTop - 22}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#cbd5e1">A</text>
+                
+                <circle cx="${padLeft + planW / 2}" cy="${padTop - 25}" r="7.5" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+                <text x="${padLeft + planW / 2}" y="${padTop - 22}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#cbd5e1">B</text>
+                
+                <circle cx="${padLeft + planW}" cy="${padTop - 25}" r="7.5" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+                <text x="${padLeft + planW}" y="${padTop - 22}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#cbd5e1">C</text>
+            </g>
+        `;
 
         return `
             <svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" class="blueprint-svg">
                 <defs>
-                    <!-- Lưới tọa độ CAD Blueprint -->
                     <pattern id="cadGrid-${floor.floorNum}" width="20" height="20" patternUnits="userSpaceOnUse">
                         <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.06)"/>
                     </pattern>
                 </defs>
 
-                <!-- Nền lưới CAD -->
                 <rect width="${svgW}" height="${svgH}" fill="url(#cadGrid-${floor.floorNum})"/>
 
+                ${axisBubblesSVG}
+
                 <!-- THƯỚC ĐO KÍCH THƯỚC CHIỀU DÀI (TOP DIMENSION) -->
-                <line x1="${padX}" y1="${dimTopY}" x2="${padX + planW}" y2="${dimTopY}" stroke="#94a3b8" stroke-width="1.2"/>
-                <line x1="${padX}" y1="${dimTopY - 6}" x2="${padX}" y2="${dimTopY + 6}" stroke="#94a3b8" stroke-width="1.5"/>
-                <line x1="${padX + planW}" y1="${dimTopY - 6}" x2="${padX + planW}" y2="${dimTopY + 6}" stroke="#94a3b8" stroke-width="1.5"/>
-                <text x="${padX + planW / 2}" y="${dimTopY - 5}" text-anchor="middle" font-size="10" font-weight="700" fill="#cbd5e1">${depthLabel}</text>
+                <line x1="${padLeft}" y1="${dimTopY}" x2="${padLeft + planW}" y2="${dimTopY}" stroke="#94a3b8" stroke-width="1.2"/>
+                <line x1="${padLeft}" y1="${dimTopY - 6}" x2="${padLeft}" y2="${dimTopY + 6}" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="${padLeft + planW}" y1="${dimTopY - 6}" x2="${padLeft + planW}" y2="${dimTopY + 6}" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="${padLeft + planW / 2}" y="${dimTopY - 5}" text-anchor="middle" font-size="10" font-weight="700" fill="#cbd5e1">${depthLabel}</text>
 
                 <!-- THƯỚC ĐO KÍCH THƯỚC MẶT TIỀN (LEFT DIMENSION) -->
-                <line x1="${dimLeftX}" y1="${padY}" x2="${dimLeftX}" y2="${padY + planH}" stroke="#94a3b8" stroke-width="1.2"/>
-                <line x1="${dimLeftX - 6}" y1="${padY}" x2="${dimLeftX + 6}" y2="${padY}" stroke="#94a3b8" stroke-width="1.5"/>
-                <line x1="${dimLeftX - 6}" y1="${padY + planH}" x2="${dimLeftX + 6}" y2="${padY + planH}" stroke="#94a3b8" stroke-width="1.5"/>
-                <text x="${dimLeftX - 8}" y="${padY + planH / 2}" text-anchor="middle" font-size="10" font-weight="700" fill="#cbd5e1" transform="rotate(-90, ${dimLeftX - 8}, ${padY + planH / 2})">${widthLabel}</text>
+                <line x1="${dimLeftX}" y1="${padTop}" x2="${dimLeftX}" y2="${padTop + planH}" stroke="#94a3b8" stroke-width="1.2"/>
+                <line x1="${dimLeftX - 6}" y1="${padTop}" x2="${dimLeftX + 6}" y2="${padTop}" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="${dimLeftX - 6}" y1="${padTop + planH}" x2="${dimLeftX + 6}" y2="${padTop + planH}" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="${dimLeftX - 8}" y="${padTop + planH / 2}" text-anchor="middle" font-size="10" font-weight="700" fill="#cbd5e1" transform="rotate(-90, ${dimLeftX - 8}, ${padTop + planH / 2})">${widthLabel}</text>
 
                 <!-- TƯỜNG BAO KẾT CẤU CHỊU LỰC (OUTER REINFORCED CONCRETE WALLS 200mm) -->
-                <rect x="${padX - 4}" y="${padY - 4}" width="${planW + 8}" height="${planH + 8}" fill="none" stroke="#38bdf8" stroke-width="2.5" rx="5"/>
-                <rect x="${padX}" y="${padY}" width="${planW}" height="${planH}" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" rx="3"/>
+                <rect x="${padLeft - 4}" y="${padTop - 4}" width="${planW + 8}" height="${planH + 8}" fill="none" stroke="#38bdf8" stroke-width="2.5" rx="5"/>
+                <rect x="${padLeft}" y="${padTop}" width="${planW}" height="${planH}" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" rx="3"/>
 
                 <!-- CÁC KHỐI PHÒNG CÔNG NĂNG TƯƠNG TÁC -->
                 ${roomBlocksSVG}
 
                 <!-- MŨI TÊN CHỈ HƯỚNG BẮC (NORTH ARROW COMPASS) -->
-                <g transform="translate(${svgW - 40}, 24)">
+                <g transform="translate(${svgW - 36}, 24)">
                     <circle cx="0" cy="0" r="14" fill="rgba(15,23,42,0.85)" stroke="#e5b95d" stroke-width="1.2"/>
                     <polygon points="0,-10 -4,2 0,0 4,2" fill="#ef4444"/>
                     <polygon points="0,10 -4,-2 0,0 4,-2" fill="#94a3b8"/>
@@ -2723,7 +2907,7 @@ class DreamHouseApp {
                 </g>
 
                 <!-- KHUNG TÊN BẢN VẼ CHUẨN KIẾN TRÚC (CAD TITLE BLOCK) -->
-                <g transform="translate(${padX}, ${svgH - 12})">
+                <g transform="translate(${padLeft}, ${svgH - 12})">
                     <text x="0" y="0" font-size="8.5" font-weight="600" fill="#64748b">DREAM HOUSE ARCHITECTURAL BLUEPRINT • TỶ LỆ 1/100 • TIÊU CHUẨN TCXDVN 2026</text>
                     <text x="${planW}" y="0" text-anchor="end" font-size="8.5" font-weight="700" fill="#e5b95d">${floor.title}</text>
                 </g>
@@ -2767,10 +2951,21 @@ class DreamHouseApp {
 
     /**
      * Chuyển đổi hiển thị tầng được chọn
+     * Đồng thời điều khiển cắt lát mô hình 3D tương ứng
      */
     switchFloorplan(index) {
         if (index < 0 || index >= this._currentFloorsData.length) return;
         this.currentFloorIndex = index;
+
+        // Cắt lát mô hình 3D tương ứng theo tầng được chọn
+        if (this.viewer3D) {
+            const totalFloors = Math.max(1, this._currentFloorsData.length - 1);
+            if (index < totalFloors) {
+                this.viewer3D.sliceFloor(index, totalFloors);
+            } else {
+                this.viewer3D.clearClipping();
+            }
+        }
 
         // Cập nhật active tab trong detail modal
         const detailTabs = document.querySelectorAll('#detail-floorplan-tabs .fp-pill-btn');

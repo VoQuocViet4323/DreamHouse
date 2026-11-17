@@ -1298,6 +1298,41 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.7`** trên `index.html` và `admin.html`.
 - [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 65** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 81: Tự Động Đồng Bộ Mặt Bằng Tầng Từ Mô Hình 3D & Tái Thiết Bố Cục Bản Vẽ CAD Vector Không Đè Chữ (3D Auto-Floorplan Sync & 2-Bay CAD Layout v9.8)
+- [x] **Tự động nhận diện số tầng và kích thước hình học từ mô hình 3D thực tế:**
+  - **Tích hợp `analyzeAndEmitModelInfo` trong `js/viewer3d.js`:**
+    - Tính toán Bounding Box thực tế bằng Three.js (`adjustedSize`).
+    - Phân tích chiều cao công trình ($Y$) theo tiêu chuẩn TCXDVN (chiều cao tầng chuẩn 3.3m – 3.8m):
+      - $H < 5.0\text{m} \rightarrow 1$ tầng (Nhà cấp 4).
+      - $5.0\text{m} \le H < 8.5\text{m} \rightarrow 2$ tầng.
+      - $8.5\text{m} \le H < 14.5\text{m} \rightarrow 3$ tầng (Biệt thự / Nhà phố 3 tầng).
+      - $H \ge 14.5\text{m} \rightarrow 4$ tầng (hoặc 3 tầng đối với biệt thự tân cổ điển có mái chóp Mansard cao > 18m).
+    - Tính toán bề ngang ($W$) và bề sâu ($D$), tự động lọc bỏ phần ngoại cảnh/đường sá lớn để lấy kích thước mặt bằng xây dựng thực tế.
+    - Phát sự kiện callback `onModelParsed({ width, depth, height, floors, box, size })`.
+  - **Đồng bộ tự động vào `app.js` (`handle3DModelParsed`):**
+    - Khi người dùng xem mẫu (ví dụ mẫu Biệt thự tân cổ điển `test` có mô hình 3D thực tế là 3 tầng nhưng metadata trong DB ghi 2 tầng), hệ thống tự động cập nhật số tầng sang 3 tầng.
+    - Tự động sinh đầy đủ các tab mặt bằng: `[Tầng 1] [Tầng 2] [Tầng 3] [Mái]`.
+    - Tự động cập nhật kích thước thước đo CAD ($W \times D$) đồng bộ với mô hình 3D.
+- [x] **Cắt lát mô hình 3D theo tầng (3D Floor Section Slicing & Top-Down Isometric):**
+  - Kích hoạt `renderer.localClippingEnabled = true` trong Three.js.
+  - Xây dựng phương thức `sliceFloor(floorIndex, totalFloors)`:
+    - Sử dụng mặt phẳng cắt `THREE.Plane(new THREE.Vector3(0, -1, 0), cutY)` cắt ngang cao độ trần của tầng đang xem, ẩn toàn bộ mái và các tầng phía trên để nhìn thấu không gian nội thất, tường ngăn, bố cục phòng ốc bên trong tầng đó.
+    - Khi chọn tầng Mái hoặc đóng modal, tự động gọi `clearClipping()` khôi phục công trình nguyên vẹn.
+  - Bổ sung camera preset `'iso-cut'` (`spherical.phi = 0.52`, góc nghiêng 30 độ nhìn từ trên cao xuống) và nâng cấp nút **[Mặt cắt 3D]** (`#btn-fp-iso3d`): tự động chuyển sang visual tab 3D, cắt lát tầng hiện tại và xoay góc nhìn phối cảnh từ trên cao nhìn vào bên trong phòng cực kỳ sống động.
+- [x] **Tái thiết kế hoàn toàn Bản vẽ Mặt bằng CAD SVG (`renderFloorplanSVG`):**
+  - **Triệt tiêu 100% tình trạng tràn chữ / đè chữ (Text Collisions):**
+    - Thay thế cơ chế xếp 1 hàng ngang duy nhất bằng **Bố cục Không Gian Kiến Trúc 2 Dãy (2-Bay Spatial Layout)** cho các tầng có từ 4 phòng trở lên:
+      - **Dãy Trên (Bay 1 - Public/Front):** Sảnh đón, Phòng khách, Bếp & Bàn ăn liên hoàn.
+      - **Dãy Dưới (Bay 2 - Private/Rear):** Phòng ngủ (Master/Trệt), Cầu thang & Giếng trời, Gara / WC / Kho.
+    - Tăng diện tích hiển thị mỗi phòng lên gấp 2.5 lần ($140-200\text{px} \times 100-130\text{px}$).
+    - Tích hợp hàm ngắt dòng thông minh `formatRoomTitle(name)`: tự động tách tên phòng dài thành 2 dòng với `<tspan x="..." dy="...">`, tên phòng luôn nằm ngay ngắn bên dưới icon và phía trên huy hiệu diện tích bo góc màu vàng kim (`#e5b95d`).
+    - Bổ sung hệ trục định vị kiến trúc (Grid Axis Bubbles: A, B, C... và 1, 2...), ký hiệu cửa mở cung tròn 90 độ (Door swing), cửa sổ lấy sáng ngoài trời và khung tên bản vẽ chuẩn TCXDVN.
+- [x] **Tự động nhận diện từ tệp 3D trong Trang Quản Trị (`admin.html`):**
+  - Nhúng thư viện Three.js và GLTFLoader vào `admin.html`.
+  - Khi Quản trị viên chọn tải file `.glb` hoặc `.gltf` ở ô `#tpl-model-file`, hệ thống tự động bóc tách bounding box client-side bằng `THREE.GLTFLoader`, suy ra số tầng, kích thước $W \times D$, diện tích xây dựng GFA và tự động điền sẵn vào các ô `tpl-floors`, `tpl-width`, `tpl-depth`, `tpl-gfa` kèm thông báo Toast xác nhận.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.8`** trên `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 66** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

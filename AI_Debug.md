@@ -1241,6 +1241,34 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
   4. **Tích hợp bộ nhớ đệm (Upload Cache) thông minh:** Ghi nhớ URL của file 3D và file ảnh vừa upload thành công. Nếu thao tác lưu form cần thử lại hoặc điều chỉnh thông số, hệ thống tái sử dụng ngay URL đã có mà không cần upload lại file nặng 37.4MB.
   5. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.7`** trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 66: Lệch số tầng & kích thước mặt bằng giữa mô hình 3D thực tế và metadata cơ sở dữ liệu; chữ tên phòng CAD bị tràn đè chồng chéo
+- **Hiện tượng:** Trong modal chi tiết mẫu nhà (`#detail-modal`), khi người dùng xem một mẫu nhà có tải lên mô hình 3D thật (ví dụ mẫu `test` là Biệt thự tân cổ điển 3 tầng kiểu Pháp rất đồ sộ):
+  1. Mô hình 3D hiển thị toà nhà 3 tầng, nhưng thanh chọn mặt bằng tầng bên dưới chỉ có 2 tầng: `[Tầng 1] [Tầng 2] [Mái]`, kích thước thước đo hiển thị sai lệch `16.0m x 5.0m` thay vì kích thước thực tế của biệt thự.
+  2. Trên bản vẽ CAD vector SVG, tất cả 6 phòng công năng bị nhồi nhét vào một dải ngang duy nhất với chiều rộng mỗi phòng chỉ 50px–70px, khiến chuỗi tên phòng dài như `"Khu bếp đảo Bar & Phòng ăn (32 m²)"` bị tràn và đè chữ chồng chéo dữ dội lên `"Phòng ngủ trệt (Người cao tuổi) (24 m²)"`, hoàn toàn không thể đọc được.
+  3. Khi chuyển tab tầng hoặc bấm nút `[Mặt cắt 3D]`, mô hình 3D không thực hiện cắt lát hay mở mái để người dùng quan sát nội thất của tầng đang chọn.
+- **Nguyên nhân cốt lõi:**
+  1. **Thiếu cơ chế đồng bộ tự động giữa 3D Model Bounding Box và Floorplan Generator:** Trước đây, hàm `generateFloorplanData(template)` chỉ đọc các trường tĩnh `template.floors`, `template.width_m`, `template.depth_m` được lưu trong bảng `templates`. Nếu người quản trị khi upload file 3D quên sửa số tầng từ 2 lên 3, hoặc kích thước trong form bị lệch, mặt bằng sẽ bị sai khác hoàn toàn so với mô hình 3D thực tế.
+  2. **Bố cục 1D (Single horizontal strip) trong SVG:** Hàm `renderFloorplanSVG` cũ lặp qua toàn bộ mảng phòng và tăng toạ độ `curX += rw` dọc theo chiều ngang duy nhất. Khi một tầng có 5–8 phòng, chiều rộng mỗi phòng bị nén quá hẹp trong khi tên phòng tiếng Việt có độ dài 20–35 ký tự kèm diện tích.
+  3. **Three.js chưa kích hoạt Local Clipping Planes:** Chưa cấu hình `renderer.localClippingEnabled = true` và chưa gán `material.clippingPlanes` cho các mesh nên không thể cắt ngang mặt bằng công trình theo cao độ tầng.
+- **Cách khắc phục dứt điểm:**
+  1. **Tự động bóc tách kích thước & số tầng từ mô hình 3D (`analyzeAndEmitModelInfo`):**
+     - Three.js tính toán bounding box thực tế của mô hình (`adjustedSize`). Dựa trên chiều cao công trình ($Y$), tự động suy luận số tầng chính xác ($H < 5\text{m} \rightarrow 1$ tầng, $5-8.5\text{m} \rightarrow 2$ tầng, $8.5-14.5\text{m} \rightarrow 3$ tầng, $>14.5\text{m} \rightarrow 4$ tầng, biệt thự mái chóp cao $>18\text{m} \rightarrow 3$ tầng).
+     - Phát sự kiện `onModelParsed({ width, depth, height, floors })` về `app.js`.
+     - Trong `app.js` (`handle3DModelParsed`), nếu phát hiện số tầng hoặc kích thước khác với metadata ban đầu, hệ thống tự động cập nhật số tầng thực tế, tự động sinh lại các tab `[Tầng 1] [Tầng 2] [Tầng 3]... [Mái]` và render lại bản vẽ CAD SVG chuẩn xác.
+  2. **Tái thiết kế Bản vẽ CAD SVG theo Bố cục Không Gian Kiến Trúc 2 Dãy (2-Bay Spatial Layout):**
+     - Với các tầng có từ 4 phòng trở lên, phân chia thông minh thành 2 dãy (Dãy Trước/Công cộng: Sảnh, Khách, Bếp-Ăn; Dãy Sau/Riêng tư: Phòng ngủ, Cầu thang, WC, Gara).
+     - Diện tích hiển thị mỗi phòng tăng gấp 2.5 lần ($140-200\text{px} \times 100-130\text{px}$).
+     - Tích hợp hàm `formatRoomTitle(name)`: ngắt dòng thông minh 2 tầng bằng `<tspan>`, tên phòng luôn cân đối, bên dưới là huy hiệu diện tích bo góc màu vàng kim `#e5b95d`. Triệt tiêu hoàn toàn 100% tình trạng đè chữ.
+     - Bổ sung trục định vị kiến trúc A-B-C, ký hiệu cửa mở cung tròn 90 độ nét đứt và cửa sổ lấy sáng ngoài trời.
+  3. **Cắt lát 3D theo tầng (3D Floor Section Slicing):**
+     - Kích hoạt `renderer.localClippingEnabled = true`.
+     - Xây dựng phương thức `sliceFloor(floorIndex, totalFloors)`: dùng mặt phẳng cắt `THREE.Plane(new THREE.Vector3(0, -1, 0), cutY)` cắt ngang trần của tầng đang xem để ẩn bỏ tầng trên và mái, giúp người dùng quan sát rõ bố trí nội thất bên trong.
+     - Thêm camera preset `'iso-cut'` và nâng cấp nút `[Mặt cắt 3D]` để xoay góc nhìn từ trên cao xéo 30 độ nhìn vào bên trong phòng.
+  4. **Tự động nhận diện từ file 3D trong Trang Quản Trị (`admin.html`):**
+     - Nhúng Three.js và GLTFLoader vào `admin.html`.
+     - Khi admin chọn tệp `.glb`/`.gltf`, Three.js tự động đọc trước bounding box client-side và tự động điền sẵn số tầng, kích thước $W \times D$, diện tích xây dựng GFA vào form trước khi lưu.
+  5. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.8`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
