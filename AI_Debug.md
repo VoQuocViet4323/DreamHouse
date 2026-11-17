@@ -1287,6 +1287,14 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Tích hợp nút **`⚡ Gợi ý công năng`** để Admin chỉ cần bấm một chạm là tự động sinh công năng phòng chuẩn phong cách.
   3. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.9`** trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 68: Toast thông báo thành công tự động đồng bộ mặt bằng xuất hiện liên tục khi mở xem mô hình dự án làm phiền trải nghiệm người dùng
+- **Hiện tượng:** Mỗi khi khách truy cập hoặc Quản trị viên bấm xem bất kỳ mẫu nhà nào có mô hình 3D trong danh sách, hệ thống tự động bắn ra một Toast thông báo góc màn hình: *"Thành công: ✨ Đã tự động đồng bộ mặt bằng 3 tầng (9.1m x 22.5m) từ mô hình 3D!"*. Thông báo này liên tục nảy lên mỗi lần bấm xem mẫu mới, gây rối mắt và che khuất nội dung quan trọng trên giao diện.
+- **Nguyên nhân cốt lõi:** Trong hàm `handle3DModelParsed(info)` ở `js/app.js`, khi Three.js phát hiện số tầng hoặc kích thước của mô hình 3D khác với dữ liệu cũ và tiến hành cập nhật lại các tab mặt bằng, code có gọi `window.toast.success(...)` nhằm mục đích thông báo. Tuy nhiên, với hành vi duyệt xem của người dùng (bấm qua lại nhiều mẫu nhà để ngắm phối cảnh 3D), đây là tác vụ đồng bộ ngầm của hệ thống, không cần thiết phải hiển thị popup toast làm phiền người dùng.
+- **Cách khắc phục dứt điểm:**
+  1. Loại bỏ hoàn toàn khối lệnh `window.toast.success(...)` trong `handle3DModelParsed` ở `js/app.js`.
+  2. Toàn bộ logic cập nhật mặt bằng, số lượng tab tầng (`[Tầng 1] [Tầng 2]... [Mái]`), thước đo CAD và badge thông số tầng trên modal vẫn được tính toán và cập nhật chính xác 100% dưới nền một cách tĩnh lặng, thanh lịch (Silent Background Sync).
+  3. Nâng tham số cache-busting toàn hệ thống lên **`?v=10.0`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

@@ -2546,23 +2546,10 @@ class DreamHouseApp {
         if (needsRefresh) {
             this.updateDetailFloorplans(this.currentTemplate);
 
-            // Cập nhật thông số badge tầng trên modal chi tiết
+            // Cập nhật thông số badge tầng trên modal chi tiết (đồng bộ ngầm mượt mà, không bật thông báo làm phiền)
             const floorsBadge = document.querySelector('#detail-modal .detail-meta-floors');
             if (floorsBadge && this.currentTemplate._detectedFloors) {
                 floorsBadge.textContent = `${this.currentTemplate._detectedFloors} tầng`;
-            }
-
-            if (window.toast) {
-                const isVi = window.i18n.getLang() === 'vi';
-                const fCount = this.currentTemplate._detectedFloors || info.floors;
-                const dW = this.currentTemplate._detectedWidth || this.currentTemplate.width_m || info.width;
-                const dD = this.currentTemplate._detectedDepth || this.currentTemplate.depth_m || info.depth;
-                window.toast.success(
-                    isVi 
-                        ? `✨ Đã tự động đồng bộ mặt bằng ${fCount} tầng (${dW}m × ${dD}m) từ mô hình 3D!`
-                        : `✨ Automatically synced ${fCount} floors (${dW}m × ${dD}m) from 3D model!`,
-                    3200
-                );
             }
         }
     }

@@ -1352,6 +1352,15 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.9`** trên `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 67** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 83: Chuyển Đổi Đồng Bộ Mặt Bằng Sang Chế Độ Chạy Ngầm Tĩnh Lặng (Silent Background Sync v10.0)
+- [x] **Loại bỏ popup thông báo khi người dùng bấm vào xem mô hình dự án:**
+  - **Vấn đề được báo cáo:** Mỗi khi người dùng mở xem modal chi tiết dự án (`#detail-modal`) có mô hình 3D, hệ thống tự động bắn ra một Toast thông báo xanh lá *"Thành công: ✨ Đã tự động đồng bộ mặt bằng 3 tầng (9.1m x 22.5m) từ mô hình 3D!"*. Thông báo này liên tục nảy lên mỗi lần người dùng bấm xem các mẫu nhà, gây che khuất tầm nhìn và làm gián đoạn trải nghiệm người dùng.
+  - **Khắc phục dứt điểm:**
+    - Loại bỏ hoàn toàn lệnh `window.toast.success(...)` trong hàm `handle3DModelParsed(info)` ở `js/app.js`.
+    - Cơ chế đồng bộ số tầng và kích thước mặt bằng CAD từ mô hình 3D vẫn âm thầm hoạt động 100% dưới nền (Silent Background Sync), cập nhật các tab tầng và badge số tầng mượt mà mà không tạo ra bất kỳ popup hay âm thanh làm phiền nào.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=10.0`** trên `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 68** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 
