@@ -1269,6 +1269,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Khi admin chọn tệp `.glb`/`.gltf`, Three.js tự động đọc trước bounding box client-side và tự động điền sẵn số tầng, kích thước $W \times D$, diện tích xây dựng GFA vào form trước khi lưu.
   5. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.8`** trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 67: Các mẫu nhà mới tải lên bằng GLB bị trùng lặp mặt bằng tầng giống hệt nhau
+- **Hiện tượng:** Khi người dùng xem 2 mẫu nhà khác nhau (ví dụ một mẫu là "Nhà phố 2 tầng 5x16m" và một mẫu là "Biệt thự hiện đại" mới tải lên bằng file .glb), phần mặt bằng tầng ở cả 2 mẫu đều hiển thị danh sách phòng, icon và số mét vuông giống hệt nhau (cùng có Tiền sảnh, Phòng khách tân cổ điển, Bếp quầy bar, Phòng ngủ trệt...).
+- **Nguyên nhân cốt lõi:**
+  1. **Dữ liệu kích thước mặc định khi lưu form Admin:** Khi Quản trị viên thêm mẫu mới trong `admin.html`, các ô kích thước trước đây đều để mặc định là `5.0m x 16.0m, 2 tầng, 150m²`, và trường công năng phòng `rooms_vi` bị bỏ trống.
+  2. **Thuật toán sinh mặt bằng trong `generateFloorplanData` phân loại quá sơ sài:** Hàm cũ chỉ chia 3 nhánh đơn giản (`nha-cap-4`, `biet-thu || floors >= 3`, và `else`). Khi 3D model cao $\ge 8.5\text{m}$, cả 2 mẫu đều bị rơi vào cùng một nhánh và gán danh sách phòng hardcode giống hệt nhau, số diện tích các phòng bị fix cứng số tĩnh (18, 38, 32, 24...) thay vì tính theo kích thước thực tế của từng ngôi nhà.
+- **Cách khắc phục dứt điểm:**
+  1. **Xây dựng Bộ Sinh Mặt Bằng Đa Dạng Theo Phong Cách (Smart Multi-Theme Architectural Engine):**
+     - Tự động nhận diện phong cách thiết kế từ `name_vi`, `style_vi`, `type`:
+       - **Biệt thự Hiện đại (`modern_villa`):** Sảnh đón Panorama kính cường lực, Khách thông tầng Double-Height (45m²), Bếp đảo Boffi & Bar sang trọng (35m²), Phòng ngủ Suite view hồ bơi (29m²), Hồ bơi tràn viền & Sân Deck thư giãn, Gara kính siêu xe, Phòng ngủ Penthouse Master (51m²), Walk-in Closet & Spa, Home Cinema, Sky Lounge & Cocktail Bar ngoài trời (48m²), Gym & Yoga, Sauna muối hồng & Jacuzzi...
+       - **Nhà phố Hiện đại (`townhouse`):** Sân trước để xe hơi (16m²), Phòng khách liên thông (22m²), Giếng trời giữa & Hồ cá Koi (10m²), Cầu thang 21 bậc & WC chân thang, Bếp gia đình ấm cúng (18m²), Sân sau giặt phơi, Phòng ngủ Master ban công trước (26m²), Sảnh sinh hoạt chung & Bàn học (13m²), Phòng ngủ con (19m²)...
+       - **Biệt thự Tân cổ điển (`classic_villa`):** Tiền sảnh vòm Corinthian, Khách vương giả, Bếp tiệc Pháp, Phòng ngủ Hoàng gia dát vàng, Thư viện, Phòng thờ gia tiên sơn son thếp vàng...
+       - **Nhà vườn / Nhà cấp 4 (`rural_garden`):** Hiên đón tam cấp, Gian khách & phòng thờ liên hoàn, Bếp chữ L, 3 phòng ngủ sân vườn...
+     - **Diện tích tính ĐỘNG 100%:** Diện tích từng phòng tỷ lệ thuận theo $W \times D$ của mẫu đó (`calcArea = Math.round(groundArea * pct)`), nhà lớn thì phòng lớn, nhà nhỏ thì phòng nhỏ tương xứng.
+  2. **Bổ sung trường cấu hình phòng trong Trang Quản Trị `admin.html`:**
+     - Thêm ô nhập **Công năng các phòng (`tpl-rooms` / `rooms_vi`)** và **Mô tả thiết kế (`tpl-desc` / `description_vi`)**.
+     - Tích hợp nút **`⚡ Gợi ý công năng`** để Admin chỉ cần bấm một chạm là tự động sinh công năng phòng chuẩn phong cách.
+  3. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.9`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)

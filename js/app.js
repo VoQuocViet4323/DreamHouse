@@ -2569,43 +2569,77 @@ class DreamHouseApp {
 
     /**
      * Sinh dữ liệu bóc tách mặt bằng kiến trúc chuẩn kỹ thuật cho từng tầng
+     * Tự động cá nhân hóa theo phong cách kiến trúc, công năng riêng và diện tích thực tế của từng mẫu nhà
      */
     generateFloorplanData(template) {
         if (!template) return [];
 
         const floorsCount = Math.max(1, parseInt(template._detectedFloors || template.floors, 10) || 1);
-        const w = parseFloat(template._detectedWidth || template.width_m) || 5.0;
-        const d = parseFloat(template._detectedDepth || template.depth_m) || 16.0;
+        let w = parseFloat(template._detectedWidth || template.width_m) || 5.0;
+        let d = parseFloat(template._detectedDepth || template.depth_m) || 16.0;
+
+        const name = (template.name_vi || '').toLowerCase();
+        const style = (template.style_vi || '').toLowerCase();
+        const type = (template.type || '').toLowerCase();
+
+        // Phân loại phong cách kiến trúc chuyên biệt cho từng mẫu nhà
+        let archTheme = 'townhouse'; // 'modern_villa' | 'classic_villa' | 'townhouse' | 'rural_garden'
+        if (name.includes('tân cổ điển') || style.includes('tân cổ điển') || style.includes('classic') || name.includes('châu âu')) {
+            archTheme = 'classic_villa';
+            if (w < 8 && !template._detectedWidth) w = 10.0;
+        } else if (name.includes('biệt thự') || type === 'biet-thu' || name.includes('villa') || style.includes('nghỉ dưỡng')) {
+            archTheme = 'modern_villa';
+            if (w < 8 && !template._detectedWidth) w = 10.0;
+        } else if (type === 'nha-cap-4' || name.includes('cấp 4') || name.includes('vườn')) {
+            archTheme = 'rural_garden';
+            if (w < 7 && !template._detectedWidth) w = 8.5;
+        } else {
+            archTheme = 'townhouse';
+        }
+
         const groundArea = Math.round(w * d);
         const lang = window.i18n.getLang();
         const isVi = lang === 'vi';
+
+        // Hàm phân bổ diện tích theo tỷ lệ phần trăm của diện tích sàn tầng
+        const calcArea = (pct, minM2 = 4) => Math.max(minM2, Math.round(groundArea * pct));
 
         const floors = [];
 
         // 1. TẦNG 1 (TRỆT)
         const f1Rooms = [];
-        if (template.type === 'nha-cap-4') {
-            f1Rooms.push({ id: 'r1', name: isVi ? 'Sảnh chính & Hiên đón' : 'Main Porch & Entry', area: Math.round(w * 1.5), icon: '🚪', desc: isVi ? 'Bậc tam cấp phong thủy' : 'Entrance porch' });
-            f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách & Phòng thờ' : 'Living & Altar Hall', area: Math.round(w * 4.5), icon: '🛋️', desc: isVi ? 'Không gian sinh hoạt trung tâm' : 'Central living hall' });
-            f1Rooms.push({ id: 'r3', name: isVi ? 'Bếp & Phòng ăn liên hoàn' : 'Kitchen & Dining', area: Math.round(w * 3.2), icon: '🍳', desc: isVi ? 'Bếp chữ L thông thoáng' : 'Open continuous dining' });
-            f1Rooms.push({ id: 'r4', name: isVi ? 'Phòng ngủ 1 (Master)' : 'Master Bedroom', area: 18, icon: '🛏️', desc: isVi ? 'Có WC khép kín' : 'En-suite bath' });
-            f1Rooms.push({ id: 'r5', name: isVi ? 'Phòng ngủ 2' : 'Bedroom 2', area: 14, icon: '🛏️', desc: isVi ? 'Cửa sổ đón nắng mai' : 'Window garden view' });
-            f1Rooms.push({ id: 'r6', name: isVi ? 'Phòng ngủ 3' : 'Bedroom 3', area: 13, icon: '🛏️', desc: isVi ? 'Phòng trẻ em / khách' : 'Kids / Guest room' });
-            f1Rooms.push({ id: 'r7', name: isVi ? 'Nhà vệ sinh chung (WC)' : 'Common Bathroom', area: 5, icon: '🚿', desc: isVi ? 'Phân khu khô ướt' : 'Wet & dry separation' });
-            f1Rooms.push({ id: 'r8', name: isVi ? 'Sân ướt & Giặt phơi sau' : 'Service Yard', area: Math.max(6, Math.round(groundArea - 18 - 14 - 13 - 5 - (w * 4.5) - (w * 3.2))), icon: '🧺', desc: isVi ? 'Lối ra vườn sau' : 'Rear garden egress' });
-        } else if (template.type === 'biet-thu' || floorsCount >= 3) {
-            f1Rooms.push({ id: 'r1', name: isVi ? 'Tiền sảnh & Sảnh đón VIP' : 'Grand Foyer & Porch', area: 18, icon: '🏛️', desc: isVi ? 'Cột Corinthian bề thế' : 'Stately grand entry' });
-            f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách Tân cổ điển' : 'Grand Living Parlor', area: 38, icon: '🛋️', desc: isVi ? 'Trần cao 4.2m thông thoáng' : 'High ceiling 4.2m' });
-            f1Rooms.push({ id: 'r3', name: isVi ? 'Khu bếp đảo Bar & Phòng ăn' : 'Island Kitchen & Banquet', area: 32, icon: '🍷', desc: isVi ? 'Bàn ăn 10-12 chỗ ngồi' : 'Seats 10-12 guests' });
-            f1Rooms.push({ id: 'r4', name: isVi ? 'Phòng ngủ trệt (Người cao tuổi)' : 'Ground Floor Suite', area: 24, icon: '🛏️', desc: isVi ? 'Không phải leo cầu thang, WC riêng' : 'Private bath, elderly friendly' });
-            f1Rooms.push({ id: 'r5', name: isVi ? 'Gara ô tô trong nhà' : 'Indoor Car Garage', area: 28, icon: '🚗', desc: isVi ? 'Chứa 2 ô tô & 3 xe máy' : 'Fits 2 cars & bikes' });
-            f1Rooms.push({ id: 'r6', name: isVi ? 'WC chung & Kho đồ' : 'Powder Room & Storage', area: 8, icon: '🚿', desc: isVi ? 'Thiết bị vệ sinh cao cấp' : 'Premium sanitary ware' });
+        if (archTheme === 'modern_villa') {
+            // BIỆT THỰ HIỆN ĐẠI (như mẫu "Biệt thự hiện đại" test-2)
+            f1Rooms.push({ id: 'r1', name: isVi ? 'Sảnh đón Panorama kính cường lực' : 'Panorama Glass Foyer', area: calcArea(0.12, 14), icon: '✨', desc: isVi ? 'Không gian mở kết nối thiên nhiên' : 'Open glass gallery entry' });
+            f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách thông tầng Double-Height' : 'Double-Height Living Hall', area: calcArea(0.28, 32), icon: '🛋️', desc: isVi ? 'Trần cao 6.5m, vách đá cẩm thạch' : '6.5m high ceiling marble wall' });
+            f1Rooms.push({ id: 'r3', name: isVi ? 'Bếp đảo Boffi & Quầy Bar sang trọng' : 'Island Kitchen & Modern Bar', area: calcArea(0.22, 26), icon: '🍷', desc: isVi ? 'Thiết bị Smeg cao cấp, bàn ăn 10 chỗ' : 'Luxury island bar counter' });
+            f1Rooms.push({ id: 'r4', name: isVi ? 'Phòng ngủ Suite tầng trệt (View hồ bơi)' : 'Ground Pool-view Suite', area: calcArea(0.18, 20), icon: '🛏️', desc: isVi ? 'Cửa trượt kính kịch trần, WC riêng' : 'Private deck pool view' });
+            f1Rooms.push({ id: 'r5', name: isVi ? 'Hồ bơi tràn viền & Sân Deck thư giãn' : 'Infinity Pool & Sun Deck', area: calcArea(0.18, 22), icon: '🏊', desc: isVi ? 'Hệ lọc muối khoáng thông minh' : 'Smart mineral pool & timber deck' });
+            f1Rooms.push({ id: 'r6', name: isVi ? 'Gara kính siêu xe & WC khách' : 'Showroom Garage & Powder Room', area: calcArea(0.14, 16), icon: '🏎️', desc: isVi ? 'Hệ thống sạc xe điện Smart EV' : 'Smart EV charging indoor garage' });
+        } else if (archTheme === 'classic_villa') {
+            // BIỆT THỰ TÂN CỔ ĐIỂN
+            f1Rooms.push({ id: 'r1', name: isVi ? 'Tiền sảnh vòm & Cột Corinthian' : 'Grand Corinthian Foyer', area: calcArea(0.12, 16), icon: '🏛️', desc: isVi ? 'Hoa văn phào chỉ mạ vàng thủ công' : 'Stately classical entrance' });
+            f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách Tân cổ điển vương giả' : 'Grand Neo-Classical Salon', area: calcArea(0.28, 36), icon: '🛋️', desc: isVi ? 'Đèn chùm pha lê Tiệp Khắc, trần 4.2m' : 'Crystal chandelier luxury salon' });
+            f1Rooms.push({ id: 'r3', name: isVi ? 'Phòng tiệc & Khu bếp đảo phong cách Pháp' : 'Banquet Hall & French Kitchen', area: calcArea(0.22, 28), icon: '🍷', desc: isVi ? 'Bàn tiệc dài 12 chỗ ngồi trang trọng' : '12-seat formal dining hall' });
+            f1Rooms.push({ id: 'r4', name: isVi ? 'Phòng ngủ trệt (Người cao tuổi)' : 'Ground Floor Suite', area: calcArea(0.18, 22), icon: '🛏️', desc: isVi ? 'Sàn gỗ tự nhiên, WC riêng tiện nghi' : 'Hardwood floor en-suite' });
+            f1Rooms.push({ id: 'r5', name: isVi ? 'Gara ô tô trong nhà khép kín' : 'Indoor Enclosed Garage', area: calcArea(0.16, 20), icon: '🚗', desc: isVi ? 'Chứa 2 ô tô & 3 xe máy' : 'Fits 2 luxury cars' });
+            f1Rooms.push({ id: 'r6', name: isVi ? 'WC chung & Hầm rượu vang' : 'Powder Room & Wine Cellar', area: calcArea(0.08, 8), icon: '🍾', desc: isVi ? 'Nhiệt độ bảo quản chuẩn sommelier' : 'Temperature controlled cellar' });
+        } else if (archTheme === 'rural_garden') {
+            // NHÀ CẤP 4 / NHÀ VƯỜN
+            f1Rooms.push({ id: 'r1', name: isVi ? 'Hiên đón bậc tam cấp phong thủy' : 'Fengshui Porch & Entry', area: calcArea(0.12, 10), icon: '🚪', desc: isVi ? 'Đón gió nam mát lành' : 'South wind entry' });
+            f1Rooms.push({ id: 'r2', name: isVi ? 'Gian khách & Phòng thờ liên hoàn' : 'Living & Sacred Altar Hall', area: calcArea(0.28, 28), icon: '🛋️', desc: isVi ? 'Không gian sinh hoạt trung tâm sum vầy' : 'Spacious family gathering' });
+            f1Rooms.push({ id: 'r3', name: isVi ? 'Bếp & Phòng ăn chữ L thông thoáng' : 'L-Shape Kitchen & Dining', area: calcArea(0.20, 20), icon: '🍳', desc: isVi ? 'Cửa sổ mở ra vườn rau bên hông' : 'Garden daylight kitchen' });
+            f1Rooms.push({ id: 'r4', name: isVi ? 'Phòng ngủ Master 1 (Gia chủ)' : 'Master Bedroom 1', area: calcArea(0.16, 16), icon: '🛏️', desc: isVi ? 'Có WC riêng khép kín' : 'En-suite private bath' });
+            f1Rooms.push({ id: 'r5', name: isVi ? 'Phòng ngủ 2 (Con cái / Khách)' : 'Bedroom 2', area: calcArea(0.14, 13), icon: '🛏️', desc: isVi ? 'Cửa sổ đón nắng sớm mai' : 'Morning daylight view' });
+            f1Rooms.push({ id: 'r6', name: isVi ? 'WC chung & Khu giặt phơi sân sau' : 'Bathroom & Rear Utility Yard', area: calcArea(0.10, 8), icon: '🚿', desc: isVi ? 'Lối ra vườn sau hái rau' : 'Rear garden egress' });
         } else {
-            f1Rooms.push({ id: 'r1', name: isVi ? 'Sân trước & Gara để xe' : 'Front Yard & Garage', area: Math.round(w * 3.0), icon: '🚗', desc: isVi ? 'Cổng nhôm đúc tự động' : 'Car and scooter parking' });
-            f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách liên thông' : 'Open Living Hall', area: Math.round(w * 4.8), icon: '🛋️', desc: isVi ? 'Liên thông sảnh chính' : 'Seamless open space' });
-            f1Rooms.push({ id: 'r3', name: isVi ? 'Cầu thang & Giếng trời giữa' : 'Stairwell & Central Skylight', area: Math.round(w * 2.2), icon: '🪜', desc: isVi ? 'Cầu thang 21 bậc tài lộc, WC chân thang' : '21-step fengshui stairs, powder room' });
-            f1Rooms.push({ id: 'r4', name: isVi ? 'Bếp & Phòng ăn gia đình' : 'Kitchen & Dining Room', area: Math.round(w * 4.2), icon: '🍳', desc: isVi ? 'Tủ bếp Acrylic kịch trần' : 'Modern island and cabinetry' });
-            f1Rooms.push({ id: 'r5', name: isVi ? 'Sân sau & Giếng trời thoát khí' : 'Rear Courtyard & Airwell', area: Math.round(w * 1.8), icon: '🌿', desc: isVi ? 'Lấy gió đối lưu tự nhiên' : 'Natural cross-ventilation' });
+            // NHÀ PHỐ HIỆN ĐẠI (như mẫu "Nhà phố 2 tầng 5x16m" test)
+            f1Rooms.push({ id: 'r1', name: isVi ? 'Sân trước & Gara để xe hơi' : 'Front Yard & Garage', area: calcArea(0.20, 14), icon: '🚗', desc: isVi ? 'Cổng nhôm đúc tự động, cây xanh' : 'Auto gate & car parking' });
+            f1Rooms.push({ id: 'r2', name: isVi ? 'Phòng khách liên thông hiện đại' : 'Open Concept Living Room', area: calcArea(0.28, 22), icon: '🛋️', desc: isVi ? 'Sofa góc L, vách TV ốp lam sóng' : 'Modern open living area' });
+            f1Rooms.push({ id: 'r3', name: isVi ? 'Giếng trời giữa & Hồ cá Koi' : 'Central Skylight & Koi Pond', area: calcArea(0.12, 8), icon: '🌿', desc: isVi ? 'Lấy sáng đối lưu tự nhiên tầng trệt' : 'Green courtyard ventilation' });
+            f1Rooms.push({ id: 'r4', name: isVi ? 'Cầu thang 21 bậc & WC chân thang' : 'Fengshui Stairs & Powder Room', area: calcArea(0.10, 6), icon: '🪜', desc: isVi ? 'Bậc ốp đá Marble, lan can kính' : 'Marble steps glass railing' });
+            f1Rooms.push({ id: 'r5', name: isVi ? 'Khu bếp & Bàn ăn gia đình' : 'Kitchen & Dining Area', area: calcArea(0.22, 16), icon: '🍳', desc: isVi ? 'Tủ bếp Acrylic kịch trần, bar mini' : 'Full height acrylic cabinets' });
+            f1Rooms.push({ id: 'r6', name: isVi ? 'Sân sau giặt phơi đối lưu gió' : 'Rear Courtyard & Airwell', area: calcArea(0.08, 6), icon: '🧺', desc: isVi ? 'Hút gió xuyên phòng từ trước ra sau' : 'Cross-ventilation airwell' });
         }
         floors.push({
             floorNum: 1,
@@ -2618,18 +2652,24 @@ class DreamHouseApp {
         // 2. TẦNG 2 (LẦU 1 - nếu có)
         if (floorsCount >= 2) {
             const f2Rooms = [];
-            if (template.type === 'biet-thu' || floorsCount >= 3) {
-                f2Rooms.push({ id: 'r2_1', name: isVi ? 'Phòng ngủ Master Hoàng gia' : 'Presidential Master Suite', area: 46, icon: '👑', desc: isVi ? 'Phòng thay đồ Walk-in & Bồn tắm Jacuzzi' : 'Walk-in closet & spa tub' });
-                f2Rooms.push({ id: 'r2_2', name: isVi ? 'Phòng sinh hoạt chung & Thư viện' : 'Family Lounge & Library', area: 26, icon: '📚', desc: isVi ? 'Không gian gắn kết gia đình' : 'Cozy family entertainment' });
-                f2Rooms.push({ id: 'r2_3', name: isVi ? 'Phòng ngủ VIP 2' : 'VIP Bedroom 2', area: 24, icon: '🛏️', desc: isVi ? 'WC riêng, ban công view hồ' : 'En-suite bath & balcony' });
-                f2Rooms.push({ id: 'r2_4', name: isVi ? 'Phòng ngủ VIP 3' : 'VIP Bedroom 3', area: 22, icon: '🛏️', desc: isVi ? 'Cửa kính panorama tràn viền' : 'Panorama window view' });
-                f2Rooms.push({ id: 'r2_5', name: isVi ? 'Ban công thư giãn dài' : 'Grand Balcony', area: 12, icon: '🌅', desc: isVi ? 'Lan can nhôm đúc mạ đồng' : 'Glass railing veranda' });
+            if (archTheme === 'modern_villa') {
+                f2Rooms.push({ id: 'r2_1', name: isVi ? 'Phòng ngủ Master phong cách Penthouse' : 'Penthouse Master Suite', area: calcArea(0.32, 32), icon: '👑', desc: isVi ? 'Cửa kính panorama góc nhìn 270 độ' : '270-degree panorama master' });
+                f2Rooms.push({ id: 'r2_2', name: isVi ? 'Phòng thay đồ Walk-in Closet & Spa' : 'Walk-in Closet & Luxury Spa', area: calcArea(0.16, 16), icon: '🛁', desc: isVi ? 'Bồn tắm lập thể giữa phòng kính' : 'Freestanding soaking tub & closet' });
+                f2Rooms.push({ id: 'r2_3', name: isVi ? 'Phòng sinh hoạt chung & Home Cinema' : 'Family Lounge & Media Room', area: calcArea(0.22, 22), icon: '🎬', desc: isVi ? 'Màn chiếu 120 inch âm tường' : '120-inch built-in home cinema' });
+                f2Rooms.push({ id: 'r2_4', name: isVi ? 'Phòng ngủ VIP 2 view sân vườn' : 'Garden-view VIP Bedroom', area: calcArea(0.18, 18), icon: '🛏️', desc: isVi ? 'WC riêng khép kín, ban công đón nắng' : 'En-suite bath private balcony' });
+                f2Rooms.push({ id: 'r2_5', name: isVi ? 'Ban công kính cường lực tràn viền' : 'Frameless Glass Balcony', area: calcArea(0.12, 10), icon: '🌅', desc: isVi ? 'Góc thư giãn ngắm cảnh hoàng hôn' : 'Sunset view lounging terrace' });
+            } else if (archTheme === 'classic_villa') {
+                f2Rooms.push({ id: 'r2_1', name: isVi ? 'Phòng ngủ Master Hoàng gia dát vàng' : 'Gilded Royal Master Suite', area: calcArea(0.34, 34), icon: '👑', desc: isVi ? 'Phòng thay đồ hoàng gia & bồn sục' : 'Royal walk-in dressing room' });
+                f2Rooms.push({ id: 'r2_2', name: isVi ? 'Thư viện & Không gian đọc sách' : 'Classical Library & Reading Room', area: calcArea(0.18, 18), icon: '📚', desc: isVi ? 'Tủ sách gỗ gõ đỏ kịch trần' : 'Solid hardwood book collection' });
+                f2Rooms.push({ id: 'r2_3', name: isVi ? 'Phòng ngủ VIP 2 (Hoàng tử / Công chúa)' : 'VIP Bedroom Suite 2', area: calcArea(0.20, 20), icon: '🛏️', desc: isVi ? 'Thiết kế quý phái, WC riêng' : 'Luxury en-suite room' });
+                f2Rooms.push({ id: 'r2_4', name: isVi ? 'Phòng ngủ khách VIP 3' : 'Guest Bedroom VIP 3', area: calcArea(0.18, 18), icon: '🛏️', desc: isVi ? 'Cửa vòm ban công hướng đông' : 'Arched balcony sunrise view' });
+                f2Rooms.push({ id: 'r2_5', name: isVi ? 'Ban công nhôm đúc mạ đồng nghệ thuật' : 'Bronze Cast Balcony', area: calcArea(0.10, 10), icon: '🌅', desc: isVi ? 'Chi tiết hoa văn tân cổ điển sắc sảo' : 'Artisanal architectural railing' });
             } else {
-                f2Rooms.push({ id: 'r2_1', name: isVi ? 'Phòng ngủ Master (Gia chủ)' : 'Master Bedroom Suite', area: Math.round(w * 4.5), icon: '👑', desc: isVi ? 'Ban công riêng, WC khép kín' : 'Front balcony, en-suite' });
-                f2Rooms.push({ id: 'r2_2', name: isVi ? 'Ban công trước đón gió' : 'Front Balcony', area: Math.round(w * 1.2), icon: '🌅', desc: isVi ? 'Trồng cây cảnh xanh mát' : 'Planter box & railing' });
-                f2Rooms.push({ id: 'r2_3', name: isVi ? 'Sảnh thang & Sinh hoạt chung' : 'Stair Hall & Study Nook', area: Math.round(w * 2.5), icon: '📖', desc: isVi ? 'Bàn học tập & làm việc' : 'Shared work/study nook' });
-                f2Rooms.push({ id: 'r2_4', name: isVi ? 'Phòng ngủ con 1' : 'Bedroom 2 (Kids)', area: Math.round(w * 3.8), icon: '🛏️', desc: isVi ? 'Cửa sổ mở ra giếng trời sau' : 'Rear airwell daylight' });
-                f2Rooms.push({ id: 'r2_5', name: isVi ? 'Nhà vệ sinh tầng 2 (WC)' : 'Bathroom Level 2', area: 5, icon: '🚿', desc: isVi ? 'Vách tắm kính cường lực' : 'Tempered glass shower' });
+                f2Rooms.push({ id: 'r2_1', name: isVi ? 'Phòng ngủ Master gia chủ (Ban công trước)' : 'Master Bedroom Suite', area: calcArea(0.32, 22), icon: '👑', desc: isVi ? 'Ban công riêng, WC khép kín' : 'Front balcony en-suite' });
+                f2Rooms.push({ id: 'r2_2', name: isVi ? 'Ban công trước đón gió mát' : 'Front Wind Balcony', area: calcArea(0.10, 6), icon: '🌅', desc: isVi ? 'Bồn hoa cây cảnh xanh ngát' : 'Planter box fresh breeze' });
+                f2Rooms.push({ id: 'r2_3', name: isVi ? 'Sảnh sinh hoạt chung & Bàn học tập' : 'Study Nook & Family Nook', area: calcArea(0.16, 12), icon: '📖', desc: isVi ? 'Không gian đọc sách ấm cúng' : 'Study and work station' });
+                f2Rooms.push({ id: 'r2_4', name: isVi ? 'Phòng ngủ con (Cửa sổ giếng trời)' : 'Kids Bedroom', area: calcArea(0.24, 16), icon: '🛏️', desc: isVi ? 'Cửa sổ mở ra giếng trời sau thoáng' : 'Airwell daylight window' });
+                f2Rooms.push({ id: 'r2_5', name: isVi ? 'Nhà vệ sinh tầng 2 vách kính' : 'Level 2 Glass Shower Bath', area: calcArea(0.08, 5), icon: '🚿', desc: isVi ? 'Vách tắm kính cường lực đứng' : 'Glass partition shower' });
             }
             floors.push({
                 floorNum: 2,
@@ -2643,10 +2683,22 @@ class DreamHouseApp {
         // 3. TẦNG 3 (LẦU 2 - nếu có)
         if (floorsCount >= 3) {
             const f3Rooms = [];
-            f3Rooms.push({ id: 'r3_1', name: isVi ? 'Phòng thờ gia tiên trang nghiêm' : 'Sacred Ancestral Altar', area: Math.round(w * 2.8), icon: '🕯️', desc: isVi ? 'Hướng cát tài lộc theo tuổi gia chủ' : 'Auspicious fengshui orientation' });
-            f3Rooms.push({ id: 'r3_2', name: isVi ? 'Phòng ngủ 3 / Phòng làm việc' : 'Bedroom 3 / Home Office', area: Math.round(w * 3.6), icon: '💻', desc: isVi ? 'Yên tĩnh, tập trung tối đa' : 'Quiet home studio' });
-            f3Rooms.push({ id: 'r3_3', name: isVi ? 'Khu giặt sấy & Phòng kỹ thuật' : 'Laundry & Utility Room', area: 8, icon: '🧺', desc: isVi ? 'Có ống cấp thoát nước chuyên dụng' : 'Dedicated washing plumbing' });
-            f3Rooms.push({ id: 'r3_4', name: isVi ? 'Sân thượng tiệc nướng BBQ & Cây cảnh' : 'Rooftop Sky Garden & BBQ', area: Math.round(w * 4.2), icon: '🍹', desc: isVi ? 'Góc chill ngắm thành phố về đêm' : 'Panoramic city view terrace' });
+            if (archTheme === 'modern_villa') {
+                f3Rooms.push({ id: 'r3_1', name: isVi ? 'Sky Lounge & Quầy Bar sân thượng' : 'Sky Lounge & Cocktail Bar', area: calcArea(0.30, 28), icon: '🍸', desc: isVi ? 'Tầm nhìn 360 độ ngắm hoàng hôn' : '360 panoramic views' });
+                f3Rooms.push({ id: 'r3_2', name: isVi ? 'Phòng Gym & Yoga view toàn cảnh' : 'Panorama Gym & Yoga Studio', area: calcArea(0.22, 20), icon: '🧘', desc: isVi ? 'Sàn gỗ Teak tự nhiên kháng ẩm' : 'Teak hardwood wellness studio' });
+                f3Rooms.push({ id: 'r3_3', name: isVi ? 'Phòng Sauna & Bồn sục Jacuzzi ngoài trời' : 'Sauna & Outdoor Jacuzzi', area: calcArea(0.18, 16), icon: '🧖', desc: isVi ? 'Xông hơi đá muối Himalaya' : 'Himalayan salt rock sauna' });
+                f3Rooms.push({ id: 'r3_4', name: isVi ? 'Sân thượng BBQ tiệc nướng ngoài trời' : 'Rooftop BBQ Party Oasis', area: calcArea(0.30, 26), icon: '🍹', desc: isVi ? 'Bếp nướng teppanyaki và bàn tiệc' : 'Teppanyaki grill terrace' });
+            } else if (archTheme === 'classic_villa') {
+                f3Rooms.push({ id: 'r3_1', name: isVi ? 'Phòng thờ gia tiên sơn son thếp vàng' : 'Ancestral Golden Altar Hall', area: calcArea(0.28, 24), icon: '🕯️', desc: isVi ? 'Không gian trang nghiêm tôn kính' : 'Sacred cultural orientation' });
+                f3Rooms.push({ id: 'r3_2', name: isVi ? 'Phòng trà đạo & Không gian thiền định' : 'Tea Ceremony & Zen Studio', area: calcArea(0.24, 20), icon: '🍵', desc: isVi ? 'Trầm hương tĩnh lặng thanh bình' : 'Peaceful zen meditation' });
+                f3Rooms.push({ id: 'r3_3', name: isVi ? 'Phòng giặt ủi & Kho gia vật' : 'Laundry & Family Storage', area: calcArea(0.14, 10), icon: '🧺', desc: isVi ? 'Khu giặt sấy phân loại chuyên dụng' : 'Dedicated laundry utilities' });
+                f3Rooms.push({ id: 'r3_4', name: isVi ? 'Vườn thượng uyển ngắm sao trên cao' : 'Royal Sky Garden & Stargazing', area: calcArea(0.34, 28), icon: '🌿', desc: isVi ? 'Tiểu cảnh hòn non bộ và hoa quý' : 'Bonsai & royal fountain' });
+            } else {
+                f3Rooms.push({ id: 'r3_1', name: isVi ? 'Phòng thờ gia tiên trang nghiêm' : 'Sacred Ancestral Altar', area: calcArea(0.26, 16), icon: '🕯️', desc: isVi ? 'Hướng cát tài lộc theo tuổi gia chủ' : 'Auspicious fengshui orientation' });
+                f3Rooms.push({ id: 'r3_2', name: isVi ? 'Phòng ngủ 3 / Studio làm việc' : 'Bedroom 3 / Home Office', area: calcArea(0.26, 18), icon: '💻', desc: isVi ? 'Yên tĩnh, tập trung tối đa' : 'Quiet home creative studio' });
+                f3Rooms.push({ id: 'r3_3', name: isVi ? 'Khu giặt sấy & Phòng kỹ thuật' : 'Laundry & Utility Room', area: calcArea(0.14, 8), icon: '🧺', desc: isVi ? 'Có ống cấp thoát nước chuyên dụng' : 'Dedicated washing plumbing' });
+                f3Rooms.push({ id: 'r3_4', name: isVi ? 'Sân thượng trồng cây & Tiệc BBQ' : 'Rooftop Garden & BBQ Terrace', area: calcArea(0.34, 22), icon: '🍹', desc: isVi ? 'Góc chill ngắm phố về đêm' : 'Panoramic city view terrace' });
+            }
             floors.push({
                 floorNum: 3,
                 title: isVi ? 'Mặt bằng Tầng 3 (Lầu 2)' : 'Floor 3 (Level 2)',
@@ -2659,9 +2711,9 @@ class DreamHouseApp {
         // 4. TẦNG 4 (LẦU 3 - nếu có >= 4 tầng)
         if (floorsCount >= 4) {
             const f4Rooms = [];
-            f4Rooms.push({ id: 'r4_1', name: isVi ? 'Phòng giải trí Karaoke VIP' : 'VIP Karaoke & Media Lounge', area: Math.round(w * 3.8), icon: '🎬', desc: isVi ? 'Cách âm tiêu chuẩn rạp phim' : 'Acoustic treatment' });
-            f4Rooms.push({ id: 'r4_2', name: isVi ? 'Phòng Gym & Yoga dưỡng sinh' : 'Gym & Yoga Studio', area: Math.round(w * 3.0), icon: '🧘', desc: isVi ? 'Sàn gỗ cao cấp đón ánh nắng' : 'Hardwood floor & daylight' });
-            f4Rooms.push({ id: 'r4_3', name: isVi ? 'Sky Bar & Vườn ngắm sao' : 'Sky Bar & Stargazing Lounge', area: Math.round(w * 4.0), icon: '🍸', desc: isVi ? 'View 360 độ ngắm cảnh trên cao' : '360 panoramic views' });
+            f4Rooms.push({ id: 'r4_1', name: isVi ? 'Phòng giải trí Karaoke VIP & Cinema' : 'VIP Cinema & Karaoke Studio', area: calcArea(0.32, 24), icon: '🎬', desc: isVi ? 'Cách âm tiêu chuẩn rạp chiếu phim' : 'Acoustic treatment' });
+            f4Rooms.push({ id: 'r4_2', name: isVi ? 'Phòng Gym & Yoga dưỡng sinh' : 'Gym & Yoga Studio', area: calcArea(0.24, 18), icon: '🧘', desc: isVi ? 'Sàn gỗ cao cấp đón ánh nắng' : 'Hardwood floor & daylight' });
+            f4Rooms.push({ id: 'r4_3', name: isVi ? 'Sky Bar & Vườn ngắm sao thiên văn' : 'Sky Bar & Observatory Terrace', area: calcArea(0.44, 30), icon: '🍸', desc: isVi ? 'Tầm nhìn 360 độ bao trọn thành phố' : '360 panoramic views' });
             floors.push({
                 floorNum: 4,
                 title: isVi ? 'Mặt bằng Tầng 4 (Lầu 3)' : 'Floor 4 (Level 3)',

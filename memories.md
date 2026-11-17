@@ -1333,6 +1333,25 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.8`** trên `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 66** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 82: Tối Ưu Hóa Tính Đa Dạng Của Mặt Bằng Tầng Theo Phong Cách Thiết Kế Riêng Biệt & Thêm Cấu Hình Công Năng Phòng Admin (Dynamic Multi-Theme Floorplan Engine v9.9)
+- [x] **Xử lý triệt để hiện tượng 2 mẫu nhà mới tải lên bằng GLB có mặt bằng tầng giống nhau:**
+  - **Phát hiện nguyên nhân cốt lõi:**
+    1. Khi tải lên mẫu mới trong `admin.html`, các ô kích thước và số tầng trước đây dùng giá trị mặc định giống nhau (`5x16m, 2 tầng`), và cột `rooms_vi` bị bỏ trống rỗng.
+    2. Hàm `generateFloorplanData` trước đây chỉ chia 3 nhánh đơn giản (`nha-cap-4`, `biet-thu || floors >= 3`, và `else`). Cả 2 mẫu đều rơi vào cùng một nhánh nên sinh ra danh sách phòng và diện tích cố định y hệt nhau.
+  - **Tái thiết kế Bộ Sinh Mặt Bằng Đa Dạng Theo Phong Cách (Smart Multi-Theme Architectural Engine):**
+    - Phân tích chi tiết tên gọi (`name_vi`), phong cách (`style_vi`), loại hình (`type`):
+      - **Biệt thự Hiện đại (`modern_villa` - ví dụ mẫu "Biệt thự hiện đại"):** Sảnh đón Panorama kính cường lực, Khách thông tầng Double-Height (45m²), Bếp đảo Boffi & Bar sang trọng (35m²), Phòng ngủ Suite view hồ bơi (29m²), Hồ bơi tràn viền & Sân Deck thư giãn, Gara kính siêu xe, Phòng ngủ Penthouse Master (51m²), Walk-in Closet & Spa, Home Cinema, Sky Lounge & Cocktail Bar ngoài trời (48m²), Gym & Yoga, Sauna muối hồng & Jacuzzi...
+      - **Nhà phố Hiện đại (`townhouse` - ví dụ mẫu "Nhà phố 2 tầng 5x16m"):** Sân trước để xe hơi (16m²), Phòng khách liên thông (22m²), Giếng trời giữa & Hồ cá Koi (10m²), Cầu thang 21 bậc & WC chân thang, Bếp gia đình ấm cúng (18m²), Sân sau giặt phơi, Phòng ngủ Master ban công trước (26m²), Sảnh sinh hoạt chung & Bàn học (13m²), Phòng ngủ con (19m²)...
+      - **Biệt thự Tân cổ điển (`classic_villa`):** Tiền sảnh vòm Corinthian, Khách vương giả, Bếp tiệc Pháp, Phòng ngủ Hoàng gia, Thư viện gỗ gõ đỏ, Phòng thờ gia tiên dát vàng, Vườn thượng uyển...
+      - **Nhà vườn / Nhà cấp 4 (`rural_garden`):** Hiên đón tam cấp, Gian khách & phòng thờ liên hoàn, Bếp chữ L, 3 phòng ngủ sân vườn...
+    - **Tính toán diện tích các phòng ĐỘNG 100%:** Diện tích từng phòng tỷ lệ thuận theo $W \times D$ của mẫu đó (`calcArea = Math.round(groundArea * pct)`), không còn fix cứng số mét vuông như trước.
+  - **Nâng cấp Trang Quản Trị `admin.html`:**
+    - Bổ sung trường nhập **Công năng các phòng (`tpl-rooms` / `rooms_vi`)** và **Mô tả kiến trúc (`tpl-desc` / `description_vi`)**.
+    - Tích hợp nút **`⚡ Gợi ý công năng`** tự động đề xuất danh sách phòng chuẩn chuyên môn kiến trúc theo phong cách mẫu nhà.
+    - Lưu trữ đầy đủ vào Supabase khi thêm/sửa mẫu.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.9`** trên `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 67** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 
