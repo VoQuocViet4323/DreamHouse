@@ -1280,7 +1280,23 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
     - Trong hàm `renderList()`: dọn sạch danh sách, gọi `filterNotifications()` và đặt số đếm badge về `0` (ẩn badge đỏ) nếu `!this.currentUser`.
     - Trong bộ hẹn giờ mô phỏng `setTimeout` nhận thông báo mới sau 2.4s: bổ sung điều kiện dừng `if (!root.isConnected || !this.currentUser) return;` để không tự động nảy số thông báo giả khi người dùng chưa đăng nhập.
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.6`** trên `index.html` và `admin.html`.
-- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 64** trong [`AI_Debug.md`](file:///d:/DreamHouse/AI_Debug.md).
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 64** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
+### Giai đoạn 80: Khắc Phục Lỗi 409 Conflict Khi Lưu Mẫu Nhà Mới & Cơ Chế Sinh Slug Duy Nhất Tự Động (Template Insert Conflict Fix v9.7)
+- [x] **Giải quyết triệt để lỗi 409 (Conflict) khi tải lên file 3D (.glb) để lưu mẫu nhà mới:**
+  - **Xây dựng hàm `ensureUniqueSlug(baseSlug, currentId)`:**
+    - Tự động kiểm tra tính tồn tại của slug trong cơ sở dữ liệu Supabase trước khi insert/update.
+    - Nếu slug đã tồn tại (do trùng tên với mẫu có sẵn), tự động nối thêm hậu tố `-2`, `-3`... hoặc mã ngẫu nhiên để bảo đảm tính duy nhất tuyệt đối 100%, vĩnh viễn không thể xảy ra lỗi vi phạm ràng buộc khóa duy nhất `templates_slug_key` (mã lỗi PostgreSQL `23505` / HTTP 409 Conflict).
+  - **Đưa trường `Mã định danh Slug (URL)` hiển thị trực quan trên Modal Thêm/Sửa Mẫu:**
+    - Bỏ thẻ ẩn `<input type="hidden" id="tpl-slug">`, thay bằng ô nhập liệu trực quan kèm nhãn "Chuẩn SEO duy nhất".
+    - Tự động đồng bộ theo thời gian thực từ ô `Tên mẫu nhà` (`tpl-name`) khi người dùng gõ phím.
+    - Cung cấp nút bấm `⚡ Tự tạo` (`#btn-gen-slug`) để Quản trị viên có thể sinh lại slug tự động hoặc chủ động tùy chỉnh slug theo ý muốn.
+  - **Tích hợp bộ nhớ đệm (Upload Cache) thông minh:**
+    - Ghi nhớ URL của file 3D và file ảnh vừa upload thành công trong phiên mở modal. Nếu người dùng điều chỉnh thông số và bấm lưu lại, hệ thống tái sử dụng ngay URL đã có mà không cần upload lại file nặng gần 40MB lên Storage.
+  - **Bổ sung cơ chế Fallback tự động khi Insert:**
+    - Nếu xảy ra race-condition hiếm gặp lúc insert, hệ thống tự động phát hiện mã lỗi `23505`, tự động nối hậu tố timestamp và lưu lại ngay lập tức mà không làm gián đoạn trải nghiệm người dùng.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=9.7`** trên `index.html` và `admin.html`.
+- [x] Cập nhật cẩm nang chẩn đoán vào **Lỗi 65** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
 
 

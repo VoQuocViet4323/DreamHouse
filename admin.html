@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9.6">
+    <link rel="stylesheet" href="style.css?v=9.7">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js?v=9.6"></script>
-    <script src="js/i18n.js?v=9.6"></script>
-    <script src="js/toast.js?v=9.6"></script>
+    <script src="js/config.js?v=9.7"></script>
+    <script src="js/i18n.js?v=9.7"></script>
+    <script src="js/toast.js?v=9.7"></script>
 
     <!-- Bảo đảm khi tải lại trang luôn hiển thị tại đầu mục (Scroll to Top on Load/Reload) -->
     <script>
@@ -484,14 +484,25 @@
 
             <form id="template-form" class="inquiry-form">
                 <input type="hidden" id="edit-id" />
-                <input type="hidden" id="tpl-slug" />
 
                 <div class="admin-form-section-title">1. Thông tin định danh</div>
-                <div class="form-grid-3">
+                <div class="form-grid-2">
                     <div class="form-group">
-                        <label>Tên mẫu nhà</label>
+                        <label>Tên mẫu nhà <span style="color:#ef4444;">*</span></label>
                         <input type="text" id="tpl-name" required placeholder="Ví dụ: Biệt thự vườn, Nhà phố 2 tầng..." />
                     </div>
+                    <div class="form-group">
+                        <label style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Mã định danh Slug (URL)</span>
+                            <span style="font-size:0.72rem; color:var(--color-accent); font-weight:600;">Chuẩn SEO duy nhất</span>
+                        </label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="tpl-slug" placeholder="vi-du-nha-pho-2-tang-5x16m" />
+                            <button type="button" id="btn-gen-slug" class="btn-subtle" style="white-space: nowrap; font-size: 0.78rem; padding: 0 12px;" title="Tự động sinh slug từ tên mẫu nhà">⚡ Tự tạo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-grid-2" style="margin-top: 10px;">
                     <div class="form-group">
                         <label>Phân loại kiến trúc</label>
                         <select id="tpl-type">
@@ -1617,6 +1628,59 @@
             }
 
             let currentEditingTemplate = null;
+            let lastUploadedModelFile = null;
+            let lastUploadedModelUrl = null;
+            let lastUploadedPhotoFile = null;
+            let lastUploadedPhotoUrl = null;
+            let userManuallyEditedSlug = false;
+
+            const slugify = (text) => {
+                return (text || '').toString().toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '') || `mau-${Date.now().toString().slice(-4)}`;
+            };
+
+            // Hàm kiểm tra và đảm bảo Slug duy nhất tuyệt đối, ngăn chặn triệt để lỗi 409 Conflict
+            async function ensureUniqueSlug(baseSlug, currentId = null) {
+                let candidate = baseSlug || `mau-${Date.now().toString().slice(-6)}`;
+                let counter = 1;
+                for (let attempt = 0; attempt < 50; attempt++) {
+                    let query = client.from('templates').select('id').eq('slug', candidate);
+                    if (currentId) {
+                        query = query.neq('id', currentId);
+                    }
+                    const { data, error } = await query;
+                    if (!error && (!data || data.length === 0)) {
+                        return candidate; // Slug hoàn toàn khả dụng
+                    }
+                    counter++;
+                    candidate = `${baseSlug}-${counter}`;
+                }
+                return `${baseSlug}-${Date.now().toString().slice(-4)}`;
+            }
+
+            // Tự động đồng bộ Slug từ Tên mẫu nhà khi người dùng nhập
+            const tplNameInput = document.getElementById('tpl-name');
+            const tplSlugInput = document.getElementById('tpl-slug');
+            const btnGenSlug = document.getElementById('btn-gen-slug');
+
+            tplSlugInput?.addEventListener('input', () => {
+                userManuallyEditedSlug = true;
+            });
+
+            tplNameInput?.addEventListener('input', () => {
+                const editId = document.getElementById('edit-id').value;
+                if (!editId && !userManuallyEditedSlug) {
+                    tplSlugInput.value = slugify(tplNameInput.value);
+                }
+            });
+
+            btnGenSlug?.addEventListener('click', () => {
+                tplSlugInput.value = slugify(tplNameInput.value);
+                userManuallyEditedSlug = false;
+            });
 
             // Chỉnh sửa mẫu nhà
             window.editTemplate = async function(id) {
@@ -1624,6 +1688,11 @@
                     const { data, error } = await client.from('templates').select('*').eq('id', id).single();
                     if (error || !data) throw (error || new Error('Không tìm thấy dữ liệu mẫu nhà'));
                     currentEditingTemplate = data;
+                    userManuallyEditedSlug = true;
+                    lastUploadedModelFile = null;
+                    lastUploadedModelUrl = null;
+                    lastUploadedPhotoFile = null;
+                    lastUploadedPhotoUrl = null;
 
                     document.getElementById('edit-id').value = data.id;
                     document.getElementById('tpl-name').value = data.name_vi || data.slug || '';
@@ -1650,6 +1719,11 @@
             // Mở modal thêm mẫu
             document.getElementById('btn-add-template').addEventListener('click', () => {
                 currentEditingTemplate = null;
+                userManuallyEditedSlug = false;
+                lastUploadedModelFile = null;
+                lastUploadedModelUrl = null;
+                lastUploadedPhotoFile = null;
+                lastUploadedPhotoUrl = null;
                 document.getElementById('template-form').reset();
                 document.getElementById('edit-id').value = '';
                 document.getElementById('tpl-name').value = '';
@@ -1692,46 +1766,58 @@
                     let photoPath = document.getElementById('tpl-photo-path').value.trim();
                     let modelPath = document.getElementById('tpl-model-path').value.trim();
 
-                    // 1. Upload ảnh nếu chọn file
+                    // 1. Upload ảnh nếu chọn file (có bộ nhớ đệm tránh upload lại nhiều lần)
                     const photoFile = document.getElementById('tpl-photo-file').files[0];
                     if (photoFile) {
-                        if (photoFile.size > 26214400) {
-                            throw new Error(`File ảnh quá lớn (${(photoFile.size / 1024 / 1024).toFixed(1)}MB). Giới hạn cho phép là 25MB.`);
-                        }
-                        const fileExt = photoFile.name.split('.').pop();
-                        const fileName = `img_${Date.now()}.${fileExt}`;
-                        const { error: upErr } = await client.storage
-                            .from('template-images')
-                            .upload(fileName, photoFile);
-                        if (upErr) {
-                            if (upErr.message && upErr.message.includes('exceeded the maximum allowed size')) {
-                                throw new Error('Dung lượng ảnh vượt hạn mức Storage (3MB). Hãy chạy script 07_increase_storage_limits.sql trong Supabase SQL Editor để mở rộng lên 25MB!');
+                        if (lastUploadedPhotoFile === photoFile && lastUploadedPhotoUrl) {
+                            photoPath = lastUploadedPhotoUrl;
+                        } else {
+                            if (photoFile.size > 26214400) {
+                                throw new Error(`File ảnh quá lớn (${(photoFile.size / 1024 / 1024).toFixed(1)}MB). Giới hạn cho phép là 25MB.`);
                             }
-                            throw upErr;
+                            const fileExt = photoFile.name.split('.').pop();
+                            const fileName = `img_${Date.now()}.${fileExt}`;
+                            const { error: upErr } = await client.storage
+                                .from('template-images')
+                                .upload(fileName, photoFile);
+                            if (upErr) {
+                                if (upErr.message && upErr.message.includes('exceeded the maximum allowed size')) {
+                                    throw new Error('Dung lượng ảnh vượt hạn mức Storage (3MB). Hãy chạy script 07_increase_storage_limits.sql trong Supabase SQL Editor để mở rộng lên 25MB!');
+                                }
+                                throw upErr;
+                            }
+                            const { data: { publicUrl } } = client.storage.from('template-images').getPublicUrl(fileName);
+                            photoPath = publicUrl;
+                            lastUploadedPhotoFile = photoFile;
+                            lastUploadedPhotoUrl = publicUrl;
                         }
-                        const { data: { publicUrl } } = client.storage.from('template-images').getPublicUrl(fileName);
-                        photoPath = publicUrl;
                     }
 
-                    // 2. Upload file mô hình 3D (.skp, .glb, .obj,...) nếu chọn file
+                    // 2. Upload file mô hình 3D (.skp, .glb, .obj,...) nếu chọn file (có bộ nhớ đệm tránh upload lại nhiều lần)
                     const modelFile = document.getElementById('tpl-model-file').files[0];
                     if (modelFile) {
-                        if (modelFile.size > 104857600) {
-                            throw new Error(`File 3D quá lớn (${(modelFile.size / 1024 / 1024).toFixed(1)}MB). Giới hạn cho phép là 100MB.`);
-                        }
-                        const fileExt = modelFile.name.split('.').pop();
-                        const fileName = `model_${Date.now()}.${fileExt}`;
-                        const { error: modErr } = await client.storage
-                            .from('template-models')
-                            .upload(fileName, modelFile);
-                        if (modErr) {
-                            if (modErr.message && modErr.message.includes('exceeded the maximum allowed size')) {
-                                throw new Error('Dung lượng file 3D vượt hạn mức mặc định (10MB) của Supabase Storage. Vui lòng vào Supabase SQL Editor chạy file script 07_increase_storage_limits.sql để nâng hạn mức lên 100MB!');
+                        if (lastUploadedModelFile === modelFile && lastUploadedModelUrl) {
+                            modelPath = lastUploadedModelUrl;
+                        } else {
+                            if (modelFile.size > 104857600) {
+                                throw new Error(`File 3D quá lớn (${(modelFile.size / 1024 / 1024).toFixed(1)}MB). Giới hạn cho phép là 100MB.`);
                             }
-                            throw modErr;
+                            const fileExt = modelFile.name.split('.').pop();
+                            const fileName = `model_${Date.now()}.${fileExt}`;
+                            const { error: modErr } = await client.storage
+                                .from('template-models')
+                                .upload(fileName, modelFile);
+                            if (modErr) {
+                                if (modErr.message && modErr.message.includes('exceeded the maximum allowed size')) {
+                                    throw new Error('Dung lượng file 3D vượt hạn mức mặc định (10MB) của Supabase Storage. Vui lòng vào Supabase SQL Editor chạy file script 07_increase_storage_limits.sql để nâng hạn mức lên 100MB!');
+                                }
+                                throw modErr;
+                            }
+                            const { data: { publicUrl } } = client.storage.from('template-models').getPublicUrl(fileName);
+                            modelPath = publicUrl;
+                            lastUploadedModelFile = modelFile;
+                            lastUploadedModelUrl = publicUrl;
                         }
-                        const { data: { publicUrl } } = client.storage.from('template-models').getPublicUrl(fileName);
-                        modelPath = publicUrl;
                     }
 
                     const typeVal = document.getElementById('tpl-type').value;
@@ -1750,21 +1836,19 @@
                     const nameVi = nameInput || autoFallbackVi;
                     const nameEn = nameInput || autoFallbackEn;
 
-                    const slugify = (text) => {
-                        return text.toString().toLowerCase()
-                            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                            .replace(/đ/g, 'd').replace(/Đ/g, 'd')
-                            .replace(/[^a-z0-9]+/g, '-')
-                            .replace(/^-+|-+$/g, '') || `mau-${Date.now().toString().slice(-4)}`;
-                    };
-
-                    let slugVal = document.getElementById('tpl-slug').value.trim();
-                    if (!slugVal || !editId) {
-                        slugVal = slugify(nameVi);
+                    let rawSlug = document.getElementById('tpl-slug').value.trim();
+                    if (!rawSlug) {
+                        rawSlug = slugify(nameVi);
+                    } else {
+                        rawSlug = slugify(rawSlug);
                     }
 
+                    // Tự động kiểm tra và đảm bảo slug duy nhất trước khi lưu
+                    const uniqueSlug = await ensureUniqueSlug(rawSlug, editId || null);
+                    document.getElementById('tpl-slug').value = uniqueSlug;
+
                     const payload = {
-                        slug: slugVal,
+                        slug: uniqueSlug,
                         type: typeVal,
                         style_vi: styleVi,
                         style_en: styleEn,
@@ -1785,15 +1869,26 @@
                         const { error } = await client.from('templates').update(payload).eq('id', editId);
                         if (error) throw error;
                     } else {
-                        const { error } = await client.from('templates').insert([payload]);
-                        if (error) throw error;
+                        let { error } = await client.from('templates').insert([payload]);
+                        if (error && (error.code === '23505' || (error.message && error.message.includes('slug')))) {
+                            // Dự phòng race-condition nếu có 2 thao tác cùng lúc
+                            payload.slug = `${uniqueSlug}-${Date.now().toString().slice(-4)}`;
+                            const retryRes = await client.from('templates').insert([payload]);
+                            if (retryRes.error) throw retryRes.error;
+                        } else if (error) {
+                            throw error;
+                        }
                     }
 
                     if (window.toast) window.toast.success('Lưu mẫu nhà thành công!');
                     closeTemplateModal();
                     loadTemplates();
                 } catch (err) {
-                    if (window.toast) window.toast.error('Lỗi: ' + err.message);
+                    let errMsg = err.message || 'Lỗi không xác định';
+                    if (err.code === '23505' || errMsg.includes('duplicate key') || errMsg.includes('slug')) {
+                        errMsg = 'Mã định danh (slug) này đã bị trùng lặp. Vui lòng bấm "⚡ Tự tạo" để lấy mã định danh mới và thử lại!';
+                    }
+                    if (window.toast) window.toast.error('Lỗi: ' + errMsg);
                 } finally {
                     saveBtn.disabled = false;
                     saveBtn.textContent = 'Lưu thông tin mẫu nhà';

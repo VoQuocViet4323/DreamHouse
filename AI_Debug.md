@@ -1223,6 +1223,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Trong `setTimeout` hiệu ứng chuông rung 2.4s: bổ sung điều kiện dừng `if (!root.isConnected || !this.currentUser) return;`.
   4. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.6`** trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 65: Tải mẫu nhà mới bằng file 3D (.glb) bị lỗi 409 (Conflict) không lưu được vào cơ sở dữ liệu
+- **Hiện tượng:** Trong Admin Dashboard (`admin.html`), khi Quản trị viên chọn tải lên tệp mô hình 3D (.glb, dung lượng 37.4MB) để thêm mẫu thiết kế nhà mới, tệp 3D được tải lên Supabase Storage thành công nhưng đến bước lưu thông tin vào bảng `templates` thì bị chặn lại. Console hiển thị lỗi đỏ: `POST https://.../rest/v1/templates?columns=%22slug%... 409 (Conflict)` và giao diện báo lỗi trùng lặp khóa chính/khóa duy nhất (`duplicate key value violates unique constraint "templates_slug_key"`). Mẫu nhà hoàn toàn không được tạo.
+- **Nguyên nhân cốt lõi:**
+  1. **Ràng buộc duy nhất `slug TEXT UNIQUE NOT NULL` trong PostgreSQL:** Cột `slug` của bảng `templates` bắt buộc phải là duy nhất trên toàn hệ thống.
+  2. **Trường `tpl-slug` bị ẩn (`<input type="hidden">`):** Quản trị viên hoàn toàn không nhìn thấy mã slug được sinh ra là gì để kiểm tra hay chỉnh sửa.
+  3. **Cơ chế sinh slug tự động bị đụng độ:** Hàm `slugVal = slugify(nameVi)` chỉ chuyển đổi tên mẫu nhà sang dạng không dấu. Nếu Quản trị viên nhập tên trùng với mẫu đã có (ví dụ tên demo `test` hoặc các mẫu cùng phân loại) thì slug sinh ra sẽ trùng lặp 100% với một bản ghi đã có sẵn trong cơ sở dữ liệu.
+  4. **Thiếu cơ chế kiểm tra trước (Pre-check) và cơ chế tự động tăng hậu tố:** Mã nguồn cũ gọi thẳng lệnh `client.from('templates').insert([payload])` mà không kiểm tra trước xem slug có khả dụng hay không.
+  5. **Tải lại tệp lặp đi lặp lại khi thử lại:** Khi lệnh insert bị lỗi 409, file 3D đã nằm trên Storage (`template-models`), nhưng nếu Quản trị viên bấm "Lưu" lại, hàm submit lại tiếp tục upload lại file 37.4MB từ đầu gây nghẽn mạng và sinh nhiều file trùng lặp trên Storage (`model_1794751706948.glb`, `model_1794751846079.glb`, `model_1794874286713.glb`).
+- **Cách khắc phục dứt điểm:**
+  1. **Xây dựng hàm `ensureUniqueSlug(baseSlug, currentId)`:** Tự động truy vấn bảng `templates` kiểm tra độ trùng lặp. Nếu slug đã tồn tại, hàm sẽ tự động nối thêm hậu tố `-2`, `-3`... hoặc chuỗi ngẫu nhiên để bảo đảm tính duy nhất tuyệt đối 100%, vĩnh viễn không thể xảy ra lỗi 409 Conflict.
+  2. **Đưa trường `Mã định danh Slug (URL)` hiển thị trực quan trên Modal:**
+     - Thiết kế giao diện chuyên nghiệp có nhãn "Chuẩn SEO duy nhất".
+     - Tự động đồng bộ theo thời gian thực từ ô `Tên mẫu nhà` khi nhập liệu.
+     - Cung cấp nút `⚡ Tự tạo` để Quản trị viên có thể chủ động sinh lại slug bất cứ lúc nào hoặc tự gõ slug tùy biến theo ý muốn.
+  3. **Bổ sung cơ chế Fallback tự động khi Insert:** Trong trường hợp hy hữu xảy ra race-condition, khối `catch` tự động phát hiện mã lỗi `23505` (hoặc lỗi slug), tự động nối hậu tố timestamp và retry lưu ngay lập tức mà không làm gián đoạn trải nghiệm người dùng.
+  4. **Tích hợp bộ nhớ đệm (Upload Cache) thông minh:** Ghi nhớ URL của file 3D và file ảnh vừa upload thành công. Nếu thao tác lưu form cần thử lại hoặc điều chỉnh thông số, hệ thống tái sử dụng ngay URL đã có mà không cần upload lại file nặng 37.4MB.
+  5. Nâng tham số cache-busting toàn hệ thống lên **`?v=9.7`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
