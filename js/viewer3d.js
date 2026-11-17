@@ -165,6 +165,94 @@ class House3DViewer {
         this.updateCameraPosition();
     }
 
+    recenterModel(resetAngles = false) {
+        if (!this.camera) return;
+        this.target.copy(this.initialTarget);
+        this.spherical.radius = this.initialRadius;
+        if (resetAngles) {
+            this.spherical.theta = Math.PI / 4;
+            this.spherical.phi = Math.PI / 3;
+        }
+        this.updateCameraPosition();
+        this.handleResize();
+    }
+
+    computeFocalBounds(rootObject) {
+        if (!rootObject) return { box: new THREE.Box3(), center: new THREE.Vector3(), size: new THREE.Vector3() };
+
+        rootObject.updateMatrixWorld(true);
+
+        const meshStats = [];
+        let totalVertices = 0;
+        const weightedCenter = new THREE.Vector3();
+
+        rootObject.traverse((child) => {
+            if (child.isMesh && child.geometry) {
+                const geom = child.geometry;
+                const posAttr = geom.attributes ? geom.attributes.position : null;
+                if (!posAttr || posAttr.count === 0) return;
+
+                if (!geom.boundingBox) geom.computeBoundingBox();
+
+                const worldBox = new THREE.Box3().copy(geom.boundingBox).applyMatrix4(child.matrixWorld);
+                const worldCenter = worldBox.getCenter(new THREE.Vector3());
+                const worldSize = worldBox.getSize(new THREE.Vector3());
+                const vertCount = posAttr.count;
+
+                meshStats.push({
+                    mesh: child,
+                    box: worldBox,
+                    center: worldCenter,
+                    size: worldSize,
+                    vertCount: vertCount
+                });
+
+                weightedCenter.addScaledVector(worldCenter, vertCount);
+                totalVertices += vertCount;
+            }
+        });
+
+        if (totalVertices === 0 || meshStats.length <= 1) {
+            const rawBox = new THREE.Box3().setFromObject(rootObject);
+            return {
+                box: rawBox,
+                center: rawBox.getCenter(new THREE.Vector3()),
+                size: rawBox.getSize(new THREE.Vector3())
+            };
+        }
+
+        weightedCenter.divideScalar(totalVertices);
+
+        // Lọc bỏ các mesh môi trường/đường xá/sân đất quá khổ (> 30m) nhưng rất ít vertex hoặc nằm xa cụm công trình chính
+        const focalBox = new THREE.Box3();
+        let validMeshCount = 0;
+
+        for (const stat of meshStats) {
+            const distFromWeight = Math.hypot(stat.center.x - weightedCenter.x, stat.center.z - weightedCenter.z);
+            const isSprawlingGround = (stat.size.x > 30 || stat.size.z > 30) && stat.size.y < 0.6 && stat.vertCount < 600;
+
+            if (!isSprawlingGround && distFromWeight <= 35) {
+                focalBox.union(stat.box);
+                validMeshCount++;
+            }
+        }
+
+        if (validMeshCount === 0 || focalBox.isEmpty()) {
+            const rawBox = new THREE.Box3().setFromObject(rootObject);
+            return {
+                box: rawBox,
+                center: rawBox.getCenter(new THREE.Vector3()),
+                size: rawBox.getSize(new THREE.Vector3())
+            };
+        }
+
+        return {
+            box: focalBox,
+            center: focalBox.getCenter(new THREE.Vector3()),
+            size: focalBox.getSize(new THREE.Vector3())
+        };
+    }
+
     setupInteractions() {
         const dom = this.renderer.domElement;
 
@@ -380,33 +468,35 @@ class House3DViewer {
                     }
                 });
 
-                // 1. Tính toán bounding box nguyên bản của mô hình
-                const initialBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
-                const initialCenter = initialBox.getCenter(new THREE.Vector3());
+                // 1. Tính toán bounding box tiêu điểm (loại bỏ mặt đường/sân vô tận nếu có)
+                const focal = this.computeFocalBounds(this.currentMeshGroup);
 
-                // 2. CĂN CHÍNH GIỮA: Dời toạ độ model sao cho tâm X-Z về chính xác (0,0), đáy tiếp đất y = 0
-                this.currentMeshGroup.position.x -= initialCenter.x;
-                this.currentMeshGroup.position.z -= initialCenter.z;
-                this.currentMeshGroup.position.y -= initialBox.min.y;
+                // 2. CĂN CHÍNH GIỮA: Dời toạ độ model sao cho tâm công trình X-Z về chính xác (0,0), đáy tiếp đất y = 0
+                this.currentMeshGroup.position.x -= focal.center.x;
+                this.currentMeshGroup.position.z -= focal.center.z;
+                this.currentMeshGroup.position.y -= focal.box.min.y;
 
                 this.scene.add(this.currentMeshGroup);
                 if (statusEl) statusEl.textContent = '';
                 
-                // 3. Tính lại bounding box sau khi đã căn giữa
-                const adjustedBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
-                const adjustedSize = adjustedBox.getSize(new THREE.Vector3());
-                const adjustedCenter = adjustedBox.getCenter(new THREE.Vector3());
+                // 3. Tính lại bounding box tiêu điểm sau khi đã căn giữa
+                this.currentMeshGroup.updateMatrixWorld(true);
+                const adjustedFocal = this.computeFocalBounds(this.currentMeshGroup);
+                const adjustedSize = adjustedFocal.size;
 
-                this.initialTarget.copy(adjustedCenter);
-                this.target.copy(adjustedCenter);
+                // Đặt camera nhìn vào khoảng giữa chiều cao của ngôi nhà
+                const targetY = Math.max(1.5, adjustedSize.y * 0.45);
+                this.initialTarget.set(0, targetY, 0);
+                this.target.copy(this.initialTarget);
 
+                // Cự ly camera bao quát trọn vẹn ngôi nhà
                 const maxDim = Math.max(adjustedSize.x, adjustedSize.y, adjustedSize.z);
-                this.initialRadius = Math.max(10, maxDim * 1.8);
+                this.initialRadius = Math.max(10, Math.min(65, maxDim * 1.65));
                 this.spherical.radius = this.initialRadius;
                 this.updateCameraPosition();
 
                 // 4. Tự động bóc tách kích thước thực & suy đoán số tầng từ mô hình 3D
-                this.analyzeAndEmitModelInfo(adjustedSize, adjustedBox, fallbackTemplate);
+                this.analyzeAndEmitModelInfo(adjustedSize, adjustedFocal.box, fallbackTemplate);
             },
             undefined,
             (err) => {
@@ -451,30 +541,30 @@ class House3DViewer {
                 });
 
                 // Căn chính giữa sàn
-                const initialBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
-                const initialCenter = initialBox.getCenter(new THREE.Vector3());
+                const focal = this.computeFocalBounds(this.currentMeshGroup);
 
-                this.currentMeshGroup.position.x -= initialCenter.x;
-                this.currentMeshGroup.position.z -= initialCenter.z;
-                this.currentMeshGroup.position.y -= initialBox.min.y;
+                this.currentMeshGroup.position.x -= focal.center.x;
+                this.currentMeshGroup.position.z -= focal.center.z;
+                this.currentMeshGroup.position.y -= focal.box.min.y;
 
                 this.scene.add(this.currentMeshGroup);
                 if (statusEl) statusEl.textContent = '';
 
-                const adjustedBox = new THREE.Box3().setFromObject(this.currentMeshGroup);
-                const adjustedSize = adjustedBox.getSize(new THREE.Vector3());
-                const adjustedCenter = adjustedBox.getCenter(new THREE.Vector3());
+                this.currentMeshGroup.updateMatrixWorld(true);
+                const adjustedFocal = this.computeFocalBounds(this.currentMeshGroup);
+                const adjustedSize = adjustedFocal.size;
 
-                this.initialTarget.copy(adjustedCenter);
-                this.target.copy(adjustedCenter);
+                const targetY = Math.max(1.5, adjustedSize.y * 0.45);
+                this.initialTarget.set(0, targetY, 0);
+                this.target.copy(this.initialTarget);
 
                 const maxDim = Math.max(adjustedSize.x, adjustedSize.y, adjustedSize.z);
-                this.initialRadius = Math.max(10, maxDim * 1.8);
+                this.initialRadius = Math.max(10, Math.min(65, maxDim * 1.65));
                 this.spherical.radius = this.initialRadius;
                 this.updateCameraPosition();
 
                 // 4. Tự động bóc tách kích thước thực & suy đoán số tầng từ mô hình 3D
-                this.analyzeAndEmitModelInfo(adjustedSize, adjustedBox, fallbackTemplate);
+                this.analyzeAndEmitModelInfo(adjustedSize, adjustedFocal.box, fallbackTemplate);
             },
             undefined,
             (err) => {

@@ -2311,6 +2311,11 @@ body.dark-theme {
 }
 
 /* Chế độ Phóng to 3D Toàn Màn Hình (Fullscreen Immersive 3D Mode) */
+body.is-viewer-fullscreen #close-detail-modal,
+body.is-viewer-fullscreen #detail-modal > .modal-close {
+  display: none !important;
+}
+
 .media-box.viewer-box.is-fullscreen {
   position: fixed !important;
   inset: 0 !important;
@@ -2318,7 +2323,7 @@ body.dark-theme {
   height: 100vh !important;
   max-width: 100vw !important;
   max-height: 100vh !important;
-  z-index: 999999 !important;
+  z-index: 1000050 !important;
   border-radius: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -2337,24 +2342,69 @@ body.dark-theme {
 }
 
 .media-box.viewer-box.is-fullscreen .viewer-header {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
   background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  padding: 14px 24px !important;
+  padding: 12px 24px !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-  z-index: 20;
+  z-index: 1000060 !important;
+}
+
+.media-box.viewer-box.is-fullscreen .camera-presets {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-left: auto !important;
+  width: auto !important;
+}
+
+.media-box.viewer-box.is-fullscreen .btn-viewer-fs {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  font-size: 0.78rem !important;
+  padding: 5px 12px !important;
+}
+
+.media-box.viewer-box.is-fullscreen .btn-viewer-fs:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
 }
 
 .media-box.viewer-box.is-fullscreen .viewer-canvas-container {
   flex: 1 1 auto !important;
-  height: calc(100vh - 110px) !important;
+  height: calc(100vh - 100px) !important;
   width: 100% !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
 }
 
 .media-box.viewer-box.is-fullscreen .threejs-canvas {
   height: 100% !important;
   max-height: 100% !important;
   width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.media-box.viewer-box.is-fullscreen .viewer-floating-controls {
+  position: absolute !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1000070 !important;
 }
 
 .media-box.viewer-box.is-fullscreen .viewer-footer {

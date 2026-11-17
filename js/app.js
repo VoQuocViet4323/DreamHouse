@@ -1285,6 +1285,7 @@ class DreamHouseApp {
         if (viewerBox && viewerBox.classList.contains('is-fullscreen')) {
             this.toggleViewerFullscreen(false);
         }
+        document.body.classList.remove('is-viewer-fullscreen');
 
         // Khôi phục mô hình 3D nguyên vẹn khi đóng modal
         this.viewer3D?.clearClipping();
@@ -2560,6 +2561,7 @@ class DreamHouseApp {
         const shouldBeFS = (forceState !== undefined) ? forceState : !isCurrentlyFS;
 
         viewerBox.classList.toggle('is-fullscreen', shouldBeFS);
+        document.body.classList.toggle('is-viewer-fullscreen', shouldBeFS);
 
         // Cập nhật icon & text nút bấm
         const iconOpen = fsBtn?.querySelector('.fs-icon-open');
@@ -2573,6 +2575,16 @@ class DreamHouseApp {
             if (fsText) fsText.textContent = isVi ? 'Thu nhỏ (Esc)' : 'Exit (Esc)';
             if (fsBtn) fsBtn.title = isVi ? 'Thu nhỏ góc nhìn 3D (Esc)' : 'Exit Fullscreen 3D (Esc)';
             document.body.style.overflow = 'hidden';
+
+            // CĂN CHÍNH GIỮA MÔ HÌNH VÀ TỐI ƯU CỰ LY KHI PHÓNG TO
+            setTimeout(() => {
+                this.viewer3D?.handleResize();
+                this.viewer3D?.recenterModel(false);
+            }, 60);
+            setTimeout(() => {
+                this.viewer3D?.handleResize();
+                this.viewer3D?.recenterModel(false);
+            }, 260);
         } else {
             iconOpen?.classList.remove('hidden');
             iconClose?.classList.add('hidden');
@@ -2583,11 +2595,16 @@ class DreamHouseApp {
             if (!detailModal || detailModal.classList.contains('hidden')) {
                 document.body.style.overflow = '';
             }
-        }
 
-        // Tự động căn chỉnh và làm nét lại khung vẽ Three.js
-        setTimeout(() => this.viewer3D?.handleResize(), 60);
-        setTimeout(() => this.viewer3D?.handleResize(), 260);
+            // Căn chỉnh lại khi thoát toàn màn hình
+            setTimeout(() => {
+                this.viewer3D?.handleResize();
+                this.viewer3D?.recenterModel(false);
+            }, 60);
+            setTimeout(() => {
+                this.viewer3D?.handleResize();
+            }, 260);
+        }
     }
 
     /**

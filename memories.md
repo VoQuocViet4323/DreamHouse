@@ -1383,6 +1383,26 @@ Tài liệu này lưu trữ toàn bộ bối cảnh kiến trúc, các quyết �
 - [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=10.1`** trên `index.html` và `admin.html`.
 - [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 69** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
 
+### Giai đoạn 85: Thuật Toán Căn Tâm Tiêu Điểm Thông Minh & Tự Động Định Vị Chính Giữa Khi Phóng To 3D (Smart Focal Centering & Fullscreen Auto-Alignment v10.2)
+- [x] **Giải quyết triệt để lỗi mô hình bị lệch góc/dạt sang một bên khi mở phóng to:**
+  - **Vấn đề được báo cáo:** Khi người dùng bấm "Phóng to" trên modal chi tiết mẫu nhà, mô hình 3D bị đẩy dạt xuống góc dưới bên phải, không hiển thị ở chính giữa màn hình, khiến phần lớn diện tích màn hình bị trống trắng.
+  - **Nguyên nhân cốt lõi phát hiện:**
+    1. Các tệp mô hình 3D kiến trúc (xuất từ SketchUp, Lumion, Revit, Blender) thường chứa cả ngữ cảnh đường xá, vỉa hè dài hàng trăm mét (vd: tệp GLB người dùng tải lên có mặt đường asphalt trải dài $111\text{m}$, từ $x = -42.58\text{m}$ đến $+68.78\text{m}$). Khi tính bounding box thô sơ `Box3.setFromObject()`, tâm hình học bị lệch sang mặt đường ở $x = +13.1\text{m}$, trong khi cụm ngôi nhà chính (chiếm hơn 95% số lượng đỉnh/vertex) nằm tại $x \approx 0.9\text{m}$. Hệ quả là ngôi nhà bị dạt lệch hơn $12\text{m}$ sang một bên và cự ly camera bị lùi xa đến $200\text{m}$!
+    2. Khi chuyển đổi toàn màn hình (Fullscreen), camera chỉ thay đổi `aspect ratio` mà không định tâm lại góc máy về tiêu điểm ngôi nhà, làm mô hình tiếp tục bị kẹt ở góc lệch.
+  - **Khắc phục dứt điểm:**
+    1. **Thuật toán tính Bounding Box tiêu điểm thông minh (`computeFocalBounds` trong `js/viewer3d.js`):**
+       - Tính trọng số vị trí các đỉnh $\mathbf{C}_{\text{focus}} = \frac{\sum V_i \cdot \mathbf{c}_i}{\sum V_i}$ dựa trên mật độ khối đa giác thật sự của công trình.
+       - Tự động nhận diện và loại trừ các mặt phẳng đường xá/sân đất quá khổ ($> 30\text{m}$) có số lượng đỉnh nghèo nàn ($< 600$ vertices) khi xác định tâm công trình.
+       - Dời toạ độ mô hình theo đúng tâm tiêu điểm của ngôi nhà về toạ độ gốc $(0, 0, 0)$ và đáy tiếp đất tại $y = 0$.
+       - Đặt camera target chính xác vào độ cao $45\%$ của ngôi nhà $(0, y_{\text{building}} \times 0.45, 0)$ với cự ly camera tối ưu (giới hạn từ $10\text{m}$ đến $65\text{m}$, không còn bị văng ra $200\text{m}$).
+    2. **Tự động Căn Giữa Khi Bấm Phóng To (`recenterModel`):**
+       - Khi kích hoạt `toggleViewerFullscreen(true)`, hệ thống tự động gọi `viewer3D.recenterModel(false)` ở cả mốc $60\text{ms}$ và $260\text{ms}$, đưa tâm nhìn camera về ngay chính giữa ngôi nhà.
+    3. **Tối ưu hóa UI & Thiết lập lớp phủ Fullscreen:**
+       - Tự động gán `body.is-viewer-fullscreen` để ẩn nút đóng của Modal nền (`#close-detail-modal`), tránh che khuất thanh công cụ 3D.
+       - Đảm bảo thanh tiêu đề `.viewer-header` và thanh điều khiển `.viewer-floating-controls` hiển thị sắc nét với z-index cao nhất.
+- [x] Nâng cấp tham số cache-busting toàn hệ thống lên **`?v=10.2`** trên `index.html` và `admin.html`.
+- [x] Bổ sung cẩm nang xử lý lỗi vào **Lỗi 70** trong [`AI_Debug.md`](file:///e:/Dream-house/AI_Debug.md).
+
 
 
 

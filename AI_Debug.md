@@ -1311,6 +1311,24 @@ Tài liệu này tổng hợp toàn bộ các lỗi tiềm ẩn trong kiến tr�
      - Cung cấp hàm `zoomCamera(delta)` trong `viewer3d.js` với thuật toán điều chỉnh bán kính tọa độ cầu `spherical.radius` mượt mà, chống văng camera.
   4. Nâng tham số cache-busting toàn hệ thống lên **`?v=10.1`** trên `index.html` và `admin.html`.
 
+### 🔴 Lỗi 70: Mô hình 3D bị dạt lệch sang góc và cự ly camera bị đẩy ra xa hàng trăm mét khi bấm Phóng to
+- **Hiện tượng:** Khi người dùng mở xem modal và bấm "Phóng to", mô hình 3D bị đẩy dạt sang góc dưới bên phải, ở giữa màn hình là khoảng trống trắng mênh mông, người dùng không thể thấy toàn diện công trình ở vị trí trung tâm.
+- **Nguyên nhân cốt lõi:**
+  1. Trong các file thiết kế 3D kiến trúc (GLB/OBJ), tác giả thường vẽ kèm mặt đường, vỉa hè dài hàng trăm mét xung quanh (vd: file GLB thực tế có mặt đường kéo dài $111\text{m}$, từ $-42.58\text{m}$ đến $+68.78\text{m}$). Việc dùng hàm `Box3.setFromObject()` thô sơ tính trung bình cả mặt đường khiến tâm hình học bị kéo lệch sang toạ độ $x = +13.1\text{m}$, trong khi ngôi nhà thực tế nằm tại $x \approx 0.9\text{m}$.
+  2. Kích thước bounding box bị đội lên $111\text{m}$ khiến bán kính camera `initialRadius` bị phóng xa đến $200\text{m}$, làm ngôi nhà vừa bé vừa lệch góc.
+  3. Hàm bật phóng to `toggleViewerFullscreen()` chưa có cơ chế tự động trả tâm nhìn camera về tiêu điểm ngôi nhà khi kích thước viewport thay đổi.
+- **Cách khắc phục dứt điểm:**
+  1. **Phát triển thuật toán tiêu điểm thông minh `computeFocalBounds` trong `js/viewer3d.js`:**
+     - Tính tâm trọng số vị trí các đỉnh $\mathbf{C}_{\text{focus}} = \frac{\sum V_i \cdot \mathbf{c}_i}{\sum V_i}$ dựa trên phân bố hình học thật sự của công trình.
+     - Tự động phát hiện và loại bỏ các mặt phẳng nền đường/vỉa hè quá khổ ($> 30\text{m}$) có số lượng đỉnh rất ít ($< 600$ vertices) khi xác định tâm công trình.
+     - Căn chỉnh toạ độ dời ngôi nhà chính xác về gốc $(0, 0, 0)$ và mặt đất tại $y = 0$.
+     - Đặt camera target vào tâm độ cao $45\%$ của ngôi nhà $(0, y_{\text{building}} \times 0.45, 0)$ với cự ly camera chuẩn kiến trúc ($10\text{m}$ đến $65\text{m}$).
+  2. **Tự động Căn Giữa Khi Bấm Phóng To (`recenterModel`):**
+     - Khi chuyển sang toàn màn hình, gọi `this.viewer3D?.recenterModel(false)` và `handleResize()` để công trình luôn nằm ở vị trí trung tâm màn hình.
+  3. **Tối ưu CSS & Design Tokens:**
+     - Thiết lập `body.is-viewer-fullscreen #close-detail-modal { display: none !important; }` để ẩn nút đóng trùng lặp, giữ lại nút `✕ Thu nhỏ (Esc)` chuẩn Design Token trên thanh công cụ 3D.
+  4. Nâng tham số cache-busting toàn hệ thống lên **`?v=10.2`** trên `index.html` và `admin.html`.
+
 ---
 
 ## 4. CHECKLIST KIỂM TRA HỆ THỐNG TRƯỚC KHI BÀN GIAO (VERIFICATION MATRIX)
